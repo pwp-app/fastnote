@@ -55,6 +55,7 @@ button {
     background-color:#1faeff;   
     padding-left:12px !important;
     padding-right:12px !important; 
+    border-top:solid 1px #ffffff;
 }
 .container-newnote .lbl{
     padding-top:10px;
@@ -83,7 +84,7 @@ button {
 /* note */
 .note-list{
     width:100%;
-    padding-top:20px;
+    padding-top:15px;
     padding-bottom: 15px;
     height:-webkit-calc(100% - (35px + 185px));
     height:calc(100% - (35px + 185px));
@@ -123,7 +124,7 @@ button {
     background-color:#1faeff; 
     border-radius: 8px;
     box-shadow:2px 2px 2px rgba(0,0,0,.25);
-    padding:8px 12px;
+    padding:8px 15px;
     margin-bottom:12px;
 }
 .note-header{

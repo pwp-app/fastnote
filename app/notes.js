@@ -13,15 +13,15 @@ let notesid = 0;
 let isNotesEmpty;
 
 //获取notesid的数据
-storage.get('notesid',function(error,data){
-    if (error){
+storage.get('notesid', function (error, data) {
+    if (error) {
         notesid = 1;
         return;
     }
     //获取callback回传的json
     var notesid_json = data;
     //判断是否为空
-    if (notesid_json == null || notesid_json == undefined){
+    if (notesid_json == null || notesid_json == undefined) {
         notesid = 1;
         return;
     }
@@ -29,41 +29,41 @@ storage.get('notesid',function(error,data){
     notesid_json = JSON.parse(notesid_json);
     notesid = notesid_json.id;
     console.log(notesid);
-    if (notesid == null || notesid == undefined){
+    if (notesid == null || notesid == undefined) {
         notesid = 1;
     }
 });
 
 //判断是否存在notes文件夹，不存在代表没有笔记
-if (!fs.existsSync('./notes/')){
+if (!fs.existsSync('./notes/')) {
     showNoteEmpty();
     isNotesEmpty = true;
     fs.mkdir('./notes/');
 } else {
-    fs.readdir('./notes/',function(err,fileArr){
-        if (fileArr == undefined){
+    fs.readdir('./notes/', function (err, fileArr) {
+        if (fileArr == undefined) {
             showNoteEmpty();
             isNotesEmpty = true;
             return;
         }
         //目录是空的
-        if (!fileArr[0]){
+        if (!fileArr[0]) {
             showNoteEmpty();
             isNotesEmpty = true;
         } else {
             //目录不是空的，代表有笔记，执行初始化
             let countOffset = 0;
             fileArr.forEach(element => {
-                fs.readFile('./notes/'+element,'utf-8',function(err,data){
-                    if (err){
+                fs.readFile('./notes/' + element, 'utf-8', function (err, data) {
+                    if (err) {
                         countOffset++;
-                        throw(err);
+                        throw (err);
                     }
                     var note_json = data;
-                    if (note_json != undefined && note_json != null){
+                    if (note_json != undefined && note_json != null) {
                         note_json = JSON.parse(note_json);
-                        addNoteToArray(note_json.id,note_json.time,note_json.text);
-                        if (notes.length == fileArr.length+countOffset){
+                        addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.text,note_json.timezone, note_json.offset);
+                        if (notes.length == fileArr.length + countOffset) {
                             //结束文件遍历，渲染列表
                             refreshNoteList();
                             //显示列表
@@ -77,26 +77,49 @@ if (!fs.existsSync('./notes/')){
 }
 
 //绑定textarea的事件
-textarea.keyup(function (e) {
+let isComboKeyDown = false; //防止反复触发
+textarea.keydown(function (e) {
     var ctrlKey = e.ctrlKey || e.metaKey;
-    if (ctrlKey && e.keyCode == 13) {
+    if (ctrlKey && e.keyCode == 13 && !isComboKeyDown) {
+        isComboKeyDown = true;
         var text = textarea.val();
-        if (text.trim() != null && text.trim()!="")
+        if (text.trim() != null && text.trim() != "")
             saveNote(text.trim());
+    }
+});
+//按键弹起解除锁
+textarea.keyup(function(e){
+    var ctrlKey = e.ctrlKey || e.metaKey;
+    if (e.keyCode == 13 || ctrlKey){
+        isComboKeyDown = false;
     }
 });
 
 //保存note为json
 function saveNote(notetext) {
+    var alltime = time.getAllTime();
+    var path = './notes/' + alltime.rawTime + '.json';
+    var offset = 0;
+    if (fs.existsSync(path)) {
+        offset++;
+    }
+    if (offset > 0) {
+        path = './notes/' + alltime.rawTime + '.' + offset + '.json';
+        while (fs.existsSync(path)) {
+            offset++;
+            path = './notes/' + alltime.rawTime + '.' + offset + '.json';
+        }
+    }
     var note = {
         id: notesid,
-        time: time.getCurrentTime(),
-        rawtime:time.getRawCurrentTime(),
+        time: alltime.currentTime,
+        rawtime: alltime.rawtime,
         timezone: time.getTimeZone(),
-        text: notetext
+        text: notetext,
+        offset: offset
     }
     var json = JSON.stringify(note);
-    fs.writeFile('./notes/' + time.getRawCurrentTime() + '.json', json, 'utf-8', function (err, data) {
+    fs.writeFile(path, json, 'utf-8', function (err, data) {
         if (err) {
             console.log(data);
         } else {
@@ -108,9 +131,9 @@ function saveNote(notetext) {
 }
 
 //保存ID
-function saveNotesId(){
+function saveNotesId() {
     var data = {
-        id:notesid
+        id: notesid
     }
-    storage.set('notesid',JSON.stringify(data));
+    storage.set('notesid', JSON.stringify(data));
 }

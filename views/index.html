@@ -62,7 +62,7 @@
             function renderNote(id, time, text) {
                 var node_list = document.getElementsByClassName('note-list')[0];
                 var html = '<div class="note"><div class="note-header"><p class="note-no">';
-                html += '#'+id;
+                html += '#' + id;
                 html += '</p><p class="note-time">';
                 html += time;
                 html += '</p></div><div class="note-content"><p class="note-text">';
@@ -71,28 +71,31 @@
                 node_list.innerHTML += html;
             }
             //添加笔记至Array
-            function addNoteToArray(id, time, text) {
+            function addNoteToArray(id, time, rawtime, text, offset, timezone) {
                 var note = {
                     id: id,
                     time: time,
-                    text: text
+                    rawtime: rawtime,
+                    text: text,
+                    offset: offset,
+                    timezone: timezone
                 }
                 notes.push(note);
             }
             //刷新note-list
             function refreshNoteList() {
                 clearNoteList(); //先清空                
-                notes.sort(sortNotes);  //排序
+                notes.sort(sortNotes); //排序
                 console.log(notes.length);
-                notes.forEach(function(note){
-                    renderNote(note.id,note.time,note.text);
+                notes.forEach(function (note) {
+                    renderNote(note.id, note.time, note.text);
                 });
             }
             //排序笔记
-            function sortNotes(a,b){
-                if (a.id>b.id){
+            function sortNotes(a, b) {
+                if (a.id > b.id) {
                     return -1;
-                } else if (a.id<b.id){
+                } else if (a.id < b.id) {
                     return 1;
                 } else {
                     return 0;
