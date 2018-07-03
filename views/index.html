@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Fastnote</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--import requirements-->
+    <script>
+        window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
+        require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
+    </script>
+    <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
+    <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container-titlebar col-lg=12 drag">
+        <div class="title">Fastnote</div>
+        <div id="electron-titlebar" class="titlebar" style="z-index: 999;position: fixed;">
+    </div>
+    <script>
+            require('electron-titlebar');
+        </script>
+</body>
+
+</html>

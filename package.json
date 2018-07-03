@@ -1,0 +1,21 @@
+{
+  "devDependencies": {
+    "electron": "^2.0.3"
+  },
+  "dependencies": {
+    "bootstrap": "^4.1.1",
+    "electron-titlebar-windows": "^3.0.0",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.3"
+  },
+  "name": "fastnote",
+  "version": "0.0.1",
+  "description": "Quick create notes",
+  "main": "main.js",
+  "scripts": {
+    "test": "electron ."
+  },
+  "author": "BackRunner",
+  "license": "MIT"
+}
