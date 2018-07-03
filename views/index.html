@@ -18,13 +18,39 @@
 </head>
 
 <body>
-    <div class="container-titlebar col-lg=12 drag">
+    <!-- titlebar -->
+    <div class="container-titlebar col-lg-12 drag">
         <div class="title">Fastnote</div>
-        <div id="electron-titlebar" class="titlebar" style="z-index: 999;position: fixed;">
+        <div id="electron-titlebar" class="titlebar" style="z-index: 999;position: fixed !important;"></div>
     </div>
     <script>
-            require('electron-titlebar');
-        </script>
+        require('electron-titlebar');
+    </script>
+    <!-- notes -->
+    <div class="container-main">
+        <div class="note-list col-lg-12">
+            <div class="note">
+                <div class="note-header">
+                    <p class="note-no">#1</p>
+                    <p class="note-time">2018-7-3 16:25</p>
+                </div>
+                <div class="note-content">
+                    <p class="note-content">今天要购买一台笔记本电脑</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- new note -->
+    <div class="fixed col-lg-12">
+        <div class="container-newnote">
+            <div class="lbl">
+                <label>新建笔记</label>
+            </div>            
+            <div class="control">
+                <textarea></textarea>
+            </div>            
+        </div>
+    </div>
 </body>
 
 </html>

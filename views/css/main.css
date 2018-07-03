@@ -1,7 +1,8 @@
 /*主设置*/
 body{
     margin:0;
-    font-family:Source Han Sans CN,Arial, Helvetica, sans-serif;
+    font-family:Source Han Sans CN,Arial, Helvetica, sans-serif !important;
+    font-weight: 200px;
 }
 
 button {
@@ -22,13 +23,90 @@ button {
     margin-top:12px !important;
 }
 .container-titlebar{
-    background-color:#0cdffc;
+    background-color:#1faeff;
     height:35px;
+    position:absolute;
+    top:0px;
+    padding:0 !important;
 }
 .title{
     color:#ffffff;
     height:35px;
-    font-size: 18px;
-    font-weight: 280;
-    padding:4px 15px;    
+    font-size: 16px;
+    font-weight: 200px;
+    padding:5px 8px;    
+    -webkit-user-select:none;
+    position: fixed !important;
+}
+/*fixed part*/
+.fixed{
+    position: fixed !important;
+    display: block;
+    bottom: 0px;
+    margin:0;
+    padding:0 !important;
+}
+.container-newnote{
+    height: 185px;
+    width: 100%;
+    background-color:#1faeff;   
+    padding-left:12px !important;
+    padding-right:12px !important; 
+}
+.container-newnote .lbl{
+    padding-top:10px;
+    color:#ffffff;
+    font-size: 14px;
+    -webkit-user-select:none;
+}
+.container-newnote .control{
+    width: 100%;
+    font-weight: 300;
+}
+.container-newnote .control textarea{
+    width: 100%;
+    height:132px;
+    text-align: justify;
+    border: 0;
+    padding: 8px 12px;
+    resize: none;
+    font-weight: 100px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+.container-newnote .control textarea:focus{
+    outline:0;
+}
+/* note */
+.note-list{
+    width:100%;
+    padding-top:20px;
+}
+.note{
+    color:#ffffff;
+    background-color:#1faeff; 
+    border-radius: 8px;
+    box-shadow:2px 2px 2px rgba(0,0,0,.25);
+    padding:8px 12px;
+    margin-bottom:12px;
+}
+.note-header{
+    border-bottom: solid #ffffff 2px;
+    height: 32px;
+    -webkit-user-select:none;
+}
+.note-header p{
+    display:inline-block;
+}
+.note-no{
+    font-size: 15px;
+}
+.note-time{
+    font-size: 12px;
+    float:right;
+    padding-top:5px;
+}
+.note-content{
+    padding-top:5px;
+    margin-bottom: 5px;
 }

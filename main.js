@@ -10,7 +10,7 @@ function createWindow () {
   // 创建浏览器窗口。
   var conf = {
       width:1280,
-      height:850,
+      height:800,
       resizable:false,
       maximazable:false
   }
