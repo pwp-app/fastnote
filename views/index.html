@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
 </head>
 
 <body>
@@ -26,11 +27,11 @@
     <script>
         require('electron-titlebar');
     </script>
+    <!-- infobar -->
+    <div class="container-infobar"></div>
     <!-- notes -->
     <div class="container-main">
-        <div class="note-list col-lg-12">
-
-        </div>
+        <div class="note-list col-lg-12"></div>
         <!-- empty -->
         <div class="note-empty col-lg-12">
             <span>您还没有建立任何的笔记</br>在下方你可以快速新建新笔记</span>
@@ -70,6 +71,21 @@
                 html += '</p></div></div>';
                 node_list.innerHTML += html;
             }
+            //在顶部渲染Note
+            function renderNoteAtTop(id, time, text) {
+                //构造html
+                var node_list = document.getElementsByClassName('note-list')[0];
+                var html = '<div class="note" id="note_'+id+'"><div class="note-header"><p class="note-no">';
+                html += '#' + id;
+                html += '</p><p class="note-time">';
+                html += time;
+                html += '</p></div><div class="note-content"><p class="note-text">';
+                html += text;
+                html += '</p></div></div>';
+                node_list.innerHTML = html + node_list.innerHTML;
+                //animate
+                $('#note_'+id).animateCss('fadeInLeft');
+            }
             //添加笔记至Array
             function addNoteToArray(id, time, rawtime, text, offset, timezone) {
                 var note = {
@@ -82,14 +98,21 @@
                 }
                 notes.push(note);
             }
+            //添加Note Obj至Array
+            function addNoteObjToArray(note) {
+                notes.push(note);
+            }
             //刷新note-list
             function refreshNoteList() {
                 clearNoteList(); //先清空                
                 notes.sort(sortNotes); //排序
-                console.log(notes.length);
                 notes.forEach(function (note) {
                     renderNote(note.id, note.time, note.text);
                 });
+            }
+            //清空notes数组
+            function clearNoteArray() {
+                notes = new Array();
             }
             //排序笔记
             function sortNotes(a, b) {
@@ -117,7 +140,38 @@
     </div>
 
     <script>
+        //import requirements
+        $.getScript('../app/infobar.js');        //import by jQuery
         require('../app/notes.js');
+    </script>
+    <script>
+        //load Animate CSS
+        $.fn.extend({
+            animateCss: function (animationName, callback) {
+                var animationEnd = (function (el) {
+                    var animations = {
+                        animation: 'animationend',
+                        OAnimation: 'oAnimationEnd',
+                        MozAnimation: 'mozAnimationEnd',
+                        WebkitAnimation: 'webkitAnimationEnd',
+                    };
+
+                    for (var t in animations) {
+                        if (el.style[t] !== undefined) {
+                            return animations[t];
+                        }
+                    }
+                })(document.createElement('div'));
+
+                this.addClass('animated ' + animationName).one(animationEnd, function () {
+                    $(this).removeClass('animated ' + animationName);
+
+                    if (typeof callback === 'function') callback();
+                });
+
+                return this;
+            },
+        });
     </script>
 </body>
 

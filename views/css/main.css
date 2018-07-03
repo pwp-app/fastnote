@@ -1,75 +1,90 @@
 /*主设置*/
-body{
-    margin:0;
-    font-family:Source Han Sans CN,Arial, Helvetica, sans-serif !important;
+
+body {
+    margin: 0;
+    font-family: Source Han Sans CN, Arial, Helvetica, sans-serif !important;
     font-weight: 200px;
 }
-html{ 
+
+html {
     overflow-x: hidden;
     overflow-y: hidden;
 }
+
 button {
     -webkit-app-region: no-drag;
 }
-.drag{
+
+.drag {
     -webkit-app-region: drag;
 }
+
 /*titlebar*/
-.titlebar{
-    padding-right:20px;
-    float:right;
+
+.titlebar {
+    padding-right: 20px;
+    float: right;
 }
-.titlebar .button{
-    height:35px !important;
+
+.titlebar .button {
+    height: 35px !important;
 }
-.titlebar img{
-    margin-top:12px !important;
+
+.titlebar img {
+    margin-top: 12px !important;
 }
-.container-titlebar{
-    background-color:#1faeff;
-    height:35px;
-    position:absolute;
-    top:0px;
-    padding:0 !important;
+
+.container-titlebar {
+    background-color: #1faeff;
+    height: 35px;
+    position: absolute;
+    top: 0px;
+    padding: 0 !important;
 }
-.title{
-    color:#ffffff;
-    height:35px;
+
+.title {
+    color: #ffffff;
+    height: 35px;
     font-size: 16px;
     font-weight: 200px;
-    padding:5px 10px;    
-    -webkit-user-select:none;
+    padding: 5px 10px;
+    -webkit-user-select: none;
     position: fixed !important;
 }
+
 /*fixed part*/
-.fixed{
+
+.fixed {
     position: fixed !important;
     display: block;
     bottom: 0px;
-    margin:0;
-    padding:0 !important;
+    margin: 0;
+    padding: 0 !important;
 }
-.container-newnote{
+
+.container-newnote {
     height: 185px;
     width: 100%;
-    background-color:#1faeff;   
-    padding-left:12px !important;
-    padding-right:12px !important; 
-    border-top:solid 1px #ffffff;
+    background-color: #1faeff;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
 }
-.container-newnote .lbl{
-    padding-top:10px;
-    color:#ffffff;
+
+.container-newnote .lbl {
+    padding-top: 10px;
+    color: #ffffff;
     font-size: 14px;
-    -webkit-user-select:none;
+    -webkit-user-select: none;
 }
-.container-newnote .control{
+
+.container-newnote .control {
     width: 100%;
     font-weight: 300;
 }
-.container-newnote .control textarea{
+
+.container-newnote .control textarea {
     width: 100%;
-    height:132px;
+    height: 132px;
     text-align: justify;
     border: 0;
     padding: 8px 12px;
@@ -78,77 +93,139 @@ button {
     font-size: 14px;
     border-radius: 5px;
 }
-.container-newnote .control textarea:focus{
-    outline:0;
+
+.container-newnote .control textarea:focus {
+    outline: 0;
 }
+
 /* note */
-.note-list{
-    width:100%;
-    padding-top:15px;
-    padding-bottom: 15px;
-    height:-webkit-calc(100% - (35px + 185px));
-    height:calc(100% - (35px + 185px));
-    height:580px;
+
+.note-list {
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 12px;
+    height: -webkit-calc(100% - (35px + 185px));
+    height: calc(100% - (35px + 185px));
+    height: 580px;
     overflow-y: auto;
 }
-.note-list::-webkit-scrollbar{
+
+.note-list::-webkit-scrollbar {
     width: 5px;
 }
-.note-list::-webkit-scrollbar-track-piece{
+
+.note-list::-webkit-scrollbar-track-piece {
     background-color: white;
 }
-.note-list::-webkit-scrollbar-thumb{
+
+.note-list::-webkit-scrollbar-thumb {
     border-radius: 9px;
-    background-color:#1faeff; 
+    background-color: #1faeff;
 }
-.note-list::-webkit-scrollbar-button{
+
+.note-list::-webkit-scrollbar-button {
     display: none;
 }
-.note-empty{
-    width:100%;
-    height:-webkit-calc(100% - (35px + 185px));
-    height:calc(100% - (35px + 185px));
-    height:580px;
+
+.note-empty {
+    width: 100%;
+    height: -webkit-calc(100% - (35px + 185px));
+    height: calc(100% - (35px + 185px));
+    height: 580px;
     overflow-y: hidden;
     justify-content: center;
     text-align: center;
     align-items: center;
-    display:none;
+    display: none;
 }
-.note-empty span{
-    color:black;
-    font-size:18px;
+
+.note-empty span {
+    color: black;
+    font-size: 18px;
 }
-.note{
-    color:#ffffff;
-    background-color:#1faeff; 
+
+.note {
+    color: #ffffff;
+    background-color: #1faeff;
     border-radius: 8px;
-    box-shadow:2px 2px 2px rgba(0,0,0,.25);
-    padding:8px 15px;
-    margin-bottom:12px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, .25);
+    padding: 8px 15px;
+    margin-bottom: 12px;
+    /* animate */
+    animation-duration: 2s;
+    -vendor-animation-duration: 2s;
 }
-.note-header{
+
+.note-header {
     border-bottom: solid #ffffff 2px;
     height: 32px;
-    -webkit-user-select:none;
+    -webkit-user-select: none;
 }
-.note-header p{
-    display:inline-block;
+
+.note-header p {
+    display: inline-block;
 }
-.note-no{
+
+.note-no {
     font-size: 15px;
 }
-.note-time{
+
+.note-time {
     font-size: 12px;
-    float:right;
-    padding-top:5px;
+    float: right;
+    padding-top: 5px;
 }
-.note-content{
-    padding-top:5px;
+
+.note-content {
+    padding-top: 5px;
     margin-bottom: 5px;
 }
-.note-text{
-    padding-top:5px;
+
+.note-text {
+    padding-top: 5px;
     margin-bottom: 5px;
     font-size: 15px;
+}
+
+/* infobar */
+
+.container-infobar {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+.infobar {
+    width: 450px;
+    height: 35px;
+    text-align: center;
+    top: 0;
+    position: fixed;
+    font-size: 14px;
+    padding: 5px 15px;
+    color: #ffffff;
+    /* animate */
+    animation-duration: 1s;
+    -vendor-animation-duration: 1s;
+}
+
+.infobar i {
+    padding-right: 15px;
+}
+
+.infobar-success {
+    background-color: #00c13f;
+}
+
+.infobar-warning {
+    background-color: #F4B300;
+}
+
+.infobar-error {
+    background-color: #FF2E12;
+}
+
+.infobar-info {
+    background-color: #2673EC;
 }
