@@ -145,6 +145,8 @@ function saveNote(notetext) {
         }
         //在顶部渲染Note
         renderNoteAtTop(note.id, note.time, note.text);
+        //绑定事件
+        bindRightClickEvent();
     } catch (e) {
         //出现错误则打印错误并刷新List
         console.error(e);

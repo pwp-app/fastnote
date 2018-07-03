@@ -31,7 +31,7 @@
     <div class="container-infobar"></div>
     <!-- notes -->
     <div class="container-main">
-        <div class="note-list col-lg-12"></div>
+        <div class="note-list col-lg-12" id="note-list"></div>
         <!-- empty -->
         <div class="note-empty col-lg-12">
             <span>您还没有建立任何的笔记</br>在下方你可以快速新建新笔记</span>
@@ -62,7 +62,7 @@
             //渲染一条笔记
             function renderNote(id, time, text) {
                 var node_list = document.getElementsByClassName('note-list')[0];
-                var html = '<div class="note"><div class="note-header"><p class="note-no">';
+                var html = '<div class="note" id="note_' + id + '"><div class="note-header"><p class="note-no">';
                 html += '#' + id;
                 html += '</p><p class="note-time">';
                 html += time;
@@ -75,7 +75,7 @@
             function renderNoteAtTop(id, time, text) {
                 //构造html
                 var node_list = document.getElementsByClassName('note-list')[0];
-                var html = '<div class="note" id="note_'+id+'"><div class="note-header"><p class="note-no">';
+                var html = '<div class="note" id="note_' + id + '"><div class="note-header"><p class="note-no">';
                 html += '#' + id;
                 html += '</p><p class="note-time">';
                 html += time;
@@ -84,7 +84,7 @@
                 html += '</p></div></div>';
                 node_list.innerHTML = html + node_list.innerHTML;
                 //animate
-                $('#note_'+id).animateCss('fadeInLeft');
+                $('#note_' + id).animateCss('fadeInLeft');
             }
             //添加笔记至Array
             function addNoteToArray(id, time, rawtime, text, offset, timezone) {
@@ -109,6 +109,8 @@
                 notes.forEach(function (note) {
                     renderNote(note.id, note.time, note.text);
                 });
+                //绑定右键事件
+                bindRightClickEvent();
             }
             //清空notes数组
             function clearNoteArray() {
@@ -139,9 +141,44 @@
         </div>
     </div>
 
+    <!-- rightclick menu -->
+    <div class="rightclickmenu">
+        <div class="list-group">
+            <button type="button" class="list-group-item">编辑</button>
+            <button type="button" class="list-group-item">删除</button>
+        </div>
+    </div>
+
+    <script>
+        var noteid_clicked = -1;
+        //右键菜单相关事件绑定
+        function bindRightClickEvent() {
+            $('.note').mousedown(function (e) {
+                if (e.which == 3) {
+                    $('.rightclickmenu').attr('style', 'display:block;' + 'left:' + e.clientX + 'px;top:' +
+                        e.clientY +
+                        'px;z-index:1000;');
+                    isRightClickMenuOpened = true;
+                    noteid_clicked = parseInt($(this).attr("id").replace('note_',''));
+                    console.log(noteid_clicked);
+                }
+            });
+        }
+        $('body').mousedown(function (e) {
+            if (e.which == 1) {
+                $('.rightclickmenu').attr('style', 'display:none;');
+                noteid_clicked = -1;
+            }
+        });
+        $('#note-list').scroll(function () {
+            $('.rightclickmenu').attr('style', 'display:none;');
+            noteid_clicked = -1;
+        });
+    </script>
+
     <script>
         //import requirements
-        $.getScript('../app/infobar.js');        //import by jQuery
+        $.getScript('../app/infobar.js'); //import by jQuery
         require('../app/notes.js');
     </script>
     <script>

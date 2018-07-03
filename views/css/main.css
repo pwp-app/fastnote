@@ -229,3 +229,24 @@ button {
 .infobar-info {
     background-color: #2673EC;
 }
+/* rightclickmenu */
+.rightclickmenu{
+    background-color: white;
+    width: 85px;
+    height:auto;
+    display:none;
+    position: absolute;
+    font-size:13px;
+    color:#2e2e2e;
+    border:solid 1px grey;
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, .25);
+}
+.rightclickmenu button{
+    height:30px;
+    padding:0px 10px;
+    background-color: white !important;
+    border-radius: 0 !important;
+}
+.rightclickmenu button:focus{
+    outline:0;
+}
