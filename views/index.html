@@ -38,99 +38,27 @@
                     <p class="note-content">今天要购买一台笔记本电脑</p>
                 </div>
             </div>
-
-            <div class="note">
-                <div class="note-header">
-                    <p class="note-no">#1</p>
-                    <p class="note-time">2018-7-3 16:25</p>
-                </div>
-                <div class="note-content">
-                    <p class="note-content">今天要购买一台笔记本电脑</p>
-                </div>
-            </div>
-            <div class="note">
-                <div class="note-header">
-                    <p class="note-no">#1</p>
-                    <p class="note-time">2018-7-3 16:25</p>
-                </div>
-                <div class="note-content">
-                    <p class="note-content">今天要购买一台笔记本电脑</p>
-                </div>
-            </div>
-            <div class="note">
-                <div class="note-header">
-                    <p class="note-no">#1</p>
-                    <p class="note-time">2018-7-3 16:25</p>
-                </div>
-                <div class="note-content">
-                    <p class="note-content">今天要购买一台笔记本电脑</p>
-                </div>
-            </div>
-            <div class="note">
-                <div class="note-header">
-                    <p class="note-no">#1</p>
-                    <p class="note-time">2018-7-3 16:25</p>
-                </div>
-                <div class="note-content">
-                    <p class="note-content">今天要购买一台笔记本电脑</p>
-                </div>
-            </div>
-            <div class="note">
-                <div class="note-header">
-                    <p class="note-no">#1</p>
-                    <p class="note-time">2018-7-3 16:25</p>
-                </div>
-                <div class="note-content">
-                    <p class="note-content">今天要购买一台笔记本电脑</p>
-                </div>
-            </div>
-            <div class="note">
-                <div class="note-header">
-                    <p class="note-no">#1</p>
-                    <p class="note-time">2018-7-3 16:25</p>
-                </div>
-                <div class="note-content">
-                    <p class="note-content">今天要购买一台笔记本电脑</p>
-                </div>
-            </div>
-            <div class="note">
-                <div class="note-header">
-                    <p class="note-no">#1</p>
-                    <p class="note-time">2018-7-3 16:25</p>
-                </div>
-                <div class="note-content">
-                    <p class="note-content">今天要购买一台笔记本电脑</p>
-                </div>
-            </div>
-            <div class="note">
-                <div class="note-header">
-                    <p class="note-no">#1</p>
-                    <p class="note-time">2018-7-3 16:25</p>
-                </div>
-                <div class="note-content">
-                    <p class="note-content">今天要购买一台笔记本电脑</p>
-                </div>
-            </div>
-            <div class="note">
-                <div class="note-header">
-                    <p class="note-no">#1</p>
-                    <p class="note-time">2018-7-3 16:25</p>
-                </div>
-                <div class="note-content">
-                    <p class="note-content">今天要购买一台笔记本电脑</p>
-                </div>
-            </div>
-            <div class="note">
-                <div class="note-header">
-                    <p class="note-no">#1</p>
-                    <p class="note-time">2018-7-3 16:25</p>
-                </div>
-                <div class="note-content">
-                    <p class="note-content">今天要购买一台笔记本电脑</p>
-                </div>
-            </div>
         </div>
+        <!-- empty -->
+        <div class="note-empty col-lg-12">
+            <span>您还没有建立任何的笔记</br>在下方你可以快速新建新笔记</span>
+        </div>
+        <script>
+            function showNoteEmpty(){
+                var node_empty = document.getElementsByClassName('note-empty')[0];
+                var node_list = document.getElementsByClassName('note-list')[0];
+                node_empty.setAttribute("style","display:flex;");
+                node_list.setAttribute("style","display:none;");
+            }
+            function showNoteList(){
+                var node_empty = document.getElementsByClassName('note-empty')[0];
+                var node_list = document.getElementsByClassName('note-list')[0];
+                node_empty.setAttribute("style","display:none;");
+                node_list.setAttribute("style","display:block;");
+            }
+        </script>
     </div>
+
     <!-- new note -->
     <div class="fixed col-lg-12">
         <div class="container-newnote">
@@ -138,10 +66,14 @@
                 <label>新建笔记</label>
             </div>
             <div class="control">
-                <textarea></textarea>
+                <textarea id="note-text"></textarea>
             </div>
         </div>
     </div>
+
+    <script>
+        require('../app/notes.js');
+    </script>
 </body>
 
 </html>

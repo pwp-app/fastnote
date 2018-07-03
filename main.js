@@ -1,26 +1,29 @@
-const {BrowserWindow} = require('electron')
+const {
+  BrowserWindow
+} = require('electron')
 const app = require('electron').app
-
+//ipc主进程
+const ipc = require('electron').ipcMain;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
-function createWindow () {
+function createWindow() {
   // 创建浏览器窗口。
   var conf = {
-      width:1280,
-      height:800,
-      resizable:false,
-      maximazable:false,
-      show:false
+    width: 1280,
+    height: 800,
+    resizable: false,
+    maximazable: false,
+    show: false
   }
   if (process.platform == 'darwin')
     conf.titleBarStyle = 'hiddenInset';
   else
     conf.frame = false;
 
-  win = new BrowserWindow(conf)  
+  win = new BrowserWindow(conf)
   win.webContents.openDevTools()
   // 然后加载应用的 index.html。
   win.loadFile('views/index.html')
@@ -36,7 +39,7 @@ function createWindow () {
   win.on('ready-to-show', () => {
     win.focus();
     win.show();
-});
+  });
 }
 
 // Electron 会在初始化后并准备

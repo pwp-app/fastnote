@@ -91,17 +91,32 @@ button {
     overflow-y: auto;
 }
 .note-list::-webkit-scrollbar{
-    width: 4px;
+    width: 5px;
 }
 .note-list::-webkit-scrollbar-track-piece{
     background-color: white;
 }
 .note-list::-webkit-scrollbar-thumb{
-    border-radius: 5px;
+    border-radius: 9px;
     background-color:#1faeff; 
 }
 .note-list::-webkit-scrollbar-button{
     display: none;
+}
+.note-empty{
+    width:100%;
+    height:-webkit-calc(100% - (35px + 185px));
+    height:calc(100% - (35px + 185px));
+    height:580px;
+    overflow-y: hidden;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    display:none;
+}
+.note-empty span{
+    color:black;
+    font-size:18px;
 }
 .note{
     color:#ffffff;
