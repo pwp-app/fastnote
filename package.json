@@ -4,6 +4,7 @@
   },
   "dependencies": {
     "bootstrap": "^4.1.1",
+    "electron-json-storage": "^4.1.0",
     "electron-titlebar-windows": "^3.0.0",
     "font-awesome": "^4.7.0",
     "jquery": "^3.3.1",
