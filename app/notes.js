@@ -9,17 +9,23 @@ let time = require('./tools/time.js');
 //预设notesid
 let notesid = 0;
 
+//标记
+let isNotesEmpty;
+
 //获取notesid的数据
 storage.get('notesid',function(error,data){
     if (error){
         notesid = 1;
         return;
     }
+    //获取callback回传的json
     var notesid_json = data;
+    //判断是否为空
     if (notesid_json == null || notesid_json == undefined){
         notesid = 1;
         return;
     }
+    //parse Json，获取数据
     notesid_json = JSON.parse(notesid_json);
     notesid = notesid_json.id;
     console.log(notesid);
@@ -28,8 +34,46 @@ storage.get('notesid',function(error,data){
     }
 });
 
+//判断是否存在notes文件夹，不存在代表没有笔记
 if (!fs.existsSync('./notes/')){
+    showNoteEmpty();
+    isNotesEmpty = true;
     fs.mkdir('./notes/');
+} else {
+    fs.readdir('./notes/',function(err,fileArr){
+        if (fileArr == undefined){
+            showNoteEmpty();
+            isNotesEmpty = true;
+            return;
+        }
+        //目录是空的
+        if (!fileArr[0]){
+            showNoteEmpty();
+            isNotesEmpty = true;
+        } else {
+            //目录不是空的，代表有笔记，执行初始化
+            let countOffset = 0;
+            fileArr.forEach(element => {
+                fs.readFile('./notes/'+element,'utf-8',function(err,data){
+                    if (err){
+                        countOffset++;
+                        throw(err);
+                    }
+                    var note_json = data;
+                    if (note_json != undefined && note_json != null){
+                        note_json = JSON.parse(note_json);
+                        addNoteToArray(note_json.id,note_json.time,note_json.text);
+                        if (notes.length == fileArr.length+countOffset){
+                            //结束文件遍历，渲染列表
+                            refreshNoteList();
+                            //显示列表
+                            showNoteList();
+                        }
+                    }
+                });
+            });
+        }
+    });
 }
 
 //绑定textarea的事件

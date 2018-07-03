@@ -18,6 +18,7 @@ function createWindow() {
     maximazable: false,
     show: false
   }
+  //标题栏的选用
   if (process.platform == 'darwin')
     conf.titleBarStyle = 'hiddenInset';
   else

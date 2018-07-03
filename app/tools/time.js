@@ -21,7 +21,7 @@ var Time = {
             s="0"+s;
         }
 
-        return year+'年'+month+'月'+' '+h+':'+m+':'+s;
+        return year+'年'+month+'月'+day+'日'+' '+h+':'+m+':'+s;
     },
     //获取时区
     getTimeZone:function(){
