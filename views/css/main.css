@@ -4,7 +4,10 @@ body{
     font-family:Source Han Sans CN,Arial, Helvetica, sans-serif !important;
     font-weight: 200px;
 }
-
+html{ 
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
 button {
     -webkit-app-region: no-drag;
 }
@@ -81,6 +84,24 @@ button {
 .note-list{
     width:100%;
     padding-top:20px;
+    padding-bottom: 15px;
+    height:-webkit-calc(100% - (35px + 185px));
+    height:calc(100% - (35px + 185px));
+    height:580px;
+    overflow-y: auto;
+}
+.note-list::-webkit-scrollbar{
+    width: 4px;
+}
+.note-list::-webkit-scrollbar-track-piece{
+    background-color: white;
+}
+.note-list::-webkit-scrollbar-thumb{
+    border-radius: 5px;
+    background-color:#1faeff; 
+}
+.note-list::-webkit-scrollbar-button{
+    display: none;
 }
 .note{
     color:#ffffff;
