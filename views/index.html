@@ -126,6 +126,16 @@
                     return 0;
                 }
             }
+
+            function deleteNoteFromArr(id) {
+                notes.every(function (note, i) {
+                    if (note.id == id) {
+                        notes.splice(i, 1);
+                        return false;
+                    }
+                    return true; //every是true继续循环 false跳出
+                });
+            }
         </script>
     </div>
 
@@ -144,8 +154,8 @@
     <!-- rightclick menu -->
     <div class="rightclickmenu">
         <div class="list-group">
-            <button type="button" class="list-group-item">编辑</button>
-            <button type="button" class="list-group-item">删除</button>
+            <button type="button" class="btn-rightclick list-group-item" id="btn-editNote">编辑</button>
+            <button type="button" class="btn-rightclick list-group-item" id="btn-deleteNote">删除</button>
         </div>
     </div>
 
@@ -159,16 +169,13 @@
                         e.clientY +
                         'px;z-index:1000;');
                     isRightClickMenuOpened = true;
-                    noteid_clicked = parseInt($(this).attr("id").replace('note_',''));
-                    console.log(noteid_clicked);
+                    noteid_clicked = parseInt($(this).attr("id").replace('note_', ''));
                 }
             });
         }
-        $('body').mousedown(function (e) {
-            if (e.which == 1) {
-                $('.rightclickmenu').attr('style', 'display:none;');
-                noteid_clicked = -1;
-            }
+        $('body').click(function (e) {
+            $('.rightclickmenu').attr('style', 'display:none;'); //右键菜单隐藏
+            noteid_clicked = -1;
         });
         $('#note-list').scroll(function () {
             $('.rightclickmenu').attr('style', 'display:none;');

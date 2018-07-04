@@ -34,6 +34,71 @@ storage.get('notesid', function (error, data) {
 
 readNoteFiles();
 
+//绑定textarea的事件
+let isComboKeyDown = false; //防止反复触发
+textarea.keydown(function (e) {
+    var ctrlKey = e.ctrlKey || e.metaKey;
+    if (ctrlKey && e.keyCode == 13 && !isComboKeyDown) {
+        isComboKeyDown = true;
+        var text = textarea.val();
+        if (text.trim() != null && text.trim() != "")
+            saveNote(text.trim());
+    }
+});
+//按键弹起解除锁
+textarea.keyup(function (e) {
+    var ctrlKey = e.ctrlKey || e.metaKey;
+    if (e.keyCode == 13 || ctrlKey) {
+        isComboKeyDown = false;
+    }
+});
+
+//删除按钮事件绑定
+let btn_deleteNote = $('#btn-deleteNote')
+btn_deleteNote.click(function (){
+    deleteNote(noteid_clicked);
+    //隐藏右键菜单
+    $('.rightclickmenu').attr('style', 'display:none;');
+})
+
+//删除note
+function deleteNote(id){
+    notes.every(function (note, i) {
+        if (note.id == id) {
+            console.log(note.rawtime);
+            console.log(notes);
+            console.log(note);
+            var path = './notes/'+note.rawtime+'.json';
+            if (fs.existsSync(path)){
+                //删除文件
+                fs.unlink(path,function (err){
+                    if (err){
+                        //文件删除失败
+                        displayInfobar('error','文件删除失败');
+                        console.error(err);
+                        readNoteFiles();
+                    } else {
+                        //删除成功
+                        deleteNoteFromArr(id);
+                        //动画
+                        $('#note_'+id).animateCss('fadeOutLeft',function(){
+                            $('#note_'+id).remove();    //动画结束后删除div
+                            
+                        })
+                        displayInfobar('success','删除成功');
+                    }
+                })
+            } else {
+                displayInfobar('error','找不到文件，无法删除');
+                readNoteFiles();
+            }
+            return false;
+        } else {
+            return true;
+        }
+    });
+}
+
 //封装在函数中
 function readNoteFiles() {
     //重新读取需要清空notes Array
@@ -66,7 +131,7 @@ function readNoteFiles() {
                         var note_json = data;
                         if (note_json != undefined && note_json != null) {
                             note_json = JSON.parse(note_json);
-                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.text, note_json.timezone, note_json.offset);
+                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.text, note_json.offset, note_json.timezone);
                             if (notes.length == fileArr.length + countOffset) {
                                 //结束文件遍历，渲染列表
                                 refreshNoteList();
@@ -80,25 +145,6 @@ function readNoteFiles() {
         });
     }
 }
-
-//绑定textarea的事件
-let isComboKeyDown = false; //防止反复触发
-textarea.keydown(function (e) {
-    var ctrlKey = e.ctrlKey || e.metaKey;
-    if (ctrlKey && e.keyCode == 13 && !isComboKeyDown) {
-        isComboKeyDown = true;
-        var text = textarea.val();
-        if (text.trim() != null && text.trim() != "")
-            saveNote(text.trim());
-    }
-});
-//按键弹起解除锁
-textarea.keyup(function (e) {
-    var ctrlKey = e.ctrlKey || e.metaKey;
-    if (e.keyCode == 13 || ctrlKey) {
-        isComboKeyDown = false;
-    }
-});
 
 //保存note为json
 function saveNote(notetext) {
@@ -117,10 +163,15 @@ function saveNote(notetext) {
             path = './notes/' + alltime.rawTime + '.' + offset + '.json';
         }
     }
+    //转换回车
+    notetext = notetext.replace(/\n/g, '<br/>');
+	notetext = notetext.replace(/\r\n/g, '<br/>');
+    console.log(notetext);
+    //构造note
     var note = {
         id: notesid,
         time: alltime.currentTime,
-        rawtime: alltime.rawtime,
+        rawtime: alltime.rawTime,
         timezone: time.getTimeZone(),
         text: notetext,
         offset: offset
@@ -144,6 +195,7 @@ function saveNote(notetext) {
             showNoteList();
         }
         //在顶部渲染Note
+        console.log(notetext);
         renderNoteAtTop(note.id, note.time, note.text);
         //绑定事件
         bindRightClickEvent();
