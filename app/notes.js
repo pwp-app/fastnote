@@ -65,10 +65,13 @@ btn_deleteNote.click(function (){
 function deleteNote(id){
     notes.every(function (note, i) {
         if (note.id == id) {
-            console.log(note.rawtime);
-            console.log(notes);
-            console.log(note);
-            var path = './notes/'+note.rawtime+'.json';
+            var path;
+            //检查offset
+            if (note.offset>0){
+                path = './notes/'+note.rawtime+'.'+note.offset+'.json';
+            } else {
+                path = './notes/'+note.rawtime+'.json';
+            }
             if (fs.existsSync(path)){
                 //删除文件
                 fs.unlink(path,function (err){
