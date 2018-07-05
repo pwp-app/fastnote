@@ -34,7 +34,7 @@
                         }
                     }
                 })(document.createElement('div'));
-                
+
                 console.log(this);
 
                 this.addClass('animated ' + animationName).one(animationEnd, function () {
@@ -59,7 +59,8 @@
         require('electron-titlebar');
     </script>
     <!-- infobar -->
-    <div class="container-infobar"></div>
+    <div class="container-infobar">
+    </div>
     <!-- notes -->
     <div class="container-main">
         <div class="note-list col-lg-12" id="note-list"></div>
@@ -217,6 +218,27 @@
         $.getScript('../app/infobar.js'); //import by jQuery
         require('../app/notes.js');
     </script>
+
+    <!-- update -->
+    <div class="container-updater">
+        <div class="update-block">
+            <div class="update-title">
+                <span>检测到新版本：</span>
+            </div>
+            <div class="update-contents">
+                <h1 class="update-contents-title">更新日志</h1>
+                <div class="update-contents-details">
+                </div>
+            </div>
+            <div class="update-footer">
+                <div class="control-group">
+                    <button type="button" class="br-btn btn-noback control-item">取消</button>
+                    <button type="button" class="br-btn btn-noback control-item">更新</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>

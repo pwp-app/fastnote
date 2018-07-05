@@ -15,6 +15,9 @@ function displayInfobar(type, text, timeout = 3000) {
         case 'error':
             html += '<div class="infobar infobar-error" id="infobar_' + infobar_id + '"><i class="fa fa-warning"></i><span>';
             break;
+        case 'update':
+            timeout=0;
+            html += '<div class="infobar infobar-info" id="infobar_update"><i class="fa fa-spinner"></i><span>正在更新中……</span><progress class="update-progress" value="0" max="100"></progress><span></div>';
         case 'info':
         default:
             html += '<div class="infobar infobar-info" id="infobar_' + infobar_id + '"><i class="fa fa-info-circle"></i><span>';
