@@ -16,6 +16,37 @@
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
+    <script>
+        //load Animate CSS
+        $.fn.extend({
+            animateCss: function (animationName, callback) {
+                var animationEnd = (function (el) {
+                    var animations = {
+                        animation: 'animationend',
+                        OAnimation: 'oAnimationEnd',
+                        MozAnimation: 'mozAnimationEnd',
+                        WebkitAnimation: 'webkitAnimationEnd',
+                    };
+
+                    for (var t in animations) {
+                        if (el.style[t] !== undefined) {
+                            return animations[t];
+                        }
+                    }
+                })(document.createElement('div'));
+                
+                console.log(this);
+
+                this.addClass('animated ' + animationName).one(animationEnd, function () {
+                    $(this).removeClass('animated ' + animationName);
+                    console.log(this);
+                    if (typeof callback === 'function') callback();
+                });
+
+                return this;
+            },
+        });
+    </script>
 </head>
 
 <body>
@@ -61,7 +92,6 @@
             }
             //渲染一条笔记
             function renderNote(id, time, text) {
-                var node_list = document.getElementsByClassName('note-list')[0];
                 var html = '<div class="note" id="note_' + id + '"><div class="note-header"><p class="note-no">';
                 html += '#' + id;
                 html += '</p><p class="note-time">';
@@ -69,12 +99,11 @@
                 html += '</p></div><div class="note-content"><p class="note-text">';
                 html += text;
                 html += '</p></div></div>';
-                node_list.innerHTML += html;
+                $('.note-list').append($(html));
             }
             //在顶部渲染Note
             function renderNoteAtTop(id, time, text) {
                 //构造html
-                var node_list = document.getElementsByClassName('note-list')[0];
                 var html = '<div class="note" id="note_' + id + '"><div class="note-header"><p class="note-no">';
                 html += '#' + id;
                 html += '</p><p class="note-time">';
@@ -82,7 +111,7 @@
                 html += '</p></div><div class="note-content"><p class="note-text">';
                 html += text;
                 html += '</p></div></div>';
-                node_list.innerHTML = html + node_list.innerHTML;
+                $('.note-list').prepend($(html));
                 //animate
                 $('#note_' + id).animateCss('fadeInLeft');
             }
@@ -187,35 +216,6 @@
         //import requirements
         $.getScript('../app/infobar.js'); //import by jQuery
         require('../app/notes.js');
-    </script>
-    <script>
-        //load Animate CSS
-        $.fn.extend({
-            animateCss: function (animationName, callback) {
-                var animationEnd = (function (el) {
-                    var animations = {
-                        animation: 'animationend',
-                        OAnimation: 'oAnimationEnd',
-                        MozAnimation: 'mozAnimationEnd',
-                        WebkitAnimation: 'webkitAnimationEnd',
-                    };
-
-                    for (var t in animations) {
-                        if (el.style[t] !== undefined) {
-                            return animations[t];
-                        }
-                    }
-                })(document.createElement('div'));
-
-                this.addClass('animated ' + animationName).one(animationEnd, function () {
-                    $(this).removeClass('animated ' + animationName);
-
-                    if (typeof callback === 'function') callback();
-                });
-
-                return this;
-            },
-        });
     </script>
 </body>
 

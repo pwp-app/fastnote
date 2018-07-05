@@ -152,8 +152,8 @@ button {
     padding: 8px 15px;
     margin-bottom: 12px;
     /* animate */
-    animation-duration: 2s;
-    -vendor-animation-duration: 2s;
+    animation-iteration-count:1 !important;
+    -webkit-animation-duration: 1s !important;
 }
 
 .note-header {
@@ -206,8 +206,7 @@ button {
     padding: 5px 15px;
     color: #ffffff;
     /* animate */
-    animation-duration: 1s;
-    -vendor-animation-duration: 1s;
+    -webkit-animation-duration: 1s !important;
 }
 
 .infobar i {
