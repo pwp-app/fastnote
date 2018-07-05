@@ -35,11 +35,8 @@
                     }
                 })(document.createElement('div'));
 
-                console.log(this);
-
                 this.addClass('animated ' + animationName).one(animationEnd, function () {
                     $(this).removeClass('animated ' + animationName);
-                    console.log(this);
                     if (typeof callback === 'function') callback();
                 });
 
@@ -220,25 +217,59 @@
     </script>
 
     <!-- update -->
-    <div class="container-updater">
+    <div class="container-updater" style="display:block;">
         <div class="update-block">
             <div class="update-title">
                 <span>检测到新版本：</span>
             </div>
-            <div class="update-contents">
+            <div class="update-contents" style="display:none;">
                 <h1 class="update-contents-title">更新日志</h1>
                 <div class="update-contents-details">
                 </div>
             </div>
+
+            <div class="update-contents update-contents-loading">
+                <span>载入中……</span>
+            </div>
+
             <div class="update-footer">
                 <div class="control-group">
-                    <button type="button" class="br-btn btn-noback control-item">取消</button>
-                    <button type="button" class="br-btn btn-noback control-item">更新</button>
+                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-cancel">取消</button>
+                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-confirm">更新</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ipcRenderer -->
+    <script>
+        const {ipcRenderer} = require('electron');
+
+        ipcRenderer.on('message', (event, {
+            message,
+            data
+        }) => {
+            switch (message, obj=null) {
+                case 'checking-for-update':
+                    console.log('checking for update...');
+                    break;
+                case 'update-available':
+                    displayInfobar('update','正在下载更新……');
+                    break;
+                case 'downloadProgress':
+                    document.getElementById('update-progress').value = progressObj.percent || 0;                    
+                    break;
+                case 'isUpdateNow':
+                    $('.container-updater').css('display','block');
+                    $('.container-updater').animateCss('fadeIn');
+                    break;
+            }
+        });
+        //绑定按钮事件
+        $('#btn-update-cancel').on('click',function(){
+            $('.container-updater').animateCss('fadeOut');
+        });
+    </script>
 </body>
 
 </html>

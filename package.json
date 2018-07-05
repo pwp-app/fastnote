@@ -2,22 +2,38 @@
   "dependencies": {
     "animate.css": "^3.6.1",
     "bootstrap": "^4.1.1",
+    "buffer-from": "^1.1.0",
     "electron-json-storage": "^4.1.0",
-    "electron-titlebar": "^0.0.3",
+    "electron-titlebar": "0.0.3",
+    "electron-updater": "^2.23.3",
     "font-awesome": "^4.7.0",
     "jquery": "^3.3.1",
-    "popper.js": "^1.14.3"
+    "locate-path": "^3.0.0",
+    "popper.js": "^1.14.3",
+    "source-map": "^0.7.3"
   },
   "devDependencies": {
-    "electron": "^3.0.0-beta.1"
+    "electron": "^3.0.0-beta.1",
+    "electron-builder": "^20.19.1"
   },
   "name": "fastnote",
   "version": "0.0.1",
   "main": "main.js",
   "scripts": {
+    "start": "electron .",
+    "build": "electron-builder -w",
     "test": "electron ."
   },
   "author": "BackRunner",
   "license": "MIT",
+  "build": {
+    "appId": "app.pwp.fastnote",
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "http://update.backrunner.top/fastnote/"
+      }
+    ]
+  },
   "description": ""
 }

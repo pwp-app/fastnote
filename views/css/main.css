@@ -267,6 +267,8 @@ button {
     bottom: 0;
     left: 0;
     right: 0;
+    animation-duration: 0.5s;
+    -webkit-animation-duration: 0.5s;
 }
 
 .update-block {
@@ -275,7 +277,7 @@ button {
     background-color: white;
     border: solid 1px #1faeff;
     border-radius: 12px;
-    display: none;
+    display: block;
     position: absolute;
     margin: auto;
     top: 0;
@@ -410,4 +412,11 @@ button {
 
 .update-progress::-webkit-progress-value {
     background: #1faeff;
+}
+
+.update-contents-loading{
+    text-align: center;
+}
+.update-contents-loading span{
+    font-size: 15px;
 }
