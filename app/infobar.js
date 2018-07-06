@@ -3,7 +3,7 @@ var infobar_container = $(".container-infobar");
 var infobar_id = 0;
 
 //显示Infobar
-function displayInfobar(type, text, timeout = 3000) {
+function displayInfobar(type, text, timeout = 2000) {
     var html = "";
     switch (type) {
         case 'success':
@@ -48,6 +48,10 @@ function displayInfobar(type, text, timeout = 3000) {
         });
     } else {
         $('#infobar_' + infobar_id).animateCss('fadeInDown');
+    }
+    //更新infobar
+    if (type=="update"){
+        $('#infobar_update').animateCss('fadeInDown');
     }
     infobar_id++;
 }

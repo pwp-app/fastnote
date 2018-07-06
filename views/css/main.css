@@ -137,6 +137,9 @@ button {
     text-align: center;
     align-items: center;
     display: none;
+    /* animate */
+    animation-duration: 1.5s !important;
+    -webkit-animation-duration: 1.5s !important;
 }
 
 .note-empty span {
@@ -193,7 +196,7 @@ button {
     display: flex;
     justify-content: center;
     text-align: center;
-    align-items: center;
+    align-items: center;    
 }
 
 .infobar {
@@ -203,11 +206,11 @@ button {
     top: 0;
     position: fixed;
     font-size: 14px;
-    padding: 5px 15px;
+    padding: 6px 15px;
     color: #ffffff;
     /* animate */
-    animation-duration: 0.5s !important;
-    -webkit-animation-duration: 0.5s !important;
+    animation-duration: 1s !important;
+    -webkit-animation-duration: 1s !important;
 }
 
 .infobar i {

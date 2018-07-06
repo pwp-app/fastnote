@@ -76,6 +76,13 @@
                 node_empty.setAttribute("style", "display:flex;");
                 node_list.setAttribute("style", "display:none;");
             }
+
+            function showNoteEmpty_Anim() {
+                $('.note-empty').css('display', 'flex');
+                $('.note-empty').animateCss('fadeIn');
+                var node_list = document.getElementsByClassName('note-list')[0];
+                node_list.setAttribute("style", "display:none;");
+            }
             //显示有笔记的界面
             function showNoteList() {
                 var node_empty = document.getElementsByClassName('note-empty')[0];
@@ -170,7 +177,7 @@
     <div class="fixed col-lg-12">
         <div class="container-newnote">
             <div class="lbl">
-                <label>新建笔记</label>
+                <label id="lbl-newnote">新建笔记</label>
             </div>
             <div class="control">
                 <textarea id="note-text"></textarea>
@@ -181,7 +188,7 @@
     <!-- rightclick menu -->
     <div class="rightclickmenu">
         <div class="list-group">
-            <button type="button" class="btn-rightclick list-group-item" id="btn-editNote">编辑</button>
+            <button type="button" class="btn-rightclick list-group-item" id="btn-editNote" disabled>编辑</button>
             <button type="button" class="btn-rightclick list-group-item" id="btn-deleteNote">删除</button>
         </div>
     </div>

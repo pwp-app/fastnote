@@ -86,7 +86,9 @@ function deleteNote(id){
                         //动画
                         $('#note_'+id).animateCss('fadeOutLeft',function(){
                             $('#note_'+id).remove();    //动画结束后删除div
-                            
+                            if (notes.length <= 0){
+                                showNoteEmpty_Anim();
+                            }                            
                         })
                         displayInfobar('success','删除成功');
                     }
