@@ -63,8 +63,7 @@ app.on('window-all-closed', () => {
 //自动更新事件定义
 let sendUpdateMessage = (message, data) => {
   win.webContents.send('message', {
-    message,
-    data
+    message, data
   });
 };
 
@@ -91,7 +90,7 @@ let checkForUpdates = () => {
     sendUpdateMessage('downloadProgress', progressObj)
   })
   autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
-    ipcMain.on('updateNow', (e, arg) => {
+    ipc.on('updateNow', (e, arg) => {
       //some code here to handle event
       autoUpdater.quitAndInstall();
     })

@@ -110,7 +110,7 @@ function readNoteFiles() {
     if (!fs.existsSync('./notes/')) {
         showNoteEmpty();
         isNotesEmpty = true;
-        fs.mkdir('./notes/');
+        fs.mkdirSync('./notes/');
     } else {
         fs.readdir('./notes/', function (err, fileArr) {
             if (fileArr == undefined) {

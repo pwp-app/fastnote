@@ -152,8 +152,8 @@ button {
     padding: 8px 15px;
     margin-bottom: 12px;
     /* animate */
-    animation-iteration-count: 1 !important;
-    -webkit-animation-duration: 1s !important;
+    animation-duration: 0.5s !important;
+    -webkit-animation-duration: 0.5s !important;
 }
 
 .note-header {
@@ -206,7 +206,8 @@ button {
     padding: 5px 15px;
     color: #ffffff;
     /* animate */
-    -webkit-animation-duration: 1s !important;
+    animation-duration: 0.5s !important;
+    -webkit-animation-duration: 0.5s !important;
 }
 
 .infobar i {
@@ -267,8 +268,8 @@ button {
     bottom: 0;
     left: 0;
     right: 0;
-    animation-duration: 0.5s;
-    -webkit-animation-duration: 0.5s;
+    animation-duration: 0.5s !important;
+    -webkit-animation-duration: 0.5s !important;
 }
 
 .update-block {
@@ -416,6 +417,7 @@ button {
 
 .update-contents-loading{
     text-align: center;
+    display:block;
 }
 .update-contents-loading span{
     font-size: 15px;

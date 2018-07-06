@@ -21,7 +21,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder -w",
+    "build": "electron-builder -w --ia32",
     "test": "electron ."
   },
   "author": "BackRunner",
