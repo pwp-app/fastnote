@@ -49,8 +49,8 @@
 <body>
     <!-- titlebar -->
     <div class="container-titlebar col-lg-12 drag">
-        <div class="title">Fastnote</div>
-        <div id="electron-titlebar" class="titlebar" style="z-index: 999;position: fixed !important;"></div>
+        <div class="title" id="app-title">Fastnote</div>
+        <div id="electron-titlebar" class="titlebar" style="position: fixed !important;"></div>
     </div>
     <script>
         require('electron-titlebar');
@@ -174,19 +174,26 @@
     </div>
 
     <!-- new note -->
-    <div class="fixed col-lg-12">
-        <div class="container-newnote">
-            <div class="lbl">
-                <div class="tips-newnote">
-                    <label>Ctrl+Enter</label>
-                </div>
-                <label id="lbl-newnote">新建笔记</label>
+
+    <div class="container-newnote">
+        <div class="lbl">
+            <div class="tips-newnote">
+                <label>Ctrl+Enter</label>
             </div>
-            <div class="control">
-                <textarea id="note-text"></textarea>
-            </div>
+            <label id="lbl-newnote">新建笔记</label>
+        </div>
+        <div class="control">
+            <textarea id="note-text"></textarea>
         </div>
     </div>
+    <div class="container-bottombar">
+        <div class="trigger-mainmenu">
+            <button class="br-btn btn-noback" id="btn-mainmenu-trigger">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+    </div>
+
     <script>
         //绑定新建笔记的tooltip
         let tips_newnote_animplaying = false;
@@ -199,7 +206,7 @@
                         $('.tips-newnote').css('display', 'none');
                         tips_newnote_animplaying = false;
                     });
-                }, 5000);
+                }, 6500);
             }
         });
     </script>
@@ -327,6 +334,55 @@
         $('#btn-update-confirm').on('click', function () {
             ipcRenderer.send('updateNow');
         })
+    </script>
+
+    <!-- main menu -->
+    <div class="mainmenu-background"></div>
+    <div class="container-mainmenu">
+        <div class="mainmenu-panel">
+            <div class="mainmenu-logo">
+                <h1>Fastnote</h1>
+            </div>
+            <div class="mainmenu-split"></div>
+            <div class="mainmenu-menu">
+                <ul>
+                    <li>
+                        <span>设置</span>
+                    </li>
+                    <li>
+                        <span>关于</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        //绑定主菜单的动画事件
+        let isMainMenuOpen = false;
+        $('.mainmenu-background').on('click', function () {
+            if (isMainMenuOpen) {
+                $('.mainmenu-background').css('width', '100%'); //动态修改宽度防止阻挡
+                $('.mainmenu-background').animateCss('fadeOut', function () {
+                    $('.mainmenu-background').css('display', 'none');
+                })
+                $('.container-mainmenu').animateCss('fadeOutLeft', function () {
+                    $('.container-mainmenu').css('display', 'none');
+                    isMainMenuOpen = false;
+                })
+            }
+        });
+        $('#btn-mainmenu-trigger').on('click', function () {
+            if (!isMainMenuOpen) {
+                $('.mainmenu-background').css('display', 'block');
+                $('.mainmenu-background').css('width', '100%');
+                $('.mainmenu-background').animateCss('fadeIn', function () {
+                    $('.mainmenu-background').css('width', '80%');
+                });
+                $('.container-mainmenu').css('display', 'block');
+                $('.container-mainmenu').animateCss('fadeInLeft');
+                isMainMenuOpen = true;
+            }
+        });
     </script>
 </body>
 

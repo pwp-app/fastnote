@@ -28,8 +28,8 @@
   "license": "MIT",
   "build": {
     "appId": "app.pwp.fastnote",
-    "copyright":"BackRunenr",
-    "productName":"Fastnote",
+    "copyright": "BackRunenr",
+    "productName": "Fastnote",
     "publish": [
       {
         "provider": "generic",
@@ -37,13 +37,13 @@
       }
     ],
     "win": {
-      "target":"nsis"
+      "target": "nsis"
     },
     "nsis": {
-      "oneClick":false,
-      "allowToChangeInstallationDirectory":true,
-      "allowElevation":true,
-      "differentialPackage":true
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "differentialPackage": true
     }
   },
   "description": ""

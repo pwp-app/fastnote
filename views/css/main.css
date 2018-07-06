@@ -19,6 +19,12 @@ button {
     -webkit-app-region: drag;
 }
 
+/* main */
+.container-main{
+    z-index: -1;
+    pointer-events: none;
+}
+
 /*titlebar*/
 
 .titlebar {
@@ -47,27 +53,23 @@ button {
     height: 35px;
     font-size: 16px;
     font-weight: 200px;
-    padding: 5px 10px;
+    padding: 6px 12px;
     -webkit-user-select: none;
     position: fixed !important;
 }
 
 /*fixed part*/
 
-.fixed {
-    position: fixed !important;
-    display: block;
-    bottom: 0px;
-    margin: 0;
-    padding: 0 !important;
-}
-
 .container-newnote {
-    height: 185px;
+    height: 180px;
     width: 100%;
     background-color: #1faeff;
     padding-left: 12px !important;
     padding-right: 12px !important;
+    position: fixed;
+    bottom: 26px;
+    display: block;
+    border-bottom: 1px solid white;
 }
 
 .container-newnote .lbl {
@@ -84,7 +86,7 @@ button {
 
 .container-newnote .control textarea {
     width: 100%;
-    height: 132px;
+    height: 120px;
     text-align: justify;
     border: 0;
     padding: 8px 12px;
@@ -118,10 +120,9 @@ button {
     width: 100%;
     padding-top: 15px;
     padding-bottom: 12px;
-    height: -webkit-calc(100% - (35px + 185px));
-    height: calc(100% - (35px + 185px));
-    height: 580px;
+    height: 565px;
     overflow-y: auto;
+    pointer-events: auto !important;
 }
 
 .note-list::-webkit-scrollbar {
@@ -143,17 +144,17 @@ button {
 
 .note-empty {
     width: 100%;
-    height: -webkit-calc(100% - (35px + 185px));
-    height: calc(100% - (35px + 185px));
-    height: 580px;
+    height: 565px;
     overflow-y: hidden;
     justify-content: center;
     text-align: center;
     align-items: center;
     display: none;
+    z-index: -1;
     /* animate */
     animation-duration: 1.5s !important;
     -webkit-animation-duration: 1.5s !important;
+    -webkit-user-select: none;
 }
 
 .note-empty span {
@@ -171,6 +172,7 @@ button {
     /* animate */
     animation-duration: 0.5s !important;
     -webkit-animation-duration: 0.5s !important;
+    pointer-events: auto !important;
 }
 
 .note-header {
@@ -279,7 +281,6 @@ button {
     height: 100%;
     position: fixed;
     background-color: rgba(0, 0, 0, .25);
-    z-index: 100;
     display: none;
     top: 0;
     bottom: 0;
@@ -302,7 +303,6 @@ button {
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 105;
 }
 
 .update-title {
@@ -456,4 +456,102 @@ button {
 
 .icon-spin {
     animation: icon-spin 2s infinite linear;
+}
+
+/* main menu */
+.container-mainmenu{
+    display: none;
+    position: absolute;
+    width: 280px;
+    height: 100%;
+    top:0;
+    bottom:0;
+    left:0;
+    z-index: 1;
+    /*animate*/
+    -webkit-animation-duration: 0.75s !important;
+    animation-duration: 0.75s !important;
+}
+.mainmenu-background{
+    display: none;
+    background-color:rgba(0, 0, 0, .25);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top:0;
+    bottom:0;
+    right:0;
+    z-index: 0;
+    /*animate*/
+    -webkit-animation-duration: 0.75s !important;
+    animation-duration: 0.75s !important;
+}
+.mainmenu-panel{
+    width: 280px;
+    height: 100%;
+    left:0;
+    background: white;
+    z-index: 1;
+    box-shadow: 0px 0px 20px 3px rgba(0, 0, 0, .2);
+}
+.mainmenu-logo{
+    text-align: center;
+    padding-top:48px;
+    padding-bottom: 20px
+}
+.mainmenu-logo h1{
+    color:gray;
+    font-size: 35px;
+    font-weight: lighter;
+    letter-spacing: 0.05em;
+    -webkit-user-select: none;
+}
+.mainmenu-split{
+    width: 100%;
+    height:1px;
+    margin-top:25px;
+    margin-bottom:25px;
+    background: rgb(216, 216, 216);
+}
+.mainmenu-menu{
+    width: 100%;
+}
+.mainmenu-menu ul{
+    width: 100%;
+    margin:0;
+    padding:0;
+}
+.mainmenu-menu li{
+    width: 100%;
+    height:70px;
+    list-style-type: none;
+    color:gray;
+    letter-spacing: 0.05em;
+    font-size: 17px;
+    line-height: 70px;
+}
+.mainmenu-menu li span{
+    padding-left:45px;
+    -webkit-user-select: none;
+}
+.mainmenu-menu li:hover{
+    background-color:rgb(245, 245, 245);
+}
+/* bottom-bar */
+.container-bottombar{
+    background-color: #1faeff;
+    width: 100%;
+    height: 26px;
+    position: fixed;
+    bottom:0px;
+    display: block;
+    z-index: 1;
+}
+.trigger-mainmenu{
+    display:inline-block;
+    width: 32px;
+    height:26px;
+    color:white;
+    padding-left: 10px;
+    line-height: 26px;
 }
