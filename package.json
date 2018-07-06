@@ -28,12 +28,23 @@
   "license": "MIT",
   "build": {
     "appId": "app.pwp.fastnote",
+    "copyright":"BackRunenr",
+    "productName":"Fastnote",
     "publish": [
       {
         "provider": "generic",
         "url": "http://update.backrunner.top/fastnote/"
       }
-    ]
+    ],
+    "win": {
+      "target":"nsis"
+    },
+    "nsis": {
+      "oneClick":false,
+      "allowToChangeInstallationDirectory":true,
+      "allowElevation":true,
+      "differentialPackage":true
+    }
   },
   "description": ""
 }

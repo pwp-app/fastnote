@@ -5,6 +5,8 @@ const app = require('electron').app;
 //ipc主进程
 const ipc = require('electron').ipcMain;
 
+const indebug = false;
+
 //auto-update
 const {
   autoUpdater
@@ -31,7 +33,10 @@ function createWindow() {
     conf.frame = false;
 
   win = new BrowserWindow(conf);
-  win.webContents.openDevTools();
+
+  if (indebug) {
+    win.webContents.openDevTools();
+  }
   // 然后加载应用的 index.html。
   win.loadFile('views/index.html');
 
@@ -63,7 +68,8 @@ app.on('window-all-closed', () => {
 //自动更新事件定义
 let sendUpdateMessage = (message, data) => {
   win.webContents.send('message', {
-    message, data
+    message,
+    data
   });
 };
 
@@ -105,6 +111,6 @@ app.on('activate', () => {
   // 在macOS上，当单击dock图标并且没有其他窗口打开时，
   // 通常在应用程序中重新创建一个窗口。
   if (win === null) {
-    createWindow();    
+    createWindow();
   }
 });
