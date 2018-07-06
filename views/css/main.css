@@ -98,6 +98,20 @@ button {
     outline: 0;
 }
 
+.tips-newnote{
+    color:#1faeff;
+    background-color: white;
+    font-size: 12px;
+    border: solid 1px #1faeff;
+    position: absolute;
+    padding: 3px 5px;
+    top:-16px;
+    left:5px;
+    height:25px;
+    text-align: center;
+    display:none;
+}
+
 /* note */
 
 .note-list {

@@ -177,6 +177,9 @@
     <div class="fixed col-lg-12">
         <div class="container-newnote">
             <div class="lbl">
+                <div class="tips-newnote">
+                    <label>Ctrl+Enter</label>
+                </div>
                 <label id="lbl-newnote">新建笔记</label>
             </div>
             <div class="control">
@@ -184,6 +187,22 @@
             </div>
         </div>
     </div>
+    <script>
+        //绑定新建笔记的tooltip
+        let tips_newnote_animplaying = false;
+        $('#lbl-newnote').click(function () {
+            if (!tips_newnote_animplaying) {
+                $('.tips-newnote').css('display', 'block');
+                tips_newnote_animplaying = true;
+                $('.tips-newnote').animateCss('fadeIn', function () {
+                    $('.tips-newnote').animateCss('fadeOut', function () {
+                        $('.tips-newnote').css('display', 'none');
+                        tips_newnote_animplaying = false;
+                    });
+                }, 5000);
+            }
+        });
+    </script>
 
     <!-- rightclick menu -->
     <div class="rightclickmenu">
