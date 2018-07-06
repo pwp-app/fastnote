@@ -264,15 +264,20 @@
                     break;
                 case 'isUpdateNow':
                     console.log('isupdatenow');
+                    document.getElementById('update-progress').value = 100;
                     $('.container-updater').css('display', 'block');
+                    //收起上方的通知
+                    $('#infobar_update').animateCss('fadeOutUp', function () {
+                        $('#infobar_update').remove();
+                    });
                     $('.container-updater').animateCss('fadeIn', function () {
                         $.getJSON(`http://update.backrunner.top/fastnote/${process.platform}/var.json`,
                             function (result) {
                                 if (result != null && result != "" && result != undefined) {
-                                    try {                                      
+                                    try {
                                         $('#update-title-span').append(result.var);
                                         $('.update-contents-details').append(result.text);
-                                        $('.update-contents-loading').css('display','none');
+                                        $('.update-contents-loading').css('display', 'none');
 
                                     } catch (err) {
                                         console.error(err);
@@ -293,7 +298,7 @@
                 $('.container-updater').removeAttr('style');
             });
         });
-        $('btn-update-confirm').on('click', function () {
+        $('#btn-update-confirm').on('click', function () {
             ipcRenderer.send('updateNow');
         })
     </script>

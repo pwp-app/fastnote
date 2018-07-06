@@ -211,7 +211,7 @@ button {
 }
 
 .infobar i {
-    padding-right: 15px;
+    margin-right: 15px;
 }
 
 .infobar-success {
@@ -401,7 +401,7 @@ button {
     border: none;
     background: #1faeff;
     position: absolute;
-    height:3px;
+    height: 3px;
     bottom: 0;
     left: 0;
     width: 100%;
@@ -415,10 +415,28 @@ button {
     background: #1faeff;
 }
 
-.update-contents-loading{
+.update-contents-loading {
     text-align: center;
-    display:block;
+    display: block;
 }
-.update-contents-loading span{
+
+.update-contents-loading span {
     font-size: 15px;
+}
+
+/* icon */
+
+@keyframes icon-spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+
+.icon-spin {
+    animation: icon-spin 2s infinite linear;
 }

@@ -8,23 +8,31 @@ function displayInfobar(type, text, timeout = 3000) {
     switch (type) {
         case 'success':
             html += '<div class="infobar infobar-success" id="infobar_' + infobar_id + '"><i class="fa fa-check"></i><span>';
+            html += text;
+            html += '</span></div>';
             break;
         case 'warning':
             html += '<div class="infobar infobar-warning" id="infobar_' + infobar_id + '"><i class="fa fa-warning"></i><span>';
+            html += text;
+            html += '</span></div>';
             break;
         case 'error':
             html += '<div class="infobar infobar-error" id="infobar_' + infobar_id + '"><i class="fa fa-warning"></i><span>';
+            html += text;
+            html += '</span></div>';
             break;
         case 'update':
-            timeout=0;  //禁用自动关闭
-            html += '<div class="infobar infobar-info" id="infobar_update"><i class="fa fa-spinner"></i><span>'+text+'</span><progress class="update-progress" id="update-progress" value="0" max="100"></progress><span></div>';
+            timeout = 0; //禁用自动关闭
+            html += '<div class="infobar infobar-info" id="infobar_update"><i class="fa fa-spinner icon-spin"></i><span>' + text + '</span><progress class="update-progress" id="update-progress" value="0" max="100"></progress>';
+            html += '</div>';
+            break;
         case 'info':
         default:
             html += '<div class="infobar infobar-info" id="infobar_' + infobar_id + '"><i class="fa fa-info-circle"></i><span>';
+            html += text;
+            html += '</span></div>';
             break;
     }
-    html += text;
-    html += '</span></div>';
     infobar_container.append($(html));
     //animate
     //timeout > 0则自动关闭，否则需要用户手动关闭
