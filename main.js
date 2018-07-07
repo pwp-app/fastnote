@@ -5,7 +5,7 @@ const app = require('electron').app;
 //ipc主进程
 const ipc = require('electron').ipcMain;
 
-const indebug = true;
+const indebug = false;
 
 //auto-update
 const {

@@ -227,20 +227,25 @@
         function bindRightClickEvent() {
             $('.note').mousedown(function (e) {
                 if (e.which == 3) {
-                    $('.rightclickmenu').attr('style', 'display:block;' + 'left:' + e.clientX + 'px;top:' +
-                        e.clientY +
+                    if (noteid_clicked != -1) {
+                        $('#note_' + noteid_clicked).removeClass('note-selected');
+                    }
+                    $('.rightclickmenu').attr('style', 'display:block;' + 'left:' + e.clientX + 'px;top:' + e.clientY +
                         'px;z-index:1000;');
                     isRightClickMenuOpened = true;
                     noteid_clicked = parseInt($(this).attr("id").replace('note_', ''));
+                    $(this).addClass('note-selected');
                 }
             });
         }
         $('body').click(function (e) {
             $('.rightclickmenu').attr('style', 'display:none;'); //右键菜单隐藏
+            $('#note_' + noteid_clicked).removeClass('note-selected');
             noteid_clicked = -1;
         });
         $('#note-list').scroll(function () {
             $('.rightclickmenu').attr('style', 'display:none;');
+            $('#note_' + noteid_clicked).removeClass('note-selected');
             noteid_clicked = -1;
         });
     </script>
@@ -282,6 +287,8 @@
             ipcRenderer
         } = require('electron');
 
+        let time = require('../app/tools/time.js');
+
         ipcRenderer.on('message', (event, {
             message,
             data
@@ -296,6 +303,7 @@
                 case 'downloadProgress':
                     console.log('progress', data);
                     document.getElementById('update-progress').value = data.percent || 0;
+
                     break;
                 case 'isUpdateNow':
                     console.log('isupdatenow');
@@ -306,7 +314,7 @@
                         $('#infobar_update').remove();
                     });
                     $('.container-updater').animateCss('fadeIn', function () {
-                        $.getJSON(`http://update.backrunner.top/fastnote/${process.platform}/var.json`,
+                        $.getJSON(`http://update.backrunner.top/fastnote/${process.platform}/var.json?time=`+time.getRawCurrentMillTime(),  //时间戳避免缓存
                             function (result) {
                                 if (result != null && result != "" && result != undefined) {
                                     try {

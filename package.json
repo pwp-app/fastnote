@@ -14,30 +14,36 @@
   },
   "devDependencies": {
     "electron": "^3.0.0-beta.1",
-    "electron-builder": "^20.19.1"
+    "electron-builder": "^20.19.2"
   },
   "name": "fastnote",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder -w --ia32",
+    "build": "electron-builder",
     "test": "electron ."
   },
   "author": "BackRunner",
   "license": "MIT",
   "build": {
     "appId": "app.pwp.fastnote",
-    "copyright": "BackRunenr",
+    "copyright": "BackRunner",
     "productName": "Fastnote",
     "publish": [
       {
         "provider": "generic",
-        "url": "http://update.backrunner.top/fastnote/"
+        "url": "http://update.backrunner.top/fastnote"
       }
     ],
     "win": {
-      "target": "nsis"
+      "target": {
+        "target": "nsis",
+        "arch": [
+          "x64",
+          "ia32"
+        ]
+      }
     },
     "nsis": {
       "oneClick": false,

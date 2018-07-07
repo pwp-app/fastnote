@@ -207,6 +207,12 @@ button {
     font-size: 15px;
 }
 
+.note-selected{
+    border:solid 2.5px rgba(245, 245, 245, .65);
+    border-radius: 8px;
+    padding: 5.5px 12.5px;
+}
+
 /* infobar */
 
 .container-infobar {
@@ -418,9 +424,9 @@ button {
     color: #2673EC;
     /*兼容IE10的已完成进度背景*/
     border: none;
-    background: #1faeff;
+    background: #1fadff85;
     position: absolute;
-    height: 3px;
+    height: 4px;
     bottom: 0;
     left: 0;
     width: 100%;
@@ -431,7 +437,7 @@ button {
 }
 
 .update-progress::-webkit-progress-value {
-    background: #1faeff;
+    background: #1fadff85;
 }
 
 .update-contents-loading {

@@ -171,7 +171,6 @@ function saveNote(notetext) {
     //转换回车
     notetext = notetext.replace(/\n/g, '<br/>');
 	notetext = notetext.replace(/\r\n/g, '<br/>');
-    console.log(notetext);
     //构造note
     var note = {
         id: notesid,
@@ -200,7 +199,6 @@ function saveNote(notetext) {
             showNoteList();
         }
         //在顶部渲染Note
-        console.log(notetext);
         renderNoteAtTop(note.id, note.time, note.text);
         //绑定事件
         bindRightClickEvent();
