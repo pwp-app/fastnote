@@ -8,7 +8,7 @@ const ipc = require('electron').ipcMain;
 //获取shell
 const {shell} = require('electron');
 
-const indebug = true;
+const indebug = false;
 
 //auto-update
 const {
