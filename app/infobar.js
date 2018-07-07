@@ -3,7 +3,7 @@ var infobar_container = $(".container-infobar");
 var infobar_id = 0;
 
 //显示Infobar
-function displayInfobar(type, text, timeout = 2000) {
+function displayInfobar(type, text, timeout = 3000) {
     var html = "";
     switch (type) {
         case 'success':

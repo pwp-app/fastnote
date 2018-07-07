@@ -5,7 +5,7 @@ var Time = {
 
         var year = date.getFullYear();
         var month = date.getMonth() + 1;
-        var day = date.getDay();
+        var day = date.getDate();
 
         var h = date.getHours();
         var m = date.getMinutes();
@@ -28,7 +28,7 @@ var Time = {
 
         var year = date.getFullYear();
         var month = date.getMonth() + 1;
-        var day = date.getDay();
+        var day = date.getDate();
 
         var h = date.getHours();
         var m = date.getMinutes();
@@ -70,7 +70,7 @@ var Time = {
         
         var year = date.getFullYear();
         var month = date.getMonth() + 1;
-        var day = date.getDay();
+        var day = date.getDate();
 
         var h = date.getHours();
         var m = date.getMinutes();
@@ -97,7 +97,7 @@ var Time = {
         
         var year = date.getFullYear();
         var month = date.getMonth() + 1;
-        var day = date.getDay();
+        var day = date.getDate();
 
         var h = date.getHours();
         var m = date.getMinutes();

@@ -95,6 +95,9 @@
                 var node_list = document.getElementsByClassName('note-list')[0];
                 node_list.innerHTML = "";
             }
+            //定义url过滤正则
+            let reg_url =
+                /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
             //渲染一条笔记
             function renderNote(id, time, text) {
                 var html = '<div class="note" id="note_' + id + '"><div class="note-header"><p class="note-no">';
@@ -102,9 +105,17 @@
                 html += '</p><p class="note-time">';
                 html += time;
                 html += '</p></div><div class="note-content"><p class="note-text">';
-                html += text;
+                //自动识别网页
+                html += text.replace(reg_url, function(result){
+                    return '<a href="'+result+'">'+result+'</a>';
+                });
                 html += '</p></div></div>';
                 $('.note-list').append($(html));
+                //open external on os default webbrowser
+                $('.note-text a').click(function(e){
+                    ipcRenderer.send('openOutsideURL',$(this).attr('href'));
+                    e.preventDefault();
+                });
             }
             //在顶部渲染Note
             function renderNoteAtTop(id, time, text) {
@@ -114,11 +125,19 @@
                 html += '</p><p class="note-time">';
                 html += time;
                 html += '</p></div><div class="note-content"><p class="note-text">';
-                html += text;
+                //自动识别网页
+                html += text.replace(reg_url, function(result){
+                    return '<a href="'+result+'">'+result+'</a>';
+                });
                 html += '</p></div></div>';
                 $('.note-list').prepend($(html));
                 //animate
                 $('#note_' + id).animateCss('fadeInLeft');
+                //open external on os default webbrowser
+                $('.note-text a').click(function(e){
+                    ipcRenderer.send('openOutsideURL',$(this).attr('href'));
+                    e.preventDefault();
+                });
             }
             //添加笔记至Array
             function addNoteToArray(id, time, rawtime, text, offset, timezone) {
@@ -337,17 +356,19 @@
                     });
                 case 'error':
                     //出现错误
-                    if ($('.container-updater').attr('style').indexOf('block') != -1) {
-                        $('.container-updater').animateCss('fadeOut', function () {
-                            $('.container-updater').removeAttr('style');
-                        });
+                    if ($('.container-updater').attr('style') != undefined) {
+                        if ($('.container-updater').attr('style').indexOf('block') != -1) {
+                            $('.container-updater').animateCss('fadeOut', function () {
+                                $('.container-updater').removeAttr('style');
+                            });
+                        }
                     }
                     //收起更新通知
                     $('#infobar_update').animateCss('fadeOutUp', function () {
                         $('#infobar_update').remove();
                     });
                     //显示错误通知
-                    displayInfobar('error','自动更新时出现错误......');
+                    displayInfobar('error', '自动更新时出现错误......');
                     break;
             }
         });

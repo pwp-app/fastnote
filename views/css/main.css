@@ -1,13 +1,13 @@
 /*主设置*/
 @font-face{
     font-family: Source Han Sans CN;
-    src:url('../fonts/SourceHanSansCN-Normal.otf'),
-    url('../fonts/SourceHanSansCN-Bold.otf'),
-    url('../fonts/SourceHanSansCN-Extralight.otf'),
-    url('../fonts/SourceHanSansCN-Heavy.otf'),
-    url('../fonts/SourceHanSansCN-Light.otf'),
-    url('../fonts/SourceHanSansCN-Medium_0.otf'),
-    url('../fonts/SourceHanSansCN-Regular.otf');
+    src:url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Normal.otf'),
+    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Bold.otf'),
+    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Extralight.otf'),
+    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Heavy.otf'),
+    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Light.otf'),
+    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Medium_0.otf'),
+    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Regular.otf');
     font-weight:100,200,300,400,500,700,900;
 }
 
@@ -180,8 +180,8 @@ button {
     background-color: #1faeff;
     border-radius: 8px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, .25);
-    padding: 8px 15px;
-    margin-bottom: 12px;
+    padding: 6px 12px;
+    margin-bottom: 15px;
     /* animate */
     animation-duration: 0.5s !important;
     -webkit-animation-duration: 0.5s !important;
@@ -209,20 +209,30 @@ button {
 }
 
 .note-content {
-    padding-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 8px;
 }
 
-.note-text {
-    padding-top: 5px;
+.note-content p{
+    margin-top: 5px;
     margin-bottom: 5px;
     font-size: 15px;
 }
 
+.note-content a{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    color: white;
+    font-size: 15px;
+    text-decoration:underline;
+}
+.note-content a:hover{
+    color: white;
+}
+
 .note-selected{
-    border:solid 2.5px rgba(245, 245, 245, .65);
+    border:solid 3px rgba(245, 245, 245, .65);
     border-radius: 8px;
-    padding: 5.5px 12.5px;
+    padding: 3px 9px;
 }
 
 /* infobar */

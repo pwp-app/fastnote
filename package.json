@@ -17,7 +17,7 @@
     "electron-builder": "^20.19.2"
   },
   "name": "fastnote",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -49,7 +49,8 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "allowElevation": true,
-      "differentialPackage": true
+      "differentialPackage": true,
+      "license":"LICENSE"
     }
   },
   "description": ""

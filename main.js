@@ -5,7 +5,10 @@ const app = require('electron').app;
 //ipc主进程
 const ipc = require('electron').ipcMain;
 
-const indebug = false;
+//获取shell
+const {shell} = require('electron');
+
+const indebug = true;
 
 //auto-update
 const {
@@ -51,6 +54,7 @@ function createWindow() {
   win.on('ready-to-show', () => {
     win.focus();
     win.show();
+    openOutsideURL();
     checkForUpdates();
   });
 }
@@ -106,6 +110,13 @@ let checkForUpdates = () => {
   //执行自动更新检查
   autoUpdater.checkForUpdates();
 };
+
+//打开外部链接事件监听
+let openOutsideURL = () =>{
+  ipc.on('openOutsideURL',(e,msg) => {
+    shell.openExternal(msg);
+  })
+}
 
 app.on('activate', () => {
   // 在macOS上，当单击dock图标并且没有其他窗口打开时，
