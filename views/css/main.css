@@ -526,14 +526,30 @@ button {
 }
 .mainmenu-logo{
     text-align: center;
-    padding-top:48px;
-    padding-bottom: 20px
+    padding-top: 21px;
+    padding-bottom: 10px;
+}
+.mainmenu-logo img{
+    width: 100px;
+    height: 100px;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
 }
 .mainmenu-logo h1{
+    padding-top:12px;
     color:gray;
-    font-size: 35px;
+    font-size: 28px;
     font-weight: lighter;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+}
+.mainmenu-logo span{
+    color:gray;
+    font-size: 14px;
+    font-weight: lighter;
+    letter-spacing: 0.1em;
+    -webkit-user-drag: none;
     -webkit-user-select: none;
 }
 .mainmenu-split{
@@ -553,12 +569,12 @@ button {
 }
 .mainmenu-menu li{
     width: 100%;
-    height:55px;
+    height:50px;
     list-style-type: none;
     color:gray;
     letter-spacing: 0.05em;
     font-size: 16px;
-    line-height: 55px;
+    line-height: 50px;
 }
 .mainmenu-menu li span{
     padding-left:45px;
