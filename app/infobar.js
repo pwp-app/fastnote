@@ -23,7 +23,7 @@ function displayInfobar(type, text, timeout = 2000) {
             break;
         case 'update':
             timeout = 0; //禁用自动关闭
-            html += '<div class="infobar infobar-info" id="infobar_update"><i class="fa fa-spinner icon-spin"></i><span>' + text + '</span><progress class="update-progress" id="update-progress" value="0" max="100"></progress>';
+            html += '<div class="infobar infobar-info" id="infobar_update"><i class="fa fa-spinner icon-spin"></i><span id="infobar-update-text">' + text + '</span><progress class="update-progress" id="update-progress" value="0" max="100"></progress>';
             html += '</div>';
             break;
         case 'info':

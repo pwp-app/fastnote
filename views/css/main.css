@@ -1,4 +1,16 @@
 /*主设置*/
+@font-face{
+    font-family: Source Han Sans CN;
+    src:url('../fonts/SourceHanSansCN-Normal.otf'),
+    url('../fonts/SourceHanSansCN-Bold.otf'),
+    url('../fonts/SourceHanSansCN-Extralight.otf'),
+    url('../fonts/SourceHanSansCN-Heavy.otf'),
+    url('../fonts/SourceHanSansCN-Light.otf'),
+    url('../fonts/SourceHanSansCN-Medium_0.otf'),
+    url('../fonts/SourceHanSansCN-Regular.otf');
+    font-weight:100,200,300,400,500,700,900;
+}
+
 
 body {
     margin: 0;

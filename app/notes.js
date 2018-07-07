@@ -5,6 +5,11 @@ let textarea = $('#note-text');
 let fs = require('fs');
 let time = require('./tools/time.js');
 
+//import storage location
+const remote = require('electron').remote;
+const app = remote.app;
+var storagePath = app.getPath('userData');
+
 //预设notesid
 let notesid = 0;
 
@@ -68,9 +73,9 @@ function deleteNote(id){
             var path;
             //检查offset
             if (note.offset>0){
-                path = './notes/'+note.rawtime+'.'+note.offset+'.json';
+                path = storagePath+'/notes/'+note.rawtime+'.'+note.offset+'.json';
             } else {
-                path = './notes/'+note.rawtime+'.json';
+                path = storagePath+'/notes/'+note.rawtime+'.json';
             }
             if (fs.existsSync(path)){
                 //删除文件
@@ -109,12 +114,12 @@ function readNoteFiles() {
     //重新读取需要清空notes Array
     clearNoteArray();
     //判断是否存在notes文件夹，不存在代表没有笔记
-    if (!fs.existsSync('./notes/')) {
+    if (!fs.existsSync(storagePath+'/notes/')) {
         showNoteEmpty();
         isNotesEmpty = true;
-        fs.mkdirSync('./notes/');
+        fs.mkdirSync(storagePath+'/notes/');
     } else {
-        fs.readdir('./notes/', function (err, fileArr) {
+        fs.readdir(storagePath+'/notes/', function (err, fileArr) {
             if (fileArr == undefined) {
                 showNoteEmpty();
                 isNotesEmpty = true;
@@ -128,7 +133,7 @@ function readNoteFiles() {
                 //目录不是空的，代表有笔记，执行初始化
                 let countOffset = 0;
                 fileArr.forEach(element => {
-                    fs.readFile('./notes/' + element, 'utf-8', function (err, data) {
+                    fs.readFile(storagePath+'/notes/' + element, 'utf-8', function (err, data) {
                         if (err) {
                             countOffset++;
                             throw (err);
@@ -155,17 +160,17 @@ function readNoteFiles() {
 function saveNote(notetext) {
     var alltime = time.getAllTime();
     //保存路径
-    var path = './notes/' + alltime.rawTime + '.json';
+    var path = storagePath+'/notes/' + alltime.rawTime + '.json';
     //计算文件的offset
     var offset = 0;
     if (fs.existsSync(path)) {
         offset++;
     }
     if (offset > 0) {
-        path = './notes/' + alltime.rawTime + '.' + offset + '.json';
+        path = storagePath+'/notes/' + alltime.rawTime + '.' + offset + '.json';
         while (fs.existsSync(path)) {
             offset++;
-            path = './notes/' + alltime.rawTime + '.' + offset + '.json';
+            path = storagePath+'/notes/' + alltime.rawTime + '.' + offset + '.json';
         }
     }
     //转换回车

@@ -303,18 +303,22 @@
                 case 'downloadProgress':
                     console.log('progress', data);
                     document.getElementById('update-progress').value = data.percent || 0;
-
+                    document.getElementById('infobar-update-text').innerHTML = "正在下载更新（" + data.percent || 0 +
+                        "%）......";
                     break;
                 case 'isUpdateNow':
                     console.log('isupdatenow');
                     document.getElementById('update-progress').value = 100;
+                    document.getElementById('infobar-update-text').innerHTML = "新版本安装包已下载......";
                     $('.container-updater').css('display', 'block');
                     //收起上方的通知
                     $('#infobar_update').animateCss('fadeOutUp', function () {
                         $('#infobar_update').remove();
                     });
                     $('.container-updater').animateCss('fadeIn', function () {
-                        $.getJSON(`http://update.backrunner.top/fastnote/${process.platform}/var.json?time=`+time.getRawCurrentMillTime(),  //时间戳避免缓存
+                        $.getJSON(
+                            `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=` +
+                            time.getRawCurrentMillTime(), //时间戳避免缓存
                             function (result) {
                                 if (result != null && result != "" && result != undefined) {
                                     try {
@@ -331,7 +335,19 @@
                                 }
                             });
                     });
-
+                case 'error':
+                    //出现错误
+                    if ($('.container-updater').attr('style').indexOf('block') != -1) {
+                        $('.container-updater').animateCss('fadeOut', function () {
+                            $('.container-updater').removeAttr('style');
+                        });
+                    }
+                    //收起更新通知
+                    $('#infobar_update').animateCss('fadeOutUp', function () {
+                        $('#infobar_update').remove();
+                    });
+                    //显示错误通知
+                    displayInfobar('error','自动更新时出现错误......');
                     break;
             }
         });
