@@ -83,6 +83,9 @@ button {
     display: block;
     border-top: 1px solid rgba(255,255,255,0.75);
     border-bottom: 1px solid rgba(255,255,255,0.75);
+    /* animate */
+    animation-duration: 0.5s !important;
+    -webkit-animation-duration: 0.5s !important;
 }
 
 .container-newnote .lbl {
@@ -90,6 +93,10 @@ button {
     color: #ffffff;
     font-size: 14px;
     -webkit-user-select: none;
+}
+
+.container-newnote label{
+    display: inline-block;
 }
 
 .container-newnote .control {
@@ -125,6 +132,16 @@ button {
     height:25px;
     text-align: center;
     display:none;
+}
+
+.newnote-fold{
+    float: right;
+    display:inline-block;
+    width: 32px;
+    height:24px;
+    text-align: right;
+    right: 0px;
+    margin-right: -5px;
 }
 
 /* note */
@@ -598,6 +615,21 @@ button {
     width: 32px;
     height:26px;
     color:white;
-    padding-left: 10px;
+    padding-left: 8px;
     line-height: 26px;
+    font-size: 14px;
+    z-index: 2;
+    /* animate */
+    animation-duration: 0.5s !important;
+    -webkit-animation-duration: 0.5s !important;
+}
+.trigger-expandnewnote{
+    display: none;
+    width: 30px;
+    height: 26px;
+    color: white;
+    float:right;
+    line-height: 26px;
+    font-size: 14px;
+    z-index: 2;
 }
