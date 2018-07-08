@@ -29,7 +29,7 @@
                     };
 
                     for (var t in animations) {
-                        if (el.style[t] !== undefined) {
+                        if (typeof(el.style[t]) !== undefined) {
                             return animations[t];
                         }
                     }
@@ -251,7 +251,7 @@
         let isNoteFolded = false;
         //init
         storage.get('newnoteconfig', function (err, data) {
-            if (err || data == undefined || data == null || data == "") {
+            if (err || typeof(data) == undefined || data == null || data == "") {
                 isNoteFolded = false;
                 $('.container-newnote').css('display', 'block');
                 $('.trigger-expandnewnote').css('display', 'none');
@@ -412,7 +412,7 @@
                             `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=` +
                             time.getRawCurrentMillTime(), //时间戳避免缓存
                             function (result) {
-                                if (result != null && result != "" && result != undefined) {
+                                if (result != null && result != "" && typeof(result) != undefined) {
                                     try {
                                         $('#update-title-span').append(result.var);
                                         $('.update-contents-details').append(result.text);
@@ -429,7 +429,7 @@
                     });
                 case 'error':
                     //出现错误
-                    if ($('.container-updater').attr('style') != undefined) {
+                    if (typeof($('.container-updater').attr('style')) != undefined) {
                         if ($('.container-updater').attr('style').indexOf('block') != -1) {
                             $('.container-updater').animateCss('fadeOut', function () {
                                 $('.container-updater').removeAttr('style');
@@ -517,6 +517,7 @@
                 isMainMenuOpen = true;
             }
         });
+        //绑定菜单项
         $('#mainmenu-btn-about').click(function(){
             ipcRenderer.send("openAboutWindow");
         });

@@ -1,16 +1,10 @@
-let win_about;
+let win_about = null;
 
 const {
     BrowserWindow
 } = require('electron');
-const app = require('electron').app;
-//ipc主进程
-const ipc = require('electron').ipcMain;
 
-//获取shell
-const {
-    shell
-} = require('electron');
+const app = require('electron').app;
 
 function createAboutWindow() {
     var conf = {
@@ -25,8 +19,31 @@ function createAboutWindow() {
         conf.titleBarStyle = 'hiddenInset';
     else
         conf.frame = false;
+
     win_about = new BrowserWindow(conf);
+
+    win_about.loadFile('../view/about.html');
+
+    win_about.webContents.openDevTools();
+
     win_about.on('closed', () => {
         win_about = null;
     })
+    win_about.on('ready-to-show', () => {
+        win_about.focus();
+        win_about.show();
+    });
 }
+
+function showAboutWindow(){
+    if (win_about !== null){
+        if (win_about.isMinimized()){
+            win_about.restore();
+            win_about.focus();
+        }
+    } else {
+        createAboutWindow();
+    }
+}
+
+module.exports = showAboutWindow;

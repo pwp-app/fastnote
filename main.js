@@ -17,7 +17,10 @@ const {
 const feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
 
 //import other window
-require('./app/about.js');
+aboutWindow = require('./app/about');
+
+//import const
+global.Const = require('./app/const.js');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -55,7 +58,10 @@ function createWindow() {
   win.on('ready-to-show', () => {
     win.focus();
     win.show();    
-    checkForUpdates();    
+    checkForUpdates();  
+    ipc.on('openAboutWindow',()=>{
+      aboutWindow();
+    });
   });
 }
 

@@ -3,7 +3,7 @@ const storage = require('electron-json-storage');
 
 let textarea = $('#note-text');
 let fs = require('fs');
-let time = require('./tools/time.js');
+let time = require('../app/tools/time.js');
 
 //import storage location
 const remote = require('electron').remote;
@@ -25,14 +25,14 @@ storage.get('notesid', function (error, data) {
     //获取callback回传的json
     var notesid_json = data;
     //判断是否为空
-    if (notesid_json == null || notesid_json == undefined) {
+    if (notesid_json == null || typeof(notesid_json) == undefined) {
         notesid = 1;
         return;
     }
     //parse Json，获取数据
     notesid_json = JSON.parse(notesid_json);
     notesid = notesid_json.id;
-    if (notesid == null || notesid == undefined) {
+    if (notesid == null || typeof(notesid) == undefined) {
         notesid = 1;
     }
 });
@@ -120,7 +120,7 @@ function readNoteFiles() {
         fs.mkdirSync(storagePath+'/notes/');
     } else {
         fs.readdir(storagePath+'/notes/', function (err, fileArr) {
-            if (fileArr == undefined) {
+            if (typeof(fileArr) == undefined) {
                 showNoteEmpty();
                 isNotesEmpty = true;
                 return;
@@ -139,7 +139,7 @@ function readNoteFiles() {
                             throw (err);
                         }
                         var note_json = data;
-                        if (note_json != undefined && note_json != null) {
+                        if (typeof(note_json) != undefined && note_json != null) {
                             note_json = JSON.parse(note_json);
                             addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.text, note_json.offset, note_json.timezone);
                             if (notes.length == fileArr.length + countOffset) {
