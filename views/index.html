@@ -29,7 +29,7 @@
                     };
 
                     for (var t in animations) {
-                        if (typeof(el.style[t]) !== undefined) {
+                        if (typeof (el.style[t]) !== undefined) {
                             return animations[t];
                         }
                     }
@@ -118,7 +118,7 @@
                 html += '</p></div></div>';
                 $('.note-list').append($(html));
                 //open external on os default webbrowser
-                $('#note_' + id+' a').click(function (e) {
+                $('#note_' + id + ' a').click(function (e) {
                     ipcRenderer.send('openExternalURL', $(this).attr('href'));
                     e.preventDefault();
                 });
@@ -140,7 +140,7 @@
                 //animate
                 $('#note_' + id).animateCss('fadeInLeft');
                 //open external on os default webbrowser
-                $('#note_' + id+' a').click(function (e) {
+                $('#note_' + id + ' a').click(function (e) {
                     ipcRenderer.send('openExternalURL', $(this).attr('href'));
                     e.preventDefault();
                 });
@@ -251,7 +251,7 @@
         let isNoteFolded = false;
         //init
         storage.get('newnoteconfig', function (err, data) {
-            if (err || typeof(data) == undefined || data == null || data == "") {
+            if (err || typeof (data) == undefined || data == null || data == "") {
                 isNoteFolded = false;
                 $('.container-newnote').css('display', 'block');
                 $('.trigger-expandnewnote').css('display', 'none');
@@ -367,7 +367,7 @@
             <div class="update-footer">
                 <div class="control-group" style="-webkit-user-select: none">
                     <button type="button" class="br-btn btn-noback control-item" id="btn-update-cancel">取消</button>
-                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-confirm">更新</button>
+                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-confirm">下载</button>
                 </div>
             </div>
         </div>
@@ -389,35 +389,19 @@
                     console.log('checking for update...');
                     break;
                 case 'update-available':
-                    displayInfobar('update', '正在下载更新……');
-                    break;
-                case 'downloadProgress':
-                    console.log('progress', data);
-                    document.getElementById('update-progress').value = data.percent || 0;
-                    document.getElementById('infobar-update-text').innerHTML = "正在下载更新（" + data.percent.toFixed(
-                            1) || 0 +
-                        "%）......";
-                    break;
-                case 'isUpdateNow':
-                    console.log('isupdatenow');
-                    document.getElementById('update-progress').value = 100;
-                    document.getElementById('infobar-update-text').innerHTML = "新版本安装包已下载......";
+                    console.log("update-avaliable");
                     $('.container-updater').css('display', 'block');
-                    //收起上方的通知
-                    $('#infobar_update').animateCss('fadeOutUp', function () {
-                        $('#infobar_update').remove();
-                    });
                     $('.container-updater').animateCss('fadeIn', function () {
-                        $.getJSON(
-                            `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=` +
-                            time.getRawCurrentMillTime(), //时间戳避免缓存
+                        var path_varfile =
+                            `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=`;
+                        $.getJSON(path_varfile + time.getRawCurrentMillTime(), //时间戳避免缓存
                             function (result) {
-                                if (result != null && result != "" && typeof(result) != undefined) {
+                                if (result != null && result != "" && typeof (result) != undefined) {
                                     try {
-                                        $('#update-title-span').append(result.var);
-                                        $('.update-contents-details').append(result.text);
+                                        $('#update-title-span').text('检测到新版本：' + result.var);
+                                        document.getElementsByClassName('update-contents-details')[
+                                            0].innerHTML = result.text;
                                         $('.update-contents-loading').css('display', 'none');
-
                                     } catch (err) {
                                         console.error(err);
                                         $('#update-loading-span').innerHTML = "更新日志加载失败";
@@ -427,21 +411,21 @@
                                 }
                             });
                     });
-                case 'error':
-                    //出现错误
-                    if (typeof($('.container-updater').attr('style')) != undefined) {
-                        if ($('.container-updater').attr('style').indexOf('block') != -1) {
-                            $('.container-updater').animateCss('fadeOut', function () {
-                                $('.container-updater').removeAttr('style');
-                            });
-                        }
-                    }
-                    //收起更新通知
+                    break;
+                case 'downloadProgress':
+                    document.getElementById('update-progress').value = data.percent;
+                    document.getElementById('infobar-update-text').innerText = "正在下载更新（" + data.percent.toFixed(
+                        1) + " %）......";
+                    break;
+                case 'update-downloaded':
+                    console.log('update-downloaded');
+                    //收起上方的通知
                     $('#infobar_update').animateCss('fadeOutUp', function () {
                         $('#infobar_update').remove();
                     });
-                    //显示错误通知
-                    displayInfobar('error', '自动更新时出现错误......');
+                    displayInfobar('success', '更新下载完成，关闭程序后将自动安装', 5000);
+                case 'error':
+                    console.error(data);
                     break;
             }
         });
@@ -450,9 +434,14 @@
             $('.container-updater').animateCss('fadeOut', function () {
                 $('.container-updater').removeAttr('style');
             });
+            ipcRenderer.send('updateCancelled');
         });
         $('#btn-update-confirm').on('click', function () {
-            ipcRenderer.send('updateNow');
+            ipcRenderer.send('downloadNow');
+            displayInfobar('update', '正在下载更新……');
+            $('.container-updater').animateCss('fadeOut', function () {
+                $('.container-updater').removeAttr('style');
+            });
         })
     </script>
 
@@ -468,7 +457,6 @@
                     //获取版本                    
                     var version = app.getVersion();
                     $(document).ready(function () {
-                        console.log($('#mainmenu-version'));
                         $('#mainmenu-version').append(version);
                     });
                 </script>
@@ -518,7 +506,7 @@
             }
         });
         //绑定菜单项
-        $('#mainmenu-btn-about').click(function(){
+        $('#mainmenu-btn-about').click(function () {
             ipcRenderer.send("openAboutWindow");
         });
     </script>

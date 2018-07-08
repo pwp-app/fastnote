@@ -8,7 +8,7 @@ const ipc = require('electron').ipcMain;
 //获取shell
 const {shell} = require('electron');
 
-global.indebug = false;
+global.indebug = true;
 
 //auto-update
 const {
@@ -85,32 +85,30 @@ let sendUpdateMessage = (message, data) => {
 
 let checkForUpdates = () => {
   autoUpdater.setFeedURL(feedUrl);
+  autoUpdater.autoDownload = false;
 
   autoUpdater.on('error', function (message) {
-    sendUpdateMessage('error', message)
-    console.error('autoupdate error:' + message);
+    sendUpdateMessage('error', message);
   });
   autoUpdater.on('checking-for-update', function (message) {
-    sendUpdateMessage('checking-for-update', message)
-    console.log('checking update...');
+    sendUpdateMessage('checking-for-update', message);
   });
   autoUpdater.on('update-available', function (message) {
-    sendUpdateMessage('update-available', message)
+    sendUpdateMessage('update-available', message);
+    ipc.on('downloadNow',function(){
+      autoUpdater.downloadUpdate();
+    });
   });
   autoUpdater.on('update-not-available', function (message) {
-    sendUpdateMessage('update-not-available', message)
+    sendUpdateMessage('update-not-available', message);
   });
 
   // 更新下载进度事件
   autoUpdater.on('download-progress', function (progressObj) {
-    sendUpdateMessage('downloadProgress', progressObj)
+    sendUpdateMessage('downloadProgress', progressObj);
   })
-  autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
-    ipc.on('updateNow', (e, arg) => {
-      //some code here to handle event
-      autoUpdater.quitAndInstall();
-    })
-    sendUpdateMessage('isUpdateNow');
+  autoUpdater.on('update-downloaded', () => {
+    sendUpdateMessage('update-downloaded');
   });
 
   //执行自动更新检查
