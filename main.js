@@ -8,7 +8,7 @@ const ipc = require('electron').ipcMain;
 //获取shell
 const {shell} = require('electron');
 
-global.indebug = true;
+global.indebug = false;
 
 //auto-update
 const {
@@ -18,9 +18,6 @@ const feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
 
 //import other window
 aboutWindow = require('./app/about');
-
-//import const
-global.Const = require('./app/const.js');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
