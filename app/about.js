@@ -5,6 +5,7 @@ const {
 } = require('electron');
 
 const app = require('electron').app;
+const path = require('path');
 
 function createAboutWindow() {
     var conf = {
@@ -22,7 +23,8 @@ function createAboutWindow() {
 
     win_about = new BrowserWindow(conf);
 
-    win_about.loadFile('../view/about.html');
+    var viewpath = path.resolve(__dirname,'../views/about.html');
+    win_about.loadFile(viewpath);
 
     win_about.webContents.openDevTools();
 
