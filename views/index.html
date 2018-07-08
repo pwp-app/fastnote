@@ -118,7 +118,7 @@
                 html += '</p></div></div>';
                 $('.note-list').append($(html));
                 //open external on os default webbrowser
-                $('.note-text a').click(function (e) {
+                $('#note_' + id+' a').click(function (e) {
                     ipcRenderer.send('openOutsideURL', $(this).attr('href'));
                     e.preventDefault();
                 });
@@ -140,7 +140,7 @@
                 //animate
                 $('#note_' + id).animateCss('fadeInLeft');
                 //open external on os default webbrowser
-                $('.note-text a').click(function (e) {
+                $('#note_' + id+' a').click(function (e) {
                     ipcRenderer.send('openOutsideURL', $(this).attr('href'));
                     e.preventDefault();
                 });
@@ -516,6 +516,9 @@
                 $('.container-mainmenu').animateCss('fadeInLeft');
                 isMainMenuOpen = true;
             }
+        });
+        $('#mainmenu-btn-about').click(function(){
+            ipcRenderer.send("openAboutWindow");
         });
     </script>
 </body>
