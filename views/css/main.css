@@ -114,6 +114,7 @@ button {
     font-weight: 100px;
     font-size: 14px;
     border-radius: 5px;
+    letter-spacing: 0.05em;
 }
 
 .container-newnote .control textarea:focus {
@@ -223,16 +224,18 @@ button {
     font-size: 12px;
     float: right;
     padding-top: 5px;
+    -webkit-user-drag: none;
 }
 
 .note-content {
-    margin-top: 8px;
+    margin-top: 8px;    
 }
 
 .note-content p{
     margin-top: 5px;
     margin-bottom: 5px;
     font-size: 15px;
+    letter-spacing: 0.05em;
 }
 
 .note-content a{
@@ -241,6 +244,7 @@ button {
     color: white;
     font-size: 15px;
     text-decoration:underline;
+    letter-spacing: 0.05em;
 }
 .note-content a:hover{
     color: white;
@@ -515,6 +519,7 @@ button {
     bottom:0;
     left:0;
     z-index: 2;
+    -webkit-user-drag: none;
     /*animate*/
     -webkit-animation-duration: 0.75s !important;
     animation-duration: 0.75s !important;
@@ -583,6 +588,7 @@ button {
     width: 100%;
     margin:0;
     padding:0;
+    -webkit-user-drag: none;
 }
 .mainmenu-menu li{
     width: 100%;
@@ -592,6 +598,7 @@ button {
     letter-spacing: 0.05em;
     font-size: 16px;
     line-height: 50px;
+    -webkit-user-drag: none;
 }
 .mainmenu-menu li span{
     padding-left:45px;

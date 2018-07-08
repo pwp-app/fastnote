@@ -119,7 +119,7 @@
                 $('.note-list').append($(html));
                 //open external on os default webbrowser
                 $('#note_' + id+' a').click(function (e) {
-                    ipcRenderer.send('openOutsideURL', $(this).attr('href'));
+                    ipcRenderer.send('openExternalURL', $(this).attr('href'));
                     e.preventDefault();
                 });
             }
@@ -141,7 +141,7 @@
                 $('#note_' + id).animateCss('fadeInLeft');
                 //open external on os default webbrowser
                 $('#note_' + id+' a').click(function (e) {
-                    ipcRenderer.send('openOutsideURL', $(this).attr('href'));
+                    ipcRenderer.send('openExternalURL', $(this).attr('href'));
                     e.preventDefault();
                 });
             }

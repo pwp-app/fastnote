@@ -23,10 +23,11 @@ function createAboutWindow() {
 
     win_about = new BrowserWindow(conf);
 
-    var viewpath = path.resolve(__dirname,'../views/about.html');
+    var viewpath = path.resolve(__dirname, '../views/about.html');
     win_about.loadFile(viewpath);
 
-    win_about.webContents.openDevTools();
+    if (indebug)
+        win_about.webContents.openDevTools();
 
     win_about.on('closed', () => {
         win_about = null;
@@ -37,12 +38,12 @@ function createAboutWindow() {
     });
 }
 
-function showAboutWindow(){
-    if (win_about !== null){
-        if (win_about.isMinimized()){
+function showAboutWindow() {
+    if (win_about !== null) {
+        if (win_about.isMinimized()) {
             win_about.restore();
-            win_about.focus();
         }
+        win_about.focus();
     } else {
         createAboutWindow();
     }

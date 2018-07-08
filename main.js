@@ -8,7 +8,7 @@ const ipc = require('electron').ipcMain;
 //获取shell
 const {shell} = require('electron');
 
-const indebug = true;
+global.indebug = false;
 
 //auto-update
 const {
@@ -118,8 +118,8 @@ let checkForUpdates = () => {
 };
 
 //打开外部链接事件监听
-let openOutsideURL = () =>{
-  ipc.on('openOutsideURL',(e,msg) => {
+let openExternalURL = () =>{
+  ipc.on('openExternalURL',(e,msg) => {
     shell.openExternal(msg);
   })
 }
@@ -132,4 +132,4 @@ app.on('activate', () => {
   }
 });
 
-openOutsideURL();
+openExternalURL();

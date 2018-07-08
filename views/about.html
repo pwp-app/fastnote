@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -29,7 +30,7 @@
                     };
 
                     for (var t in animations) {
-                        if (typeof(el.style[t]) !== undefined) {
+                        if (typeof (el.style[t]) !== undefined) {
                             return animations[t];
                         }
                     }
@@ -45,13 +46,44 @@
         });
     </script>
 </head>
+
 <body>
     <!-- titlebar -->
     <div class="about-titlebar col-lg-12 drag">
-        <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
+        <div id="electron-titlebar" class="titlebar drag" style="position: fixed !important;z-index: 10;"></div>
     </div>
     <script>
         require('electron-titlebar');
     </script>
+    <div class="container-about">
+        <div class="about-logo">
+            <img src="images/logo.png"></img>            
+        </div>
+        <div class="about-title">
+            <h1>Fastnote</h1>
+            <span>0.0.5</span>
+        </div>
+        <div class="about-footer">
+            <div class="about-author">
+                <span>Developed by BackRunner</span>
+            </div>
+            <div class="about-opensource">
+                <span>基于<ht style="padding-left:0.25em"></ht>MIT<ht style="padding-right:0.25em"></ht>协议开源</span>
+                <button class="br-btn btn-noback" id="btn-github"><i class="fa fa-github"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const {
+            ipcRenderer
+        } = require('electron');
+        //绑定Github图标的事件
+        $("#btn-github").click(function(e){
+            ipcRenderer.send('openExternalURL','https://github.com/backrunner/Fastnote');
+            e.preventDefault();
+        });
+    </script>
 </body>
+
 </html>
