@@ -47,6 +47,8 @@
         //define const
         const remote = require('electron').remote;
         const app = remote.app;
+        //import json storage
+        const storage = require('electron-json-storage');
     </script>
 </head>
 
@@ -245,20 +247,54 @@
                 });
             }
         });
-        //绑定折叠
+        //折叠开关
         let isNoteFolded = false;
+        //init
+        storage.get('newnoteconfig', function (err, data) {
+            if (err || data == undefined || data == null || data == "") {
+                isNoteFolded = false;
+                $('.container-newnote').css('display', 'block');
+                $('.trigger-expandnewnote').css('display', 'none');
+            } else {
+                if (data.isFolded) {
+                    $('.container-newnote').animateCss('fadeOutDown', function () {
+                        $('.container-newnote').css('display', 'none');
+                        isNoteFolded = true;
+                    });
+                    $('.trigger-expandnewnote').css('display', 'block');
+                    $('.trigger-expandnewnote').animateCss('fadeIn');
+                } else {
+                    isNoteFolded = false;
+                    $('.container-newnote').css('display', 'block');
+                    $('.trigger-expandnewnote').css('display', 'none');
+                }
+            }
+        });
+        //绑定折叠事件
         $('#btn-newnote-fold').click(function () {
-            if (!isNoteFolded){
+            if (!isNoteFolded) {
+                //set config
+                var config = {
+                    isFolded: true
+                }
+                storage.set('newnoteconfig', config);
+                //animate
                 $('.container-newnote').animateCss('fadeOutDown', function () {
-                    $('.container-newnote').css('display', 'none'); 
-                    isNoteFolded=true;                   
+                    $('.container-newnote').css('display', 'none');
+                    isNoteFolded = true;
                 });
                 $('.trigger-expandnewnote').css('display', 'block');
                 $('.trigger-expandnewnote').animateCss('fadeIn');
             }
         });
         $('#btn-newnote-expand').click(function () {
-            if (isNoteFolded){
+            if (isNoteFolded) {
+                //set config
+                var config = {
+                    isFolded: false
+                }
+                storage.set('newnoteconfig', config);
+                //animate
                 $('.container-newnote').css('display', 'block');
                 $('.container-newnote').animateCss('fadeInUp');
                 $('.trigger-expandnewnote').animateCss('fadeOut', function () {
@@ -344,7 +380,6 @@
         } = require('electron');
 
         let time = require('../app/tools/time.js');
-
         ipcRenderer.on('message', (event, {
             message,
             data
