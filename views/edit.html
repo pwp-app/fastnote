@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Fastnote - 编辑</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--import requirements-->
+    <script>
+        window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
+        require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
+    </script>
+    <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
+    <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
+    <script>
+        //load Animate CSS
+        $.fn.extend({
+            animateCss: function (animationName, callback) {
+                var animationEnd = (function (el) {
+                    var animations = {
+                        animation: 'animationend',
+                        OAnimation: 'oAnimationEnd',
+                        MozAnimation: 'mozAnimationEnd',
+                        WebkitAnimation: 'webkitAnimationEnd',
+                    };
+
+                    for (var t in animations) {
+                        if (typeof (el.style[t]) !== undefined) {
+                            return animations[t];
+                        }
+                    }
+                })(document.createElement('div'));
+
+                this.addClass('animated ' + animationName).one(animationEnd, function () {
+                    $(this).removeClass('animated ' + animationName);
+                    if (typeof callback === 'function') callback();
+                });
+
+                return this;
+            },
+        });
+
+        //define const
+        const remote = require('electron').remote;
+        const app = remote.app;
+        //import json storage
+        const storage = require('electron-json-storage');
+    </script>
+</head>
+
+<body>
+    <!-- titlebar -->
+    <div class="container-titlebar col-lg-12 drag">
+        <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
+    </div>
+    <script>
+        require('electron-titlebar');
+    </script>
+    <!-- main -->
+    <div class="container-edit">
+        <textarea class="text-edit"></textarea>
+        </textarea>
+    </div>
+</body>

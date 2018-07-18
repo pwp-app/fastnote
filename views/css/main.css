@@ -250,14 +250,17 @@ button {
 }
 
 .note-content {
-    margin-top: 8px;    
+    width: 100%;    
+    margin-top:8px !important;
+    margin-bottom: 5px !important;
 }
 
 .note-content p{
-    margin-top: 5px;
-    margin-bottom: 5px;
     font-size: 15px;
+    line-height: 22px;
     letter-spacing: 0.05em;
+    padding:0 !important;
+    margin:0 !important;
 }
 
 .note-content a{

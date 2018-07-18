@@ -118,9 +118,7 @@
                 html += '</p></div></div>';
                 $('.note-list').append($(html));
                 //auto fold
-                if($('#note_'+id+' .note-content').height()>250){
-                    $('#note_'+id+' .note-content').addClass("note-overheight");
-                }
+                bindNoteFoldDBL(id);
                 //open external on os default webbrowser
                 $('#note_' + id + ' a').click(function (e) {
                     ipcRenderer.send('openExternalURL', $(this).attr('href'));
@@ -142,9 +140,7 @@
                 html += '</p></div></div>';
                 $('.note-list').prepend($(html));
                 //auto fold
-                if($('#note_'+id+' .note-content').height()>250){
-                    $('#note_'+id+' .note-content').addClass("note-overheight");
-                }
+                bindNoteFoldDBL(id);
                 //animate
                 $('#note_' + id).animateCss('fadeInLeft');
                 //open external on os default webbrowser
@@ -153,6 +149,24 @@
                     e.preventDefault();
                 });
             }
+            function bindNoteFoldDBL(id){
+                if($('#note_'+id+' .note-content').height()>250){
+                    $('#note_'+id+' .note-content').addClass("note-overheight");
+                    $('#note_'+id+' .note-content').dblclick(function(){
+                        if ($('#note_'+id+' .note-content').height()>250){
+                            $('#note_'+id+' .note-content').animate({height:"250px"});
+                            $('#note_'+id+' .note-content').addClass("note-overheight");
+                        } else {     
+                            $('#note_'+id+' .note-content').css('height','auto');
+                            var animate_height = $('#note_'+id+' .note-content').height();        
+                            $('#note_'+id+' .note-content').css('height','250px'); 
+                            $('#note_'+id+' .note-content').animate({height:animate_height});
+                            $('#note_'+id+' .note-content').removeClass("note-overheight");
+                        }
+                    });
+                }
+            }
+
             //添加笔记至Array
             function addNoteToArray(id, time, rawtime, text, offset, timezone) {
                 var note = {
@@ -266,10 +280,9 @@
                 $('.note-list').removeClass('note-list-fullheight');
             } else {
                 if (data.isFolded) {
+                    $('.note-list').addClass('note-list-fullheight');
                     $('.container-newnote').animateCss('fadeOutDown', function () {
-                        $('.container-newnote').css('display', 'none');
-                        $('.note-list').css('height','735px');
-                        $('.note-list').addClass('note-list-fullheight');
+                        $('.container-newnote').css('display', 'none');                        
                         isNoteFolded = true;
                     });
                     $('.trigger-expandnewnote').css('display', 'block');
@@ -291,9 +304,9 @@
                 }
                 storage.set('newnoteconfig', config);
                 //animate
+                $('.note-list').addClass('note-list-fullheight');
                 $('.container-newnote').animateCss('fadeOutDown', function () {
-                    $('.container-newnote').css('display', 'none');
-                    $('.note-list').addClass('note-list-fullheight');
+                    $('.container-newnote').css('display', 'none');                    
                     isNoteFolded = true;
                 });
                 $('.trigger-expandnewnote').css('display', 'block');
@@ -308,11 +321,11 @@
                 }
                 storage.set('newnoteconfig', config);
                 //animate
+                $('.note-list').removeClass('note-list-fullheight');
                 $('.container-newnote').css('display', 'block');
-                $('.container-newnote').animateCss('fadeInUp');
+                $('.container-newnote').animateCss('fadeInUp');                
                 $('.trigger-expandnewnote').animateCss('fadeOut', function () {
-                    $('.trigger-expandnewnote').css('display', 'none');
-                    $('.note-list').removeClass('note-list-fullheight');
+                    $('.trigger-expandnewnote').css('display', 'none');                    
                     isNoteFolded = false;
                 });
             }
@@ -322,7 +335,7 @@
     <!-- rightclick menu -->
     <div class="rightclickmenu">
         <div class="list-group">
-            <button type="button" class="btn-rightclick list-group-item" id="btn-editNote" disabled>编辑</button>
+            <button type="button" class="btn-rightclick list-group-item" id="btn-editNote">编辑</button>
             <button type="button" class="btn-rightclick list-group-item" id="btn-deleteNote">删除</button>
         </div>
     </div>
@@ -354,6 +367,10 @@
             $('#note_' + noteid_clicked).removeClass('note-selected');
             noteid_clicked = -1;
         });
+
+        $('#btn-editNote').click(function(){
+            ipcRenderer.send("openEditWindow");
+        });
     </script>
 
     <script>
@@ -366,7 +383,7 @@
     <div class="container-updater">
         <div class="update-block">
             <div class="update-title">
-                <span id="update-title-span">新版本已下载：</span>
+                <span id="update-title-span">检测到新版本：</span>
             </div>
             <div class="update-contents">
                 <h1 class="update-contents-title">更新日志</h1>

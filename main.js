@@ -8,7 +8,8 @@ const ipc = require('electron').ipcMain;
 //获取shell
 const {shell} = require('electron');
 
-global.indebug = false;
+//Debug开关
+global.indebug = true;
 
 //auto-update
 const {
@@ -18,6 +19,7 @@ const feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
 
 //import other window
 aboutWindow = require('./app/about');
+editWindow = require('./app/edit');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -58,6 +60,9 @@ function createWindow() {
     checkForUpdates();  
     ipc.on('openAboutWindow',()=>{
       aboutWindow();
+    });
+    ipc.on('openEditWindow',()=>{
+      editWindow.showWindow();
     });
   });
 }
