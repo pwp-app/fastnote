@@ -11,6 +11,7 @@
         window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
         require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
     </script>
+    <link rel="stylesheet" type="text/css" media="screen" href="css/edit.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
@@ -48,20 +49,61 @@
         const app = remote.app;
         //import json storage
         const storage = require('electron-json-storage');
+        //ipc
+        const {
+            ipcRenderer
+        } = require('electron');
     </script>
 </head>
 
 <body>
+    <script>
+        //全局变量定义
+        var note;
+    </script>
     <!-- titlebar -->
     <div class="container-titlebar col-lg-12 drag">
-        <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
+        <div class="title" id="edit-title">编辑笔记</div>
+        <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 999;"></div>
     </div>
     <script>
         require('electron-titlebar');
     </script>
     <!-- main -->
     <div class="container-edit">
-        <textarea class="text-edit"></textarea>
-        </textarea>
+        <div class="container-edit-header">
+            <span id="edit-header-time">创建时间：</span>
+        </div>
+        <textarea class="text-edit" id="text-edit"></textarea>
     </div>
+    <div class="container-footer">
+        <div class="control-group">
+            <button class="br-btn btn-noback">保存</button>
+            <button class="br-btn btn-noback" id="edit-btn-cancel">取消</button>            
+        </div>
+     </div>
+    <script>
+        $("#edit-btn-cancel").click(function(){
+            window.close();
+        });
+
+        ipcRenderer.on('message', (event, {
+            type,
+            data
+        }) => {
+            switch (type) {
+                case 'init':
+                    note = data;
+                    //初始化textarea
+                    $("#text-edit").text(note.text);
+                    //初始化title
+                    $("#edit-title").append(" #"+note.id);
+                    $("title").append(" - #"+note.id);
+                    //初始化header
+                    $("#edit-header-time").append(note.time);
+                    break;
+            }
+        });
+        ipcRenderer.send("requestInit");
+    </script>
 </body>

@@ -63,9 +63,9 @@ button {
 .title {
     color: #ffffff;
     height: 35px;
-    font-size: 16px;
-    font-weight: 200px;
-    padding: 6px 12px;
+    font-size: 15px;
+    font-weight: 200;
+    padding: 8px 12px;
     -webkit-user-select: none;
     position: fixed !important;
 }

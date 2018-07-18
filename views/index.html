@@ -369,7 +369,14 @@
         });
 
         $('#btn-editNote').click(function(){
-            ipcRenderer.send("openEditWindow");
+            for (var i=0;i<notes.length;i++){
+                if (notes[i].id == noteid_clicked){
+                    var note = notes[i];
+                    note.text = note.text.replace(/<br\/>/g,"\n")
+                    ipcRenderer.send("openEditWindow",notes[i]);
+                    return;
+                }
+            }            
         });
     </script>
 

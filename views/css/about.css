@@ -1,20 +1,3 @@
-/*主设置*/
-@font-face{
-    font-family: Source Han Sans CN;
-    src:url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Normal.otf'),
-    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Bold.otf'),
-    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Extralight.otf'),
-    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Heavy.otf'),
-    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Light.otf'),
-    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Medium_0.otf'),
-    url('http://smallfile.backrunner.top/fonts/SourceHanSansCN-Regular.otf');
-    font-weight:100,200,300,400,500,700,900;
-}
-body{
-    font-family: Source Han Sans CN,Microsoft Yahei,Arial, Helvetica, sans-serif !important;
-    -webkit-user-drag: none;
-    -webkit-user-select: none;
-}
 /* about */
 .about-titlebar {
     position: absolute;

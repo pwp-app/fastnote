@@ -61,8 +61,8 @@ function createWindow() {
     ipc.on('openAboutWindow',()=>{
       aboutWindow();
     });
-    ipc.on('openEditWindow',()=>{
-      editWindow.showWindow();
+    ipc.on('openEditWindow',function (sender, data){
+      editWindow.showWindow(data);
     });
   });
 }
