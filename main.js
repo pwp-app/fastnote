@@ -9,7 +9,7 @@ const ipc = require('electron').ipcMain;
 const {shell} = require('electron');
 
 //Debug开关
-global.indebug = true;
+global.indebug = false;
 
 //auto-update
 const {
@@ -61,8 +61,13 @@ function createWindow() {
     ipc.on('openAboutWindow',()=>{
       aboutWindow();
     });
+    //open edit window
     ipc.on('openEditWindow',function (sender, data){
       editWindow.showWindow(data);
+      //bind update event
+      editWindow.bindEditEvent(function(data){
+        win.webContents.send('update-edit-note',data);
+      });
     });
   });
 }

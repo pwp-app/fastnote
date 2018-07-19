@@ -55,7 +55,14 @@ var editWindow = {
         createEditWindow(data);
         ipc.on('editWindow-close',function(sys,data){
             win_edits[data].close();
-        })
+        });
+    },
+    bindEditEvent: function(callback){
+        ipc.on('update-edit-note',function(sys,data){
+            if (typeof(callback)!=undefined){
+                callback(data);
+            }
+        });
     }
 }
 

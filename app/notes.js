@@ -45,9 +45,9 @@ textarea.keydown(function (e) {
     var ctrlKey = e.ctrlKey || e.metaKey;
     if (ctrlKey && e.keyCode == 13 && !isComboKeyDown) {
         isComboKeyDown = true;
-        var text = textarea.val();
-        if (text.trim() != null && text.trim() != "")
-            saveNote(text.trim());
+        var text = textarea.val().trim();
+        if (text != null && text != "")
+            saveNote(text);
     }
 });
 //按键弹起解除锁

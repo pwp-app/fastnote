@@ -49,6 +49,12 @@
         const app = remote.app;
         //import json storage
         const storage = require('electron-json-storage');
+
+        const {
+            ipcRenderer
+        } = require('electron');
+
+        const notesEdit = require("../app/notes_edit.js");
     </script>
 </head>
 
@@ -164,6 +170,8 @@
                             $('#note_'+id+' .note-content').removeClass("note-overheight");
                         }
                     });
+                } else {
+                    $('#note_'+id+' .note-content').removeClass("note-overheight");
                 }
             }
 
@@ -216,6 +224,41 @@
                     }
                     return true; //every是true继续循环 false跳出
                 });
+            }
+
+            //编辑笔记
+            ipcRenderer.on('update-edit-note',(event,data) => {
+                updateEditNote(data);
+            });
+
+            function updateEditNote(note){
+                notesEdit.saveEditNote(note,function(data){
+                    updateEditNoteinArray(data);    //更新数组内容
+                    //reset contents in note
+                    var html = data.text.replace(reg_url, function (result) {
+                        return '<a href="' + result + '">' + result + '</a>';
+                    });
+                    $("#note_" + data.id + " .note-content p").html(html);  //reset note content on page
+                    console.log($("#note_" + data.id + " .note-content p"));
+                    bindNoteFoldDBL(data.id);   //rebind foldevent
+                    //open external event rebind
+                    $('#note_' + data.id + ' a').click(function (e) {
+                        ipcRenderer.send('openExternalURL', $(this).attr('href'));
+                        e.preventDefault();
+                    });
+                    //show infobar
+                    displayInfobar("success","笔记内容已保存");
+                });
+            }
+
+            //异步执行notes的替换
+            async function updateEditNoteinArray(data){
+                for (var i = 0;i<notes.length;i++){
+                    if (notes[i].id == data.id){
+                        notes[i] = data;
+                        return;
+                    }
+                }
             }
         </script>
     </div>
@@ -413,10 +456,6 @@
 
     <!-- ipcRenderer -->
     <script>
-        const {
-            ipcRenderer
-        } = require('electron');
-
         let time = require('../app/tools/time.js');
         ipcRenderer.on('message', (event, {
             message,

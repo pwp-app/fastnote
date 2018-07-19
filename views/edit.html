@@ -78,11 +78,22 @@
     </div>
     <div class="container-footer">
         <div class="control-group">
-            <button class="br-btn btn-noback">保存</button>
+            <button class="br-btn btn-noback" id="edit-btn-save">保存</button>
             <button class="br-btn btn-noback" id="edit-btn-cancel">取消</button>            
         </div>
      </div>
     <script>
+        $("#edit-btn-save").click(function(){
+            var text = $("#text-edit").val().trim();
+            if (text != null && text != ""){
+                note.text = text;
+                ipcRenderer.send('update-edit-note',note);  
+                window.close();              
+            } else {
+                //error
+            }                  
+        });
+
         $("#edit-btn-cancel").click(function(){
             window.close();
         });
