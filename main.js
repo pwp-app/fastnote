@@ -9,7 +9,7 @@ const ipc = require('electron').ipcMain;
 const {shell} = require('electron');
 
 //Debug开关
-global.indebug = false;
+global.indebug = true;
 
 //auto-update
 const {

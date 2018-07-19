@@ -25,14 +25,14 @@ storage.get('notesid', function (error, data) {
     //获取callback回传的json
     var notesid_json = data;
     //判断是否为空
-    if (notesid_json == null || typeof(notesid_json) == undefined) {
+    if (notesid_json == null || typeof(notesid_json) == 'undefined') {
         notesid = 1;
         return;
     }
     //parse Json，获取数据
     notesid_json = JSON.parse(notesid_json);
     notesid = notesid_json.id;
-    if (notesid == null || typeof(notesid) == undefined) {
+    if (notesid == null || typeof(notesid) == 'undefined') {
         notesid = 1;
     }
 });
@@ -120,7 +120,7 @@ function readNoteFiles() {
         fs.mkdirSync(storagePath+'/notes/');
     } else {
         fs.readdir(storagePath+'/notes/', function (err, fileArr) {
-            if (typeof(fileArr) == undefined) {
+            if (typeof(fileArr) == 'undefined') {
                 showNoteEmpty();
                 isNotesEmpty = true;
                 return;
@@ -139,9 +139,9 @@ function readNoteFiles() {
                             throw (err);
                         }
                         var note_json = data;
-                        if (typeof(note_json) != undefined && note_json != null) {
+                        if (typeof(note_json) != 'undefined' && note_json != null) {
                             note_json = JSON.parse(note_json);
-                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.text, note_json.offset, note_json.timezone);
+                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime,note_json.updatetime,note_json.updaterawtime, note_json.text, note_json.offset, note_json.timezone);
                             if (notes.length == fileArr.length + countOffset) {
                                 //结束文件遍历，渲染列表
                                 refreshNoteList();
@@ -204,7 +204,7 @@ function saveNote(notetext) {
             showNoteList();
         }
         //在顶部渲染Note
-        renderNoteAtTop(note.id, note.time, note.text);
+        renderNoteAtTop(note.id, note.time, note.updatetime, note.text);
         //绑定事件
         bindRightClickEvent();
     } catch (e) {

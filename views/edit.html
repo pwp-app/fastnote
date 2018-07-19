@@ -29,7 +29,7 @@
                     };
 
                     for (var t in animations) {
-                        if (typeof (el.style[t]) !== undefined) {
+                        if (typeof (el.style[t]) !== 'undefined') {
                             return animations[t];
                         }
                     }
@@ -53,6 +53,9 @@
         const {
             ipcRenderer
         } = require('electron');
+
+        //import requirements
+        $.getScript('../app/infobar.js'); //import by jQuery
     </script>
 </head>
 
@@ -69,6 +72,9 @@
     <script>
         require('electron-titlebar');
     </script>
+    <!-- infobar -->
+    <div class="container-infobar">
+    </div>
     <!-- main -->
     <div class="container-edit">
         <div class="container-edit-header">
@@ -79,22 +85,43 @@
     <div class="container-footer">
         <div class="control-group">
             <button class="br-btn btn-noback" id="edit-btn-save">保存</button>
-            <button class="br-btn btn-noback" id="edit-btn-cancel">取消</button>            
+            <button class="br-btn btn-noback" id="edit-btn-cancel">取消</button>
         </div>
-     </div>
+    </div>
     <script>
-        $("#edit-btn-save").click(function(){
+        $("#edit-btn-save").click(function () {
             var text = $("#text-edit").val().trim();
-            if (text != null && text != ""){
+            if (text != null && text != "") {
                 note.text = text;
-                ipcRenderer.send('update-edit-note',note);  
-                window.close();              
+                ipcRenderer.send('update-edit-note', note);
+                window.close();
             } else {
                 //error
-            }                  
+                displayInfobar("error", "笔记内容不能为空");
+            }
         });
 
-        $("#edit-btn-cancel").click(function(){
+        var isComboKey = false;
+        $("#text-edit").keydown(function (e) {
+            var ctrlKey = e.ctrlKey || e.metaKey;
+            if (ctrlKey && e.keyCode == 13) {
+                var text = $("#text-edit").val().trim();
+                if (!isComboKey) {
+                    isComboKey = true;
+                    if (text != null && text != "") {
+                        note.text = text;
+                        ipcRenderer.send('update-edit-note', note);
+                        isComboKey = false;
+                        window.close();
+                    } else {
+                        isComboKey = false;
+                        displayInfobar("error", "笔记内容不能为空");
+                    }
+                }
+            }
+        });
+
+        $("#edit-btn-cancel").click(function () {
             window.close();
         });
 
@@ -108,8 +135,8 @@
                     //初始化textarea
                     $("#text-edit").text(note.text);
                     //初始化title
-                    $("#edit-title").append(" #"+note.id);
-                    $("title").append(" - #"+note.id);
+                    $("#edit-title").append(" #" + note.id);
+                    $("title").append(" - #" + note.id);
                     //初始化header
                     $("#edit-header-time").append(note.time);
                     break;

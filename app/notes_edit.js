@@ -35,7 +35,7 @@ var notesEdit = {
             }
         });
         //callback
-        if (typeof(callback)!=undefined){
+        if (typeof(callback)!='undefined'){
             callback(note);
         }
     }

@@ -248,6 +248,9 @@ button {
     padding-top: 5px;
     -webkit-user-drag: none;
 }
+.note-updatetime{
+    margin-left: 15px;
+}
 
 .note-content {
     width: 100%;    
