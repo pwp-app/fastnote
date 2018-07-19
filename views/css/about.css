@@ -1,3 +1,7 @@
+body{
+    -webkit-user-drag: none !important;
+    -webkit-user-select: none !important;
+}
 /* about */
 .about-titlebar {
     position: absolute;
@@ -44,11 +48,9 @@
     display:block;
     font-weight: 200 !important;
 }
-.about-author{
-    padding-bottom: 5px;
-}
+
 .about-opensource{
-    padding-bottom:36px;
+    padding-bottom:24px;
 }
 .about-opensource span{
     display:inline-block;
@@ -58,4 +60,6 @@
     display: inline-block;
     margin-left:0.25em;
 }
-
+.about-opensource i:hover{
+    cursor: pointer;   
+}

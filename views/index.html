@@ -55,6 +55,40 @@
         } = require('electron');
 
         const notesEdit = require("../app/notes_edit.js");
+
+        //tools
+        const UUID = require('../app/tools/uuid.js');
+
+        //first start
+        var uuid = "";
+        var firstStart = false;
+        //生成一个独立的uuid
+        storage.has('uuid', function (error, hasKey) {
+            if (error) {
+                throw (error);
+            }
+            //err为首次启动
+            if (hasKey) {
+                storage.get('uuid', function (error, data) {
+                    if (error) {
+                        throw (error);
+                    } else {
+                        var parsed = JSON.parse(data);
+                        uuid = parsed.uuid;
+                        ipcRenderer.send("set-uuid",uuid);
+                    }
+                });
+            } else {
+                uuid = UUID.gen();
+                var json = {
+                    uuid: uuid
+                }
+                storage.set('uuid', JSON.stringify(json));
+                firstStart = true;
+                ipcRenderer.send("set-uuid",uuid);
+                addTiptoEmptyInfo();
+            }
+        });       
     </script>
 </head>
 
@@ -119,7 +153,7 @@
                 //选择性显示时间
                 if (typeof (updatetime) != 'undefined') {
                     html += '<p class="note-time note-updatetime">更新：' + updatetime + '</p>';
-                    html += '<p class="note-time">创建：' + time + '</p>';                    
+                    html += '<p class="note-time">创建：' + time + '</p>';
                 } else {
                     html += '<p class="note-time">' + time + '</p>';
                 }
@@ -146,7 +180,7 @@
                 //选择性显示时间
                 if (typeof (updatetime) != 'undefined') {
                     html += '<p class="note-time note-updatetime">更新：' + updatetime + '</p>';
-                    html += '<p class="note-time">创建：' + time + '</p>';                    
+                    html += '<p class="note-time">创建：' + time + '</p>';
                 } else {
                     html += '<p class="note-time">' + time + '</p>';
                 }
@@ -168,10 +202,12 @@
                 });
             }
 
+            //绑定note的双击折叠
             function bindNoteFoldDBL(id) {
                 if ($('#note_' + id + ' .note-content').height() > 250) {
-                    $('#note_' + id + ' .note-content').addClass("note-overheight");
+                    $('#note_' + id + ' .note-content').addClass("note-overheight"); //process css
                     $('#note_' + id + ' .note-content').dblclick(function () {
+                        //process double click
                         if ($('#note_' + id + ' .note-content').height() > 250) {
                             $('#note_' + id + ' .note-content').animate({
                                 height: "250px"
@@ -234,7 +270,7 @@
                     return 0;
                 }
             }
-
+            //从数组中删除一项
             function deleteNoteFromArr(id) {
                 notes.every(function (note, i) {
                     if (note.id == id) {
@@ -260,13 +296,13 @@
                     //reset note content on page
                     $("#note_" + data.id + " .note-content p").html(html);
                     //reset content of updatetime
-                    $('#note_' + data.id + ' .note-header .note-updatetime').text('更新：'+data.updatetime);
+                    $('#note_' + data.id + ' .note-header .note-updatetime').text('更新：' + data.updatetime);
                     bindNoteFoldDBL(data.id); //rebind foldevent
                     //open external event rebind
                     $('#note_' + data.id + ' a').click(function (e) {
                         ipcRenderer.send('openExternalURL', $(this).attr('href'));
                         e.preventDefault();
-                    });                    
+                    });
                     //show infobar
                     displayInfobar("success", "笔记内容已保存");
                 });
@@ -279,6 +315,13 @@
                         notes[i] = data;
                         return;
                     }
+                }
+            }
+
+            async function addTiptoEmptyInfo() {
+                //首次启动在note-empty显示提示
+                if (firstStart) {
+                    $('.note-empty span').append('<br/>（请使用Ctrl+Enter保存新建笔记）');
                 }
             }
         </script>
@@ -342,9 +385,11 @@
                 $('.container-newnote').css('display', 'block');
                 $('.trigger-expandnewnote').css('display', 'none');
                 $('.note-list').removeClass('note-list-fullheight');
+                $('.note-empty').removeClass('note-empty-fullheight'); //same for note-empty
             } else {
                 if (data.isFolded) {
                     $('.note-list').addClass('note-list-fullheight');
+                    $('.note-empty').addClass('note-empty-fullheight'); //same for note-empty
                     $('.container-newnote').animateCss('fadeOutDown', function () {
                         $('.container-newnote').css('display', 'none');
                         isNoteFolded = true;
@@ -356,6 +401,7 @@
                     $('.container-newnote').css('display', 'block');
                     $('.trigger-expandnewnote').css('display', 'none');
                     $('.note-list').removeClass('note-list-fullheight');
+                    $('.note-empty').removeClass('note-empty-fullheight'); //same for note-empty
                 }
             }
         });
@@ -367,8 +413,10 @@
                     isFolded: true
                 }
                 storage.set('newnoteconfig', config);
-                //animate
+                //set height
                 $('.note-list').addClass('note-list-fullheight');
+                $('.note-empty').addClass('note-empty-fullheight'); //same for note-empty
+                //animate
                 $('.container-newnote').animateCss('fadeOutDown', function () {
                     $('.container-newnote').css('display', 'none');
                     isNoteFolded = true;
@@ -384,8 +432,10 @@
                     isFolded: false
                 }
                 storage.set('newnoteconfig', config);
-                //animate
+                //set height
                 $('.note-list').removeClass('note-list-fullheight');
+                $('.note-empty').removeClass('note-empty-fullheight'); //same for note-empty
+                //animate
                 $('.container-newnote').css('display', 'block');
                 $('.container-newnote').animateCss('fadeInUp');
                 $('.trigger-expandnewnote').animateCss('fadeOut', function () {
@@ -393,7 +443,7 @@
                     isNoteFolded = false;
                 });
             }
-        })
+        });
     </script>
 
     <!-- rightclick menu -->
@@ -573,6 +623,10 @@
                     <li id="mainmenu-btn-about">
                         <span>关于</span>
                     </li>
+                    <div class="mainmenu-split"></div>
+                    <li id="mainmenu-btn-exit">
+                        <span>退出</span>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -606,7 +660,10 @@
         });
         //绑定菜单项
         $('#mainmenu-btn-about').click(function () {
-            ipcRenderer.send("openAboutWindow");
+            ipcRenderer.send("openAboutWindow"); //打开关于窗口
+        });
+        $('#mainmenu-btn-exit').click(function () {
+            ipcRenderer.send("app-quitNow"); //退出程序
         });
     </script>
 </body>

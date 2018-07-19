@@ -47,6 +47,10 @@
         //define const
         const remote = require('electron').remote;
         const app = remote.app;
+
+        const {
+            ipcRenderer
+        } = require('electron');
     </script>
 </head>
 
@@ -73,13 +77,22 @@
             </script>
         </div>
         <div class="about-footer">
+            <div class="about-uuid">
+                <span id="about-uuid-text"></span>
+            </div>
+            <script>
+                ipcRenderer.on('set-uuid',(event,data)=>{
+                    console.log(data);
+                    if (typeof(data)!='undefined' && data!="" && data!=null){
+                        $('#about-uuid-text').text('UUID：'+data);
+                    }
+                });
+            </script>
             <div class="about-author">
                 <span>Developed by BackRunner</span>
             </div>
             <div class="about-opensource">
-                <span>基于
-                    <ht style="padding-left:0.25em"></ht>MIT
-                    <ht style="padding-right:0.25em"></ht>协议开源</span>
+                <span>基于MIT协议开源</span>
                 <button class="br-btn btn-noback" id="btn-github">
                     <i class="fa fa-github"></i>
                 </button>
@@ -87,10 +100,7 @@
         </div>
     </div>
 
-    <script>
-        const {
-            ipcRenderer
-        } = require('electron');
+    <script>        
         //绑定Github图标的事件
         $("#btn-github").click(function (e) {
             ipcRenderer.send('openExternalURL', 'https://github.com/backrunner/Fastnote');

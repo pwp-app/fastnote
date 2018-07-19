@@ -4,12 +4,20 @@ const {
 const app = require('electron').app;
 //ipc主进程
 const ipc = require('electron').ipcMain;
+//set storage
+const storage = require('electron-json-storage');
 
 //获取shell
-const {shell} = require('electron');
+const {
+  shell
+} = require('electron');
 
 //Debug开关
 global.indebug = true;
+
+//global settings
+global.firstStart = false;
+global.uuid = "";
 
 //auto-update
 const {
@@ -55,20 +63,30 @@ function createWindow() {
   })
   //getfocus
   win.on('ready-to-show', () => {
+    //uuid recevier
+    ipc.on('set-uuid',function(sender,data){
+      global.uuid = data;
+    });
+    //show main window
     win.focus();
-    win.show();    
-    checkForUpdates();  
-    ipc.on('openAboutWindow',()=>{
+    win.show();
+    checkForUpdates();
+    //open about window
+    ipc.on('openAboutWindow', () => {
       aboutWindow();
     });
     //open edit window
-    ipc.on('openEditWindow',function (sender, data){
+    ipc.on('openEditWindow', function (sender, data) {
       editWindow.showWindow(data);
       //bind update event
-      editWindow.bindEditEvent(function(data){
-        win.webContents.send('update-edit-note',data);
+      editWindow.bindEditEvent(function (data) {
+        win.webContents.send('update-edit-note', data);
       });
     });
+    //quit now
+    ipc.on('app-quitNow', () => {
+      app.quit();
+    })
   });
 }
 
@@ -102,7 +120,7 @@ let checkForUpdates = () => {
   });
   autoUpdater.on('update-available', function (message) {
     sendUpdateMessage('update-available', message);
-    ipc.on('downloadNow',function(){
+    ipc.on('downloadNow', function () {
       autoUpdater.downloadUpdate();
     });
   });
@@ -123,8 +141,8 @@ let checkForUpdates = () => {
 };
 
 //打开外部链接事件监听
-let openExternalURL = () =>{
-  ipc.on('openExternalURL',(e,msg) => {
+let openExternalURL = () => {
+  ipc.on('openExternalURL', (e, msg) => {
     shell.openExternal(msg);
   })
 }
@@ -137,4 +155,5 @@ app.on('activate', () => {
   }
 });
 
+//event
 openExternalURL();

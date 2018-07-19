@@ -35,6 +35,7 @@ function createAboutWindow() {
     win_about.on('ready-to-show', () => {
         win_about.focus();
         win_about.show();
+        win_about.webContents.send('set-uuid',global.uuid);
     });
 }
 
