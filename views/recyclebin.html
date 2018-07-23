@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Fastnote - About</title>
+    <title>Fastnote - 回收站</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!--import requirements-->
@@ -13,7 +13,7 @@
         require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
     </script>
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="css/about.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/recyclebin.css" />
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
@@ -56,56 +56,15 @@
 
 <body>
     <!-- titlebar -->
-    <div class="about-titlebar col-lg-12 drag">
-        <div id="electron-titlebar" class="titlebar drag" style="position: fixed !important;z-index: 10;"></div>
+    <div class="container-titlebar col-lg-12 drag">
+        <div class="title" id="app-title">回收站</div>
+        <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
     </div>
     <script>
         require('electron-titlebar');
     </script>
-    <div class="container-about">
-        <div class="about-logo">
-            <img src="images/logo.png"></img>
-        </div>
-        <div class="about-title">
-            <h1>Fastnote</h1>
-            <span id="about-version"></span>
-            <script>
-                var version = app.getVersion();
-                $(document).ready(function () {
-                    $('#about-version').text(version);
-                });
-            </script>
-        </div>
-        <div class="about-footer">
-            <div class="about-uuid">
-                <span id="about-uuid-text"></span>
-            </div>
-            <script>
-                ipcRenderer.on('set-uuid',(event,data)=>{
-                    if (typeof(data)!='undefined' && data!="" && data!=null){
-                        $('#about-uuid-text').text('UUID：'+data);
-                    }
-                });
-            </script>
-            <div class="about-author">
-                <span>Developed by BackRunner</span>
-            </div>
-            <div class="about-opensource">
-                <span>基于MIT协议开源</span>
-                <button class="br-btn btn-noback" id="btn-github">
-                    <i class="fa fa-github"></i>
-                </button>
-            </div>
+    <div class="recycle-container">
+        <div class="note-list recycle-list">           
         </div>
     </div>
-
-    <script>        
-        //绑定Github图标的事件
-        $("#btn-github").click(function (e) {
-            ipcRenderer.send('openExternalURL', 'https://github.com/backrunner/Fastnote');
-            e.preventDefault();
-        });
-    </script>
 </body>
-
-</html>

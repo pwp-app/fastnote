@@ -28,6 +28,7 @@ const feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
 //import other window
 aboutWindow = require('./app/about');
 editWindow = require('./app/edit');
+recycleWindow = require('./app/recyclebin');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -74,6 +75,9 @@ function createWindow() {
     //open about window
     ipc.on('openAboutWindow', () => {
       aboutWindow();
+    });
+    ipc.on('openRecycleWindow', () => {
+      recycleWindow.create();
     });
     //open edit window
     ipc.on('openEditWindow', function (sender, data) {

@@ -63,53 +63,30 @@ textarea.keyup(function (e) {
 //删除按钮事件绑定
 let btn_deleteNote = $('#btn-deleteNote')
 btn_deleteNote.click(function () {
-    deleteNote(noteid_clicked);
+    putToRecyclebin(noteid_clicked);
     //隐藏右键菜单
     $('.rightclickmenu').attr('style', 'display:none;');
 })
 
-//删除note
-function deleteNote(id) {
-    notes.every(function (note, i) {
-        if (note.id == id) {
-            var path;
-            //检查offset
-            if (note.offset > 0) {
-                path = storagePath + '/notes/' + note.rawtime + '.' + note.offset + '.json';
-            } else {
-                path = storagePath + '/notes/' + note.rawtime + '.json';
-            }
-            if (fs.existsSync(path)) {
-                //删除文件
-                fs.unlink(path, function (err) {
-                    if (err) {
-                        //文件删除失败
-                        displayInfobar('error', '文件删除失败');
-                        console.error(err);
-                        readNoteFiles();
-                    } else {
-                        //删除成功
-                        deleteNoteFromArr(id);
-                        //动画
-                        $('#note_' + id).animateCss('fadeOutLeft', function () {
-                            $('#note_' + id).remove(); //动画结束后删除div
-                            if (notes.length <= 0) {
-                                showNoteEmpty_Anim();
-                            }
-                        })
-                        displayInfobar('success', '删除成功');
-                    }
-                })
-            } else {
-                displayInfobar('error', '找不到文件，无法删除');
-                readNoteFiles();
-            }
-            return false;
+//放入回收站
+function putToRecyclebin(id){
+    if (note.id == id) {
+        var path;
+        //检查offset
+        if (note.offset > 0) {
+            path = storagePath + '/notes/' + note.rawtime + '.' + note.offset + '.json';
         } else {
-            return true;
+            path = storagePath + '/notes/' + note.rawtime + '.json';
         }
-    });
+        if (fs.existsSync(path)) {
+
+        } else {
+            displayInfobar('error', '找不到文件，无法移入回收站');
+        }
+    }
 }
+
+
 
 //封装在函数中
 function readNoteFiles() {

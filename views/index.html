@@ -71,6 +71,7 @@
             if (hasKey) {
                 storage.get('uuid', function (error, data) {
                     if (error) {
+                        console.error(error);
                         throw (error);
                     } else {
                         var parsed = JSON.parse(data);
@@ -613,7 +614,7 @@
             <div class="mainmenu-split"></div>
             <div class="mainmenu-menu">
                 <ul>
-                    <li>
+                    <li id="mainmenu-btn-recycle">
                         <span>回收站</span>
                     </li>
                     <div class="mainmenu-split"></div>
@@ -659,6 +660,9 @@
             }
         });
         //绑定菜单项
+        $('#mainmenu-btn-recycle').click(function(){
+            ipcRenderer.send("openRecycleWindow");
+        });
         $('#mainmenu-btn-about').click(function () {
             ipcRenderer.send("openAboutWindow"); //打开关于窗口
         });
