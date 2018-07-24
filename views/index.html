@@ -153,10 +153,10 @@
                 html += '#' + id + '</p>';
                 //选择性显示时间
                 if (typeof (updatetime) != 'undefined') {
-                    html += '<p class="note-time note-updatetime">更新：' + updatetime + '</p>';
-                    html += '<p class="note-time">创建：' + time + '</p>';
+                    html += '<time><p class="note-time note-updatetime">更新：' + updatetime + '</p>';
+                    html += '<p class="note-time">创建：' + time + '</p></time>';
                 } else {
-                    html += '<p class="note-time">' + time + '</p>';
+                    html += '<time><p class="note-time">' + time + '</p></time>';
                 }
                 html += '</div><div class="note-content"><p class="note-text">';
                 //自动识别网页
@@ -180,10 +180,10 @@
                 html += '#' + id + '</p>';
                 //选择性显示时间
                 if (typeof (updatetime) != 'undefined') {
-                    html += '<p class="note-time note-updatetime">更新：' + updatetime + '</p>';
-                    html += '<p class="note-time">创建：' + time + '</p>';
+                    html += '<time><p class="note-time note-updatetime">更新：' + updatetime + '</p>';
+                    html += '<p class="note-time">创建：' + time + '</p></time>';
                 } else {
-                    html += '<p class="note-time">' + time + '</p>';
+                    html += '<time><p class="note-time">' + time + '</p></time>';
                 }
                 html += '</div><div class="note-content"><p class="note-text">';
                 //自动识别网页
@@ -271,8 +271,9 @@
                     return 0;
                 }
             }
+
             //从数组中删除一项
-            function deleteNoteFromArr(id) {
+            async function deleteNoteFromArr(id) {
                 notes.every(function (note, i) {
                     if (note.id == id) {
                         notes.splice(i, 1);
@@ -297,7 +298,8 @@
                     //reset note content on page
                     $("#note_" + data.id + " .note-content p").html(html);
                     //reset content of updatetime
-                    $('#note_' + data.id + ' .note-header .note-updatetime').text('更新：' + data.updatetime);
+                    var timeContent = '<p class="note-time note-updatetime">更新：' + data.updatetime + '</p>'+'<p class="note-time">创建：' + data.time + '</p>';
+                    $('#note_' + data.id + ' .note-header time').html(timeContent);
                     bindNoteFoldDBL(data.id); //rebind foldevent
                     //open external event rebind
                     $('#note_' + data.id + ' a').click(function (e) {

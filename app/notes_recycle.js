@@ -15,8 +15,8 @@ function deleteNote(id) {
                     if (err) {
                         //文件删除失败
                         displayInfobar('error', '文件删除失败');
-                        console.error(err);
                         readNoteFiles();
+                        throw(err);                        
                     } else {
                         //删除成功
                         deleteNoteFromArr(id);
@@ -26,7 +26,7 @@ function deleteNote(id) {
                             if (notes.length <= 0) {
                                 showNoteEmpty_Anim();
                             }
-                        })
+                        });
                         displayInfobar('success', '删除成功');
                     }
                 })

@@ -19,6 +19,9 @@ let isNotesEmpty;
 //获取notesid的数据
 storage.get('notesid', function (error, data) {
     if (error) {
+        notesid = 1;
+        return;
+    } else {
         //获取callback回传的json
         var notesid_json = data;
         //判断是否为空
@@ -32,11 +35,7 @@ storage.get('notesid', function (error, data) {
         if (notesid == null || typeof (notesid) == 'undefined') {
             notesid = 1;
         }
-    } else {
-        notesid = 1;
-        return;
     }
-
 });
 
 readNoteFiles();
@@ -69,24 +68,57 @@ btn_deleteNote.click(function () {
 })
 
 //放入回收站
-function putToRecyclebin(id){
-    if (note.id == id) {
-        var path;
-        //检查offset
-        if (note.offset > 0) {
-            path = storagePath + '/notes/' + note.rawtime + '.' + note.offset + '.json';
-        } else {
-            path = storagePath + '/notes/' + note.rawtime + '.json';
-        }
-        if (fs.existsSync(path)) {
+function putToRecyclebin(id) {
+    notes.every(function (note, i) {
+        if (note.id == id) {
+            var path;
+            //检查offset
+            if (note.offset > 0) {
+                path = note.rawtime + '.' + note.offset + '.json';
+            } else {
+                path = note.rawtime + '.json';
+            }
+            if (fs.existsSync(storagePath + '/notes/' + path)) {
+                if (fs.existsSync(storagePath + '/notes/recyclebin/')) {
+                    fs.rename(storagePath + '/notes/' + path, storagePath + '/notes/recyclebin/' + path, function (err) {
+                        if (err) {
+                            displayInfobar('error', '放入回收站失败');
+                            readNoteFiles();
+                            throw (err);
+                        } else {
+                            deleteNoteFromArr(id);
+                            //动画
+                            $('#note_' + id).animateCss('fadeOutLeft', function () {
+                                $('#note_' + id).remove(); //动画结束后删除div
+                                if (notes.length <= 0) {
+                                    showNoteEmpty_Anim();
+                                }
+                            });
+                            displayInfobar('success', '已放入回收站');
+                        }
+                    });
+                } else {
+                    fs.mkdirSync(storagePath + '/notes/recyclebin/');
+                    fs.rename(storagePath + '/notes/' + path, storagePath + '/notes/recyclebin/' + path, function (err) {
+                        if (err) {
+                            displayInfobar('error', '放入回收站失败');
+                            readNoteFiles();
+                            throw (err);
+                        } else {
+                            displayInfobar('success', '已放入回收站');
+                        }
+                    });
+                }
 
+            } else {
+                displayInfobar('error', '找不到文件，无法移入回收站');
+            }
+            return false;
         } else {
-            displayInfobar('error', '找不到文件，无法移入回收站');
+            return true;
         }
-    }
+    });
 }
-
-
 
 //封装在函数中
 function readNoteFiles() {
@@ -99,6 +131,9 @@ function readNoteFiles() {
         fs.mkdirSync(storagePath + '/notes/');
     } else {
         fs.readdir(storagePath + '/notes/', function (err, fileArr) {
+            if (err) {
+                throw (err);
+            }
             if (typeof (fileArr) == 'undefined') {
                 showNoteEmpty();
                 isNotesEmpty = true;
@@ -112,23 +147,30 @@ function readNoteFiles() {
                 //目录不是空的，代表有笔记，执行初始化
                 let countOffset = 0;
                 fileArr.forEach(element => {
-                    fs.readFile(storagePath + '/notes/' + element, 'utf-8', function (err, data) {
-                        if (err) {
-                            countOffset++;
-                            throw (err);
-                        }
-                        var note_json = data;
-                        if (typeof (note_json) != 'undefined' && note_json != null) {
-                            note_json = JSON.parse(note_json);
-                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.text, note_json.offset, note_json.timezone);
-                            if (notes.length == fileArr.length + countOffset) {
-                                //结束文件遍历，渲染列表
-                                refreshNoteList();
-                                //显示列表
-                                showNoteList();
+                    if (!fs.statSync(storagePath + '/notes/' + element).isDirectory()) {
+                        fs.readFile(storagePath + '/notes/' + element, 'utf-8', function (err, data) {
+                            if (err) {
+                                countOffset++;
+                                console.error(err);
                             }
-                        }
-                    });
+                            var note_json = data;
+                            if (typeof (note_json) != 'undefined' && note_json != null) {
+                                note_json = JSON.parse(note_json);
+                                addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.text, note_json.offset, note_json.timezone);
+                                console.log(notes.length);
+                                console.log(fileArr.length);
+                                console.log(countOffset);
+                                if (notes.length + countOffset == fileArr.length) {
+                                    //结束文件遍历，渲染列表
+                                    refreshNoteList();
+                                    //显示列表
+                                    showNoteList();
+                                }
+                            }
+                        });
+                    } else {
+                        countOffset++;
+                    }
                 });
             }
         });
@@ -187,10 +229,10 @@ function saveNote(notetext) {
         //绑定事件
         bindRightClickEvent();
     } catch (e) {
-        //出现错误则打印错误并刷新List
-        console.error(e);
         //重新读取Notes
         readNoteFiles();
+        //出现错误则打印错误并刷新List
+        throw (e);
     }
 }
 
