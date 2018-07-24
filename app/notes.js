@@ -60,8 +60,8 @@ textarea.keyup(function (e) {
 });
 
 //删除按钮事件绑定
-let btn_deleteNote = $('#btn-deleteNote')
-btn_deleteNote.click(function () {
+let btn_recycleNote = $('#btn-recycleNote')
+btn_recycleNote.click(function () {
     putToRecyclebin(noteid_clicked);
     //隐藏右键菜单
     $('.rightclickmenu').attr('style', 'display:none;');
@@ -86,6 +86,9 @@ function putToRecyclebin(id) {
                             readNoteFiles();
                             throw (err);
                         } else {
+                            //暂存
+                            var note_temp = note;
+                            //从数组里删除
                             deleteNoteFromArr(id);
                             //动画
                             $('#note_' + id).animateCss('fadeOutLeft', function () {
@@ -95,6 +98,8 @@ function putToRecyclebin(id) {
                                 }
                             });
                             displayInfobar('success', '已放入回收站');
+                            //send to main process
+                            ipcRenderer.send('recycle-note', note_temp);
                         }
                     });
                 } else {
@@ -139,39 +144,34 @@ function readNoteFiles() {
                 isNotesEmpty = true;
                 return;
             }
-            //目录是空的
-            if (!fileArr[0]) {
+            //执行初始化
+            let countOffset = 0;
+            fileArr.forEach(element => {
+                if (!fs.statSync(storagePath + '/notes/' + element).isDirectory()) {
+                    fs.readFile(storagePath + '/notes/' + element, 'utf-8', function (err, data) {
+                        if (err) {
+                            countOffset++;
+                            console.error(err);
+                        }
+                        var note_json = data;
+                        if (typeof (note_json) != 'undefined' && note_json != null) {
+                            note_json = JSON.parse(note_json);
+                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.text, note_json.offset, note_json.timezone);
+                            if (notes.length + countOffset == fileArr.length) {
+                                //结束文件遍历，渲染列表
+                                refreshNoteList();
+                                //显示列表
+                                showNoteList();
+                            }
+                        }
+                    });
+                } else {
+                    countOffset++;
+                }
+            });
+            if (notes.length == 0){
                 showNoteEmpty();
                 isNotesEmpty = true;
-            } else {
-                //目录不是空的，代表有笔记，执行初始化
-                let countOffset = 0;
-                fileArr.forEach(element => {
-                    if (!fs.statSync(storagePath + '/notes/' + element).isDirectory()) {
-                        fs.readFile(storagePath + '/notes/' + element, 'utf-8', function (err, data) {
-                            if (err) {
-                                countOffset++;
-                                console.error(err);
-                            }
-                            var note_json = data;
-                            if (typeof (note_json) != 'undefined' && note_json != null) {
-                                note_json = JSON.parse(note_json);
-                                addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.text, note_json.offset, note_json.timezone);
-                                console.log(notes.length);
-                                console.log(fileArr.length);
-                                console.log(countOffset);
-                                if (notes.length + countOffset == fileArr.length) {
-                                    //结束文件遍历，渲染列表
-                                    refreshNoteList();
-                                    //显示列表
-                                    showNoteList();
-                                }
-                            }
-                        });
-                    } else {
-                        countOffset++;
-                    }
-                });
             }
         });
     }
@@ -209,7 +209,7 @@ function saveNote(notetext) {
     var json = JSON.stringify(note);
     fs.writeFile(path, json, 'utf-8', function (err, data) {
         if (err) {
-            console.log(data);
+            console.error(err);
         } else {
             textarea.val('');
             displayInfobar('success', '成功保存笔记');

@@ -7,3 +7,21 @@ body {
     height: 100%;
     position: absolute;
 }
+
+.recycle-list-container{
+    width: 100%;
+    height:100%;
+}
+.recycle-list{
+    padding: 15px 18px;
+    height:96.5%;
+    margin-bottom: 15px;
+}
+.recycle-empty{
+    padding: 15px 18px;
+    height:96.5%;
+}
+.recycle-empty span{
+    font-size: 18px;
+    padding-bottom: 25px;
+}

@@ -12,12 +12,10 @@ const {
   shell
 } = require('electron');
 
-//Debug开关
-global.indebug = true;
-
 //global settings
-global.firstStart = false;
-global.uuid = "";
+global.indebug = false;          //debug trigger
+global.firstStart = false;       //first start flag
+global.uuid = "";                //uuid storage
 
 //auto-update
 const {
@@ -72,6 +70,10 @@ function createWindow() {
     win.focus();
     win.show();
     checkForUpdates();
+    //bind restore note event
+    ipc.on('restore-note',function (sender,data){
+      win.webContents.send('restore-note',data);
+    });
     //open about window
     ipc.on('openAboutWindow', () => {
       aboutWindow();
@@ -90,7 +92,7 @@ function createWindow() {
     //quit now
     ipc.on('app-quitNow', () => {
       app.quit();
-    })
+    });
   });
 }
 

@@ -45,4 +45,11 @@ var RecycleWindow = {
     }
 }
 
+//ipc listen
+ipc.on('recycle-note',function(sender,data){
+    if (win_recycle!=null){
+        win_recycle.webContents.send('recycle-note',data);  //pass recycled note when window is opened;
+    }
+});
+
 module.exports = RecycleWindow;

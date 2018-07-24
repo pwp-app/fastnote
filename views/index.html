@@ -76,7 +76,7 @@
                     } else {
                         var parsed = JSON.parse(data);
                         uuid = parsed.uuid;
-                        ipcRenderer.send("set-uuid",uuid);
+                        ipcRenderer.send("set-uuid", uuid);
                     }
                 });
             } else {
@@ -86,10 +86,10 @@
                 }
                 storage.set('uuid', JSON.stringify(json));
                 firstStart = true;
-                ipcRenderer.send("set-uuid",uuid);
+                ipcRenderer.send("set-uuid", uuid);
                 addTiptoEmptyInfo();
             }
-        });       
+        });
     </script>
 </head>
 
@@ -248,7 +248,7 @@
                 notes.push(note);
             }
             //刷新note-list
-            function refreshNoteList() {
+            async function refreshNoteList(callback) {
                 clearNoteList(); //先清空                
                 notes.sort(sortNotes); //排序
                 notes.forEach(function (note) {
@@ -256,6 +256,10 @@
                 });
                 //绑定右键事件
                 bindRightClickEvent();
+                //callback
+                if (typeof (callback) === 'function') {
+                    callback();
+                }
             }
             //清空notes数组
             function clearNoteArray() {
@@ -298,7 +302,8 @@
                     //reset note content on page
                     $("#note_" + data.id + " .note-content p").html(html);
                     //reset content of updatetime
-                    var timeContent = '<p class="note-time note-updatetime">更新：' + data.updatetime + '</p>'+'<p class="note-time">创建：' + data.time + '</p>';
+                    var timeContent = '<p class="note-time note-updatetime">更新：' + data.updatetime + '</p>' +
+                        '<p class="note-time">创建：' + data.time + '</p>';
                     $('#note_' + data.id + ' .note-header time').html(timeContent);
                     bindNoteFoldDBL(data.id); //rebind foldevent
                     //open external event rebind
@@ -321,12 +326,21 @@
                 }
             }
 
+            //first start - tooltip
             async function addTiptoEmptyInfo() {
                 //首次启动在note-empty显示提示
                 if (firstStart) {
                     $('.note-empty span').append('<br/>（请使用Ctrl+Enter保存新建笔记）');
                 }
             }
+
+            //event restore
+            ipcRenderer.on('restore-note', (event, data) => {
+                addNoteObjToArray(data);
+                refreshNoteList();
+                //animate
+                $('#note_' + data.id).animateCss('fadeInLeft');
+            });
         </script>
     </div>
 
@@ -393,12 +407,9 @@
                 if (data.isFolded) {
                     $('.note-list').addClass('note-list-fullheight');
                     $('.note-empty').addClass('note-empty-fullheight'); //same for note-empty
-                    $('.container-newnote').animateCss('fadeOutDown', function () {
-                        $('.container-newnote').css('display', 'none');
-                        isNoteFolded = true;
-                    });
+                    $('.container-newnote').css('display', 'none');
+                    isNoteFolded = true;
                     $('.trigger-expandnewnote').css('display', 'block');
-                    $('.trigger-expandnewnote').animateCss('fadeIn');
                 } else {
                     isNoteFolded = false;
                     $('.container-newnote').css('display', 'block');
@@ -453,7 +464,7 @@
     <div class="rightclickmenu">
         <div class="list-group">
             <button type="button" class="btn-rightclick list-group-item" id="btn-editNote">编辑</button>
-            <button type="button" class="btn-rightclick list-group-item" id="btn-deleteNote">删除</button>
+            <button type="button" class="btn-rightclick list-group-item" id="btn-recycleNote">删除</button>
         </div>
     </div>
 
@@ -638,16 +649,7 @@
         //绑定主菜单的动画事件
         let isMainMenuOpen = false;
         $('.mainmenu-background').on('click', function () {
-            if (isMainMenuOpen) {
-                $('.mainmenu-background').css('width', '100%'); //动态修改宽度防止阻挡
-                $('.mainmenu-background').animateCss('fadeOut', function () {
-                    $('.mainmenu-background').css('display', 'none');
-                })
-                $('.container-mainmenu').animateCss('fadeOutLeft', function () {
-                    $('.container-mainmenu').css('display', 'none');
-                    isMainMenuOpen = false;
-                })
-            }
+            closeMainMenu();
         });
         $('#btn-mainmenu-trigger').on('click', function () {
             if (!isMainMenuOpen) {
@@ -662,15 +664,31 @@
             }
         });
         //绑定菜单项
-        $('#mainmenu-btn-recycle').click(function(){
+        $('#mainmenu-btn-recycle').click(function () {
             ipcRenderer.send("openRecycleWindow");
+            closeMainMenu();
         });
         $('#mainmenu-btn-about').click(function () {
             ipcRenderer.send("openAboutWindow"); //打开关于窗口
+            closeMainMenu();
         });
         $('#mainmenu-btn-exit').click(function () {
             ipcRenderer.send("app-quitNow"); //退出程序
+            closeMainMenu();
         });
+
+        function closeMainMenu() {
+            if (isMainMenuOpen) {
+                $('.mainmenu-background').css('width', '100%'); //动态修改宽度防止阻挡
+                $('.mainmenu-background').animateCss('fadeOut', function () {
+                    $('.mainmenu-background').css('display', 'none');
+                })
+                $('.container-mainmenu').animateCss('fadeOutLeft', function () {
+                    $('.container-mainmenu').css('display', 'none');
+                    isMainMenuOpen = false;
+                })
+            }
+        }
     </script>
 </body>
 

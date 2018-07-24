@@ -213,12 +213,12 @@ button {
     height:737px !important;
 }
 .note-empty-fullheight span{
-    padding-bottom: 50px;
+    padding-bottom: 45px;
 }
 
 .note-empty span {
     color: black;
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .note {

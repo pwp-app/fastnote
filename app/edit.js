@@ -53,9 +53,6 @@ function createEditWindow(data) {
 var editWindow = {
     showWindow: function(data){
         createEditWindow(data);
-        ipc.on('editWindow-close',function(sys,data){
-            win_edits[data].close();
-        });
     },
     bindEditEvent: function(callback){
         ipc.on('update-edit-note',function(sys,data){
