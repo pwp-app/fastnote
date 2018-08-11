@@ -130,7 +130,7 @@
         }
         //刷新note-list
         function refreshNoteList() {
-            clearNoteList(); //先清空                
+            clearNoteList(); //先清空
             notes.sort(sortNotes); //排序
             notes.forEach(function (note) {
                 renderNote(note.id, note.time, note.updatetime, note.text);

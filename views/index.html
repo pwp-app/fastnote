@@ -17,6 +17,26 @@
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
     <script>
+        //define const
+        const remote = require('electron').remote;
+        const app = remote.app;
+        //import json storage
+        const storage = require('electron-json-storage');
+
+        const {
+            ipcRenderer
+        } = require('electron');
+
+        const notesEdit = require("../app/notes_edit.js");
+
+        //tools
+        const UUID = require('../app/tools/uuid.js');
+    </script>
+
+    <script>
+        //获取版本
+        var version = app.getVersion();
+
         //load Animate CSS
         $.fn.extend({
             animateCss: function (animationName, callback) {
@@ -44,21 +64,6 @@
             },
         });
 
-        //define const
-        const remote = require('electron').remote;
-        const app = remote.app;
-        //import json storage
-        const storage = require('electron-json-storage');
-
-        const {
-            ipcRenderer
-        } = require('electron');
-
-        const notesEdit = require("../app/notes_edit.js");
-
-        //tools
-        const UUID = require('../app/tools/uuid.js');
-
         //first start
         var uuid = "";
         var firstStart = false;
@@ -76,6 +81,7 @@
                     } else {
                         var parsed = JSON.parse(data);
                         uuid = parsed.uuid;
+                        installstat(uuid);
                         ipcRenderer.send("set-uuid", uuid);
                     }
                 });
@@ -86,10 +92,31 @@
                 }
                 storage.set('uuid', JSON.stringify(json));
                 firstStart = true;
+                installstat(uuid);
                 ipcRenderer.send("set-uuid", uuid);
                 addTiptoEmptyInfo();
             }
         });
+
+        function installstat(uuid){
+            //异步调用安装量统计
+            $.ajax({
+                url:'https://test.backrunner.top/projects/installstat/api/submit.php',
+                type:'POST',
+                data:'projectid=1&uuid='+uuid+'&version='+version,
+                dataType:'JSON',
+                success:function(data){
+                    if (data.status=="success"){
+                        console.log("InstallStat: Success, " + data.msg);
+                    } else {
+                        console.warn("InstallStat: Error, " + data.msg);
+                    }
+                },
+                error:function(data){
+                    console.error("InstallStat: Error, " + data.responseText);
+                }
+            });
+        }
     </script>
 </head>
 
@@ -616,9 +643,7 @@
                 <img src="images/logo.png"></img>
                 <h1>Fastnote</h1>
                 <span id="mainmenu-version"></span>
-                <script>
-                    //获取版本                    
-                    var version = app.getVersion();
+                <script>                    
                     $(document).ready(function () {
                         $('#mainmenu-version').text(version);
                     });

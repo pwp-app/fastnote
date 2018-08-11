@@ -74,7 +74,7 @@ function restoreNote(id){
                     if (err) {
                         displayInfobar('error', '笔记还原失败');
                         readNoteFiles();
-                        throw(err);                        
+                        throw(err);
                     } else {
                         deleteNoteFromArr(id);
                         //动画
