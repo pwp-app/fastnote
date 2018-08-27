@@ -13,7 +13,7 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = false;          //debug trigger
+global.indebug = true;          //debug trigger
 global.firstStart = false;       //first start flag
 global.uuid = "";                //uuid storage
 
@@ -84,10 +84,10 @@ function createWindow() {
     //open edit window
     ipc.on('openEditWindow', function (sender, data) {
       editWindow.showWindow(data);
-      //bind update event
-      editWindow.bindEditEvent(function (data) {
-        win.webContents.send('update-edit-note', data);
-      });
+    });
+    //bind update event
+    editWindow.bindEditEvent(function (data) {
+      win.webContents.send('update-edit-note', data);
     });
     ipc.on('reloadMainWindow', function (sender, data) {
       win.reload();

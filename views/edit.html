@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
+    <script src="js/han.simple.js"></script>
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -175,7 +176,7 @@
                     $("#edit-title").append(" #" + note.id);
                     $("title").append(" - #" + note.id);
                     //初始化header
-                    $("#edit-header-time").append(note.time);
+                    $("#edit-header-time").append(insert_spacing(note.time,0.1));
                     break;
             }
         });
