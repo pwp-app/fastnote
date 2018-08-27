@@ -47,10 +47,49 @@
         //define const
         const remote = require('electron').remote;
         const app = remote.app;
+        //import json storage
+        const storage = require('electron-json-storage');
 
         const {
             ipcRenderer
         } = require('electron');
+
+        var settings;
+
+        storage.get('settings', function (error, data) {
+            if (error) {
+                console.error(error);
+                settingsInit(null);
+                return;
+            } else {
+                //获取callback回传的json
+                settings = data;
+                settingsInit(settings);
+            }
+        });
+
+        function settingsInit(settings) {
+            var cssText = "";
+            //build css
+            if (settings == null) {
+                //read error
+                cssText += 'body {font-family:Source Han Sans CN !important;}'; //font
+            } else {
+                //read success
+                if (typeof settings.fontfamily != 'undefined') {
+                    cssText += 'body {font-family:' + settings.fontfamily + ' !important;}'; //font
+                } else {
+                    cssText += 'body {font-family:Source Han Sans CN !important;}';
+                }
+            }
+            var modStyle = document.querySelector('#modCSS');
+            if (modStyle === null) {
+                modStyle = document.createElement('style');
+                modStyle.id = 'modCSS';
+                document.body.appendChild(modStyle);
+            }
+            modStyle.innerHTML = cssText;
+        }
     </script>
 </head>
 
@@ -81,9 +120,9 @@
                 <span id="about-uuid-text"></span>
             </div>
             <script>
-                ipcRenderer.on('set-uuid',(event,data)=>{
-                    if (typeof(data)!='undefined' && data!="" && data!=null){
-                        $('#about-uuid-text').text('UUID：'+data);
+                ipcRenderer.on('set-uuid', (event, data) => {
+                    if (typeof (data) != 'undefined' && data != "" && data != null) {
+                        $('#about-uuid-text').text('UUID：' + data);
                     }
                 });
             </script>
@@ -99,7 +138,7 @@
         </div>
     </div>
 
-    <script>        
+    <script>
         //绑定Github图标的事件
         $("#btn-github").click(function (e) {
             ipcRenderer.send('openExternalURL', 'https://github.com/backrunner/Fastnote');

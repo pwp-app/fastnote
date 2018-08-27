@@ -32,13 +32,13 @@ function deleteNote(id) {
                         //文件删除失败
                         displayInfobar('error', '文件删除失败');
                         readNoteFiles();
-                        throw(err);                        
+                        throw(err);
                     } else {
                         //删除成功
                         deleteNoteFromArr(id);
                         //动画
                         $('#note_' + id).animateCss('fadeOutLeft', function () {
-                            $('#note_' + id).remove(); //动画结束后删除div
+                            $('#note_' + id).parent().remove(); //动画结束后删除div
                             if (notes.length <= 0) {
                                 showNoteEmpty_Anim();
                             }
@@ -79,7 +79,7 @@ function restoreNote(id){
                         deleteNoteFromArr(id);
                         //动画
                         $('#note_' + id).animateCss('fadeOutLeft', function () {
-                            $('#note_' + id).remove(); //动画结束后删除div
+                            $('#note_' + id).parent().remove(); //动画结束后删除div
                             if (notes.length <= 0) {
                                 showNoteEmpty_Anim();
                             }
@@ -152,7 +152,13 @@ function readNoteFiles() {
                                 addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.text, note_json.offset, note_json.timezone);
                                 if (notes.length + countOffset == fileArr.length) {
                                     //结束文件遍历，渲染列表
-                                    refreshNoteList();
+                                    refreshNoteList(function(){
+                                        $(document).ready(function(){
+                                            notes.forEach(function (note) {
+                                                bindNoteFoldDBL(note.id);
+                                            });
+                                        });
+                                    });
                                     //显示列表
                                     showNoteList();
                                 }

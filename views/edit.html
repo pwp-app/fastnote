@@ -56,6 +56,43 @@
 
         //import requirements
         $.getScript('../app/infobar.js'); //import by jQuery
+
+        var settings;
+
+        storage.get('settings', function (error, data) {
+            if (error) {
+                console.error(error);
+                settingsInit(null);
+                return;
+            } else {
+                //获取callback回传的json
+                settings = data;
+                settingsInit(settings);
+            }
+        });
+
+        function settingsInit(settings) {
+            var cssText = "";
+            //build css
+            if (settings == null) {
+                //read error
+                cssText += 'body {font-family:Source Han Sans CN !important;}';
+            } else {
+                //read success
+                if (typeof settings.fontfamily != 'undefined') {
+                    cssText += 'body {font-family:' + settings.fontfamily + ' !important;}';
+                } else {
+                    cssText += 'body {font-family:Source Han Sans CN !important;}';
+                }
+            }
+            var modStyle = document.querySelector('#modCSS');
+            if (modStyle === null) {
+                modStyle = document.createElement('style');
+                modStyle.id = 'modCSS';
+                document.body.appendChild(modStyle);
+            }
+            modStyle.innerHTML = cssText;
+        }
     </script>
 </head>
 

@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
+    <script src="js/han.simple.js"></script>
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -46,6 +47,8 @@
         //define const
         const remote = require('electron').remote;
         const app = remote.app;
+        //import json storage
+        const storage = require('electron-json-storage');
 
         const {
             ipcRenderer
@@ -53,6 +56,49 @@
 
         //import requirements
         $.getScript('../app/infobar.js'); //import by jQuery
+
+        var settings;
+
+        storage.get('settings', function (error, data) {
+            if (error) {
+                console.error(error);
+                settingsInit(null);
+                return;
+            } else {
+                //获取callback回传的json
+                settings = data;
+                settingsInit(settings);
+            }
+        });
+
+        function settingsInit(settings) {
+            var cssText = "";
+            //build css
+            if (settings == null) {
+                //read error
+                cssText += 'body {font-family:Source Han Sans CN !important;}'; //font
+                cssText += '.note-content p {text-align:justify;}'; //note text align
+            } else {
+                //read success
+                if (typeof settings.fontfamily != 'undefined') {
+                    cssText += 'body {font-family:' + settings.fontfamily + ' !important;}'; //font
+                } else {
+                    cssText += 'body {font-family:Source Han Sans CN !important;}';
+                }
+                if (typeof settings.notealign != 'undefined') {
+                    cssText += '.note-content p {text-align:' + settings.notealign + ';}'; //note text align
+                } else {
+                    cssText += '.note-content p {text-align:justify;}';
+                }
+            }
+            var modStyle = document.querySelector('#modCSS');
+            if (modStyle === null) {
+                modStyle = document.createElement('style');
+                modStyle.id = 'modCSS';
+                document.body.appendChild(modStyle);
+            }
+            modStyle.innerHTML = cssText;
+        }
     </script>
 </head>
 
@@ -91,9 +137,9 @@
         }
 
         function showNoteEmpty_Anim() {
-            $('.note-empty').css('display', 'flex');
-            $('.note-empty').animateCss('fadeIn');
-            var node_list = document.getElementsByClassName('note-list')[0];
+            $('.recycle-empty').css('display', 'flex');
+            $('.recycle-empty').animateCss('fadeIn');
+            var node_list = document.getElementsByClassName('recycle-list')[0];
             node_list.setAttribute("style", "display:none;");
         }
         //显示有笔记的界面
@@ -129,7 +175,7 @@
             notes.push(note);
         }
         //刷新note-list
-        function refreshNoteList() {
+        function refreshNoteList(callback) {
             clearNoteList(); //先清空
             notes.sort(sortNotes); //排序
             notes.forEach(function (note) {
@@ -137,6 +183,10 @@
             });
             //绑定右键事件
             bindRightClickEvent();
+            //callback
+            if (typeof (callback) === 'function') {
+                callback();
+            }
         }
         //清空notes数组
         function clearNoteArray() {
@@ -162,46 +212,125 @@
                 return true; //every是true继续循环 false跳出
             });
         }
+
+        //定义url过滤正则
+        let reg_url =
+            /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
+
         //渲染一条笔记
         function renderNote(id, time, updatetime, text) {
-            var html = '<div class="note" id="note_' + id + '"><div class="note-header"><p class="note-no">';
+            var html = '<div class="note-wrapper"><div class="note" id="note_' + id +
+                '"><div class="note-header"><p class="note-no han-element">';
             html += '#' + id + '</p>';
             //选择性显示时间
             if (typeof (updatetime) != 'undefined') {
-                html += '<time><p class="note-time note-updatetime">更新：' + updatetime + '</p>';
-                html += '<p class="note-time">创建：' + time + '</p></time>';
+                html += '<time><p class="note-time note-updatetime han-element">更新：' + insert_spacing(updatetime, 0.1) +
+                    '</p>';
+                html += '<p class="note-time han-element">创建：' + insert_spacing(time, 0.1) + '</p></time>';
             } else {
-                html += '<time><p class="note-time">' + time + '</p></time>';
+                html += '<time><p class="note-time han-element">' + insert_spacing(time, 0.1) + '</p></time>';
             }
             html += '</div><div class="note-content"><p class="note-text">';
-            html += text;
-            html += '</p></div></div>';
+            temp = text.split('<br/>');
+            final_text = "";
+            for (var i = 0; i < temp.length; i++) {
+                s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+                console.log(s);
+                final_text += s;
+                final_text += "<br/>";
+            }
+            text = final_text;
+            text = insert_spacing(text, 0.12);
+            //自动识别网页
+            html += text.replace(reg_url, function (result) {
+                return '<a href="' + result + '">' + result + '</a>';
+            });
+            html += '</p></div></div></div>';
             $('.note-list').append($(html));
+            //open external on os default webbrowser
+            $('#note_' + id + ' a').click(function (e) {
+                ipcRenderer.send('openExternalURL', $(this).attr('href'));
+                e.preventDefault();
+            });
         }
+
+        //绑定note的双击折叠
+        function bindNoteFoldDBL(id) {
+            if ($('#note_' + id + ' .note-content').height() > 250) {
+                $('#note_' + id + ' .note-content').addClass("note-overheight"); //process css
+                $('#note_' + id + ' .note-content').dblclick(function () {
+                    //process double click
+                    if ($('#note_' + id + ' .note-content').height() > 250) {
+                        $('#note_' + id + ' .note-content').animate({
+                            height: "250px"
+                        });
+                        $('#note_' + id + ' .note-content').addClass("note-overheight");
+                    } else {
+                        $('#note_' + id + ' .note-content').css('height', 'auto');
+                        var animate_height = $('#note_' + id + ' .note-content').height();
+                        $('#note_' + id + ' .note-content').css('height', '250px');
+                        $('#note_' + id + ' .note-content').animate({
+                            height: animate_height
+                        });
+                        $('#note_' + id + ' .note-content').removeClass("note-overheight");
+                    }
+                });
+            } else {
+                $('#note_' + id + ' .note-content').removeClass("note-overheight");
+            }
+        }
+
         //在顶部渲染Note
         function renderNoteAtTop(id, time, updatetime, text) {
             //构造html
-            var html = '<div class="note" id="note_' + id + '"><div class="note-header"><p class="note-no">';
+            var html = '<div class="note-wrapper"><div class="note" id="note_' + id +
+                '"><div class="note-header"><p class="note-no">';
             html += '#' + id + '</p>';
             //选择性显示时间
             if (typeof (updatetime) != 'undefined') {
-                html += '<time><p class="note-time note-updatetime">更新：' + updatetime + '</p>';
-                html += '<p class="note-time">创建：' + time + '</p></time>';
+                html += '<time><p class="note-time note-updatetime han-element">更新：' + insert_spacing(updatetime, 0.1) +
+                    '</p>';
+                html += '<p class="note-time han-element">创建：' + insert_spacing(time, 0.1) + '</p></time>';
             } else {
-                html += '<time><p class="note-time">' + time + '</p></time>';
+                html += '<time><p class="note-time han-element">' + insert_spacing(time, 0.1) + '</p></time>';
             }
             html += '</div><div class="note-content"><p class="note-text">';
-            html += text;
-            html += '</p></div></div>';
+            temp = text.split('<br/>');
+            final_text = "";
+            for (var i = 0; i < temp.length; i++) {
+                s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+                console.log(s);
+                final_text += s;
+                final_text += "<br/>";
+            }
+            text = final_text;
+            text = insert_spacing(text, 0.12);
+            //自动识别网页
+            html += text.replace(reg_url, function (result) {
+                return '<a href="' + result + '">' + result + '</a>';
+            });
+            html += '</p></div></div></div>';
             $('.note-list').prepend($(html));
             //animate
             $('#note_' + id).animateCss('fadeInLeft');
+            //open external on os default webbrowser
+            $('#note_' + id + ' a').click(function (e) {
+                ipcRenderer.send('openExternalURL', $(this).attr('href'));
+                e.preventDefault();
+            });
+            //bind dbl
+            bindNoteFoldDBL(id);
         }
 
         //event recycle
         ipcRenderer.on('recycle-note', (event, data) => {
+            if (notes.length <= 0) {
+                showNoteList();
+            }
             addNoteObjToArray(data);
-            refreshNoteList();
+            refreshNoteList(function () {
+                bindNoteFoldDBL(data.id);
+            });
             //animate
             $('#note_' + data.id).animateCss('fadeInLeft');
         });
@@ -215,31 +344,33 @@
         </div>
     </div>
 
+    <span id="filter-x" style="display:none"></span>
+
     <script>
-        let noteid_clicked = -1;
+        var noteid_clicked = -1;
         //右键菜单相关事件绑定
         function bindRightClickEvent() {
             $('.note').mousedown(function (e) {
                 if (e.which == 3) {
                     if (noteid_clicked != -1) {
-                        $('#note_' + noteid_clicked).removeClass('note-selected');
+                        $('#note_' + noteid_clicked).parent().removeClass('note-selected');
                     }
                     $('.rightclickmenu').attr('style', 'display:block;' + 'left:' + e.clientX + 'px;top:' + e.clientY +
                         'px;z-index:1000;');
                     isRightClickMenuOpened = true;
                     noteid_clicked = parseInt($(this).attr("id").replace('note_', ''));
-                    $(this).addClass('note-selected');
+                    $(this).parent().addClass('note-selected');
                 }
             });
         }
         $('body').click(function (e) {
             $('.rightclickmenu').attr('style', 'display:none;'); //右键菜单隐藏
-            $('#note_' + noteid_clicked).removeClass('note-selected');
+            $('#note_' + noteid_clicked).parent().removeClass('note-selected');
             noteid_clicked = -1;
         });
-        $('.note-list').scroll(function () {
+        $('#note-list').scroll(function () {
             $('.rightclickmenu').attr('style', 'display:none;');
-            $('#note_' + noteid_clicked).removeClass('note-selected');
+            $('#note_' + noteid_clicked).parent().removeClass('note-selected');
             noteid_clicked = -1;
         });
     </script>

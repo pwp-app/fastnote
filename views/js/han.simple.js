@@ -24,6 +24,6 @@ function han_init() {
     var p8 = /([a])([>])([\u4e00-\u9fa5]+)/gi;
     str = str.replace(p1, '$1あおえ$2').replace(p2, "$1あおえ$2").replace(p3, "$1あおえ$2").replace(p4, "$1あおえ$2").replace(p5, "$1$2あおえ$3").replace(p6, "$1あおえ$2$3").replace(p7, "$1あおえ$2$3").replace(p8, "$1$2あおえ$3");
     var p = /([あ])([お])([え])/gi;
-    str = str.replace(p, '<han style="padding-left:' + space + 'em !important;padding-right:' + space + 'em !important"></han>');
+    str = str.replace(p, '<han style="padding-left:' + space + 'rem !important;padding-right:' + space + 'rem !important"></han>');
     return str;
   }

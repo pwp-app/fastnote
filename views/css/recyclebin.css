@@ -13,9 +13,8 @@ body {
     height:100%;
 }
 .recycle-list{
-    padding: 15px 18px;
     height:96.5%;
-    margin-bottom: 15px;
+    padding-bottom: 20px;
 }
 .recycle-empty{
     padding: 15px 18px;

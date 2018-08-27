@@ -33,6 +33,49 @@
         //tools
         const UUID = require('../app/tools/uuid.js');
         const indebug = remote.getGlobal('indebug');
+
+        var settings;
+
+        storage.get('settings', function (error, data) {
+            if (error) {
+                console.error(error);
+                settingsInit(null);
+                return;
+            } else {
+                //获取callback回传的json
+                settings = data;
+                settingsInit(settings);
+            }
+        });
+
+        function settingsInit(settings) {
+            var cssText = "";
+            //build css
+            if (settings == null) {
+                //read error
+                cssText += 'body {font-family:Source Han Sans CN !important;}'; //font
+                cssText += '.note-content p {text-align:justify;}'; //note text align
+            } else {
+                //read success
+                if (typeof settings.fontfamily != 'undefined') {
+                    cssText += 'body {font-family:' + settings.fontfamily + ' !important;}'; //font
+                } else {
+                    cssText += 'body {font-family:Source Han Sans CN !important;}';
+                }
+                if (typeof settings.notealign != 'undefined') {
+                    cssText += '.note-content p {text-align:' + settings.notealign + ';}'; //note text align
+                } else {
+                    cssText += '.note-content p {text-align:justify;}';
+                }
+            }
+            var modStyle = document.querySelector('#modCSS');
+            if (modStyle === null) {
+                modStyle = document.createElement('style');
+                modStyle.id = 'modCSS';
+                document.body.appendChild(modStyle);
+            }
+            modStyle.innerHTML = cssText;
+        }
     </script>
 
     <script>
@@ -100,45 +143,45 @@
             }
         });
 
-        function installstat(uuid){
+        function installstat(uuid) {
             //异步调用安装量统计
-            if (!indebug){
+            if (!indebug) {
                 $.ajax({
-                    url:'https://test.backrunner.top/projects/installstat/api/submit.php',
-                    type:'POST',
-                    data:'projectid=1&uuid='+uuid+'&version='+version,
-                    dataType:'JSON',
-                    success:function(data){
-                        if (data.status=="success"){
+                    url: 'https://test.backrunner.top/projects/installstat/api/submit.php',
+                    type: 'POST',
+                    data: 'projectid=1&uuid=' + uuid + '&version=' + version,
+                    dataType: 'JSON',
+                    success: function (data) {
+                        if (data.status == "success") {
                             console.log("InstallStat: Success, " + data.msg);
                         } else {
                             console.warn("InstallStat: Error, " + data.msg);
                         }
                     },
-                    error:function(data){
+                    error: function (data) {
                         console.error("InstallStat: Error");
                         console.error(data);
                     },
-                    timeout:5000
+                    timeout: 5000
                 });
             } else {
                 $.ajax({
-                    url:'http://localhost/projects/installstat/api/submit.php',
-                    type:'POST',
-                    data:'projectid=1&uuid='+uuid+'&version='+version,
-                    dataType:'JSON',
-                    success:function(data){
-                        if (data.status=="success"){
+                    url: 'http://localhost/projects/installstat/api/submit.php',
+                    type: 'POST',
+                    data: 'projectid=1&uuid=' + uuid + '&version=' + version,
+                    dataType: 'JSON',
+                    success: function (data) {
+                        if (data.status == "success") {
                             console.log("InstallStat: Success, " + data.msg);
                         } else {
                             console.warn("InstallStat: Error, " + data.msg);
                         }
                     },
-                    error:function(data){
+                    error: function (data) {
                         console.error("InstallStat: Error");
                         console.error(data);
                     },
-                    timeout:5000
+                    timeout: 5000
                 });
             }
         }
@@ -159,7 +202,7 @@
     </div>
     <!-- notes -->
     <div class="container-main">
-        <div class="note-list col-lg-12" id="note-list"></div>
+        <div class="note-list" id="note-list"></div>
         <!-- empty -->
         <div class="note-empty col-lg-12">
             <span>您还没有建立任何的笔记</br>在下方你可以快速新建新笔记</span>
@@ -201,25 +244,35 @@
 
             //渲染一条笔记
             function renderNote(id, time, updatetime, text) {
-                var html = '<div class="note" id="note_' + id + '"><div class="note-header"><p class="note-no han-element">';
+                var html = '<div class="note-wrapper"><div class="note" id="note_' + id +
+                    '"><div class="note-header"><p class="note-no han-element">';
                 html += '#' + id + '</p>';
                 //选择性显示时间
                 if (typeof (updatetime) != 'undefined') {
-                    html += '<time><p class="note-time note-updatetime han-element">更新：' + insert_spacing(updatetime,0.1) + '</p>';
-                    html += '<p class="note-time han-element">创建：' + insert_spacing(time,0.1) + '</p></time>';
+                    html += '<time><p class="note-time note-updatetime han-element">更新：' + insert_spacing(updatetime,
+                        0.1) + '</p>';
+                    html += '<p class="note-time han-element">创建：' + insert_spacing(time, 0.1) + '</p></time>';
                 } else {
-                    html += '<time><p class="note-time han-element">' + insert_spacing(time,0.1) + '</p></time>';
+                    html += '<time><p class="note-time han-element">' + insert_spacing(time, 0.1) + '</p></time>';
                 }
                 html += '</div><div class="note-content"><p class="note-text">';
-                text = insert_spacing(text,0.08);
+                //process html tag
+                temp = text.split('<br/>');
+                final_text = "";
+                for (var i = 0; i < temp.length; i++) {
+                    s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+                    console.log(s);
+                    final_text += s;
+                    final_text += "<br/>";
+                }
+                text = final_text;
+                text = insert_spacing(text, 0.12);
                 //自动识别网页
                 html += text.replace(reg_url, function (result) {
                     return '<a href="' + result + '">' + result + '</a>';
                 });
-                html += '</p></div></div>';
+                html += '</p></div></div></div>';
                 $('.note-list').append($(html));
-                //auto fold
-                bindNoteFoldDBL(id);
                 //open external on os default webbrowser
                 $('#note_' + id + ' a').click(function (e) {
                     ipcRenderer.send('openExternalURL', $(this).attr('href'));
@@ -229,22 +282,36 @@
             //在顶部渲染Note
             function renderNoteAtTop(id, time, updatetime, text) {
                 //构造html
-                var html = '<div class="note" id="note_' + id + '"><div class="note-header"><p class="note-no">';
+                var html = '<div class="note-wrapper"><div class="note" id="note_' + id +
+                    '"><div class="note-header"><p class="note-no">';
                 html += '#' + id + '</p>';
                 //选择性显示时间
                 if (typeof (updatetime) != 'undefined') {
-                    html += '<time><p class="note-time note-updatetime han-element">更新：' + insert_spacing(updatetime,0.1) + '</p>';
-                    html += '<p class="note-time han-element">创建：' + insert_spacing(time,0.1) + '</p></time>';
+                    html += '<time><p class="note-time note-updatetime han-element">更新：' + insert_spacing(updatetime,
+                        0.1) + '</p>';
+                    html += '<p class="note-time han-element">创建：' + insert_spacing(time, 0.1) + '</p></time>';
                 } else {
-                    html += '<time><p class="note-time han-element">' + insert_spacing(time,0.1) + '</p></time>';
+                    html += '<time><p class="note-time han-element">' + insert_spacing(time, 0.1) + '</p></time>';
                 }
                 html += '</div><div class="note-content"><p class="note-text">';
-                text = insert_spacing(text,0.08);
+
+                //process html tag
+                temp = text.split('<br/>');
+                final_text = "";
+                for (var i = 0; i < temp.length; i++) {
+                    s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+                    console.log(s);
+                    final_text += s;
+                    final_text += "<br/>";
+                }
+                text = final_text;
+
+                text = insert_spacing(text, 0.12);
                 //自动识别网页
                 html += text.replace(reg_url, function (result) {
                     return '<a href="' + result + '">' + result + '</a>';
                 });
-                html += '</p></div></div>';
+                html += '</p></div></div></div>';
                 $('.note-list').prepend($(html));
                 //auto fold
                 bindNoteFoldDBL(id);
@@ -350,16 +417,26 @@
                 notesEdit.saveEditNote(note, function (data) {
                     updateEditNoteinArray(data); //更新数组内容
                     //reset contents in note
-                    var html = data.text.replace(reg_url, function (result) {
+                    temp = data.text.split('<br/>');
+                    text = "";
+                    for (var i = 0; i < temp.length; i++) {
+                        s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+                        console.log(s);
+                        text += s;
+                        text += "<br/>";
+                    }
+                    final_text = insert_spacing(text, 0.12);
+                    var html = final_text.replace(reg_url, function (result) {
                         return '<a href="' + result + '">' + result + '</a>';
                     });
                     //reset note content on page
                     $("#note_" + data.id + " .note-content p").html(html);
                     //reset content of updatetime
-                    var timeContent = '<p class="note-time note-updatetime han-element">更新：' + data.updatetime + '</p>' +
-                        '<p class="note-time han-element">创建：' + data.time + '</p>';
+                    var timeContent = '<p class="note-time note-updatetime han-element">更新：' + insert_spacing(
+                            data.updatetime, 0.1) +
+                        '</p>' +
+                        '<p class="note-time han-element">创建：' + insert_spacing(data.time, 0.1) + '</p>';
                     $('#note_' + data.id + ' .note-header time').html(timeContent);
-                    bindNoteFoldDBL(data.id); //rebind foldevent
                     //open external event rebind
                     $('#note_' + data.id + ' a').click(function (e) {
                         ipcRenderer.send('openExternalURL', $(this).attr('href'));
@@ -367,6 +444,7 @@
                     });
                     //show infobar
                     displayInfobar("success", "笔记内容已保存");
+                    bindNoteFoldDBL(data.id);
                 });
             }
 
@@ -390,8 +468,13 @@
 
             //event restore
             ipcRenderer.on('restore-note', (event, data) => {
+                if (notes.length <= 0) {
+                    showNoteList();
+                }
                 addNoteObjToArray(data);
-                refreshNoteList();
+                refreshNoteList(function () {
+                    bindNoteFoldDBL(data.id);
+                });
                 //animate
                 $('#note_' + data.id).animateCss('fadeInLeft');
             });
@@ -529,24 +612,24 @@
             $('.note').mousedown(function (e) {
                 if (e.which == 3) {
                     if (noteid_clicked != -1) {
-                        $('#note_' + noteid_clicked).removeClass('note-selected');
+                        $('#note_' + noteid_clicked).parent().removeClass('note-selected');
                     }
                     $('.rightclickmenu').attr('style', 'display:block;' + 'left:' + e.clientX + 'px;top:' + e.clientY +
                         'px;z-index:1000;');
                     isRightClickMenuOpened = true;
                     noteid_clicked = parseInt($(this).attr("id").replace('note_', ''));
-                    $(this).addClass('note-selected');
+                    $(this).parent().addClass('note-selected');
                 }
             });
         }
         $('body').click(function (e) {
             $('.rightclickmenu').attr('style', 'display:none;'); //右键菜单隐藏
-            $('#note_' + noteid_clicked).removeClass('note-selected');
+            $('#note_' + noteid_clicked).parent().removeClass('note-selected');
             noteid_clicked = -1;
         });
         $('#note-list').scroll(function () {
             $('.rightclickmenu').attr('style', 'display:none;');
-            $('#note_' + noteid_clicked).removeClass('note-selected');
+            $('#note_' + noteid_clicked).parent().removeClass('note-selected');
             noteid_clicked = -1;
         });
 
@@ -560,12 +643,6 @@
                 }
             }
         });
-    </script>
-
-    <script>
-        //import requirements
-        $.getScript('../app/infobar.js'); //import by jQuery
-        require('../app/notes.js');
     </script>
 
     <!-- update -->
@@ -667,7 +744,7 @@
     <div class="container-mainmenu">
         <div class="mainmenu-panel">
             <div class="mainmenu-logo">
-                <img src="images/logo.png"/>
+                <img src="images/logo.png" />
                 <h1>Fastnote</h1>
                 <span id="mainmenu-version"></span>
                 <script>
@@ -684,12 +761,15 @@
                     </li>
                     <div class="mainmenu-split"></div>
                     <li id="mainmenu-btn-settings">
-                        <span>设置</span>
+                        <span>设置（开发中）</span>
                     </li>
                     <li id="mainmenu-btn-about">
                         <span>关于</span>
                     </li>
                     <div class="mainmenu-split"></div>
+                    <li id="mainmenu-btn-reload">
+                        <span>重新载入</span>
+                    </li>
                     <li id="mainmenu-btn-exit">
                         <span>退出</span>
                     </li>
@@ -724,6 +804,10 @@
             ipcRenderer.send("openAboutWindow"); //打开关于窗口
             closeMainMenu();
         });
+        $('#mainmenu-btn-reload').click(function () {
+            ipcRenderer.send("reloadMainWindow"); //退出程序
+            closeMainMenu();
+        });
         $('#mainmenu-btn-exit').click(function () {
             ipcRenderer.send("app-quitNow"); //退出程序
             closeMainMenu();
@@ -742,6 +826,15 @@
             }
         }
     </script>
+
+    <script>
+        //import requirements
+        $.getScript('../app/infobar.js'); //import by jQuery
+        require('../app/notes.js');
+    </script>
+
+
+    <span id="filter-x" style="display:none"></span>
 </body>
 
 </html>
