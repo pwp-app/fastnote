@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
+    <script src="js/han.simple.js"></script>
     <script>
         //define const
         const remote = require('electron').remote;
@@ -31,6 +32,7 @@
 
         //tools
         const UUID = require('../app/tools/uuid.js');
+        const indebug = remote.getGlobal('indebug');
     </script>
 
     <script>
@@ -100,22 +102,45 @@
 
         function installstat(uuid){
             //异步调用安装量统计
-            $.ajax({
-                url:'https://test.backrunner.top/projects/installstat/api/submit.php',
-                type:'POST',
-                data:'projectid=1&uuid='+uuid+'&version='+version,
-                dataType:'JSON',
-                success:function(data){
-                    if (data.status=="success"){
-                        console.log("InstallStat: Success, " + data.msg);
-                    } else {
-                        console.warn("InstallStat: Error, " + data.msg);
-                    }
-                },
-                error:function(data){
-                    console.error("InstallStat: Error, " + data.responseText);
-                }
-            });
+            if (!indebug){
+                $.ajax({
+                    url:'https://test.backrunner.top/projects/installstat/api/submit.php',
+                    type:'POST',
+                    data:'projectid=1&uuid='+uuid+'&version='+version,
+                    dataType:'JSON',
+                    success:function(data){
+                        if (data.status=="success"){
+                            console.log("InstallStat: Success, " + data.msg);
+                        } else {
+                            console.warn("InstallStat: Error, " + data.msg);
+                        }
+                    },
+                    error:function(data){
+                        console.error("InstallStat: Error");
+                        console.error(data);
+                    },
+                    timeout:5000
+                });
+            } else {
+                $.ajax({
+                    url:'http://localhost/projects/installstat/api/submit.php',
+                    type:'POST',
+                    data:'projectid=1&uuid='+uuid+'&version='+version,
+                    dataType:'JSON',
+                    success:function(data){
+                        if (data.status=="success"){
+                            console.log("InstallStat: Success, " + data.msg);
+                        } else {
+                            console.warn("InstallStat: Error, " + data.msg);
+                        }
+                    },
+                    error:function(data){
+                        console.error("InstallStat: Error");
+                        console.error(data);
+                    },
+                    timeout:5000
+                });
+            }
         }
     </script>
 </head>
@@ -176,16 +201,17 @@
 
             //渲染一条笔记
             function renderNote(id, time, updatetime, text) {
-                var html = '<div class="note" id="note_' + id + '"><div class="note-header"><p class="note-no">';
+                var html = '<div class="note" id="note_' + id + '"><div class="note-header"><p class="note-no han-element">';
                 html += '#' + id + '</p>';
                 //选择性显示时间
                 if (typeof (updatetime) != 'undefined') {
-                    html += '<time><p class="note-time note-updatetime">更新：' + updatetime + '</p>';
-                    html += '<p class="note-time">创建：' + time + '</p></time>';
+                    html += '<time><p class="note-time note-updatetime han-element">更新：' + insert_spacing(updatetime,0.1) + '</p>';
+                    html += '<p class="note-time han-element">创建：' + insert_spacing(time,0.1) + '</p></time>';
                 } else {
-                    html += '<time><p class="note-time">' + time + '</p></time>';
+                    html += '<time><p class="note-time han-element">' + insert_spacing(time,0.1) + '</p></time>';
                 }
                 html += '</div><div class="note-content"><p class="note-text">';
+                text = insert_spacing(text,0.08);
                 //自动识别网页
                 html += text.replace(reg_url, function (result) {
                     return '<a href="' + result + '">' + result + '</a>';
@@ -207,12 +233,13 @@
                 html += '#' + id + '</p>';
                 //选择性显示时间
                 if (typeof (updatetime) != 'undefined') {
-                    html += '<time><p class="note-time note-updatetime">更新：' + updatetime + '</p>';
-                    html += '<p class="note-time">创建：' + time + '</p></time>';
+                    html += '<time><p class="note-time note-updatetime han-element">更新：' + insert_spacing(updatetime,0.1) + '</p>';
+                    html += '<p class="note-time han-element">创建：' + insert_spacing(time,0.1) + '</p></time>';
                 } else {
-                    html += '<time><p class="note-time">' + time + '</p></time>';
+                    html += '<time><p class="note-time han-element">' + insert_spacing(time,0.1) + '</p></time>';
                 }
                 html += '</div><div class="note-content"><p class="note-text">';
+                text = insert_spacing(text,0.08);
                 //自动识别网页
                 html += text.replace(reg_url, function (result) {
                     return '<a href="' + result + '">' + result + '</a>';
@@ -276,7 +303,7 @@
             }
             //刷新note-list
             async function refreshNoteList(callback) {
-                clearNoteList(); //先清空                
+                clearNoteList(); //先清空
                 notes.sort(sortNotes); //排序
                 notes.forEach(function (note) {
                     renderNote(note.id, note.time, note.updatetime, note.text);
@@ -329,8 +356,8 @@
                     //reset note content on page
                     $("#note_" + data.id + " .note-content p").html(html);
                     //reset content of updatetime
-                    var timeContent = '<p class="note-time note-updatetime">更新：' + data.updatetime + '</p>' +
-                        '<p class="note-time">创建：' + data.time + '</p>';
+                    var timeContent = '<p class="note-time note-updatetime han-element">更新：' + data.updatetime + '</p>' +
+                        '<p class="note-time han-element">创建：' + data.time + '</p>';
                     $('#note_' + data.id + ' .note-header time').html(timeContent);
                     bindNoteFoldDBL(data.id); //rebind foldevent
                     //open external event rebind
@@ -357,7 +384,7 @@
             async function addTiptoEmptyInfo() {
                 //首次启动在note-empty显示提示
                 if (firstStart) {
-                    $('.note-empty span').append('<br/>（请使用Ctrl+Enter保存新建笔记）');
+                    $('.note-empty span han-element').append('<br/>（请使用Ctrl+Enter保存新建笔记）');
                 }
             }
 
@@ -640,10 +667,10 @@
     <div class="container-mainmenu">
         <div class="mainmenu-panel">
             <div class="mainmenu-logo">
-                <img src="images/logo.png"></img>
+                <img src="images/logo.png"/>
                 <h1>Fastnote</h1>
                 <span id="mainmenu-version"></span>
-                <script>                    
+                <script>
                     $(document).ready(function () {
                         $('#mainmenu-version').text(version);
                     });

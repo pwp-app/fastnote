@@ -259,15 +259,15 @@ button {
 }
 
 .note-content {
-    width: 100%;    
+    width: 100%;
     margin-top:8px !important;
     margin-bottom: 5px !important;
 }
 
 .note-content p{
     font-size: 15px;
-    line-height: 22px;
-    letter-spacing: 0.05em;
+    line-height: 24px;
+    letter-spacing: 0.06em;
     padding:0 !important;
     margin:0 !important;
 }
@@ -278,7 +278,7 @@ button {
     color: white;
     font-size: 15px;
     text-decoration:underline;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
 }
 .note-content a:hover{
     color: white;
