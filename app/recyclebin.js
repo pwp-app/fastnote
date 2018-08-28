@@ -17,8 +17,7 @@ var RecycleWindow = {
         var conf = {
             width: 1200,
             height: 720,
-            resizable: false,
-            maximazable: false,
+            minWidth: 480,
             show: false
         };
         //标题栏的选用
@@ -26,15 +25,15 @@ var RecycleWindow = {
             conf.titleBarStyle = 'hiddenInset';
         else
             conf.frame = false;
-    
+
         win_recycle = new BrowserWindow(conf);
-    
+
         var viewpath = path.resolve(__dirname, '../views/recyclebin.html');
         win_recycle.loadFile(viewpath);
-    
+
         if (indebug)
             win_recycle.webContents.openDevTools();
-    
+
         win_recycle.on('closed', () => {
             win_recycle = null;
         })

@@ -37,8 +37,8 @@ function createWindow() {
   var conf = {
     width: 1280,
     height: 800,
-    resizable: false,
-    maximazable: false,
+    minWidth: 480,
+    minHeight: 600,
     show: false
   };
   //标题栏的选用
