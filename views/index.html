@@ -437,10 +437,14 @@
     <!-- rightclick menu -->
     <div class="rightclickmenu">
         <div class="list-group">
+            <button type="button" class="btn-rightclick list-group-item" id="btn-copyNote">复制</button>
             <button type="button" class="btn-rightclick list-group-item" id="btn-editNote">编辑</button>
             <button type="button" class="btn-rightclick list-group-item" id="btn-recycleNote">删除</button>
         </div>
     </div>
+
+    <!-- import clipboard operation-->
+    <script src='js/clipboard.copy.js'></script>
 
     <script>
         var noteid_clicked = -1;
@@ -476,6 +480,24 @@
                     var note = notes[i];
                     note.text = note.text.replace(/<br\/>/g, "\n")
                     ipcRenderer.send("openEditWindow", notes[i]);
+                    return;
+                }
+            }
+        });
+
+        $('#btn-copyNote').click(function () {
+            for (var i = 0; i < notes.length; i++) {
+                if (notes[i].id == noteid_clicked) {
+                    var note = notes[i];
+                    note.text = note.text.replace(/<br\/>/g, "\n")
+                    copyToClipboard(note.text,{
+                        success:function(){
+                            displayInfobar('success','内容已复制到剪贴板');
+                        },
+                        error:function(){
+                            displayInfobar('success','复制内容时出现错误');
+                        }
+                    });
                     return;
                 }
             }
@@ -532,6 +554,11 @@
                                         $('#update-title-span').text('检测到新版本：' + result.var);
                                         document.getElementsByClassName('update-contents-details')[
                                             0].innerHTML = result.text;
+                                        //check show full
+                                        if (result.showfull){
+                                            document.getElementsByClassName('update-contents-details')[
+                                                0].innerHTML += '<a class="update-contents-showfull" href="https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html">完整更新日志</a>'
+                                        }
                                         $('.update-contents-loading').css('display', 'none');
                                     } catch (err) {
                                         console.error(err);

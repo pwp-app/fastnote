@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "ajv": "^6.5.3",
     "animate.css": "^3.6.1",
     "bootstrap": "^4.1.1",
     "buffer-from": "^1.1.0",
@@ -13,7 +14,7 @@
     "source-map": "^0.7.3"
   },
   "devDependencies": {
-    "electron": "^3.0.0-beta.4",
+    "electron": "^3.0.0-beta.7",
     "electron-builder": "^20.19.2"
   },
   "name": "fastnote",

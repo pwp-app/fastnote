@@ -366,10 +366,14 @@ han {
 }
 
 .rightclickmenu button {
-    height: 30px;
+    height: 28px;
     padding: 0px 10px;
-    background-color: white !important;
+    background-color: white;
     border-radius: 0 !important;
+}
+
+.rightclickmenu button:hover {
+    background-color: rgba(0, 0, 0, .1) !important;
 }
 
 .rightclickmenu button:focus {
