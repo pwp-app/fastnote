@@ -34,6 +34,11 @@ han {
     -webkit-app-region: drag;
 }
 
+br{
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+}
+
 /* main */
 .container-main{
     z-index: -1;
@@ -283,7 +288,7 @@ han {
 }
 
 .note-selected{
-    background:rgba(0, 0, 0, .125);
+    background:rgba(0, 0, 0, .1);
 }
 
 .note-overheight{

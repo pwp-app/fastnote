@@ -201,8 +201,7 @@ function saveNote(notetext) {
         }
     }
     //转换回车
-    notetext = notetext.replace(/\n/g, '<br/>');
-    notetext = notetext.replace(/\r\n/g, '<br/>');
+    notetext = notetext.replace(/(\r\n)|(\n)|(\r)/g, '<br/>');
     //构造note
     var note = {
         id: notesid,

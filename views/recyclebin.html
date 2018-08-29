@@ -77,14 +77,14 @@
             //build css
             if (settings == null) {
                 //read error
-                cssText += 'body {font-family:Source Han Sans CN !important;}'; //font
+                cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 cssText += '.note-content p {text-align:justify;}'; //note text align
             } else {
                 //read success
                 if (typeof settings.fontfamily != 'undefined') {
-                    cssText += 'body {font-family:' + settings.fontfamily + ' !important;}'; //font
+                    cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
                 } else {
-                    cssText += 'body {font-family:Source Han Sans CN !important;}';
+                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}';
                 }
                 if (typeof settings.notealign != 'undefined') {
                     cssText += '.note-content p {text-align:' + settings.notealign + ';}'; //note text align

@@ -77,13 +77,13 @@
             //build css
             if (settings == null) {
                 //read error
-                cssText += 'body {font-family:Source Han Sans CN !important;}';
+                cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}';
             } else {
                 //read success
                 if (typeof settings.fontfamily != 'undefined') {
-                    cssText += 'body {font-family:' + settings.fontfamily + ' !important;}';
+                    cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
                 } else {
-                    cssText += 'body {font-family:Source Han Sans CN !important;}';
+                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}';
                 }
             }
             var modStyle = document.querySelector('#modCSS');

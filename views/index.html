@@ -54,14 +54,14 @@
             //build css
             if (settings == null) {
                 //read error
-                cssText += 'body {font-family:Source Han Sans CN !important;}'; //font
+                cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 cssText += '.note-content p {text-align:justify;}'; //note text align
             } else {
                 //read success
                 if (typeof settings.fontfamily != 'undefined') {
-                    cssText += 'body {font-family:' + settings.fontfamily + ' !important;}'; //font
+                    cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
                 } else {
-                    cssText += 'body {font-family:Source Han Sans CN !important;}';
+                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}';
                 }
                 if (typeof settings.notealign != 'undefined') {
                     cssText += '.note-content p {text-align:' + settings.notealign + ';}'; //note text align
@@ -205,7 +205,7 @@
     <div class="container-main">
         <div class="note-list" id="note-list"></div>
         <!-- empty -->
-        <div class="note-empty col-lg-12">
+        <div class="note-empty col-lg-12" id="note-empty">
             <span>您还没有建立任何的笔记</br>在下方你可以快速新建新笔记</span>
         </div>
         <script>
@@ -230,15 +230,14 @@
                         return '<a href="' + result + '">' + result + '</a>';
                     });
                     var origin_height = $('#note_' + data.id + ' .note-content').height(); //get origin height
-                    console.log("before:" + origin_height);
                     //reset note content on page
                     $("#note_" + data.id + " .note-content p").html(html);
                     $('#note_' + data.id + ' .note-content').removeClass('note-overheight');
                     $('#note_' + data.id + ' .note-content').removeAttr('style');
                     var after_height = $('#note_' + data.id + ' .note-content').height();
                     //reset content of updatetime
-                    var timeContent = '<p class="note-time note-updatetime han-element">更新：' + 
-                            data.updatetime +
+                    var timeContent = '<p class="note-time note-updatetime han-element">更新：' +
+                        data.updatetime +
                         '</p>' +
                         '<p class="note-time han-element">创建：' + data.time + '</p>';
                     $('#note_' + data.id + ' .note-header time').html(timeContent);
@@ -251,7 +250,6 @@
                     displayInfobar("success", "笔记内容已保存");
 
                     var tag_class = $('#note_' + data.id + ' .note-content').attr('class');
-                    console.log("after:" + after_height);
                     //fix note status
                     if (after_height >= 250) {
                         if (origin_height <= 250) {
@@ -368,26 +366,31 @@
                 isNoteFolded = false;
                 $('.container-newnote').css('display', 'block');
                 $('.trigger-expandnewnote').css('display', 'none');
+                setTimeout(function(){
+                    $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 207);
+                    $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 207);
+                },200);
             } else {
                 if (data.isFolded) {
                     $('.container-newnote').css('display', 'none');
                     isNoteFolded = true;
                     $('.trigger-expandnewnote').css('display', 'block');
+                    //late execute
+                    setTimeout(function(){
+                        $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 27);
+                        $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 27);
+                    },200);
                 } else {
                     isNoteFolded = false;
                     $('.container-newnote').css('display', 'block');
                     $('.trigger-expandnewnote').css('display', 'none');
+                    setTimeout(function(){
+                        $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 207);
+                        $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 207);
+                    },200);
                 }
             }
-            console.log($(window).height());
-            console.log($('.container-titlebar').height());
-            if ($('.container-newnote').css('display') == 'none') {
-                $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 27) +
-                    'px');
-            } else {
-                $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 207) +
-                    'px');
-            }
+
         });
         //绑定折叠事件
         $('#btn-newnote-fold').click(function () {
@@ -489,13 +492,13 @@
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].id == noteid_clicked) {
                     var note = notes[i];
-                    note.text = note.text.replace(/<br\/>/g, "\n");
-                    copyToClipboard(note.text,{
-                        success:function(){
-                            displayInfobar('success','内容已复制到剪贴板');
+                    note.text = note.text.replace(/(<br\/>)/gi, "\r");
+                    copyToClipboard(note.text, {
+                        success: function () {
+                            displayInfobar('success', '内容已复制到剪贴板');
                         },
-                        error:function(){
-                            displayInfobar('success','复制内容时出现错误');
+                        error: function () {
+                            displayInfobar('success', '复制内容时出现错误');
                         }
                     });
                     return;
@@ -555,9 +558,11 @@
                                         document.getElementsByClassName('update-contents-details')[
                                             0].innerHTML = result.text;
                                         //check show full
-                                        if (result.showfull){
-                                            document.getElementsByClassName('update-contents-details')[
-                                                0].innerHTML += '<a class="update-contents-showfull" href="https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html">完整更新日志</a>'
+                                        if (result.showfull) {
+                                            document.getElementsByClassName(
+                                                    'update-contents-details')[
+                                                    0].innerHTML +=
+                                                '<a class="update-contents-showfull" href="https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html">完整更新日志</a>'
                                         }
                                         $('.update-contents-loading').css('display', 'none');
                                     } catch (err) {
