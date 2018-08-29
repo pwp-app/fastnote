@@ -25,6 +25,9 @@
         //import json storage
         const storage = require('electron-json-storage');
 
+        const Menu = remote.Menu;
+        const MenuItem = remote.MenuItem;
+
         const {
             ipcRenderer
         } = require('electron');
@@ -34,6 +37,10 @@
         //tools
         const UUID = require('../app/tools/uuid.js');
         const indebug = remote.getGlobal('indebug');
+
+        //import menu
+        $.getScript('js/menu.note.js');
+        $.getScript('js/menu.textarea.js');
 
         var settings;
 
@@ -437,20 +444,12 @@
         });
     </script>
 
-    <!-- rightclick menu -->
-    <div class="rightclickmenu">
-        <div class="list-group">
-            <button type="button" class="btn-rightclick list-group-item" id="btn-copyNote">复制</button>
-            <button type="button" class="btn-rightclick list-group-item" id="btn-editNote">编辑</button>
-            <button type="button" class="btn-rightclick list-group-item" id="btn-recycleNote">删除</button>
-        </div>
-    </div>
-
     <!-- import clipboard operation-->
     <script src='js/clipboard.copy.js'></script>
 
     <script>
         var noteid_clicked = -1;
+
         //右键菜单相关事件绑定
         function bindRightClickEvent() {
             $('.note').mousedown(function (e) {
@@ -458,53 +457,38 @@
                     if (noteid_clicked != -1) {
                         $('#note_' + noteid_clicked).parent().removeClass('note-selected');
                     }
-                    $('.rightclickmenu').attr('style', 'display:block;' + 'left:' + e.clientX + 'px;top:' + e.clientY +
-                        'px;z-index:1000;');
-                    isRightClickMenuOpened = true;
                     noteid_clicked = parseInt($(this).attr("id").replace('note_', ''));
                     $(this).parent().addClass('note-selected');
+                    menu_note.popup(remote.getCurrentWindow());
+                }
+            });
+            $('#note-text').mousedown(function (e) {
+                if (e.which == 3) {
+                    if ($('#note-text').val().trim().length>0){
+                        if (getSelectText('note-text').length>0){
+                            menu_textarea_selected.popup(remote.getCurrentWindow());
+                        } else {
+                            menu_textarea.popup(remote.getCurrentWindow());
+                        }
+                    } else {
+                        menu_textarea_empty.popup(remote.getCurrentWindow());
+                    }
                 }
             });
         }
-        $('body').click(function (e) {
-            $('.rightclickmenu').attr('style', 'display:none;'); //右键菜单隐藏
-            $('#note_' + noteid_clicked).parent().removeClass('note-selected');
-            noteid_clicked = -1;
-        });
-        $('#note-list').scroll(function () {
-            $('.rightclickmenu').attr('style', 'display:none;');
-            $('#note_' + noteid_clicked).parent().removeClass('note-selected');
-            noteid_clicked = -1;
-        });
 
-        $('#btn-editNote').click(function () {
-            for (var i = 0; i < notes.length; i++) {
-                if (notes[i].id == noteid_clicked) {
-                    var note = notes[i];
-                    note.text = note.text.replace(/<br\/>/g, "\n")
-                    ipcRenderer.send("openEditWindow", notes[i]);
-                    return;
+        function getSelectText(id) {
+            var t = document.getElementById(id);
+            if (window.getSelection) {
+                if (t.selectionStart != undefined && t.selectionEnd != undefined) {
+                    return t.value.substring(t.selectionStart, t.selectionEnd);
+                } else {
+                    return "";
                 }
+            } else {
+                return document.selection.createRange().text;
             }
-        });
-
-        $('#btn-copyNote').click(function () {
-            for (var i = 0; i < notes.length; i++) {
-                if (notes[i].id == noteid_clicked) {
-                    var note = notes[i];
-                    note.text = note.text.replace(/(<br\/>)/gi, "\r");
-                    copyToClipboard(note.text, {
-                        success: function () {
-                            displayInfobar('success', '内容已复制到剪贴板');
-                        },
-                        error: function () {
-                            displayInfobar('success', '复制内容时出现错误');
-                        }
-                    });
-                    return;
-                }
-            }
-        });
+        }
     </script>
 
     <!-- update -->
@@ -718,9 +702,8 @@
     <script>
         //import requirements
         $.getScript('../app/infobar.js'); //import by jQuery
-        require('../app/notes.js');
+        $.getScript('../app/notes.js');
     </script>
-
 
     <span id="filter-x" style="display:none"></span>
 </body>

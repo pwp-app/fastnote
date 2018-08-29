@@ -1,14 +1,5 @@
-//import
-
-const storage = require('electron-json-storage');
-
-let textarea = $('#note-text');
 let fs = require('fs');
-let time = require('../app/tools/time.js');
 
-//import storage location
-const remote = require('electron').remote;
-const app = remote.app;
 var storagePath = app.getPath('userData');
 
 //execute
@@ -98,20 +89,6 @@ function restoreNote(id){
         }
     });
 }
-
-//bind delete event
-$("#btn-deleteNote").click(function(){
-    deleteNote(noteid_clicked);
-    //隐藏右键菜单
-    $('.rightclickmenu').attr('style', 'display:none;');
-});
-
-//bind restore event
-$("#btn-restoreNote").click(function(){
-    restoreNote(noteid_clicked);
-    //隐藏右键菜单
-    $('.rightclickmenu').attr('style', 'display:none;');
-});
 
 //封装在函数中
 function readNoteFiles() {

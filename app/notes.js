@@ -1,13 +1,6 @@
-//import electron-json-storage
-const storage = require('electron-json-storage');
-
 let textarea = $('#note-text');
 let fs = require('fs');
-let time = require('../app/tools/time.js');
 
-//import storage location
-const remote = require('electron').remote;
-const app = remote.app;
 var storagePath = app.getPath('userData');
 
 //预设notesid
@@ -58,14 +51,6 @@ textarea.keyup(function (e) {
         isComboKeyDown = false;
     }
 });
-
-//删除按钮事件绑定
-let btn_recycleNote = $('#btn-recycleNote')
-btn_recycleNote.click(function () {
-    putToRecyclebin(noteid_clicked);
-    //隐藏右键菜单
-    $('.rightclickmenu').attr('style', 'display:none;');
-})
 
 //放入回收站
 function putToRecyclebin(id) {

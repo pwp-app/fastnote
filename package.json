@@ -18,7 +18,7 @@
     "electron-builder": "^20.19.2"
   },
   "name": "fastnote",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

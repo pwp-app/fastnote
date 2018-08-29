@@ -12,8 +12,6 @@ function copyToClipboard(input,callback) {
             (the execCommand for 'copy' method works on the selection) */
         SelectContent(forExecElement);
 
-        var supported = true;
-
         // UniversalXPConnect privilege is required for clipboard access in Firefox
         try {
             if (window.netscape && netscape.security) {

@@ -50,6 +50,10 @@
         const app = remote.app;
         //import json storage
         const storage = require('electron-json-storage');
+        let time = require('../app/tools/time.js');
+
+        const Menu = remote.Menu;
+        const MenuItem = remote.MenuItem;
 
         const {
             ipcRenderer
@@ -57,6 +61,9 @@
 
         //import requirements
         $.getScript('../app/infobar.js'); //import by jQuery
+
+        //import menu
+        $.getScript('js/menu.recyclebin.js');
 
         var settings;
 
@@ -140,14 +147,6 @@
         });
     </script>
 
-    <!-- rightclick menu -->
-    <div class="rightclickmenu">
-        <div class="list-group">
-            <button type="button" class="btn-rightclick list-group-item" id="btn-restoreNote">还原</button>
-            <button type="button" class="btn-rightclick list-group-item" id="btn-deleteNote">彻底删除</button>
-        </div>
-    </div>
-
     <span id="filter-x" style="display:none"></span>
 
     <script>
@@ -159,24 +158,12 @@
                     if (noteid_clicked != -1) {
                         $('#note_' + noteid_clicked).parent().removeClass('note-selected');
                     }
-                    $('.rightclickmenu').attr('style', 'display:block;' + 'left:' + e.clientX + 'px;top:' + e.clientY +
-                        'px;z-index:1000;');
-                    isRightClickMenuOpened = true;
                     noteid_clicked = parseInt($(this).attr("id").replace('note_', ''));
                     $(this).parent().addClass('note-selected');
+                    menu_recyclebin.popup(remote.getCurrentWindow());
                 }
             });
         }
-        $('body').click(function (e) {
-            $('.rightclickmenu').attr('style', 'display:none;'); //右键菜单隐藏
-            $('#note_' + noteid_clicked).parent().removeClass('note-selected');
-            noteid_clicked = -1;
-        });
-        $('#note-list').scroll(function () {
-            $('.rightclickmenu').attr('style', 'display:none;');
-            $('#note_' + noteid_clicked).parent().removeClass('note-selected');
-            noteid_clicked = -1;
-        });
 
         //bind resize
         $(window).resize(function () { //当浏览器大小变化时
@@ -190,6 +177,6 @@
     </script>
 
     <script>
-        require('../app/notes_recycle.js');
+        $.getScript('../app/notes_recycle.js');
     </script>
 </body>
