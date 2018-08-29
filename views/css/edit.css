@@ -1,7 +1,6 @@
 .container-edit{
     width:100%;
-    height:100%;
-    position: relative;
+    position: fixed;
     display: block;
     background-color: #1faeff;
     padding: 12px 13px;
@@ -23,6 +22,7 @@
     font-size: 14px;
     border-radius: 5px;
     letter-spacing: 0.05em;
+    display: block;
 }
 .title {
     font-size: 13px !important;

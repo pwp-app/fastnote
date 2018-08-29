@@ -237,10 +237,10 @@
                     $('#note_' + data.id + ' .note-content').removeAttr('style');
                     var after_height = $('#note_' + data.id + ' .note-content').height();
                     //reset content of updatetime
-                    var timeContent = '<p class="note-time note-updatetime han-element">更新：' + insert_spacing(
-                            data.updatetime, 0.1) +
+                    var timeContent = '<p class="note-time note-updatetime han-element">更新：' + 
+                            data.updatetime +
                         '</p>' +
-                        '<p class="note-time han-element">创建：' + insert_spacing(data.time, 0.1) + '</p>';
+                        '<p class="note-time han-element">创建：' + data.time + '</p>';
                     $('#note_' + data.id + ' .note-header time').html(timeContent);
                     //open external event rebind
                     $('#note_' + data.id + ' a').click(function (e) {
@@ -489,7 +489,7 @@
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].id == noteid_clicked) {
                     var note = notes[i];
-                    note.text = note.text.replace(/<br\/>/g, "\n")
+                    note.text = note.text.replace(/<br\/>/g, "\n");
                     copyToClipboard(note.text,{
                         success:function(){
                             displayInfobar('success','内容已复制到剪贴板');

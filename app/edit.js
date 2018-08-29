@@ -15,8 +15,8 @@ function createEditWindow(data) {
     var conf = {
         width: 800,
         height: 430,
-        resizable: false,
-        maximazable: false,
+        minWidth:480,
+        minHeight:200,
         show: false
     };
     //标题栏的选用
@@ -36,7 +36,7 @@ function createEditWindow(data) {
 
     win_edit.on('closed', () => {
         var index = win_edits.indexOf(win_edit);
-        win_edits[index] = null; 
+        win_edits[index] = null;
     })
 
     win_edit.on('ready-to-show', () => {

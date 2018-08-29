@@ -176,10 +176,17 @@
                     $("#edit-title").append(" #" + note.id);
                     $("title").append(" - #" + note.id);
                     //初始化header
-                    $("#edit-header-time").append(insert_spacing(note.time,0.1));
+                    $("#edit-header-time").append(note.time);
                     break;
             }
         });
         ipcRenderer.send("requestInit");
+
+        $(window).resize(function(){
+            var h_container = $(window).height()-$('.container-titlebar').height()-40;
+            $('.container-edit').css('height',h_container);
+            var h_textedit = h_container - $('.container-edit-header').height()-34;
+            $('#text-edit').css('height',h_textedit);
+        });
     </script>
 </body>

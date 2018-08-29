@@ -39,11 +39,11 @@ function renderNote(id, time, updatetime, text) {
     html += '#' + id + '</p>';
     //选择性显示时间
     if (typeof (updatetime) != 'undefined') {
-        html += '<time><p class="note-time note-updatetime han-element">更新：' + insert_spacing(updatetime,
-            0.1) + '</p>';
-        html += '<p class="note-time han-element">创建：' + insert_spacing(time, 0.1) + '</p></time>';
+        html += '<time><p class="note-time note-updatetime han-element">更新：' + updatetime,
+             + '</p>';
+        html += '<p class="note-time han-element">创建：' + time + '</p></time>';
     } else {
-        html += '<time><p class="note-time han-element">' + insert_spacing(time, 0.1) + '</p></time>';
+        html += '<time><p class="note-time han-element">' + time + '</p></time>';
     }
     html += '</div><div class="note-content"><p class="note-text">';
     //process html tag
@@ -55,7 +55,7 @@ function renderNote(id, time, updatetime, text) {
         final_text += "<br/>";
     }
     text = final_text;
-    text = insert_spacing(text, 0.12);
+    text = insert_spacing(text, 0.15);
     //自动识别网页
     html += text.replace(reg_url, function (result) {
         return '<a href="' + result + '">' + result + '</a>';
@@ -76,15 +76,13 @@ function renderNoteAtTop(id, time, updatetime, text) {
     html += '#' + id + '</p>';
     //选择性显示时间
     if (typeof (updatetime) != 'undefined') {
-        html += '<time><p class="note-time note-updatetime han-element">更新：' + insert_spacing(updatetime,
-            0.1) + '</p>';
-        html += '<p class="note-time han-element">创建：' + insert_spacing(time, 0.1) + '</p></time>';
+        html += '<time><p class="note-time note-updatetime han-element">更新：' + updatetime + '</p>';
+        html += '<p class="note-time han-element">创建：' + time + '</p></time>';
     } else {
-        html += '<time><p class="note-time han-element">' + insert_spacing(time, 0.1) + '</p></time>';
+        html += '<time><p class="note-time han-element">' + time + '</p></time>';
     }
     html += '</div><div class="note-content"><p class="note-text">';
 
-    //process html tag
     temp = text.split('<br/>');
     final_text = "";
     for (var i = 0; i < temp.length; i++) {
@@ -95,7 +93,7 @@ function renderNoteAtTop(id, time, updatetime, text) {
     }
     text = final_text;
 
-    text = insert_spacing(text, 0.12);
+    text = insert_spacing(text, 0.15);
     //自动识别网页
     html += text.replace(reg_url, function (result) {
         return '<a href="' + result + '">' + result + '</a>';
