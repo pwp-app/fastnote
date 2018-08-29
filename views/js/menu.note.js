@@ -21,13 +21,6 @@ menu_note.append(new MenuItem({
     }
 }));
 menu_note.append(new MenuItem({
-    label: '删除',
-    click: function () {
-        putToRecyclebin(noteid_clicked);
-        noteid_clicked = -1;
-    }
-}));
-menu_note.append(new MenuItem({
     label: '编辑',
     click: function () {
         for (var i = 0; i < notes.length; i++) {
@@ -38,6 +31,13 @@ menu_note.append(new MenuItem({
                 return;
             }
         }
+        noteid_clicked = -1;
+    }
+}));
+menu_note.append(new MenuItem({
+    label: '删除',
+    click: function () {
+        putToRecyclebin(noteid_clicked);
         noteid_clicked = -1;
     }
 }));

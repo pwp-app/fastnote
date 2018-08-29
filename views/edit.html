@@ -50,6 +50,10 @@
         const app = remote.app;
         //import json storage
         const storage = require('electron-json-storage');
+
+        const Menu = remote.Menu;
+        const MenuItem = remote.MenuItem;
+
         //ipc
         const {
             ipcRenderer
@@ -57,6 +61,9 @@
 
         //import requirements
         $.getScript('../app/infobar.js'); //import by jQuery
+
+        //import menu
+        $.getScript('js/menu.textarea.js');
 
         var settings;
 
@@ -182,11 +189,39 @@
         });
         ipcRenderer.send("requestInit");
 
-        $(window).resize(function(){
-            var h_container = $(window).height()-$('.container-titlebar').height()-40;
-            $('.container-edit').css('height',h_container);
-            var h_textedit = h_container - $('.container-edit-header').height()-34;
-            $('#text-edit').css('height',h_textedit);
+        $(window).resize(function () {
+            var h_container = $(window).height() - $('.container-titlebar').height() - 40;
+            $('.container-edit').css('height', h_container);
+            var h_textedit = h_container - $('.container-edit-header').height() - 34;
+            $('#text-edit').css('height', h_textedit);
         });
+
+        //右键菜单相关事件绑定
+        $('#text-edit').mousedown(function (e) {
+            if (e.which == 3) {
+                if ($('#text-edit').val().trim().length > 0) {
+                    if (getSelectText('text-edit').length > 0) {
+                        menu_textarea_selected.popup(remote.getCurrentWindow());
+                    } else {
+                        menu_textarea.popup(remote.getCurrentWindow());
+                    }
+                } else {
+                    menu_textarea_empty.popup(remote.getCurrentWindow());
+                }
+            }
+        });
+
+        function getSelectText(id) {
+            var t = document.getElementById(id);
+            if (window.getSelection) {
+                if (t.selectionStart != undefined && t.selectionEnd != undefined) {
+                    return t.value.substring(t.selectionStart, t.selectionEnd);
+                } else {
+                    return "";
+                }
+            } else {
+                return document.selection.createRange().text;
+            }
+        }
     </script>
 </body>
