@@ -29,7 +29,6 @@ var notesEdit = {
         var json = JSON.stringify(note);
         fs.writeFile(path, json, 'utf-8', function (err, data) {
             if (err) {
-                console.log(data);
                 displayInfobar('error','保存编辑内容时发生错误。');
                 return;
             }

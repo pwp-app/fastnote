@@ -123,6 +123,7 @@
         //生成一个独立的uuid
         storage.has('uuid', function (error, hasKey) {
             if (error) {
+                console.error(error);
                 throw (error);
             }
             //err为首次启动
@@ -294,10 +295,10 @@
             }
 
             //first start - tooltip
-            async function addTiptoEmptyInfo() {
+            function addTiptoEmptyInfo() {
                 //首次启动在note-empty显示提示
                 if (firstStart) {
-                    $('.note-empty span han-element').append('<br/>（请使用Ctrl+Enter保存新建笔记）');
+                    $('.note-empty span').append('<br/>'+insert_spacing('(请使用Ctrl+Enter保存新建笔记)',0.15));
                 }
             }
 

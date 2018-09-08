@@ -14,6 +14,7 @@ function han_init() {
   }
 
   function insert_spacing(str, space) {
+    str = str.replace(/(&nbsp;)/gi,'あえお');
     var p1 = /([A-Za-z_])([\u4e00-\u9fa5]+)/gi;
     var p2 = /([\u4e00-\u9fa5]+)([A-Za-z_])/gi;
     var p3 = /([0-9_])([\u4e00-\u9fa5]+)/gi;
@@ -23,7 +24,7 @@ function han_init() {
     var p7 = /([\u4e00-\u9fa5]+)([<])([a])/gi;
     var p8 = /([a])([>])([\u4e00-\u9fa5]+)/gi;
     str = str.replace(p1, '$1あおえ$2').replace(p2, "$1あおえ$2").replace(p3, "$1あおえ$2").replace(p4, "$1あおえ$2").replace(p5, "$1$2あおえ$3").replace(p6, "$1あおえ$2$3").replace(p7, "$1あおえ$2$3").replace(p8, "$1$2あおえ$3");
-    var p = /([あ])([お])([え])/gi;
-    str = str.replace(p, '<han style="padding-left:' + space + 'rem !important;padding-right:' + space + 'rem !important"></han>');
+    var p = /(あおえ)/gi;
+    str = str.replace(p, '<han style="padding-left:' + space + 'rem !important;padding-right:' + space + 'rem !important"></han>').replace(/(あえお)/gi,'&nbsp;');
     return str;
   }

@@ -134,6 +134,8 @@
         </div>
     </div>
     <script>
+        var nowNoteId = 0;
+
         $("#edit-btn-save").click(function () {
             var text = $("#text-edit").val().trim();
             if (text != null && text != "") {
@@ -174,9 +176,11 @@
             type,
             data
         }) => {
+            console.log(type);
             switch (type) {
                 case 'init':
                     note = data;
+                    nowNoteId = note.id;
                     //初始化textarea
                     $("#text-edit").text(note.text);
                     //初始化title
@@ -184,6 +188,11 @@
                     $("title").append(" - #" + note.id);
                     //初始化header
                     $("#edit-header-time").append(note.time);
+                    break;
+                case 'note-recycled':
+                    if (data.id == nowNoteId){
+                        window.close();
+                    }
                     break;
             }
         });

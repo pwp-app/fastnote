@@ -12,21 +12,23 @@ let isNotesEmpty;
 //获取notesid的数据
 storage.get('notesid', function (error, data) {
     if (error) {
-        notesid = 1;
+        notesid = 0;
         return;
     } else {
         //获取callback回传的json
         var notesid_json = data;
+        if (typeof notesid_json == 'string'){
+            notesid_json = JSON.parse(data);
+        }
         //判断是否为空
         if (notesid_json == null || typeof (notesid_json) == 'undefined') {
-            notesid = 1;
+            notesid = 0;
             return;
         }
         //parse Json，获取数据
-        notesid_json = JSON.parse(notesid_json);
         notesid = notesid_json.id;
         if (notesid == null || typeof (notesid) == 'undefined') {
-            notesid = 1;
+            notesid = 0;
         }
     }
 });
@@ -96,10 +98,10 @@ function putToRecyclebin(id) {
                             throw (err);
                         } else {
                             displayInfobar('success', '已放入回收站');
+                            ipcRenderer.send('recycle-note', note_temp);
                         }
                     });
                 }
-
             } else {
                 displayInfobar('error', '找不到文件，无法移入回收站');
             }

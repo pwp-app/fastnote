@@ -60,7 +60,6 @@ function restoreNote(id){
             }
             if (fs.existsSync(path)) {
                 var newpath = path.replace('recyclebin/','');
-                console.log(newpath);
                 fs.rename(path,newpath, function (err) {
                     if (err) {
                         displayInfobar('error', '笔记还原失败');

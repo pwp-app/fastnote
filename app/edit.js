@@ -1,4 +1,5 @@
 let win_edits = new Array();
+let edit_noteid = new Array();
 
 const {
     BrowserWindow
@@ -27,6 +28,8 @@ function createEditWindow(data) {
 
     win_edit = new BrowserWindow(conf);
     win_edits.push(win_edit);
+    //save ids
+    edit_noteid.push(data.id);
 
     var viewpath = path.resolve(__dirname, '../views/edit.html');
     win_edit.loadFile(viewpath);
@@ -37,6 +40,7 @@ function createEditWindow(data) {
     win_edit.on('closed', () => {
         var index = win_edits.indexOf(win_edit);
         win_edits[index] = null;
+        edit_noteid[index] = null;
     })
 
     win_edit.on('ready-to-show', () => {
@@ -51,8 +55,21 @@ function createEditWindow(data) {
 }
 
 var editWindow = {
+    getWins: function(){
+        return win_edits;
+    },
     showWindow: function(data){
-        createEditWindow(data);
+        var index = edit_noteid.indexOf(data.id);
+        if (index != -1){
+            if (win_edits[index]==null){
+                edit_noteid[index] = null;
+                createEditWindow(data);
+            } else {
+                win_edits[index].focus();
+            }
+        } else {
+            createEditWindow(data);
+        }
     },
     bindEditEvent: function(callback){
         ipc.on('update-edit-note',function(sys,data){

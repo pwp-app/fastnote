@@ -13,9 +13,9 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = true;          //debug trigger
-global.firstStart = false;       //first start flag
-global.uuid = "";                //uuid storage
+global.indebug = true; //debug trigger
+global.firstStart = false; //first start flag
+global.uuid = ""; //uuid storage
 
 //auto-update
 const {
@@ -63,7 +63,7 @@ function createWindow() {
   //getfocus
   win.on('ready-to-show', () => {
     //uuid recevier
-    ipc.on('set-uuid',function(sender,data){
+    ipc.on('set-uuid', function (sender, data) {
       global.uuid = data;
     });
     //show main window
@@ -71,8 +71,8 @@ function createWindow() {
     win.show();
     checkForUpdates();
     //bind restore note event
-    ipc.on('restore-note',function (sender,data){
-      win.webContents.send('restore-note',data);
+    ipc.on('restore-note', function (sender, data) {
+      win.webContents.send('restore-note', data);
     });
     //open about window
     ipc.on('openAboutWindow', () => {
@@ -92,6 +92,20 @@ function createWindow() {
     ipc.on('reloadMainWindow', function (sender, data) {
       win.reload();
     });
+
+    //when recycle close edit
+    ipc.on('recycle-note', function (sender, data) {
+      var editWins = editWindow.getWins();
+      for (var i = 0;i<editWins.length;i++){
+          if (typeof editWins[i] != undefined && editWins[i] != null){
+            editWins[i].webContents.send('message',{
+              type:'note-recycled',
+              data:data
+            });
+          }
+      }
+    });
+
     //quit now
     ipc.on('app-quitNow', () => {
       app.quit();
