@@ -615,7 +615,7 @@
                     </li>
                     <div class="mainmenu-split"></div>
                     <li id="mainmenu-btn-settings">
-                        <span>设置（开发中）</span>
+                        <span>设置</span>
                     </li>
                     <li id="mainmenu-btn-about">
                         <span>关于</span>
@@ -649,6 +649,10 @@
         //绑定菜单项
         $('#mainmenu-btn-recycle').click(function () {
             ipcRenderer.send("openRecycleWindow");
+            closeMainMenu();
+        });
+        $('#mainmenu-btn-settings').click(function () {
+            ipcRenderer.send("openSettingsWindow"); //打开关于窗口
             closeMainMenu();
         });
         $('#mainmenu-btn-about').click(function () {

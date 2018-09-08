@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Fastnote - 关于</title>
+    <title>Fastnote - 设置</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!--import requirements-->
@@ -101,50 +101,10 @@
     <script>
         require('electron-titlebar');
     </script>
-    <div class="container-about">
-        <div class="about-logo">
-            <img src="images/logo.png"></img>
-        </div>
-        <div class="about-title">
-            <h1>Fastnote</h1>
-            <span id="about-version"></span>
-            <script>
-                var version = app.getVersion();
-                $(document).ready(function () {
-                    $('#about-version').text(version);
-                });
-            </script>
-        </div>
-        <div class="about-footer">
-            <div class="about-uuid">
-                <span id="about-uuid-text"></span>
-            </div>
-            <script>
-                ipcRenderer.on('set-uuid', (event, data) => {
-                    if (typeof (data) != 'undefined' && data != "" && data != null) {
-                        $('#about-uuid-text').text('UUID：' + data);
-                    }
-                });
-            </script>
-            <div class="about-author">
-                <span>Developed by BackRunner</span>
-            </div>
-            <div class="about-opensource">
-                <span>基于MIT协议开源</span>
-                <button class="br-btn btn-noback" id="btn-github">
-                    <i class="fa fa-github"></i>
-                </button>
-            </div>
-        </div>
+    <div class="container-settings">
+
     </div>
 
-    <script>
-        //绑定Github图标的事件
-        $("#btn-github").click(function (e) {
-            ipcRenderer.send('openExternalURL', 'https://github.com/backrunner/Fastnote');
-            e.preventDefault();
-        });
-    </script>
 </body>
 
 </html>
