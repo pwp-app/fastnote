@@ -10,7 +10,7 @@ const path = require('path');
 function createAboutWindow() {
     var conf = {
         width: 680,
-        height: 360,
+        height: 420,
         resizable: false,
         maximazable: false,
         show: false
@@ -30,7 +30,7 @@ function createAboutWindow() {
         win_settings.webContents.openDevTools();
 
     win_settings.on('closed', () => {
-        win_about = null;
+        win_settings = null;
     })
     win_settings.on('ready-to-show', () => {
         win_settings.focus();

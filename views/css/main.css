@@ -73,7 +73,7 @@ br{
     height: 35px;
     font-size: 15px;
     font-weight: 200;
-    padding: 8px 12px;
+    padding: 7px 12px;
     -webkit-user-select: none;
     position: fixed !important;
 }
@@ -546,7 +546,7 @@ br{
 .container-mainmenu{
     display: none;
     position: absolute;
-    width: 280px;
+    width: 250px;
     height: 100%;
     top:0;
     bottom:0;
@@ -572,7 +572,7 @@ br{
     animation-duration: 0.75s !important;
 }
 .mainmenu-panel{
-    width: 280px;
+    width: 250px;
     height: 100%;
     left:0;
     background: white;
@@ -593,7 +593,7 @@ br{
 .mainmenu-logo h1{
     padding-top:12px;
     color:gray;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: lighter;
     letter-spacing: 0.1em;
     -webkit-user-drag: none;
@@ -634,7 +634,7 @@ br{
     -webkit-user-drag: none;
 }
 .mainmenu-menu li span{
-    padding-left:45px;
+    padding-left:42px;
     -webkit-user-select: none;
 }
 .mainmenu-menu li:hover{

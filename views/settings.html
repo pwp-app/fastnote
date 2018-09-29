@@ -13,7 +13,7 @@
         require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
     </script>
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="css/about.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/settings.css" />
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
@@ -95,16 +95,53 @@
 
 <body>
     <!-- titlebar -->
-    <div class="about-titlebar col-lg-12 drag">
+    <div class="container-titlebar col-lg-12 drag">
+        <div class="title" id="app-title">设置</div>
         <div id="electron-titlebar" class="titlebar drag" style="position: fixed !important;z-index: 10;"></div>
     </div>
     <script>
         require('electron-titlebar');
     </script>
     <div class="container-settings">
-
+        <div class="settings-titles">
+            <div class="settings-titles-block settings-titles-general settings-titles-clicked" data-target="settings-general">
+                <i class="fa fa-cog fa-fw settings-titles-icon" aria-hidden="true"></i>
+                <span class="settings-titles-span">通用</span>
+            </div>
+            <div class="settings-titles-block settings-titles-notes" data-target="settings-notes">
+                <i class="fa fa-sticky-note-o fa-fw settings-titles-icon" aria-hidden="true"></i>
+                <span class="settings-titles-span">笔记</span>
+            </div>
+            <div class="settings-titles-block settings-titles-display" data-target="settings-display">
+                <i class="fa fa-paint-brush fa-fw settings-titles-icon" aria-hidden="true"></i>
+                <span class="settings-titles-span">显示</span>
+            </div>
+        </div>
+        <script>
+            //绑定点击事件
+            $('.settings-titles-block').click(function(){
+                $('.settings-titles-block').removeClass('settings-titles-clicked');
+                $(this).addClass('settings-titles-clicked');
+                $('.settings-sections').addClass('settings-sections-hidden');
+                $('.'+$(this).attr('data-target')).removeClass('settings-sections-hidden');
+            });
+        </script>
+        <!-- sections -->
+        <div class="settings-sections settings-general">
+            <div class="settings-item">
+                
+            </div>
+        </div>
+        <div class="settings-sections settings-notes settings-sections-hidden">
+            <div class="settings-item">
+                    
+            </div>
+        </div>
+        <div class="settings-sections settings-display settings-sections-hidden">
+            <div class="settings-item">
+                
+            </div>
+        </div>
     </div>
-
 </body>
-
 </html>
