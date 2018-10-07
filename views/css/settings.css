@@ -2,6 +2,7 @@
     width: 100%;
     height: 100%;
 }
+/* select bar*/
 .settings-titles{
     width: 100%;
     height:85px;
@@ -35,6 +36,38 @@
     -webkit-user-drag: none;
     -webkit-user-select: none;
 }
+/* sections */
+.settings-sections{
+    margin:20px 24px 0px 24px;
+}
 .settings-sections-hidden{
     display:none;
+}
+.settings-item{
+    display: grid;
+    grid-template-columns: 28% 8% 64%;
+    grid-template-rows: 45px;
+    align-items: left;
+}
+.settings-item-title{
+    font-size: 15px;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    text-align: left;
+    margin-top:6px;
+    width: auto;
+    margin-left:45px;
+}
+.settings-item-control select{
+    height: 34px;
+    font-size: 13px;
+    vertical-align: middle;
+    grid-column-start: 2;
+    grid-column-end: 4;
+}
+.settings-item-control{
+    width:90%;
+}
+.settings-control-checkbox{
+    margin-top:10px;
 }

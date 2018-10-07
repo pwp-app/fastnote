@@ -129,8 +129,20 @@
         <!-- sections -->
         <div class="settings-sections settings-general">
             <div class="settings-item">
-                <div class="form-group">
+                <div class="settings-item-child settings-item-title">
+                    <span>启用自动更新</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <input class="settings-control-checkbox" type="checkbox" />
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
                     <span>语言</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
                     <select class="form-control">
                         <option>简体中文</option>
                     </select>
@@ -139,13 +151,49 @@
         </div>
         <div class="settings-sections settings-notes settings-sections-hidden">
             <div class="settings-item">
-                <span>当前Note ID:</span>
-                <button class="br-btn btn-noback">重置</button>
+                <div class="settings-item-child settings-item-title">
+                    <span>当前笔记序号：</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <button class="br-btn">重置</button>
+                </div>
             </div>
         </div>
         <div class="settings-sections settings-display settings-sections-hidden">
-            
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span>字体</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control">
+                        <option style="font-family: Source Han Sans CN !important;">思源黑体</option>
+                        <option style="font-family: Microsoft Yahei !important;">微软雅黑</option>
+                        <option style="font-family: DengXian !important;">等线</option>
+                        <option style="font-family: Arial !important;">Arial</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span>笔记字号</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control">
+                        <option style="font-size: 18px !important;">18px</option>
+                        <option style="font-size: 17px !important;">17px</option>
+                        <option style="font-size: 16px !important;">16px</option>
+                        <option style="font-size: 15px !important;">15px</option>
+                        <option style="font-size: 14px !important;">14px</option>
+                        <option style="font-size: 13px !important;">13px</option>
+                        <option style="font-size: 12px !important;">12px</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 </body>
+
 </html>
