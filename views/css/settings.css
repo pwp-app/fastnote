@@ -38,7 +38,7 @@
 }
 /* sections */
 .settings-sections{
-    margin:20px 24px 0px 24px;
+    margin:28px 24px 0px 24px;
 }
 .settings-sections-hidden{
     display:none;
@@ -48,6 +48,7 @@
     grid-template-columns: 28% 8% 64%;
     grid-template-rows: 45px;
     align-items: left;
+    margin-top:5px;
 }
 .settings-item-title{
     font-size: 15px;
@@ -62,8 +63,11 @@
     height: 34px;
     font-size: 13px;
     vertical-align: middle;
-    grid-column-start: 2;
-    grid-column-end: 4;
+}
+.settings-item-control button{
+    height: 32px;
+    font-size: 14px;
+    width:90%;
 }
 .settings-item-control{
     width:90%;
