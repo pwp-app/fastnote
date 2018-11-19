@@ -146,20 +146,6 @@ br{
     outline: 0;
 }
 
-.tips-newnote{
-    color:#1faeff;
-    background-color: white;
-    font-size: 12px;
-    border: solid 1px #1faeff;
-    position: absolute;
-    padding: 3px 5px;
-    top:-16px;
-    left:5px;
-    height:25px;
-    text-align: center;
-    display:none;
-}
-
 .newnote-fold{
     float: right;
     display:inline-block;
@@ -168,6 +154,7 @@ br{
     text-align: right;
     right: 0px;
     margin-right: -5px;
+    margin-bottom: 2px;
 }
 
 /* note */
@@ -672,4 +659,17 @@ br{
     line-height: 26px;
     font-size: 14px;
     z-index: 2;
+}
+.bottom-bar-statusbar{
+    width: auto;
+    color: white;
+    float: right;
+    margin-top:3px;
+    margin-right:6px;
+    font-size: 15px;
+}
+.statusbar-item{
+    display: inline-block;
+    width: 20px;
+    text-align: center;
 }
