@@ -17,18 +17,15 @@ storage.get('notesid', function (error, data) {
     } else {
         //获取callback回传的json
         var notesid_json = data;
-        if (typeof notesid_json == 'string'){
-            notesid_json = JSON.parse(data);
-        }
-        //判断是否为空
-        if (notesid_json == null || typeof (notesid_json) == 'undefined') {
+        if (typeof notesid_json.id  != 'undefined'){
+            if (notesid_json.id >= 0){
+                notesid = notesid_json.id;
+            } else {
+                notesid = 0;
+            }
+        } else {
             notesid = 0;
             return;
-        }
-        //parse Json，获取数据
-        notesid = notesid_json.id;
-        if (notesid == null || typeof (notesid) == 'undefined') {
-            notesid = 0;
         }
     }
 });
@@ -232,6 +229,6 @@ function saveNote(notetext) {
 function saveNotesId() {
     var data = {
         id: notesid
-    }
-    storage.set('notesid', JSON.stringify(data));
+    };
+    storage.set('notesid', data);
 }

@@ -133,10 +133,11 @@
                         console.error(error);
                         throw (error);
                     } else {
-                        var parsed = JSON.parse(data);
-                        uuid = parsed.uuid;
-                        installstat(uuid);
-                        ipcRenderer.send("set-uuid", uuid);
+                        if (typeof data != 'undefined'){
+                            uuid = data.uuid;
+                            installstat(uuid);
+                            ipcRenderer.send("set-uuid", uuid);
+                        }
                     }
                 });
             } else {
@@ -144,7 +145,7 @@
                 var json = {
                     uuid: uuid
                 }
-                storage.set('uuid', JSON.stringify(json));
+                storage.set('uuid', json);
                 firstStart = true;
                 installstat(uuid);
                 ipcRenderer.send("set-uuid", uuid);

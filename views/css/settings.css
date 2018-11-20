@@ -67,11 +67,34 @@
 .settings-item-control button{
     height: 32px;
     font-size: 14px;
-    width:90%;
+    width:100%;
+}
+.settings-item-control span{
+    line-height: 34px;
+    font-size: 14px;
+    width:100%;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
 }
 .settings-item-control{
     width:90%;
 }
 .settings-control-checkbox{
     margin-top:10px;
+}
+.setting-buttons{
+    right:106px;
+    bottom:10px;
+    width: 35px;
+    font-size: 14px;
+    position: absolute;
+    display: flex;
+}
+.setting-buttons button{
+    font-size: 14px;
+    margin-left: 8px;
+    text-align: center;
+    padding:3px 13px !important;
+    letter-spacing: 0.05em;
 }
