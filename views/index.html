@@ -38,6 +38,8 @@
         const UUID = require('../app/tools/uuid.js');
         const indebug = remote.getGlobal('indebug');
 
+        const WebFont = require('webfontloader');
+
         //import menu
         $.getScript('js/menu.note.js');
         $.getScript('js/menu.textarea.js');
@@ -58,18 +60,23 @@
 
         function settingsInit(settings) {
             var cssText = "";
+            var font = "";
             //build css
             if (settings == null) {
                 //read error
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 cssText += '.note-content p {text-align:justify;}'; //note text align
+                font = 'Source Han Sans CN';
             } else {
                 //read success
                 if (typeof settings.fontfamily != 'undefined') {
                     cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
+                    font = settings.fontfamily;
                 } else {
                     cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}';
+                    font = 'Source Han Sans CN';
                 }
+
                 if (typeof settings.notealign != 'undefined') {
                     cssText += '.note-content p {text-align:' + settings.notealign + ';}'; //note text align
                 } else {
@@ -83,8 +90,23 @@
                 document.body.appendChild(modStyle);
             }
             modStyle.innerHTML = cssText;
+
+            if (font == 'Source Han Sans CN'){
+                loadWebfont(font);
+            }
+        }
+
+        //加载webfont
+        function loadWebfont(font){
+            WebFont.load({
+                custom: {
+                    families: [font]
+                }
+            });
         }
     </script>
+
+    <link rel="stylesheet" href="css/webfont.css">
 
     <script>
         //获取版本
@@ -212,11 +234,11 @@
     </div>
     <!-- notes -->
     <div class="container-main">
-        <div class="note-list" id="note-list"></div>
         <!-- empty -->
         <div class="note-empty col-lg-12" id="note-empty">
-            <span>您还没有建立任何的笔记</br>在下方你可以快速新建新笔记</span>
+            <span>您还没有建立任何的笔记<br/>在下方你可以快速新建新笔记</span>
         </div>
+        <div class="note-list" id="note-list"></div>        
         <script>
             //编辑笔记
             ipcRenderer.on('update-edit-note', (event, data) => {

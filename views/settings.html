@@ -56,6 +56,7 @@
             ipcRenderer
         } = require('electron');
 
+        const WebFont = require('webfontloader');
 
         var settings;
 
@@ -125,6 +126,31 @@
                 document.body.appendChild(modStyle);
             }
             modStyle.innerHTML = cssText;
+
+            //init settings ui
+            switch (font){
+                case 'Microsoft Yahei':
+                break;
+                case 'Source Han Sans CN':
+                break;
+                case 'DengXian':
+                break;
+                case 'Arial':
+                break;
+            }
+
+            if (font == 'Source Han Sans CN'){
+                loadWebfont(font);
+            }
+        }
+
+        //加载webfont
+        function loadWebfont(font){
+            WebFont.load({
+                custom: {
+                    families: [font]
+                }
+            });
         }
 
         //初始化自动更新相关设置
@@ -140,6 +166,7 @@
             });
         }
 
+        //初始化Notesid
         function initNotesId(id){
             $(document).ready(function(){
                 id = id - 1;    //存储的id是当前最后一个id+1
@@ -150,6 +177,7 @@
                 }
             });
         }
+
     </script>
 </head>
 
@@ -266,7 +294,7 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>笔记字号</span>
+                    <span>便签字号</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
@@ -283,7 +311,19 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>笔记行高</span>
+                    <span>内容对齐</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control">
+                        <option>左对齐</option>
+                        <option>两端对齐</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span>便签行高</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
@@ -298,7 +338,7 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>笔记字间距</span>
+                    <span>便签字间距</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">

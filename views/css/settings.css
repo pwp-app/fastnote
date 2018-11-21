@@ -48,7 +48,7 @@
     grid-template-columns: 28% 8% 64%;
     grid-template-rows: 45px;
     align-items: left;
-    margin-top:5px;
+    margin-top:3px;
 }
 .settings-item-title{
     font-size: 15px;

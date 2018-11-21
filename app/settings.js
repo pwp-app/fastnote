@@ -10,7 +10,7 @@ const path = require('path');
 function createAboutWindow() {
     var conf = {
         width: 680,
-        height: 420,
+        height: 435,
         resizable: false,
         maximazable: false,
         show: false
