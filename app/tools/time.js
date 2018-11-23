@@ -50,7 +50,7 @@ var Time = {
             month="0"+month;
         }
 
-        var rawtime = year+month+day+h+m+s;
+        var rawtime = ''+year+month+day+h+m+s;
 
         var alltime = {
             currentTime:currenttime,

@@ -51,4 +51,10 @@ ipc.on('recycle-note',function(sender,data){
     }
 });
 
+ipc.on('reloadRecycleWindow',function(sender,data){
+    if (win_recycle != null){
+        win_recycle.reload();
+    }
+});
+
 module.exports = RecycleWindow;

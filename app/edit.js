@@ -78,6 +78,16 @@ var editWindow = {
             }
         });
     }
-}
+};
+
+ipc.on('closeAllEditWindow',function(sender,data){
+    for (var i=0;i<win_edits.length;i++){
+        if (win_edits[i] != null){
+            win_edits[i].close();
+            win_edits[i] = null;
+            edit_noteid[i] = null;
+        }
+    }
+});
 
 module.exports = editWindow;
