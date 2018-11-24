@@ -65,23 +65,43 @@
             if (settings == null) {
                 //read error
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
-                cssText += '.note-content p {text-align:justify;}'; //note text align
                 font = 'Source Han Sans CN';
+                //read error
+                console.error('A error occured when reading settings.');
             } else {
                 //read success
                 if (typeof settings.fontfamily != 'undefined') {
                     cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
                     font = settings.fontfamily;
                 } else {
-                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}';
+                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;';
                     font = 'Source Han Sans CN';
                 }
 
-                if (typeof settings.notealign != 'undefined') {
-                    cssText += '.note-content p {text-align:' + settings.notealign + ';}'; //note text align
-                } else {
-                    cssText += '.note-content p {text-align:justify;}';
+                //笔记显示设置初始化
+                cssText += '.note-content p{';
+                if (typeof settings.fontsize != 'undefined'){
+                    cssText += 'font-size:' + settings.fontsize + 'px !important;'; 
                 }
+                if (typeof settings.lineheight != 'undefined'){
+                    cssText += 'line-height:' + settings.lineheight + 'px !important;'; 
+                }
+                if (typeof settings.textalign != 'undefined') {
+                    cssText += 'text-align:' + settings.textalign + ' !important;'; //note text align
+                }
+                if (typeof settings.letterspacing != 'undefined'){
+                    cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
+                }
+                cssText += '}'
+
+                cssText += '.note-content a{';
+                if (typeof settings.fontsize != 'undefined'){
+                    cssText += 'font-size:' + settings.fontsize + 'px !important;'; 
+                }
+                if (typeof settings.letterspacing != 'undefined'){
+                    cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
+                }
+                cssText += '}'
             }
             var modStyle = document.querySelector('#modCSS');
             if (modStyle === null) {
@@ -236,7 +256,7 @@
     <div class="container-main">
         <!-- empty -->
         <div class="note-empty col-lg-12" id="note-empty">
-            <span>您还没有建立任何的笔记<br/>在下方你可以快速新建新笔记</span>
+            <span>您还没有建立任何的便签<br/>在下方你可以快速新建新便签</span>
         </div>
         <div class="note-list" id="note-list"></div>        
         <script>

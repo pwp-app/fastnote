@@ -62,7 +62,7 @@ function restoreNote(id){
                 var newpath = path.replace('recyclebin/','');
                 fs.rename(path,newpath, function (err) {
                     if (err) {
-                        displayInfobar('error', '笔记还原失败');
+                        displayInfobar('error', '便签还原失败');
                         readNoteFiles();
                         throw(err);
                     } else {

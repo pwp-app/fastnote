@@ -80,7 +80,7 @@ var editWindow = {
     }
 };
 
-ipc.on('closeAllEditWindow',function(sender,data){
+ipc.on('closeAllEditWindow',function(event,data){
     for (var i=0;i<win_edits.length;i++){
         if (win_edits[i] != null){
             win_edits[i].close();
@@ -89,5 +89,21 @@ ipc.on('closeAllEditWindow',function(sender,data){
         }
     }
 });
-
+ipc.on('reloadAllEditWindow',function(event,data){
+    for (var i=0;i<win_edits.length;i++){
+        if (win_edits[i] != null){
+            win_edits[i].send('readyToReload');
+        }
+    }
+});
+ipc.on('readyToReloadEditWindow',function(event,data){
+    event.sender.reload();
+    event.sender.once('did-finish-load', () => {
+        var type = 'init';
+        event.sender.send('message', {
+            type,
+            data
+        });
+    });
+});
 module.exports = editWindow;

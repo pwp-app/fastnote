@@ -201,7 +201,7 @@ function saveNote(notetext) {
             console.error(err);
         } else {
             textarea.val('');
-            displayInfobar('success', '成功保存笔记');
+            displayInfobar('success', '成功保存便签');
         }
     });
     notesid++;

@@ -75,16 +75,17 @@
             var font = "";
             //build css
             if (settings == null) {
-                //read error
-                cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}';
+                cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
+                //read error
+                console.error('A error occured when reading settings.');
             } else {
                 //read success
                 if (typeof settings.fontfamily != 'undefined') {
                     cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
-                    font = settings.fontfamily
+                    font = settings.fontfamily;
                 } else {
-                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}';
+                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;';
                     font = 'Source Han Sans CN';
                 }
             }
