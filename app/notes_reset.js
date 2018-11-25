@@ -15,18 +15,25 @@ $('#btn-resetNotes').click(function(){
             storage.remove('notesid', function(error){
                 if (error){
                     console.error(error);
+                    dialog.showMessageBox({
+                        type:"error",
+                        title:'错误',
+                        message:'重置便签时遇到了错误。',
+                        detail:error
+                    });
+                } else {
+                    deleteall(storagePath + '/notes');
+                    //通知其他窗体重新载入
+                    ipcRenderer.send('reloadMainWindow');
+                    ipcRenderer.send('reloadRecycleWindow');
+                    ipcRenderer.send('closeAllEditWindow');
+                    reloadNotesId();
+                    dialog.showMessageBox({
+                        type:"info",
+                        title:'完成',
+                        message:'便签已完全重置。'
+                    });
                 }
-            });
-            deleteall(storagePath + '/notes');
-            //通知其他窗体重新载入
-            ipcRenderer.send('reloadMainWindow');
-            ipcRenderer.send('reloadRecycleWindow');
-            ipcRenderer.send('closeAllEditWindow');
-            reloadNotesId();
-            dialog.showMessageBox({
-                type:"info",
-                title:'完成',
-                message:'便签已完全重置。'
             });
         }
     });

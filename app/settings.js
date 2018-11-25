@@ -4,6 +4,8 @@ const {
     BrowserWindow
 } = require('electron');
 
+const ipc = require('electron').ipcMain;
+
 const app = require('electron').app;
 const path = require('path');
 
@@ -48,5 +50,9 @@ function showSettingsWindow() {
         createAboutWindow();
     }
 }
+
+ipc.on('reloadSettingsWindow',function(sender, data){
+    win_settings.reload();
+});
 
 module.exports = showSettingsWindow;

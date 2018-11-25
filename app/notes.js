@@ -56,6 +56,8 @@ function putToRecyclebin(id) {
     notes.every(function (note, i) {
         if (note.id == id) {
             var path;
+            //暂存
+            var note_temp = note;
             //检查offset
             if (note.offset > 0) {
                 path = note.rawtime + '.' + note.offset + '.json';
@@ -70,8 +72,7 @@ function putToRecyclebin(id) {
                             readNoteFiles();
                             throw (err);
                         } else {
-                            //暂存
-                            var note_temp = note;
+                            console.log(id);
                             //从数组里删除
                             deleteNoteFromArr(id);
                             //动画
@@ -94,7 +95,18 @@ function putToRecyclebin(id) {
                             readNoteFiles();
                             throw (err);
                         } else {
+                            console.log(id);
+                            //从数组里删除
+                            deleteNoteFromArr(id);
+                            //动画
+                            $('#note_' + id).animateCss('fadeOutLeft', function () {
+                                $('#note_' + id).parent().remove(); //动画结束后删除div
+                                if (notes.length <= 0) {
+                                    showNoteEmpty_Anim();
+                                }
+                            });
                             displayInfobar('success', '已放入回收站');
+                            //send to main process
                             ipcRenderer.send('recycle-note', note_temp);
                         }
                     });

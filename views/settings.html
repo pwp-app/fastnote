@@ -266,10 +266,10 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <input class="settings-control-checkbox" type="checkbox" id="cb-autoUpdateEnabled" onclick="updateEnabledChanged(this);"/>
+                    <input class="settings-control-checkbox" type="checkbox" id="cb-autoUpdateEnabled" onclick="updateEnabledChanged(this);" />
                     <script>
-                        function updateEnabledChanged(checkbox){
-                            if (checkbox.checked){
+                        function updateEnabledChanged(checkbox) {
+                            if (checkbox.checked) {
                                 document.getElementById('select-updateChannel').disabled = false;
                             } else {
                                 document.getElementById('select-updateChannel').disabled = true;
@@ -298,6 +298,15 @@
                     <select class="form-control">
                         <option>简体中文</option>
                     </select>
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span>重置设置</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <button class="btn btn-danger" id="btn-resetSettings" onclick="resetSettings();">重置</button>
                 </div>
             </div>
         </div>
@@ -402,7 +411,7 @@
     </div>
 
     <script>
-        function saveSettings(){
+        function saveSettings() {
             //获取通用设置
             var autoUpdateStatus = document.getElementById('cb-autoUpdateEnabled').checked;
             //获取显示设置
@@ -423,12 +432,12 @@
             };
 
             //保存设置
-            storage.set('settings',settings, function (error){
-                if (error){
+            storage.set('settings', settings, function (error) {
+                if (error) {
                     dialog.showMessageBox({
-                        type:'error',
-                        title:'错误',
-                        message:'保存设置时发生错误。',
+                        type: 'error',
+                        title: '错误',
+                        message: '保存设置时发生错误。',
                         detail: error
                     });
                 } else {
@@ -446,7 +455,7 @@
     <script>
         $.getScript('../app/notes_reset.js');
 
-        function reloadNotesId(){
+        function reloadNotesId() {
             storage.get('notesid', function (error, data) {
                 if (error) {
                     console.error(error);
@@ -456,6 +465,42 @@
                     //获取callback回传的json
                     var notesid = data;
                     initNotesId(notesid.id);
+                }
+            });
+        }
+
+        function resetSettings() {
+            dialog.showMessageBox({
+                type: "warning",
+                buttons: ['取消', '确认'],
+                defaultId: 0,
+                title: '确认操作',
+                message: '确定要重置设置吗？该操作将不可撤回。',
+                detail: '所有已保存的设置都讲还原为默认值。'
+            }, function (response) {
+                if (response == 1) {
+                    storage.remove('settings', function (error) {
+                        if (error) {
+                            console.error(error);
+                            dialog.showMessageBox({
+                                type: "error",
+                                title: '错误',
+                                message: '重置设置时遇到了错误。',
+                                detail: error
+                            });
+                        } else {
+                            //通知其他窗体重新载入
+                            ipcRenderer.send('reloadMainWindow');
+                            ipcRenderer.send('reloadRecycleWindow');
+                            ipcRenderer.send('closeAllEditWindow');
+                            dialog.showMessageBox({
+                                type: "info",
+                                title: '完成',
+                                message: '设置已重置。'
+                            });
+                            ipcRenderer.send('reloadSettingsWindow');
+                        }
+                    });
                 }
             });
         }
