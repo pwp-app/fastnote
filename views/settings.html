@@ -12,8 +12,7 @@
         window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
         require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
     </script>
-    <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="css/settings.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="less/main.css" />
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
@@ -403,12 +402,12 @@
                     </select>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 
     <div class="setting-buttons">
         <button class="btn btn-danger" onclick='window.close();'>取消</button>
-        <button class="btn btn-primary btn-brblue" onclick="saveSettings();">保存</button>
+        <button class="btn setting-button-primary" onclick="saveSettings();">保存</button>
     </div>
 
     <script>

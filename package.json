@@ -19,7 +19,7 @@
     "electron-builder": "^20.38.5"
   },
   "name": "fastnote",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
