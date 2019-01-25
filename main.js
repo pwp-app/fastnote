@@ -13,9 +13,9 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = true;      //debug trigger
-global.firstStart = false;  //first start flag
-global.uuid = "";           //uuid storage
+global.indebug = true; //debug trigger
+global.firstStart = false; //first start flag
+global.uuid = ""; //uuid storage
 
 //auto-update
 const {
@@ -53,6 +53,14 @@ function createWindow() {
   if (indebug) {
     win.webContents.openDevTools();
   }
+  var settings;
+  storage.get('settings', function (error, data) {
+    if (!error) {
+      //获取callback回传的json
+      settings = data;
+    }
+  });
+
   // 然后加载应用的 index.html。
   win.loadFile('views/index.html');
 
@@ -70,7 +78,11 @@ function createWindow() {
     //show main window
     win.show();
     win.focus();
-    checkForUpdates();
+    if (typeof settings != undefined) {
+      if (settings.autoUpdateStatus) {
+        checkForUpdates();
+      }
+    }
     //bind restore note event
     ipc.on('restore-note', function (sender, data) {
       win.webContents.send('restore-note', data);
@@ -95,18 +107,23 @@ function createWindow() {
     });
     ipc.on('reloadMainWindow', function (sender, data) {
       win.reload();
+      if (typeof settings != undefined) {
+        if (settings.autoUpdateStatus) {
+          checkForUpdates();
+        }
+      }
     });
 
     //when recycle close edit
     ipc.on('recycle-note', function (sender, data) {
       var editWins = editWindow.getWins();
-      for (var i = 0;i<editWins.length;i++){
-          if (typeof editWins[i] != undefined && editWins[i] != null){
-            editWins[i].webContents.send('message',{
-              type:'note-recycled',
-              data:data
-            });
-          }
+      for (var i = 0; i < editWins.length; i++) {
+        if (typeof editWins[i] != undefined && editWins[i] != null) {
+          editWins[i].webContents.send('message', {
+            type: 'note-recycled',
+            data: data
+          });
+        }
       }
     });
 

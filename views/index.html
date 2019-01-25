@@ -96,7 +96,7 @@
 
                 cssText += '.note-content a{';
                 if (typeof settings.fontsize != 'undefined'){
-                    cssText += 'font-size:' + settings.fontsize + 'px !important;'; 
+                    cssText += 'font-size:' + settings.fontsize + 'px !important;';
                 }
                 if (typeof settings.letterspacing != 'undefined'){
                     cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
@@ -583,7 +583,8 @@
                                 } else {
                                     $('#update-loading-span').innerHTML = "更新日志加载失败";
                                 }
-                            });
+                            }
+                        );
                     });
                     break;
                 case 'downloadProgress':
