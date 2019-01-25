@@ -12,7 +12,7 @@
 }
 
 .note-list::-webkit-scrollbar-track-piece {
-    background-color: @color-white;
+    background-color: @color-secondary;
 }
 
 .note-list::-webkit-scrollbar-thumb {
@@ -44,10 +44,10 @@
 }
 
 .note {
-    color: @color-white;
+    color: @color-text-primary;
     background-color: @color-primary;
     border-radius: 8px;
-    box-shadow: 2px 2px 2px @color-deepgray;
+    box-shadow: 2px 2px 2px @color-boxshadow-dark;
     padding: 6px 12px;
     /* animate */
     .short-duration();
@@ -59,7 +59,7 @@
 }
 
 .note-header {
-    border-bottom: solid @color-white 2px;
+    border-bottom: solid @color-secondary 2px;
     height: 32px;
     .no-select();
 }
@@ -102,17 +102,17 @@
 .note-content a{
     margin-top: 5px;
     margin-bottom: 5px;
-    color: @color-white;
+    color: @color-text-primary;
     font-size: 15px;
     text-decoration:underline;
     letter-spacing: 0.06em;
 }
 .note-content a:hover{
-    color: @color-white;
+    color: @color-text-primary;
 }
 
 .note-selected{
-    background:@color-lightblack;
+    background: @color-note-selected;
 }
 
 .note-overheight{
@@ -131,7 +131,7 @@
 
 .note-overheight::-webkit-scrollbar-thumb {
     border-radius: 9px;
-    background-color: @color-white;
+    background-color: @color-secondary;
 }
 
 .note-overheight::-webkit-scrollbar-button {

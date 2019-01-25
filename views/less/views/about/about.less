@@ -1,6 +1,5 @@
 .about-body{
-    -webkit-user-drag: none !important;
-    -webkit-user-select: none !important;
+    .no-select-and-drag();
 }
 /* about */
 .about-titlebar {
@@ -16,12 +15,12 @@
 .about-logo img{
     width: 110px;
     height: 110px;
-    -webkit-user-drag: none;
+    .no-drag();
 }
 .about-title{
     width: 100%;
     letter-spacing: 0.1em;
-    color:gray;
+    color: @color-about-primary;
     text-align: center;
 }
 .about-title h1{
@@ -41,7 +40,7 @@
     bottom: 0;
     position: absolute;
     text-align: center;
-    color:gray;
+    color: @color-about-primary;
     font-size: 12px;
     text-align: center;
     letter-spacing: 0.05em;
@@ -61,5 +60,5 @@
     margin-left:0.25em;
 }
 .about-opensource i:hover{
-    cursor: pointer;   
+    cursor: pointer;
 }
