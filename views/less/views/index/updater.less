@@ -1,0 +1,145 @@
+.container-updater {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-color: @color-deepgray;
+    display: none;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    .short-duration();
+}
+
+.update-block {
+    width: 500px;
+    height: 600px;
+    background-color: @color-white;
+    border: solid 1px @color-primary;
+    border-radius: 12px;
+    display: block;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.update-title {
+    width: 100%;
+    height: 40px;
+    background-color: @color-primary;
+    text-align: center;
+    color: @color-white;
+    font-size: 16px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    .no-select-and-drag();
+}
+
+.update-title span {
+    line-height: 40px;
+}
+
+.update-contents {
+    width: 100%;
+    height: 520px;
+    padding: 15px 15px;
+    overflow-y: auto;
+    -webkit-user-select: none;
+}
+
+.update-contents h1 {
+    padding: 6px 0px;
+    font-size: 21px;
+    color: @color-darkgray;
+    font-weight: bold;
+}
+
+.update-contents h2 {
+    padding: 6px 0px;
+    font-size: 17px;
+    color: @color-darkgray;
+    font-weight: bold;
+}
+
+.update-contents p {
+    font-size: 15px;
+    color: @color-darkgray;
+    margin-bottom: 6px !important;
+    word-break: break-all;
+    white-space: pre-wrap;
+}
+
+.update-footer {
+    bottom: 0;
+    position: absolute;
+    display: block;
+    height: 40px;
+    width: 100%;
+    background-color: @color-primary;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    text-align: center;
+}
+
+.control-item {
+    margin: auto 35px;
+    height: 40px;
+}
+
+.update-contents::-webkit-scrollbar {
+    width: 3px;
+}
+
+.update-contents::-webkit-scrollbar-track-piece {
+    background-color: @color-white;
+}
+
+.update-contents::-webkit-scrollbar-thumb {
+    border-radius: 9px;
+    background-color: @color-primary;
+}
+
+.update-contents::-webkit-scrollbar-button {
+    display: none;
+}
+.update-contents-showfull{
+    width: 100%;
+    height:36px;
+    font-size: 15px;
+    margin-top:18px;
+    background: @color-primary !important;
+    border: none !important;
+}
+
+.update-progress {
+    color: @color-info;
+    /*兼容IE10的已完成进度背景*/
+    border: none;
+    background: @color-updateprogress-value;
+    position: absolute;
+    height: 4px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+.update-progress::-webkit-progress-bar {
+    background: @color-updateprogress-background;
+}
+
+.update-progress::-webkit-progress-value {
+    background: @color-updateprogress-value;
+}
+
+.update-contents-loading {
+    text-align: center;
+    display: block;
+}
+
+.update-contents-loading span {
+    font-size: 15px;
+}

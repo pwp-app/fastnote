@@ -13,9 +13,9 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = true; //debug trigger
-global.firstStart = false; //first start flag
-global.uuid = ""; //uuid storage
+global.indebug = true;      //debug trigger
+global.firstStart = false;  //first start flag
+global.uuid = "";           //uuid storage
 
 //auto-update
 const {
@@ -68,8 +68,8 @@ function createWindow() {
       global.uuid = data;
     });
     //show main window
-    win.focus();
     win.show();
+    win.focus();
     checkForUpdates();
     //bind restore note event
     ipc.on('restore-note', function (sender, data) {

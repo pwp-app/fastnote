@@ -1,0 +1,12 @@
+.no-drag{
+    -webkit-user-drag: none;
+}
+.no-select{
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+.no-select-and-drag{
+    .no-drag();
+    .no-select();
+}

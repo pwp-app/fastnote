@@ -1,0 +1,39 @@
+.container-infobar {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+.infobar {
+    width: 450px;
+    height: 35px;
+    text-align: center;
+    top: 0;
+    position: fixed;
+    font-size: 14px;
+    padding: 6px 15px;
+    color: @color-white;
+    /* animate */
+    .mid-duration();
+}
+
+.infobar i {
+    margin-right: 15px;
+}
+
+.infobar-success {
+    background-color: @color-success;
+}
+
+.infobar-warning {
+    background-color: @color-warning;
+}
+
+.infobar-error {
+    background-color: @color-error;
+}
+
+.infobar-info {
+    background-color: @color-info;
+}

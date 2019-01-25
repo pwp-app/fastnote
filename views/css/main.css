@@ -449,6 +449,14 @@ br{
 .update-contents::-webkit-scrollbar-button {
     display: none;
 }
+.update-contents-showfull{
+    width: 100%;
+    height:36px;
+    font-size: 15px;
+    margin-top:18px;
+    background: #1faeff !important;
+    border: none !important;
+}
 
 /*button*/
 

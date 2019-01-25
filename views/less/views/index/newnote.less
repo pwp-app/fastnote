@@ -1,0 +1,74 @@
+.container-newnote {
+    height: 180px;
+    width: 100%;
+    background-color: @color-primary;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    position: fixed;
+    bottom: 26px;
+    display: block;
+    border-top: 1px solid @color-lightgray;
+    border-bottom: 1px solid @color-lightgray;
+    /* animate */
+    .short-duration();
+}
+
+.container-newnote .lbl {
+    padding-top: 10px;
+    color: @color-white;
+    font-size: 14px;
+    .no-select();
+}
+
+.container-newnote label{
+    display: inline-block;
+}
+
+.container-newnote .control {
+    width: 100%;
+    font-weight: 300;
+}
+
+.container-newnote .control textarea {
+    width: 100%;
+    height: 120px;
+    text-align: justify;
+    border: 0;
+    padding: 8px 12px;
+    resize: none;
+    font-weight: 100px;
+    font-size: 14px;
+    border-radius: 5px;
+    letter-spacing: 0.05em;
+}
+
+.container-newnote .control textarea::-webkit-scrollbar {
+    width: 6.5px;
+}
+
+.container-newnote .control textarea::-webkit-scrollbar-track-piece {
+    background-color: @color-white;
+}
+
+.container-newnote .control textarea::-webkit-scrollbar-thumb {
+    border-radius: 9px;
+    background-color: @color-primary;
+}
+
+.container-newnote .control textarea::-webkit-scrollbar-button {
+    display: none;
+}
+
+.container-newnote .control textarea:focus {
+    outline: 0;
+}
+
+.newnote-fold{
+    display:inline-block;
+    width: 32px;
+    height:24px;
+    text-align: right;
+    right: 0px;
+    margin-right: -5px;
+    margin-bottom: 2px;
+}

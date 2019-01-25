@@ -1,0 +1,23 @@
+@short-time: 0.5s;
+@mid-time: 1s;
+@long-time: 1.5s;
+
+.short-duration{
+    animation-duration: @short-time !important;
+    -webkit-animation-duration: @short-time !important;
+}
+
+.mid-duration{
+    animation-duration: @mid-time !important;
+    -webkit-animation-duration: @mid-time !important;
+}
+
+.long-duration{
+    animation-duration: @long-time !important;
+    -webkit-animation-duration: @long-time !important;
+}
+
+.duration(@time){
+    animation-duration: @time !important;
+    -webkit-animation-duration: @time !important;
+}

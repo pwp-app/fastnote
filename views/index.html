@@ -573,7 +573,7 @@
                                             document.getElementsByClassName(
                                                     'update-contents-details')[
                                                     0].innerHTML +=
-                                                '<a class="update-contents-showfull" href="https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html">完整更新日志</a>'
+                                                '<button class="btn btn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">详细更新日志</button>'
                                         }
                                         $('.update-contents-loading').css('display', 'none');
                                     } catch (err) {

@@ -1,0 +1,139 @@
+.note-list {
+    width: 100%;
+    height: 558px;
+    padding-bottom: 3px;
+    overflow-y: auto;
+    pointer-events: auto !important;
+}
+
+.note-list::-webkit-scrollbar {
+    width: 8px;
+    z-index: 10;
+}
+
+.note-list::-webkit-scrollbar-track-piece {
+    background-color: @color-white;
+}
+
+.note-list::-webkit-scrollbar-thumb {
+    border-radius: 9px;
+    background-color: @color-primary;
+}
+
+.note-list::-webkit-scrollbar-button {
+    display: none;
+}
+
+.note-empty {
+    width: 100%;
+    height: 558px;
+    overflow-y: hidden;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    display: none;
+    z-index: -1;
+    /* animate */
+    .long-duration();
+    .no-select();
+}
+
+.note-empty span {
+    color: @color-black;
+    font-size: 20px;
+}
+
+.note {
+    color: @color-white;
+    background-color: @color-primary;
+    border-radius: 8px;
+    box-shadow: 2px 2px 2px @color-deepgray;
+    padding: 6px 12px;
+    /* animate */
+    .short-duration();
+    pointer-events: auto !important;
+}
+
+.note-wrapper{
+    padding:9px 12px;
+}
+
+.note-header {
+    border-bottom: solid @color-white 2px;
+    height: 32px;
+    .no-select();
+}
+
+.note-header p {
+    display: inline-block;
+}
+
+.note-no {
+    font-size: 15px;
+}
+
+.note-time {
+    font-size: 12px;
+    float: right;
+    padding-top: 5px;
+    .no-drag();
+}
+.note-updatetime{
+    margin-left: 0.25rem;
+}
+
+.note-content {
+    width: 100%;
+    margin-top:8px !important;
+    margin-bottom: 5px !important;
+}
+
+.note-content p{
+    font-size: 15px;
+    line-height: 24px;
+    letter-spacing: 0.06em;
+    padding:0 !important;
+    margin:0 !important;
+    word-break:break-all;
+    overflow-x: hidden;
+    text-justify:auto;
+}
+
+.note-content a{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    color: @color-white;
+    font-size: 15px;
+    text-decoration:underline;
+    letter-spacing: 0.06em;
+}
+.note-content a:hover{
+    color: @color-white;
+}
+
+.note-selected{
+    background:@color-lightblack;
+}
+
+.note-overheight{
+    height:250px;
+    padding-right:6px;
+    overflow-y:auto;
+}
+
+.note-overheight::-webkit-scrollbar {
+    width: 5px;
+}
+
+.note-overheight::-webkit-scrollbar-track-piece {
+    background-color: @color-primary;
+}
+
+.note-overheight::-webkit-scrollbar-thumb {
+    border-radius: 9px;
+    background-color: @color-white;
+}
+
+.note-overheight::-webkit-scrollbar-button {
+    display: none;
+}
