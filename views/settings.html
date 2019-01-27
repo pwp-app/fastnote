@@ -12,7 +12,7 @@
         window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
         require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
     </script>
-    <link rel="stylesheet" type="text/css" media="screen" href="less/main.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/main.default.css" />
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
@@ -90,6 +90,7 @@
             //build css
             if (settings == null) {
                 //read error
+                initTheme('default');
                 initFont('Source Han Sans CN');
                 //初始化设置
                 //init auto update
@@ -102,6 +103,13 @@
                 initLetterSpacing("0.06");
             } else {
                 //read success
+                //init themes
+                if (typeof settings.theme != 'undefined'){
+                    initTheme(settings.theme);
+                } else {
+                    initTheme('default');
+                }
+
                 //init font family
                 if (typeof settings.fontfamily != 'undefined') {
                     initFont(settings.fontfamily);
@@ -195,6 +203,13 @@
             });
         }
 
+        //初始化通用设置
+        function initTheme(theme){
+            $(document).ready(function(){
+                $('#select-themes').val(theme);
+            });
+        }
+
         //初始化显示设置选项
         function initFontFamilySetting(font){
             $(document).ready(function(){
@@ -220,7 +235,7 @@
             $(document).ready(function(){
                 $('#select-letterspacing').val(letterspacing);
             });
-        }
+        }        
     </script>
 </head>
 
@@ -285,6 +300,18 @@
                 <div class="settings-item-child settings-item-control">
                     <select class="form-control" id="select-updateChannel">
                         <option>Alpha</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span>主题</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control" id="select-themes">
+                        <option value="default">默认（蓝白）</option>
+                        <option value="blackwhite">黑白</option>
                     </select>
                 </div>
             </div>
@@ -414,6 +441,8 @@
         function saveSettings() {
             //获取通用设置
             var autoUpdateStatus = document.getElementById('cb-autoUpdateEnabled').checked;
+            var theme = $("#select-themes").val();
+
             //获取显示设置
             var fontfamily = $('#select-fontfamily').val();
             var fontsize = $('#select-fontsize').val();
@@ -424,6 +453,7 @@
             //构造设置obj
             var settings = {
                 autoUpdateStatus: autoUpdateStatus,
+                theme: themes,
                 fontfamily: fontfamily,
                 fontsize: fontsize,
                 textalign: textalign,

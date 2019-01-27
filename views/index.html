@@ -12,7 +12,7 @@
         window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
         require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
     </script>
-    <link rel="stylesheet" type="text/css" media="screen" href="less/main.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/main.default.css">
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
@@ -81,10 +81,10 @@
                 //笔记显示设置初始化
                 cssText += '.note-content p{';
                 if (typeof settings.fontsize != 'undefined'){
-                    cssText += 'font-size:' + settings.fontsize + 'px !important;'; 
+                    cssText += 'font-size:' + settings.fontsize + 'px !important;';
                 }
                 if (typeof settings.lineheight != 'undefined'){
-                    cssText += 'line-height:' + settings.lineheight + 'px !important;'; 
+                    cssText += 'line-height:' + settings.lineheight + 'px !important;';
                 }
                 if (typeof settings.textalign != 'undefined') {
                     cssText += 'text-align:' + settings.textalign + ' !important;'; //note text align
@@ -125,8 +125,6 @@
             });
         }
     </script>
-
-    <link rel="stylesheet" href="css/webfont.css">
 
     <script>
         //获取版本
@@ -258,7 +256,7 @@
         <div class="note-empty col-lg-12" id="note-empty">
             <span>您还没有建立任何的便签<br/>在下方你可以快速新建新便签</span>
         </div>
-        <div class="note-list" id="note-list"></div>        
+        <div class="note-list" id="note-list"></div>
         <script>
             //编辑笔记
             ipcRenderer.on('update-edit-note', (event, data) => {
@@ -628,7 +626,8 @@
     <div class="container-mainmenu">
         <div class="mainmenu-panel">
             <div class="mainmenu-logo">
-                <img src="images/logo.png" />
+                <img src="images/logo.png" class="mainmenu-logo-default"/>
+                <img src="images/logo.blackwhite.png" class="mainmenu-logo-blackwhite"/>
                 <h1>Fastnote</h1>
                 <span id="mainmenu-version"></span>
                 <script>
