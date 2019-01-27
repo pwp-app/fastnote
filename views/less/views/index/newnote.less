@@ -15,7 +15,7 @@
 
 .container-newnote .lbl {
     padding-top: 10px;
-    color: @color-white;
+    color: @color-text-primary;
     font-size: 14px;
     .no-select();
 }
@@ -40,6 +40,8 @@
     font-size: 14px;
     border-radius: 5px;
     letter-spacing: 0.05em;
+    color: @color-text-primary;
+    background: @color-textarea-background;
 }
 
 .container-newnote .control textarea::-webkit-scrollbar {
@@ -47,7 +49,7 @@
 }
 
 .container-newnote .control textarea::-webkit-scrollbar-track-piece {
-    background-color: @color-secondary;
+    background-color: @color-textarea-background;
 }
 
 .container-newnote .control textarea::-webkit-scrollbar-thumb {

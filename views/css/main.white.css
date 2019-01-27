@@ -83,14 +83,14 @@ han {
   margin-top: 12px !important;
 }
 .container-titlebar {
-  background-color: #1f1f1f;
+  background-color: #fff;
   height: 35px;
   position: absolute;
   top: 0px;
   padding: 0 !important;
 }
 .title {
-  color: #d2d2d2;
+  color: #fff;
   height: 35px;
   font-size: 15px;
   font-weight: 200;
@@ -117,18 +117,18 @@ han {
   padding-bottom: 3px;
   overflow-y: auto;
   pointer-events: auto !important;
-  background: #2e2e2e;
+  background: #fff;
 }
 .note-list::-webkit-scrollbar {
   width: 8px;
   z-index: 10;
 }
 .note-list::-webkit-scrollbar-track-piece {
-  background: #2e2e2e;
+  background: #fff;
 }
 .note-list::-webkit-scrollbar-thumb {
   border-radius: 9px;
-  background-color: #1f1f1f;
+  background-color: #fff;
 }
 .note-list::-webkit-scrollbar-button {
   display: none;
@@ -150,12 +150,12 @@ han {
   -ms-user-select: none;
 }
 .note-empty span {
-  color: #d5d2cd;
+  color: #fff;
   font-size: 20px;
 }
 .note {
-  color: #d5d2cd;
-  background-color: #1f1f1f;
+  color: #fff;
+  background-color: #fff;
   border-radius: 8px;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
   padding: 6px 12px;
@@ -168,7 +168,7 @@ han {
   padding: 9px 12px;
 }
 .note-header {
-  border-bottom: solid #d5d2cd 1px;
+  border-bottom: solid #fff 1px;
   height: 32px;
   user-select: none;
   -webkit-user-select: none;
@@ -207,16 +207,16 @@ han {
 .note-content a {
   margin-top: 5px;
   margin-bottom: 5px;
-  color: #d5d2cd;
+  color: #fff;
   font-size: 15px;
   text-decoration: underline;
   letter-spacing: 0.06em;
 }
 .note-content a:hover {
-  color: #d5d2cd;
+  color: #fff;
 }
 .note-selected {
-  background: #262626;
+  background: rgba(0, 0, 0, 0.1);
 }
 .note-overheight {
   height: 250px;
@@ -227,11 +227,11 @@ han {
   width: 5px;
 }
 .note-overheight::-webkit-scrollbar-track-piece {
-  background-color: #1f1f1f;
+  background-color: #fff;
 }
 .note-overheight::-webkit-scrollbar-thumb {
   border-radius: 9px;
-  background-color: #d2d2d2;
+  background-color: #fff;
 }
 .note-overheight::-webkit-scrollbar-button {
   display: none;
@@ -250,7 +250,7 @@ han {
   position: fixed;
   font-size: 14px;
   padding: 6px 15px;
-  color: #d2d2d2;
+  color: #fff;
   /* animate */
   animation-duration: 1s !important;
   -webkit-animation-duration: 1s !important;
@@ -268,26 +268,26 @@ han {
   background-color: #ff2e12;
 }
 .infobar-info {
-  background-color: #000000;
+  background-color: #d9d9d9;
 }
 .container-newnote {
   height: 180px;
   width: 100%;
-  background-color: #1f1f1f;
+  background-color: #fff;
   padding-left: 12px !important;
   padding-right: 12px !important;
   position: fixed;
   bottom: 26px;
   display: block;
-  border-top: 1px solid #2e2e2e;
-  border-bottom: 1px solid #2e2e2e;
+  border-top: 1px solid rgba(255, 255, 255, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.75);
   /* animate */
   animation-duration: 0.5s !important;
   -webkit-animation-duration: 0.5s !important;
 }
 .container-newnote .lbl {
   padding-top: 10px;
-  color: #d5d2cd;
+  color: #fff;
   font-size: 14px;
   user-select: none;
   -webkit-user-select: none;
@@ -311,18 +311,18 @@ han {
   font-size: 14px;
   border-radius: 5px;
   letter-spacing: 0.05em;
-  color: #d5d2cd;
-  background: #2e2e2e;
+  color: #fff;
+  background: #fff;
 }
 .container-newnote .control textarea::-webkit-scrollbar {
   width: 6.5px;
 }
 .container-newnote .control textarea::-webkit-scrollbar-track-piece {
-  background-color: #2e2e2e;
+  background-color: #fff;
 }
 .container-newnote .control textarea::-webkit-scrollbar-thumb {
   border-radius: 9px;
-  background-color: #1f1f1f;
+  background-color: #fff;
 }
 .container-newnote .control textarea::-webkit-scrollbar-button {
   display: none;
@@ -372,7 +372,7 @@ han {
   width: 250px;
   height: 100%;
   left: 0;
-  background: #1e1e1e;
+  background: #fff;
   z-index: 1;
   box-shadow: 0px 0px 20px 3px rgba(0, 0, 0, 0.2);
 }
@@ -392,7 +392,7 @@ han {
 }
 .mainmenu-logo h1 {
   padding-top: 12px;
-  color: #d5d2cd;
+  color: #fff;
   font-size: 26px;
   font-weight: lighter;
   letter-spacing: 0.1em;
@@ -400,7 +400,7 @@ han {
   -webkit-user-select: none;
 }
 .mainmenu-logo span {
-  color: #d5d2cd;
+  color: #fff;
   font-size: 14px;
   font-weight: lighter;
   letter-spacing: 0.1em;
@@ -414,7 +414,7 @@ han {
   height: 1px;
   margin-top: 15px;
   margin-bottom: 15px;
-  background: #2e2e2e;
+  background: #fff;
 }
 .mainmenu-menu {
   width: 100%;
@@ -429,7 +429,7 @@ han {
   width: 100%;
   height: 50px;
   list-style-type: none;
-  color: #d5d2cd;
+  color: #fff;
   letter-spacing: 0.05em;
   font-size: 16px;
   line-height: 50px;
@@ -440,10 +440,10 @@ han {
   -webkit-user-select: none;
 }
 .mainmenu-menu li:hover {
-  background-color: #323232;
+  background-color: #ffffff;
 }
 .container-bottombar {
-  background-color: #1f1f1f;
+  background-color: #fff;
   width: 100%;
   height: 26px;
   position: fixed;
@@ -464,7 +464,7 @@ han {
   -webkit-animation-duration: 0.5s !important;
 }
 .bottombar-trigger {
-  color: #d5d2cd;
+  color: #fff;
 }
 .trigger-expandnewnote {
   display: none;
@@ -477,7 +477,7 @@ han {
 }
 .bottom-bar-statusbar {
   width: auto;
-  color: #d2d2d2;
+  color: #fff;
   float: right;
   margin-top: 3px;
   margin-right: 6px;
@@ -506,7 +506,7 @@ han {
   width: 500px;
   height: 600px;
   background-color: #fff;
-  border: solid 1px #1f1f1f;
+  border: solid 1px #fff;
   border-radius: 12px;
   display: block;
   position: absolute;
@@ -519,7 +519,7 @@ han {
 .update-title {
   width: 100%;
   height: 40px;
-  background-color: #1f1f1f;
+  background-color: #fff;
   text-align: center;
   color: #fff;
   font-size: 16px;
@@ -565,7 +565,7 @@ han {
   display: block;
   height: 40px;
   width: 100%;
-  background-color: #1f1f1f;
+  background-color: #fff;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   text-align: center;
@@ -582,7 +582,7 @@ han {
 }
 .update-contents::-webkit-scrollbar-thumb {
   border-radius: 9px;
-  background-color: #1f1f1f;
+  background-color: #fff;
 }
 .update-contents::-webkit-scrollbar-button {
   display: none;
@@ -592,11 +592,11 @@ han {
   height: 36px;
   font-size: 15px;
   margin-top: 18px;
-  background: #1f1f1f !important;
+  background: #fff !important;
   border: none !important;
 }
 .update-progress {
-  color: #000000;
+  color: #d9d9d9;
   /*兼容IE10的已完成进度背景*/
   border: none;
   background: #1fadff85;
@@ -607,7 +607,7 @@ han {
   width: 100%;
 }
 .update-progress::-webkit-progress-bar {
-  background: #000000;
+  background: #d9d9d9;
 }
 .update-progress::-webkit-progress-value {
   background: #1fadff85;
@@ -620,8 +620,8 @@ han {
   font-size: 15px;
 }
 .index-body {
-  background: #2e2e2e;
-  background-color: #2e2e2e;
+  background: #fff;
+  background-color: #fff;
 }
 .about-body {
   -webkit-user-drag: none;
@@ -716,13 +716,13 @@ han {
   width: 100%;
   position: fixed;
   display: block;
-  background-color: #1f1f1f;
+  background-color: #fff;
   padding: 12px 13px;
-  border-top: solid 1px #d2d2d2;
+  border-top: solid 1px #fff;
 }
 .container-edit span {
   font-size: 13px;
-  color: #d2d2d2;
+  color: #fff;
 }
 .container-edit textarea {
   width: 100%;
@@ -746,11 +746,11 @@ han {
   width: 6.5px;
 }
 .container-edit textarea::-webkit-scrollbar-track-piece {
-  background-color: #d2d2d2;
+  background-color: #fff;
 }
 .container-edit textarea::-webkit-scrollbar-thumb {
   border-radius: 9px;
-  background-color: #1f1f1f;
+  background-color: #fff;
 }
 .container-edit textarea::-webkit-scrollbar-button {
   display: none;
@@ -763,7 +763,7 @@ han {
   height: 40px;
   position: absolute;
   display: block;
-  background-color: #1f1f1f;
+  background-color: #fff;
   bottom: 0px;
   padding: 0 12px;
 }
@@ -779,7 +779,7 @@ han {
   margin-bottom: 6px;
 }
 .container-footer button:hover {
-  background-color: #393939;
+  background-color: #ffffff;
 }
 .container-settings {
   width: 100%;
@@ -794,9 +794,9 @@ han {
   grid-template-rows: 85px;
 }
 .settings-titles-block {
-  background: #1f1f1f;
+  background: #fff;
   text-align: center;
-  color: #d2d2d2;
+  color: #fff;
   height: auto;
   display: inline-block;
   width: auto;
@@ -804,8 +804,8 @@ han {
   padding: 0;
 }
 .settings-titles-clicked {
-  background: #d2d2d2;
-  color: #1f1f1f;
+  background: #fff;
+  color: #fff;
 }
 .settings-titles-icon {
   margin: 14px auto 7px auto;
@@ -884,16 +884,16 @@ han {
   letter-spacing: 0.05em;
 }
 .setting-button-primary {
-  color: #d2d2d2 !important;
-  background-color: #1f1f1f !important;
+  color: #fff !important;
+  background-color: #fff !important;
   border: 0 !important;
 }
 .setting-button-primary:hover {
-  background-color: #050505 !important;
+  background-color: #e6e6e6 !important;
 }
 .mainmenu-logo-default {
-  display: none;
+  display: block;
 }
 .mainmenu-logo-blackwhite {
-  display: block;
+  display: none;
 }

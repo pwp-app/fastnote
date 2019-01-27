@@ -75,14 +75,16 @@ function createWindow() {
     ipc.on('set-uuid', function (sender, data) {
       global.uuid = data;
     });
-    //show main window
-    win.show();
-    win.focus();
     if (typeof settings != undefined) {
       if (settings.autoUpdateStatus) {
         checkForUpdates();
       }
     }
+    ipc.on('main-window-ready',function(sender, data){
+      //show main window
+      win.show();
+      win.focus();
+    });
     //bind restore note event
     ipc.on('restore-note', function (sender, data) {
       win.webContents.send('restore-note', data);

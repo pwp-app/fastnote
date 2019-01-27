@@ -53,8 +53,8 @@
   font-weight: 100,200,300,400,500,700,900;
 }
 body {
-  margin: 0;
-  font-weight: 200px;
+  margin: 0 !important;
+  font-weight: 400 !important;
 }
 html {
   overflow-x: hidden;
@@ -117,13 +117,14 @@ han {
   padding-bottom: 3px;
   overflow-y: auto;
   pointer-events: auto !important;
+  background: #fff;
 }
 .note-list::-webkit-scrollbar {
   width: 8px;
   z-index: 10;
 }
 .note-list::-webkit-scrollbar-track-piece {
-  background-color: #fff;
+  background: #fff;
 }
 .note-list::-webkit-scrollbar-thumb {
   border-radius: 9px;
@@ -167,14 +168,14 @@ han {
   padding: 9px 12px;
 }
 .note-header {
-  border-bottom: solid #fff 2px;
+  border-bottom: solid #fff 1px;
   height: 32px;
   user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
 }
 .note-header p {
-  display: inline-block;
+  display: inline-flex;
 }
 .note-no {
   font-size: 15px;
@@ -310,6 +311,8 @@ han {
   font-size: 14px;
   border-radius: 5px;
   letter-spacing: 0.05em;
+  color: #fff;
+  background: #fff;
 }
 .container-newnote .control textarea::-webkit-scrollbar {
   width: 6.5px;
@@ -452,7 +455,6 @@ han {
   display: inline-block;
   width: 32px;
   height: 26px;
-  color: #fff;
   padding-left: 8px;
   line-height: 26px;
   font-size: 14px;
@@ -461,11 +463,13 @@ han {
   animation-duration: 0.5s !important;
   -webkit-animation-duration: 0.5s !important;
 }
+.bottombar-trigger {
+  color: #fff;
+}
 .trigger-expandnewnote {
   display: none;
   width: 30px;
   height: 26px;
-  color: #fff;
   float: right;
   line-height: 26px;
   font-size: 14px;
@@ -614,6 +618,10 @@ han {
 }
 .update-contents-loading span {
   font-size: 15px;
+}
+.index-body {
+  background: #fff;
+  background-color: #fff;
 }
 .about-body {
   -webkit-user-drag: none;

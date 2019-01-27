@@ -1,7 +1,7 @@
 @import "./color.common.less";
 
 @color-primary: #1f1f1f;
-@color-secondary: @color-white;
+@color-secondary: rgb(210,210,210);
 
 //hover and shadow
 @color-primary-hover: lighten(@color-primary, 10%);
@@ -10,10 +10,12 @@
 @color-boxshadow-dark: @color-deepgray;
 
 //border
-@color-border-primary: @color-lightgray;
+@color-border-primary: #2e2e2e;
 
 //text
-@color-text-primary: @color-white;
+@color-text-primary: rgb(213,210,205);
+@color-text-secondary: rgb(150,150,150);
+@color-textarea-background: @color-notelist-background;
 
 //infobar
 @color-success: #00c13f;
@@ -26,13 +28,18 @@
 @color-updateprogress-value: #1fadff85;
 
 //mainmenu
-@color-mainmenu-primary: rgb(216,216,216);
+@color-mainmenu-primary: @color-text-primary;
 @color-mainmenu-background: #1e1e1e;
 @color-mainmenu-hover: #323232;
 @color-mainmenu-split: #2e2e2e;
 
 //note
-@color-note-selected: @color-lightblack;
+@color-note-empty: @color-text-primary;
+@color-note-selected: darken(@color-notelist-background, 3%);
+@color-notelist-background: #2e2e2e;
+
+//bottombar
+@color-trigger-primary: @color-text-primary;
 
 //about
 @color-about-primary: @color-gray;

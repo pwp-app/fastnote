@@ -12,7 +12,7 @@
         window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
         require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
     </script>
-    <link rel="stylesheet" type="text/css" media="screen" href="css/main.default.css">
+    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="css/main.white.css">
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
@@ -56,6 +56,10 @@
                 settings = data;
                 settingsInit(settings);
             }
+            //设置加载完成，显示窗体
+            $(document).ready(function(){
+                ipcRenderer.send("main-window-ready");
+            });
         });
 
         function settingsInit(settings) {
@@ -64,12 +68,20 @@
             //build css
             if (settings == null) {
                 //read error
+                $('#main-style').attr('href','css/main.default.css');
+
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
-                //read error
+
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
+                if (typeof settings.theme != 'undefined'){
+                    $('#main-style').attr('href','css/main.'+settings.theme+'.css');
+                } else {
+                    $('#main-style').attr('href','css/main.default.css');
+                }
+
                 if (typeof settings.fontfamily != 'undefined') {
                     cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
                     font = settings.fontfamily;
@@ -238,7 +250,7 @@
     </script>
 </head>
 
-<body>
+<body class="index-body">
     <!-- titlebar -->
     <div class="container-titlebar col-lg-12 drag">
         <div class="title" id="app-title">Fastnote</div>
@@ -365,7 +377,7 @@
             <label id="lbl-newnote" title="使用 Ctrl+Enter 提交便签">新建便签</label>
             <!-- fold -->
             <div class="newnote-fold">
-                <button class="br-btn btn-noback" id="btn-newnote-fold">
+                <button class="br-btn btn-noback bottombar-trigger" id="btn-newnote-fold">
                     <i class="fa fa-chevron-down"></i>
                 </button>
             </div>
@@ -376,12 +388,12 @@
     </div>
     <div class="container-bottombar">
         <div class="trigger-mainmenu">
-            <button class="br-btn btn-noback" id="btn-mainmenu-trigger">
+            <button class="br-btn btn-noback bottombar-trigger" id="btn-mainmenu-trigger">
                 <i class="fa fa-bars"></i>
             </button>
         </div>
         <div class="trigger-expandnewnote">
-            <button class="br-btn btn-noback" id="btn-newnote-expand">
+            <button class="br-btn btn-noback bottombar-trigger" id="btn-newnote-expand">
                 <i class="fa fa-chevron-up"></i>
             </button>
         </div>
@@ -401,7 +413,7 @@
                 setTimeout(function(){
                     $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 207);
                     $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 207);
-                },200);
+                },50);
             } else {
                 if (data.isFolded) {
                     $('.container-newnote').css('display', 'none');
@@ -411,7 +423,7 @@
                     setTimeout(function(){
                         $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 27);
                         $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 27);
-                    },200);
+                    },50);
                 } else {
                     isNoteFolded = false;
                     $('.container-newnote').css('display', 'block');
@@ -419,10 +431,9 @@
                     setTimeout(function(){
                         $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 207);
                         $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 207);
-                    },200);
+                    },50);
                 }
             }
-
         });
         //绑定折叠事件
         $('#btn-newnote-fold').click(function () {

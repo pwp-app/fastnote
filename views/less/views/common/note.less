@@ -4,6 +4,7 @@
     padding-bottom: 3px;
     overflow-y: auto;
     pointer-events: auto !important;
+    background: @color-notelist-background;
 }
 
 .note-list::-webkit-scrollbar {
@@ -12,7 +13,7 @@
 }
 
 .note-list::-webkit-scrollbar-track-piece {
-    background-color: @color-secondary;
+    background: @color-notelist-background;
 }
 
 .note-list::-webkit-scrollbar-thumb {
@@ -39,7 +40,7 @@
 }
 
 .note-empty span {
-    color: @color-black;
+    color: @color-note-empty;
     font-size: 20px;
 }
 
@@ -59,13 +60,13 @@
 }
 
 .note-header {
-    border-bottom: solid @color-secondary 2px;
+    border-bottom: solid @color-text-primary 1px;
     height: 32px;
     .no-select();
 }
 
 .note-header p {
-    display: inline-block;
+    display: inline-flex;
 }
 
 .note-no {
