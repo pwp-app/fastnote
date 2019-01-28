@@ -70,7 +70,9 @@
                 settings = data;
                 settingsInit(settings);
             }
-            ipcRenderer.send("winSettings-ready");
+            $(document).ready(function(){
+                ipcRenderer.send("settings-window-ready");
+            });
         });
 
         //读取noteid

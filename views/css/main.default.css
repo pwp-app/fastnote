@@ -648,6 +648,7 @@ han {
   background-color: #fff;
 }
 .about-body {
+  background: #fff;
   -webkit-user-drag: none;
   user-select: none;
   -webkit-user-select: none;
@@ -667,6 +668,7 @@ han {
 .about-logo img {
   width: 110px;
   height: 110px;
+  margin: 0 auto;
   -webkit-user-drag: none;
 }
 .about-title {
@@ -885,7 +887,7 @@ han {
 }
 .settings-item-control select:focus {
   color: #000;
-  background: #fff;
+  background: #f2f2f2;
   border: 1px solid #94a1ae;
   outline: none !important;
   box-shadow: none !important;
@@ -928,5 +930,11 @@ han {
   display: block;
 }
 .mainmenu-logo-blackwhite {
+  display: none;
+}
+.about-logo-default {
+  display: block;
+}
+.about-logo-blackwhite {
   display: none;
 }

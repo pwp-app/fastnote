@@ -648,6 +648,7 @@ han {
   background-color: #2e2e2e;
 }
 .about-body {
+  background: #1f1f1f;
   -webkit-user-drag: none;
   user-select: none;
   -webkit-user-select: none;
@@ -667,12 +668,13 @@ han {
 .about-logo img {
   width: 110px;
   height: 110px;
+  margin: 0 auto;
   -webkit-user-drag: none;
 }
 .about-title {
   width: 100%;
   letter-spacing: 0.1em;
-  color: gray;
+  color: #d5d2cd;
   text-align: center;
 }
 .about-title h1 {
@@ -691,7 +693,7 @@ han {
   width: 100%;
   bottom: 0;
   position: absolute;
-  color: gray;
+  color: #d5d2cd;
   font-size: 12px;
   text-align: center;
   letter-spacing: 0.05em;
@@ -885,7 +887,7 @@ han {
 }
 .settings-item-control select:focus {
   color: #d5d2cd;
-  background: #2f2f2f;
+  background: #222222;
   border: 1px solid #9f9f9f;
   outline: none !important;
   box-shadow: none !important;
@@ -928,5 +930,11 @@ han {
   display: none;
 }
 .mainmenu-logo-blackwhite {
+  display: block;
+}
+.about-logo-default {
+  display: none;
+}
+.about-logo-blackwhite {
   display: block;
 }

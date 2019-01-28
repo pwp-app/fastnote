@@ -28,15 +28,16 @@ function createAboutWindow() {
     var viewpath = path.resolve(__dirname, '../views/settings.html');
     win_settings.loadFile(viewpath);
 
+    ipc.on('settings-window-ready', () => {
+        win_settings.focus();
+        win_settings.show();
+    });
+
     if (indebug)
         win_settings.webContents.openDevTools();
 
     win_settings.on('closed', () => {
         win_settings = null;
-    })
-    win_settings.on('winSettings-ready', () => {
-        win_settings.focus();
-        win_settings.show();
     });
 }
 

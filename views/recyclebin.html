@@ -11,7 +11,7 @@
         window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
         require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
     </script>
-    <link rel="stylesheet" type="text/css" media="screen" href="css/main.default.css" />
+    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="css/main.white.css" />
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
@@ -78,6 +78,9 @@
                 settings = data;
                 settingsInit(settings);
             }
+            $(document).ready(function(){
+                ipcRenderer.send("recyclebin-window-ready");
+            });
         });
 
         function settingsInit(settings) {
@@ -86,13 +89,20 @@
             //build css
             if (settings == null) {
                 //read error
+                $('#main-style').attr('href','css/main.default.css');
+
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
                 //read error
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
-                //read success
+                if (typeof settings.theme != 'undefined'){
+                    $('#main-style').attr('href','css/main.'+settings.theme+'.css');
+                } else {
+                    $('#main-style').attr('href','css/main.default.css');
+                }
+
                 if (typeof settings.fontfamily != 'undefined') {
                     cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
                     font = settings.fontfamily;

@@ -31,15 +31,16 @@ var RecycleWindow = {
         var viewpath = path.resolve(__dirname, '../views/recyclebin.html');
         win_recycle.loadFile(viewpath);
 
+        ipc.on('recyclebin-window-ready', function (sender, e){
+            win_recycle.focus();
+            win_recycle.show();
+        });
+
         if (indebug)
             win_recycle.webContents.openDevTools();
 
         win_recycle.on('closed', () => {
             win_recycle = null;
-        })
-        win_recycle.on('ready-to-show', () => {
-            win_recycle.focus();
-            win_recycle.show();
         });
     }
 }
