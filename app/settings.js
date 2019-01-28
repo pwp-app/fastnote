@@ -34,7 +34,7 @@ function createAboutWindow() {
     win_settings.on('closed', () => {
         win_settings = null;
     })
-    win_settings.on('ready-to-show', () => {
+    win_settings.on('winSettings-ready', () => {
         win_settings.focus();
         win_settings.show();
     });

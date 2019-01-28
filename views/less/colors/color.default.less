@@ -3,9 +3,14 @@
 @color-primary: #1faeff;
 @color-secondary: @color-white;
 
+@color-danger: #dc3545;
+
 //hover and shadow
 @color-primary-hover: lighten(@color-primary, 10%);
 @color-primary-darkhover: darken(@color-primary, 10%);
+@color-danger-darkhover: darken(@color-danger, 10%);
+
+//shadow
 @color-boxshadow: rgba(0, 0, 0, .2);
 @color-boxshadow-dark: @color-deepgray;
 
@@ -43,3 +48,10 @@
 
 //about
 @color-about-primary: @color-gray;
+
+//settings
+@color-settings-text: @color-text-secondary;
+@color-settings-titles-clicked: @color-primary;
+@color-settings-titles-clicked-bg: @color-secondary;
+@color-settings-background: @color-secondary;
+@color-settings-selectborder:#ced4da;

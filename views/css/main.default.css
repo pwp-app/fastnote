@@ -42,6 +42,30 @@
   background-color: #fff;
   border-radius: 0 !important;
 }
+.brbtn-danger {
+  color: #fff !important;
+  background-color: #dc3545 !important;
+  border: 0 !important;
+}
+.brbtn-danger:hover {
+  background-color: #bd2130 !important;
+}
+.brbtn-danger:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.brbtn-primary {
+  color: #fff !important;
+  background-color: #1faeff !important;
+  border: 0 !important;
+}
+.brbtn-primary:hover {
+  background-color: #0096eb !important;
+}
+.brbtn-primary:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
 .btn-noback {
   background-color: transparent;
   border-radius: 0 !important;
@@ -781,6 +805,9 @@ han {
 .container-footer button:hover {
   background-color: #52c0ff;
 }
+.settings-body {
+  background: #fff;
+}
 .container-settings {
   width: 100%;
   height: 100%;
@@ -839,6 +866,7 @@ han {
   margin-top: 6px;
   width: auto;
   margin-left: 45px;
+  color: #000;
   -webkit-user-drag: none;
   user-select: none;
   -webkit-user-select: none;
@@ -847,10 +875,22 @@ han {
 .settings-item-control select {
   height: 34px;
   font-size: 13px;
+  color: #000;
+  background: #fff;
+  border: 1px solid #ced4da;
   vertical-align: middle;
 }
+.settings-item-control select:hover {
+  background: #f2f2f2;
+}
+.settings-item-control select:focus {
+  color: #000;
+  background: #fff;
+  border: 1px solid #94a1ae;
+  outline: none !important;
+  box-shadow: none !important;
+}
 .settings-item-control button {
-  height: 32px;
   font-size: 14px;
   width: 100%;
 }
@@ -858,6 +898,7 @@ han {
   line-height: 34px;
   font-size: 14px;
   width: 100%;
+  color: #000;
   -webkit-user-drag: none;
   user-select: none;
   -webkit-user-select: none;
@@ -882,14 +923,6 @@ han {
   text-align: center;
   padding: 3px 15px !important;
   letter-spacing: 0.05em;
-}
-.setting-button-primary {
-  color: #fff !important;
-  background-color: #1faeff !important;
-  border: 0 !important;
-}
-.setting-button-primary:hover {
-  background-color: #0096eb !important;
 }
 .mainmenu-logo-default {
   display: block;

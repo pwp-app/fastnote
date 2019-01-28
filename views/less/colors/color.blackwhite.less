@@ -3,9 +3,14 @@
 @color-primary: #1f1f1f;
 @color-secondary: rgb(210,210,210);
 
-//hover and shadow
+@color-danger: #4e4e4e;
+
+//hover
 @color-primary-hover: lighten(@color-primary, 10%);
-@color-primary-darkhover: darken(@color-primary, 10%);
+@color-primary-darkhover: darken(@color-primary, 5%);
+@color-danger-darkhover: darken(@color-danger, 5%);
+
+//shadow
 @color-boxshadow: rgba(0, 0, 0, .2);
 @color-boxshadow-dark: @color-deepgray;
 
@@ -43,3 +48,10 @@
 
 //about
 @color-about-primary: @color-gray;
+
+//settings
+@color-settings-text: @color-text-primary;
+@color-settings-background: #2f2f2f;
+@color-settings-titles-clicked: @color-text-primary;
+@color-settings-titles-clicked-bg: #2f2f2f;
+@color-settings-selectborder: rgb(210,210,210);

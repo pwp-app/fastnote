@@ -42,6 +42,30 @@
   background-color: #fff;
   border-radius: 0 !important;
 }
+.brbtn-danger {
+  color: #d5d2cd !important;
+  background-color: #4e4e4e !important;
+  border: 0 !important;
+}
+.brbtn-danger:hover {
+  background-color: #414141 !important;
+}
+.brbtn-danger:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.brbtn-primary {
+  color: #d5d2cd !important;
+  background-color: #1f1f1f !important;
+  border: 0 !important;
+}
+.brbtn-primary:hover {
+  background-color: #121212 !important;
+}
+.brbtn-primary:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
 .btn-noback {
   background-color: transparent;
   border-radius: 0 !important;
@@ -781,6 +805,9 @@ han {
 .container-footer button:hover {
   background-color: #393939;
 }
+.settings-body {
+  background: #2f2f2f;
+}
 .container-settings {
   width: 100%;
   height: 100%;
@@ -796,7 +823,7 @@ han {
 .settings-titles-block {
   background: #1f1f1f;
   text-align: center;
-  color: #d2d2d2;
+  color: #d5d2cd;
   height: auto;
   display: inline-block;
   width: auto;
@@ -804,8 +831,8 @@ han {
   padding: 0;
 }
 .settings-titles-clicked {
-  background: #d2d2d2;
-  color: #1f1f1f;
+  background: #2f2f2f;
+  color: #d5d2cd;
 }
 .settings-titles-icon {
   margin: 14px auto 7px auto;
@@ -839,6 +866,7 @@ han {
   margin-top: 6px;
   width: auto;
   margin-left: 45px;
+  color: #d5d2cd;
   -webkit-user-drag: none;
   user-select: none;
   -webkit-user-select: none;
@@ -847,10 +875,22 @@ han {
 .settings-item-control select {
   height: 34px;
   font-size: 13px;
+  color: #d5d2cd;
+  background: #2f2f2f;
+  border: 1px solid #d2d2d2;
   vertical-align: middle;
 }
+.settings-item-control select:hover {
+  background: #222222;
+}
+.settings-item-control select:focus {
+  color: #d5d2cd;
+  background: #2f2f2f;
+  border: 1px solid #9f9f9f;
+  outline: none !important;
+  box-shadow: none !important;
+}
 .settings-item-control button {
-  height: 32px;
   font-size: 14px;
   width: 100%;
 }
@@ -858,6 +898,7 @@ han {
   line-height: 34px;
   font-size: 14px;
   width: 100%;
+  color: #d5d2cd;
   -webkit-user-drag: none;
   user-select: none;
   -webkit-user-select: none;
@@ -882,14 +923,6 @@ han {
   text-align: center;
   padding: 3px 15px !important;
   letter-spacing: 0.05em;
-}
-.setting-button-primary {
-  color: #d2d2d2 !important;
-  background-color: #1f1f1f !important;
-  border: 0 !important;
-}
-.setting-button-primary:hover {
-  background-color: #050505 !important;
 }
 .mainmenu-logo-default {
   display: none;

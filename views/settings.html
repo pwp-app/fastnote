@@ -12,7 +12,7 @@
         window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
         require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
     </script>
-    <link rel="stylesheet" type="text/css" media="screen" href="css/main.default.css" />
+    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="css/main.white.css" />
     <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
@@ -70,6 +70,7 @@
                 settings = data;
                 settingsInit(settings);
             }
+            ipcRenderer.send("winSettings-ready");
         });
 
         //读取noteid
@@ -90,6 +91,8 @@
             //build css
             if (settings == null) {
                 //read error
+                $('#main-style').attr('href','css/main.default.css');
+
                 initTheme('default');
                 initFont('Source Han Sans CN');
                 //初始化设置
@@ -106,8 +109,10 @@
                 //init themes
                 if (typeof settings.theme != 'undefined'){
                     initTheme(settings.theme);
+                    $('#main-style').attr('href','css/main.'+settings.theme+'.css');
                 } else {
                     initTheme('default');
+                    $('#main-style').attr('href','css/main.default.css');
                 }
 
                 //init font family
@@ -235,11 +240,11 @@
             $(document).ready(function(){
                 $('#select-letterspacing').val(letterspacing);
             });
-        }        
+        }
     </script>
 </head>
 
-<body>
+<body class="settings-body">
     <!-- titlebar -->
     <div class="container-titlebar col-lg-12 drag">
         <div class="title" id="app-title">设置</div>
@@ -298,7 +303,7 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <select class="form-control" id="select-updateChannel">
+                    <select class="form-control settings-select" id="select-updateChannel">
                         <option>Alpha</option>
                     </select>
                 </div>
@@ -309,7 +314,7 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <select class="form-control" id="select-themes">
+                    <select class="form-control settings-select" id="select-themes">
                         <option value="default">默认（蓝白）</option>
                         <option value="blackwhite">黑白</option>
                     </select>
@@ -321,7 +326,7 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <select class="form-control">
+                    <select class="form-control settings-select">
                         <option>简体中文</option>
                     </select>
                 </div>
@@ -332,7 +337,7 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <button class="btn btn-danger" id="btn-resetSettings" onclick="resetSettings();">重置</button>
+                    <button class="btn btn-danger brbtn-danger" id="btn-resetSettings" onclick="resetSettings();">重置</button>
                 </div>
             </div>
         </div>
@@ -352,7 +357,7 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <button class="btn btn-danger" id="btn-resetNotes">重置</button>
+                    <button class="btn btn-danger brbtn-danger" id="btn-resetNotes">重置</button>
                 </div>
             </div>
         </div>
@@ -363,8 +368,8 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <select class="form-control" id="select-fontfamily">
-                        <option style="font-family: Source Han Sans CN !important;" value="Source Han Sans CN">思源黑体</option>
+                    <select class="form-control settings-select" id="select-fontfamily">
+                        <option style="font-family: Source Han Sans CN Arial !important;" value="Source Han Sans CN">思源黑体</option>
                         <option style="font-family: Microsoft Yahei !important;" value="Microsoft Yahei">微软雅黑</option>
                         <option style="font-family: DengXian !important;" value="DengXian">等线</option>
                         <option style="font-family: Arial !important;" value="Arial">Arial</option>
@@ -377,7 +382,7 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <select class="form-control" id="select-fontsize">
+                    <select class="form-control settings-select" id="select-fontsize">
                         <option style="font-size: 18px !important;" value="18">18px</option>
                         <option style="font-size: 17px !important;" value="17">17px</option>
                         <option style="font-size: 16px !important;" value="16">16px</option>
@@ -394,7 +399,7 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <select class="form-control" id="select-textalign">
+                    <select class="form-control settings-select" id="select-textalign">
                         <option value="left">左对齐</option>
                         <option value="justify">两端对齐</option>
                     </select>
@@ -406,7 +411,7 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <select class="form-control" id="select-lineheight">
+                    <select class="form-control settings-select" id="select-lineheight">
                         <option value="26">26px</option>
                         <option value="24">24px</option>
                         <option value="22">22px</option>
@@ -421,7 +426,7 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <select class="form-control" id="select-letterspacing">
+                    <select class="form-control settings-select" id="select-letterspacing">
                         <option value="0.08">0.08em</option>
                         <option value="0.06">0.06em</option>
                         <option value="0.04">0.04em</option>
@@ -433,8 +438,8 @@
     </div>
 
     <div class="setting-buttons">
-        <button class="btn btn-danger" onclick='window.close();'>取消</button>
-        <button class="btn setting-button-primary" onclick="saveSettings();">保存</button>
+        <button class="btn btn-danger brbtn-danger" onclick='window.close();'>取消</button>
+        <button class="btn btn-primary brbtn-primary" onclick="saveSettings();">保存</button>
     </div>
 
     <script>
