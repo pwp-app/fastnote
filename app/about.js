@@ -4,6 +4,7 @@ const {
     BrowserWindow
 } = require('electron');
 
+const ipc = require('electron').ipcMain;
 const app = require('electron').app;
 const path = require('path');
 
@@ -38,6 +39,12 @@ function createAboutWindow() {
         win_about.webContents.send('set-uuid',global.uuid);
     });
 }
+
+ipc.on('reloadAboutWindow',function(sender,data){
+    if (win_about != null){
+        win_about.reload();
+    }
+});
 
 function showAboutWindow() {
     if (win_about !== null) {

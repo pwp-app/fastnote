@@ -283,13 +283,13 @@ han {
   margin-right: 15px;
 }
 .infobar-success {
-  background-color: #00c13f;
+  background-color: #004116;
 }
 .infobar-warning {
-  background-color: #f4b300;
+  background-color: #412f00;
 }
 .infobar-error {
-  background-color: #ff2e12;
+  background-color: #5a0b00;
 }
 .infobar-info {
   background-color: #000000;
@@ -623,7 +623,7 @@ han {
   color: #000000;
   /*兼容IE10的已完成进度背景*/
   border: none;
-  background: #1fadff85;
+  background: #1a1a1a;
   position: absolute;
   height: 4px;
   bottom: 0;
@@ -634,7 +634,7 @@ han {
   background: #000000;
 }
 .update-progress::-webkit-progress-value {
-  background: #1fadff85;
+  background: #1a1a1a;
 }
 .update-contents-loading {
   text-align: center;
@@ -763,6 +763,8 @@ han {
   border-radius: 5px;
   letter-spacing: 0.05em;
   display: block;
+  background: #2e2e2e;
+  color: #d5d2cd;
 }
 .edit-title {
   font-size: 13px !important;
@@ -772,7 +774,7 @@ han {
   width: 6.5px;
 }
 .container-edit textarea::-webkit-scrollbar-track-piece {
-  background-color: #d2d2d2;
+  background-color: #2e2e2e;
 }
 .container-edit textarea::-webkit-scrollbar-thumb {
   border-radius: 9px;
@@ -806,6 +808,12 @@ han {
 }
 .container-footer button:hover {
   background-color: #393939;
+}
+#edit-header-time {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 .settings-body {
   background: #2f2f2f;

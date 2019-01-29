@@ -674,7 +674,7 @@
     <script>
         //绑定主菜单的动画事件
         let isMainMenuOpen = false;
-        $('.mainmenu-background').on('click', function () {
+        $('.mainmenu-background').on('mousedown', function () {
             closeMainMenu();
         });
         $('#btn-mainmenu-trigger').on('click', function () {
@@ -700,7 +700,10 @@
             closeMainMenu();
         });
         $('#mainmenu-btn-reload').click(function () {
-            ipcRenderer.send("reloadMainWindow"); //退出程序
+            ipcRenderer.send("reloadMainWindow"); //重载
+            ipcRenderer.send('reloadRecycleWindow');
+            ipcRenderer.send('reloadAllEditWindow');
+            ipcRenderer.send('reloadAboutWindow');
             closeMainMenu();
         });
         $('#mainmenu-btn-exit').click(function () {

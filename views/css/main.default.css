@@ -335,7 +335,7 @@ han {
   font-size: 14px;
   border-radius: 5px;
   letter-spacing: 0.05em;
-  color: #fff;
+  color: #000;
   background: #fff;
 }
 .container-newnote .control textarea::-webkit-scrollbar {
@@ -763,6 +763,8 @@ han {
   border-radius: 5px;
   letter-spacing: 0.05em;
   display: block;
+  background: #fff;
+  color: #000;
 }
 .edit-title {
   font-size: 13px !important;
@@ -806,6 +808,12 @@ han {
 }
 .container-footer button:hover {
   background-color: #52c0ff;
+}
+#edit-header-time {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 .settings-body {
   background: #fff;

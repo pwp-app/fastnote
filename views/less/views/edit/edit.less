@@ -23,6 +23,8 @@
     border-radius: 5px;
     letter-spacing: 0.05em;
     display: block;
+    background: @color-textarea-background;
+    color: @color-textarea-color;
 }
 .edit-title {
     font-size: 13px !important;
@@ -32,7 +34,7 @@
     width: 6.5px;
 }
 .container-edit textarea::-webkit-scrollbar-track-piece {
-    background-color: @color-secondary;
+    background-color: @color-textarea-background;
 }
 
 .container-edit textarea::-webkit-scrollbar-thumb {
@@ -69,4 +71,7 @@
 }
 .container-footer button:hover{
     background-color: @color-primary-hover;
+}
+#edit-header-time{
+    .no-select-and-drag();
 }
