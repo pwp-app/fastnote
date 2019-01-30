@@ -15,7 +15,7 @@
 .update-block {
     width: 500px;
     height: 600px;
-    background-color: @color-white;
+    background-color: @color-notelist-background;
     border: solid 1px @color-primary;
     border-radius: 12px;
     display: block;
@@ -32,7 +32,7 @@
     height: 40px;
     background-color: @color-primary;
     text-align: center;
-    color: @color-white;
+    color: @color-text-primary;
     font-size: 16px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -54,20 +54,20 @@
 .update-contents h1 {
     padding: 6px 0px;
     font-size: 21px;
-    color: @color-darkgray;
+    color: @color-updater-text;
     font-weight: bold;
 }
 
 .update-contents h2 {
     padding: 6px 0px;
     font-size: 17px;
-    color: @color-darkgray;
+    color: @color-updater-text;
     font-weight: bold;
 }
 
 .update-contents p {
     font-size: 15px;
-    color: @color-darkgray;
+    color: @color-updater-text;
     margin-bottom: 6px !important;
     word-break: break-all;
     white-space: pre-wrap;
@@ -95,7 +95,7 @@
 }
 
 .update-contents::-webkit-scrollbar-track-piece {
-    background-color: @color-white;
+    background-color: @color-notelist-background;
 }
 
 .update-contents::-webkit-scrollbar-thumb {
@@ -111,6 +111,7 @@
     height:36px;
     font-size: 15px;
     margin-top:18px;
+    color: @color-text-primary;
     background: @color-primary !important;
     border: none !important;
 }
@@ -127,14 +128,6 @@
     width: 100%;
 }
 
-.update-progress::-webkit-progress-bar {
-    background: @color-updateprogress-background;
-}
-
-.update-progress::-webkit-progress-value {
-    background: @color-updateprogress-value;
-}
-
 .update-contents-loading {
     text-align: center;
     display: block;
@@ -142,4 +135,13 @@
 
 .update-contents-loading span {
     font-size: 15px;
+}
+
+//提供给var.json的
+.up-red{
+    color: @color-updater-text-red;
+}
+
+.up-bold{
+    font-weight: bold;
 }

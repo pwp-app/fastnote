@@ -294,6 +294,12 @@ han {
 .infobar-info {
   background-color: #0086d2;
 }
+.update-progress::-webkit-progress-bar {
+  background: #0086d2;
+}
+.update-progress::-webkit-progress-value {
+  background: #1fadff85;
+}
 .container-newnote {
   height: 180px;
   width: 100%;
@@ -616,6 +622,7 @@ han {
   height: 36px;
   font-size: 15px;
   margin-top: 18px;
+  color: #fff;
   background: #1faeff !important;
   border: none !important;
 }
@@ -630,18 +637,18 @@ han {
   left: 0;
   width: 100%;
 }
-.update-progress::-webkit-progress-bar {
-  background: #0086d2;
-}
-.update-progress::-webkit-progress-value {
-  background: #1fadff85;
-}
 .update-contents-loading {
   text-align: center;
   display: block;
 }
 .update-contents-loading span {
   font-size: 15px;
+}
+.up-red {
+  color: red;
+}
+.up-bold {
+  font-weight: bold;
 }
 .index-body {
   background: #fff;

@@ -294,6 +294,12 @@ han {
 .infobar-info {
   background-color: #d9d9d9;
 }
+.update-progress::-webkit-progress-bar {
+  background: #d9d9d9;
+}
+.update-progress::-webkit-progress-value {
+  background: #1fadff85;
+}
 .container-newnote {
   height: 180px;
   width: 100%;
@@ -567,18 +573,18 @@ han {
 .update-contents h1 {
   padding: 6px 0px;
   font-size: 21px;
-  color: #2e2e2e;
+  color: #fff;
   font-weight: bold;
 }
 .update-contents h2 {
   padding: 6px 0px;
   font-size: 17px;
-  color: #2e2e2e;
+  color: #fff;
   font-weight: bold;
 }
 .update-contents p {
   font-size: 15px;
-  color: #2e2e2e;
+  color: #fff;
   margin-bottom: 6px !important;
   word-break: break-all;
   white-space: pre-wrap;
@@ -616,6 +622,7 @@ han {
   height: 36px;
   font-size: 15px;
   margin-top: 18px;
+  color: #fff;
   background: #fff !important;
   border: none !important;
 }
@@ -630,18 +637,18 @@ han {
   left: 0;
   width: 100%;
 }
-.update-progress::-webkit-progress-bar {
-  background: #d9d9d9;
-}
-.update-progress::-webkit-progress-value {
-  background: #1fadff85;
-}
 .update-contents-loading {
   text-align: center;
   display: block;
 }
 .update-contents-loading span {
   font-size: 15px;
+}
+.up-red {
+  color: #fff;
+}
+.up-bold {
+  font-weight: bold;
 }
 .index-body {
   background: #fff;
