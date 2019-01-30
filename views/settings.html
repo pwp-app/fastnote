@@ -278,6 +278,15 @@
                 $('.settings-sections').addClass('settings-sections-hidden');
                 $('.'+$(this).attr('data-target')).removeClass('settings-sections-hidden');
             });
+            $('.settings-titles-general').click(function(){
+                ipcRenderer.send("settings-window-heightChange",430);
+            })
+            $('.settings-titles-notes').click(function(){
+                ipcRenderer.send("settings-window-heightChange",285);
+            });
+            $('.settings-titles-display').click(function(){
+                ipcRenderer.send("settings-window-heightChange",430);
+            });
         </script>
         <!-- sections -->
         <div class="settings-sections settings-general">

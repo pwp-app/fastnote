@@ -32,7 +32,6 @@ var RecycleWindow = {
         win_recycle.loadFile(viewpath);
 
         ipc.on('recyclebin-window-ready', function (sender, e){
-            win_recycle.focus();
             win_recycle.show();
         });
 

@@ -83,7 +83,6 @@ function createWindow() {
     ipc.on('main-window-ready',function(sender, data){
       //show main window
       win.show();
-      win.focus();
     });
     //bind restore note event
     ipc.on('restore-note', function (sender, data) {

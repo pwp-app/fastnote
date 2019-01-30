@@ -32,15 +32,14 @@ function createAboutWindow() {
 
     win_about.on('closed', () => {
         win_about = null;
-    })
+    });
     win_about.on('ready-to-show', () => {
-        win_about.focus();
         win_about.show();
         win_about.webContents.send('set-uuid',global.uuid);
     });
 }
 
-ipc.on('reloadAboutWindow',function(sender,data){
+ipc.on('reloadAboutWindow',function(sender, data){
     if (win_about != null){
         win_about.reload();
     }

@@ -44,7 +44,6 @@ function createEditWindow(data) {
     })
 
     win_edit.on('ready-to-show', () => {
-        win_edit.focus();
         win_edit.show();
         type = 'init';
         win_edit.webContents.send('message', {
