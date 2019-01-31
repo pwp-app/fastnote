@@ -52,7 +52,7 @@ textarea.keyup(function (e) {
 });
 
 //放入回收站
-function putToRecyclebin(id) {
+function putToRecyclebin(id, infoEnabled=true) {
     notes.every(function (note, i) {
         if (note.id == id) {
             var path;
@@ -72,7 +72,6 @@ function putToRecyclebin(id) {
                             readNoteFiles();
                             throw (err);
                         } else {
-                            console.log(id);
                             //从数组里删除
                             deleteNoteFromArr(id);
                             //动画
@@ -82,16 +81,20 @@ function putToRecyclebin(id) {
                                     showNoteEmpty_Anim();
                                 }
                             });
-                            displayInfobar('success', '已放入回收站');
                             //send to main process
                             ipcRenderer.send('recycle-note', note_temp);
+                            if (infoEnabled){
+                                displayInfobar('success', '已放入回收站');
+                            }
                         }
                     });
                 } else {
                     fs.mkdirSync(storagePath + '/notes/recyclebin/');
                     fs.rename(storagePath + '/notes/' + path, storagePath + '/notes/recyclebin/' + path, function (err) {
                         if (err) {
-                            displayInfobar('error', '放入回收站失败');
+                            if (infoEnabled){
+                                displayInfobar('error', '放入回收站失败');
+                            }
                             readNoteFiles();
                             throw (err);
                         } else {
@@ -105,14 +108,18 @@ function putToRecyclebin(id) {
                                     showNoteEmpty_Anim();
                                 }
                             });
-                            displayInfobar('success', '已放入回收站');
                             //send to main process
                             ipcRenderer.send('recycle-note', note_temp);
+                            if (infoEnabled){
+                                displayInfobar('success', '已放入回收站');
+                            }
                         }
                     });
                 }
             } else {
-                displayInfobar('error', '找不到文件，无法移入回收站');
+                if (infoEnabled){
+                    displayInfobar('error', '找不到文件，无法移入回收站');
+                }
             }
             return false;
         } else {
@@ -228,7 +235,7 @@ function saveNote(notetext) {
         //在顶部渲染Note
         renderNoteAtTop(note.id, note.time, note.updatetime, note.text);
         //绑定事件
-        bindRightClickEvent();
+        bindNoteClickEvent();
     } catch (e) {
         //重新读取Notes
         readNoteFiles();

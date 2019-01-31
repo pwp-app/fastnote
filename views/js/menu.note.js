@@ -41,6 +41,26 @@ menu_note.append(new MenuItem({
         noteid_clicked = -1;
     }
 }));
-menu_note.on('menu-will-close',(event,args)=>{
+menu_note.on('menu-will-close',(event, args)=>{
     $('#note_' + noteid_clicked).parent().removeClass('note-selected');
+});
+
+//多选状态
+let menu_note_multiSelected = new Menu();
+menu_note_multiSelected.append(new MenuItem({
+    label: '删除',
+    click: function () {
+
+    }
+}));
+menu_note_multiSelected.append(new MenuItem({
+    label: '取消',
+    click: function () {
+        $('.note').parent().removeClass('note-selected');
+        selectModeEnabled = false;
+    }
+}));
+menu_note_multiSelected.on('menu-will-close', (event, args) => {
+    $('.note').parent().removeClass('note-selected');
+    selectModeEnabled = false;
 });

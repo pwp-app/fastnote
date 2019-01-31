@@ -1,6 +1,11 @@
 //保存所有的notes
 var notes = new Array();
 
+let selectModeEnabled = false;
+var noteLongClickTimeout;
+
+var notes_selected = new Array();
+
 //显示没有笔记的界面
 function showNoteEmpty() {
     var node_empty = document.getElementsByClassName('note-empty')[0];
@@ -35,12 +40,12 @@ let reg_url =
 //渲染一条笔记
 function renderNote(id, time, updatetime, text) {
     var html = '<div class="note-wrapper"><div class="note" id="note_' + id +
-        '"><div class="note-header"><p class="note-no han-element">';
+        '" data-id="'+ id +'"><div class="note-header"><p class="note-no">';
     html += '#' + id + '</p>';
     //选择性显示时间
     if (typeof (updatetime) != 'undefined') {
         html += '<time><p class="note-time note-updatetime han-element">更新：' + updatetime,
-             + '</p>';
+            +'</p>';
         html += '<p class="note-time han-element">创建：' + time + '</p></time>';
     } else {
         html += '<time><p class="note-time han-element">' + time + '</p></time>';
@@ -72,7 +77,7 @@ function renderNote(id, time, updatetime, text) {
 function renderNoteAtTop(id, time, updatetime, text) {
     //构造html
     var html = '<div class="note-wrapper"><div class="note" id="note_' + id +
-        '"><div class="note-header"><p class="note-no">';
+        '" data-id="'+ id +'"><div class="note-header"><p class="note-no">';
     html += '#' + id + '</p>';
     //选择性显示时间
     if (typeof (updatetime) != 'undefined') {
@@ -163,7 +168,7 @@ function refreshNoteList(callback) {
         renderNote(note.id, note.time, note.updatetime, note.text);
     });
     //绑定右键事件
-    bindRightClickEvent();
+    bindNoteClickEvent();
     //callback
     if (typeof (callback) === 'function') {
         callback();
