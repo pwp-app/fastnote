@@ -28,7 +28,7 @@ function createAboutWindow() {
 
     win_settings = new BrowserWindow(conf);
 
-    var viewpath = path.resolve(__dirname, '../views/settings.html');
+    var viewpath = path.resolve(__dirname, '../public/settings.html');
     win_settings.loadFile(viewpath);
 
     ipc.on('settings-window-ready', () => {

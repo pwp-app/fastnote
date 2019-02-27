@@ -31,7 +31,7 @@ function createEditWindow(data) {
     //save ids
     edit_noteid.push(data.id);
 
-    var viewpath = path.resolve(__dirname, '../views/edit.html');
+    var viewpath = path.resolve(__dirname, '../public/edit.html');
     win_edit.loadFile(viewpath);
 
     if (indebug)

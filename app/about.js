@@ -24,7 +24,7 @@ function createAboutWindow() {
 
     win_about = new BrowserWindow(conf);
 
-    var viewpath = path.resolve(__dirname, '../views/about.html');
+    var viewpath = path.resolve(__dirname, '../public/about.html');
     win_about.loadFile(viewpath);
 
     if (indebug)

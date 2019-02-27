@@ -9,16 +9,16 @@
 
     <!--import requirements-->
     <script>
-        window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
-        require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
+        window.$ = window.jQuery = require('./static/jquery.min.js');
+        require('./static/bootstrap.min.js');
     </script>
-    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="css/main.white.css">
-    <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
-    <script src="js/array.js"></script>
-    <script src="js/han.simple.js"></script>
-    <script src="js/notes.render.js"></script>
+    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css">
+    <link rel="stylesheet" href="static/font-awesome.min.css">
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+    <link rel="stylesheet" href="static/animate.min.css">
+    <script src="static/array.js"></script>
+    <script src="static/han.simple.js"></script>
+    <script src="static/notes.render.js"></script>
     <script>
         //define const
         const remote = require('electron').remote;
@@ -42,8 +42,8 @@
         const WebFont = require('webfontloader');
 
         //import menu
-        $.getScript('js/menu.note.js');
-        $.getScript('js/menu.textarea.js');
+        $.getScript('static/menu.note.js');
+        $.getScript('static/menu.textarea.js');
 
         var settings;
 
@@ -69,7 +69,7 @@
             //build css
             if (settings == null) {
                 //read error
-                $('#main-style').attr('href','css/main.default.css');
+                $('#main-style').attr('href','static/main.default.css');
 
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
@@ -78,9 +78,9 @@
             } else {
                 //read success
                 if (typeof settings.theme != 'undefined'){
-                    $('#main-style').attr('href','css/main.'+settings.theme+'.css');
+                    $('#main-style').attr('href','static/main.'+settings.theme+'.css');
                 } else {
-                    $('#main-style').attr('href','css/main.default.css');
+                    $('#main-style').attr('href','static/main.default.css');
                 }
 
                 if (typeof settings.fontfamily != 'undefined') {
@@ -371,13 +371,13 @@
 
             //笔记鼠标点击事件绑定
             function bindNoteClickEvent() {
-                $('.note').mousedown(function (e) {
-                    noteid_clicked = parseInt($(this).attr("data-id"));
-                    console.log("Mouse down: " + noteid_clicked);
+                $('.note-wrapper').mousedown(function (e) {
+                    //提取点击的id
+                    noteid_clicked = parseInt($(this).children('.note').attr("data-id"));
                     if (e.which == 1){
                         if (selectModeEnabled){
                             //多选模式下，单击，如果选中则取消，未选中则选中
-                            let index = notes_selected.indexOf(noteid_clicked)
+                            var index = notes_selected.indexOf(noteid_clicked);
                             if (index != -1){
                                 $('#note_'+noteid_clicked).parent().removeClass('note-selected');
                                 notes_selected.removeAt(index);
@@ -386,14 +386,14 @@
                                     selectModeEnabled = false;
                                 }
                             } else {
-                                $(this).parent().addClass('note-selected');
+                                $('#note_'+noteid_clicked).parent().addClass('note-selected');
                                 notes_selected.push(noteid_clicked);
                             }
                         } else {
                             noteLongClickTimeout = setTimeout(function(){
                                 selectModeEnabled = true;
                                 $('#note_'+noteid_clicked).parent().addClass('note-selected');
-                                console.log("Select Mode On: " + noteid_clicked);
+                                console.log("Select Mode On: " + selectModeEnabled + " @ " + noteid_clicked);
                                 notes_selected.push(noteid_clicked);
                             }, 1000);
                         }
@@ -406,18 +406,20 @@
                                 menu_note_multiSelected.popup(remote.getCurrentWindow());
                             } else {
                                 selectModeEnabled = false;
-                                $('.note').parent().removeClass('note-selected');
-                                $(this).parent().addClass('note-selected');
+                                $('.note-wrapper').removeClass('note-selected');
+                                $(this).addClass('note-selected');
                                 menu_note.popup(remote.getCurrentWindow());
                             }
                         } else {
                             $('#note_'+noteid_clicked).parent().removeClass('note-selected');
-                            $(this).parent().addClass('note-selected');
+                            $(this).addClass('note-selected');
                             menu_note.popup(remote.getCurrentWindow());
                         }
                     }
+                    //阻止事件冒泡到父元素
+                    e.stopPropagation();
                 });
-                $('.note').mouseup(function (e){
+                $('.note-wrapper').mouseup(function (e){
                     if (e.which == 1){
                         clearTimeout(noteLongClickTimeout);
                     }
@@ -429,7 +431,8 @@
                 $('#note-list').mousedown(function(){
                     if (selectModeEnabled){
                         selectModeEnabled = false;
-                        $('.note').parent().removeClass('note-selected');
+                        $('.note-wrapper').removeClass('note-selected');
+                        notes_selected = new Array();
                     }
                 });
             });
@@ -547,7 +550,7 @@
     </script>
 
     <!-- import clipboard operation-->
-    <script src='js/clipboard.copy.js'></script>
+    <script src='static/clipboard.copy.js'></script>
 
     <script>
         var noteid_clicked = -1;        
@@ -696,8 +699,8 @@
     <div class="container-mainmenu">
         <div class="mainmenu-panel">
             <div class="mainmenu-logo">
-                <img src="images/logo.png" class="mainmenu-logo-default"/>
-                <img src="images/logo.blackwhite.png" class="mainmenu-logo-blackwhite"/>
+                <img src="static/images/logo.png" class="mainmenu-logo-default"/>
+                <img src="static/images/logo.blackwhite.png" class="mainmenu-logo-blackwhite"/>
                 <h1>Fastnote</h1>
                 <span id="mainmenu-version"></span>
                 <script>

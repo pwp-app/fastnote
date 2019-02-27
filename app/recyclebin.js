@@ -28,7 +28,7 @@ var RecycleWindow = {
 
         win_recycle = new BrowserWindow(conf);
 
-        var viewpath = path.resolve(__dirname, '../views/recyclebin.html');
+        var viewpath = path.resolve(__dirname, '../public/recyclebin.html');
         win_recycle.loadFile(viewpath);
 
         ipc.on('recyclebin-window-ready', function (sender, e){

@@ -9,13 +9,13 @@
 
     <!--import requirements-->
     <script>
-        window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
-        require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
+        window.$ = window.jQuery = require('./static/jquery.min.js');
+        require('./static/bootstrap.min.js');
     </script>
-    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="css/main.white.css" />
-    <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
+    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
+    <link rel="stylesheet" href="static/font-awesome.min.css">
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+    <link rel="stylesheet" href="static/animate.min.css">
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -93,7 +93,7 @@
             //build css
             if (settings == null) {
                 //read error
-                $('#main-style').attr('href','css/main.default.css');
+                $('#main-style').attr('href','static/main.default.css');
 
                 initTheme('default');
                 initFont('Source Han Sans CN');
@@ -111,10 +111,10 @@
                 //init themes
                 if (typeof settings.theme != 'undefined'){
                     initTheme(settings.theme);
-                    $('#main-style').attr('href','css/main.'+settings.theme+'.css');
+                    $('#main-style').attr('href','static/main.'+settings.theme+'.css');
                 } else {
                     initTheme('default');
-                    $('#main-style').attr('href','css/main.default.css');
+                    $('#main-style').attr('href','static/main.default.css');
                 }
 
                 //init font family
