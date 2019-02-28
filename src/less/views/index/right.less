@@ -1,0 +1,35 @@
+@toast-max-width: 350px;
+@toast-height: 40px;
+
+.container-right{
+    position: absolute;
+    width:@toast-max-width;
+    right:0;
+}
+.right-wrapper{
+    width: max-content;
+    max-width: @toast-max-width;
+    float: right;
+    margin:10px;
+}
+.brtoast{
+    margin:0 0 12px 0;
+    background: @color-toast-bg;
+    max-width: @toast-max-width;
+    width: max-content;
+    height: @toast-height;
+    box-shadow: 2px 4px 4px @color-boxshadow-dark;
+    border: @color-toast-border;
+    display: none;
+}
+.brtoast-normaltext{
+    width: 100%;
+    padding:0px 18px;
+    line-height: @toast-height - 1;
+    font-size: 14px;
+    color: @color-toast-text;
+    .no-select-and-drag();
+}
+.toast-active{
+    display: block;
+}

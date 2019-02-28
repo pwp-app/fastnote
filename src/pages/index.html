@@ -265,6 +265,15 @@
     </div>
     <!-- notes -->
     <div class="container-main">
+        <!-- container-right -->
+        <div class="container-right">
+            <div class="right-wrapper">
+                <!-- multi-selected -->
+                <div class="brtoast toast-multiselected">
+                    <p class="brtoast-normaltext" id="toast-multiselected-text"></p>
+                </div>
+            </div>
+        </div>
         <!-- empty -->
         <div class="note-empty col-lg-12" id="note-empty">
             <span>您还没有建立任何的便签<br/>在下方你可以快速新建新便签</span>
@@ -384,10 +393,17 @@
                                 //如果没有选中则退出
                                 if (notes_selected.length <= 0){
                                     selectModeEnabled = false;
+                                    $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
+                                        $('.toast-multiselected').removeClass('toast-active');
+                                    });
+                                } else{
+                                    $('#toast-multiselected-text').html('当前选择了<handefault/>'+notes_selected.length+"<handefault/>个便签");
                                 }
                             } else {
                                 $('#note_'+noteid_clicked).parent().addClass('note-selected');
                                 notes_selected.push(noteid_clicked);
+                                //set up toast
+                                $('#toast-multiselected-text').html('当前选择了<handefault/>'+notes_selected.length+"<handefault/>个便签");
                             }
                         } else {
                             noteLongClickTimeout = setTimeout(function(){
@@ -395,6 +411,10 @@
                                 $('#note_'+noteid_clicked).parent().addClass('note-selected');
                                 console.log("Select Mode On: " + selectModeEnabled + " @ " + noteid_clicked);
                                 notes_selected.push(noteid_clicked);
+                                //set up toast
+                                $('.toast-multiselected').addClass('toast-active');
+                                $('#toast-multiselected-text').html('当前选择了<handefault/>'+notes_selected.length+"<handefault/>个便签");
+                                $('.toast-multiselected').animateCss('fadeInRight faster');
                             }, 1000);
                         }
                     }
@@ -406,9 +426,13 @@
                                 menu_note_multiSelected.popup(remote.getCurrentWindow());
                             } else {
                                 selectModeEnabled = false;
+                                notes_selected = new Array();
                                 $('.note-wrapper').removeClass('note-selected');
                                 $(this).addClass('note-selected');
                                 menu_note.popup(remote.getCurrentWindow());
+                                $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
+                                    $('.toast-multiselected').removeClass('toast-active');
+                                });
                             }
                         } else {
                             $('#note_'+noteid_clicked).parent().removeClass('note-selected');
@@ -433,6 +457,9 @@
                         selectModeEnabled = false;
                         $('.note-wrapper').removeClass('note-selected');
                         notes_selected = new Array();
+                        $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
+                            $('.toast-multiselected').removeClass('toast-active');
+                        });
                     }
                 });
             });
@@ -553,7 +580,7 @@
     <script src='static/clipboard.copy.js'></script>
 
     <script>
-        var noteid_clicked = -1;        
+        var noteid_clicked = -1;
 
         function getSelectText(id) {
             var t = document.getElementById(id);

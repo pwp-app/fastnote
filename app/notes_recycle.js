@@ -6,7 +6,7 @@ var storagePath = app.getPath('userData');
 readNoteFiles();
 
 //删除note
-function deleteNote(id) {
+function deleteNote(id, infoEnabled=true) {
     notes.every(function (note, i) {
         if (note.id == id) {
             var path;
@@ -21,7 +21,9 @@ function deleteNote(id) {
                 fs.unlink(path, function (err) {
                     if (err) {
                         //文件删除失败
-                        displayInfobar('error', '文件删除失败');
+                        if (infoEnabled){
+                            displayInfobar('error', '文件删除失败');
+                        }
                         readNoteFiles();
                         throw(err);
                     } else {
@@ -34,11 +36,15 @@ function deleteNote(id) {
                                 showNoteEmpty_Anim();
                             }
                         });
-                        displayInfobar('success', '删除成功');
+                        if (infoEnabled){
+                            displayInfobar('success', '删除成功');
+                        }
                     }
-                })
+                });
             } else {
-                displayInfobar('error', '找不到文件，无法删除');
+                if (infoEnabled){
+                    displayInfobar('error', '找不到文件，无法删除');
+                }
                 readNoteFiles();
             }
             return false;
@@ -48,7 +54,29 @@ function deleteNote(id) {
     });
 }
 
-function restoreNote(id){
+//多选删除Note
+function deleteNotes(notes, callback){
+    if (Object.prototype.toString.call(notes) === '[object Array]'){
+        if (notes.length){
+            try{
+                notes.forEach(noteid => {
+                    deleteNote(noteid, false);
+                });
+                if (typeof callback == 'function'){
+                    callback(true);
+                    return;
+                }
+            } catch (err){
+                console.error(err);
+            }
+        }
+    }
+    if (typeof callback == 'function'){
+        callback(false);
+    }
+}
+
+function restoreNote(id, infoEnabled=true){
     notes.every(function (note, i) {
         if (note.id == id) {
             var path;
@@ -62,7 +90,9 @@ function restoreNote(id){
                 var newpath = path.replace('recyclebin/','');
                 fs.rename(path,newpath, function (err) {
                     if (err) {
-                        displayInfobar('error', '便签还原失败');
+                        if (infoEnabled){
+                            displayInfobar('error', '便签还原失败');
+                        }
                         readNoteFiles();
                         throw(err);
                     } else {
@@ -74,12 +104,16 @@ function restoreNote(id){
                                 showNoteEmpty_Anim();
                             }
                         });
-                        displayInfobar('success', '还原成功');
+                        if (infoEnabled){
+                            displayInfobar('success', '还原成功');
+                        }
                         ipcRenderer.send('restore-note', note);
                     }
                 })
             } else {
-                displayInfobar('error', '找不到文件，无法还原');
+                if (infoEnabled){
+                    displayInfobar('error', '找不到文件，无法还原');
+                }
                 readNoteFiles();
             }
             return false;
@@ -87,6 +121,28 @@ function restoreNote(id){
             return true;
         }
     });
+}
+
+//多选回收便签
+function restoreNotes(notes, callback){
+    if (Object.prototype.toString.call(notes) === '[object Array]'){
+        if(notes.length>0){
+            try{
+                notes.forEach(noteid => {
+                    restoreNote(noteid, false);
+                });
+                if (typeof(callback) == 'function'){
+                    callback(true);
+                    return;
+                }
+            } catch (err){
+                console.error(err);
+            }
+        }
+    }
+    if (typeof(callback == 'function')){
+        callback(false);
+    }
 }
 
 //封装在函数中

@@ -128,6 +128,28 @@ function putToRecyclebin(id, infoEnabled=true) {
     });
 }
 
+//放多个便签至回收站
+function putNotesToRecyclebin(notes, callback){
+    if (Object.prototype.toString.call(notes) === '[object Array]'){
+        if (notes.length>0){
+            try{
+                notes.forEach(noteid => {
+                    putToRecyclebin(noteid,false);
+                });
+                if (typeof callback == 'function'){
+                    callback(true);
+                    return;
+                }
+            }catch(err){
+                console.error(err);
+            }
+        }
+    }
+    if (typeof callback == 'function'){
+        callback(false);
+    }
+}
+
 //封装在函数中
 function readNoteFiles() {
     //重新读取需要清空notes Array

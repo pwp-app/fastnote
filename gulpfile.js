@@ -65,6 +65,13 @@ gulp.task('assets', function(){
         .pipe(gulp.dest('public/static/images'));
 });
 
+//watch
+gulp.task('watch',function(){
+    gulp.watch('src/less/**/*.less',gulp.series('less'));
+    gulp.watch('node_modules/**/*',gulp.series('requirements'));
+    gulp.watch('src/pages/**/*',gulp.series('pages'));
+    gulp.watch('src/scripts/**/*',gulp.series('scripts'));
+});
 
 gulp.task('clean', function(){
     return del('public/**/*');

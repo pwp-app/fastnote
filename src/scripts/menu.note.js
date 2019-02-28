@@ -50,17 +50,34 @@ let menu_note_multiSelected = new Menu();
 menu_note_multiSelected.append(new MenuItem({
     label: '删除',
     click: function () {
-
+        $('.note-wrapper').removeClass('note-selected');
+        selectModeEnabled = false;
+        $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
+            $('.toast-multiselected').removeClass('toast-active');
+        });
+        putNotesToRecyclebin(notes_selected, function (res) {
+            if (res){
+                displayInfobar('success', '选中的便签均已放入回收站');
+            } else {
+                displayInfobar('error', '将便签放入回收站时出现错误');
+            }
+        });
     }
 }));
 menu_note_multiSelected.append(new MenuItem({
     label: '取消',
     click: function () {
-        $('.note').parent().removeClass('note-selected');
+        $('.note-wrapper').removeClass('note-selected');
         selectModeEnabled = false;
+        $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
+            $('.toast-multiselected').removeClass('toast-active');
+        });
     }
 }));
 menu_note_multiSelected.on('menu-will-close', (event, args) => {
-    $('.note').parent().removeClass('note-selected');
+    $('.note-wrapper').removeClass('note-selected');
     selectModeEnabled = false;
+    $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
+        $('.toast-multiselected').removeClass('toast-active');
+    });
 });

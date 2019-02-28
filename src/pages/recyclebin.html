@@ -176,6 +176,14 @@
     </div>
     <!-- main -->
     <div class="recycle-container">
+        <div class="container-right">
+                <div class="right-wrapper">
+                    <!-- multi-selected -->
+                    <div class="brtoast toast-multiselected">
+                        <p class="brtoast-normaltext" id="toast-multiselected-text"></p>
+                    </div>
+                </div>
+            </div>
         <div class="recycle-list-container">
             <div class="note-empty recycle-empty col-lg-12">
                 <span>回收站内没有便签</span>
@@ -213,6 +221,77 @@
                 }
             });
         });
+
+        function bindNoteClickEvent() {
+                $('.note-wrapper').mousedown(function (e) {
+                    //提取点击的id
+                    noteid_clicked = parseInt($(this).children('.note').attr("data-id"));
+                    if (e.which == 1){
+                        if (selectModeEnabled){
+                            //多选模式下，单击，如果选中则取消，未选中则选中
+                            var index = notes_selected.indexOf(noteid_clicked);
+                            if (index != -1){
+                                $('#note_'+noteid_clicked).parent().removeClass('note-selected');
+                                notes_selected.removeAt(index);
+                                //如果没有选中则退出
+                                if (notes_selected.length <= 0){
+                                    selectModeEnabled = false;
+                                    $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
+                                        $('.toast-multiselected').removeClass('toast-active');
+                                    });
+                                } else{
+                                    $('#toast-multiselected-text').html('当前选择了<handefault/>'+notes_selected.length+"<handefault/>个便签");
+                                }
+                            } else {
+                                $('#note_'+noteid_clicked).parent().addClass('note-selected');
+                                notes_selected.push(noteid_clicked);
+                                //set up toast
+                                $('#toast-multiselected-text').html('当前选择了<handefault/>'+notes_selected.length+"<handefault/>个便签");
+                            }
+                        } else {
+                            noteLongClickTimeout = setTimeout(function(){
+                                selectModeEnabled = true;
+                                $('#note_'+noteid_clicked).parent().addClass('note-selected');
+                                console.log("Select Mode On: " + selectModeEnabled + " @ " + noteid_clicked);
+                                notes_selected = new Array();
+                                notes_selected.push(noteid_clicked);
+                                //set up toast
+                                $('.toast-multiselected').addClass('toast-active');
+                                $('#toast-multiselected-text').html('当前选择了<handefault/>'+notes_selected.length+"<handefault/>个便签");
+                                $('.toast-multiselected').animateCss('fadeInRight faster');
+                            }, 1000);
+                        }
+                    }
+                    if (e.which == 3) {
+                        if (selectModeEnabled){
+                            let index = notes_selected.indexOf(noteid_clicked);
+                            //如果是选中的，弹出菜单，如果不是选中的，取消
+                            if (index != -1){
+                                menu_recyclebin_multiselected.popup(remote.getCurrentWindow());
+                            } else {
+                                selectModeEnabled = false;
+                                $('.note-wrapper').removeClass('note-selected');
+                                $(this).addClass('note-selected');
+                                menu_recyclebin.popup(remote.getCurrentWindow());
+                                $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
+                                    $('.toast-multiselected').removeClass('toast-active');
+                                });
+                            }
+                        } else {
+                            $('#note_'+noteid_clicked).parent().removeClass('note-selected');
+                            $(this).addClass('note-selected');
+                            menu_recyclebin.popup(remote.getCurrentWindow());
+                        }
+                    }
+                    //阻止事件冒泡到父元素
+                    e.stopPropagation();
+                });
+                $('.note-wrapper').mouseup(function (e){
+                    if (e.which == 1){
+                        clearTimeout(noteLongClickTimeout);
+                    }
+                });
+            }
     </script>
 
     <script>
