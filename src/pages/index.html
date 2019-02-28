@@ -408,6 +408,7 @@
                         } else {
                             noteLongClickTimeout = setTimeout(function(){
                                 selectModeEnabled = true;
+                                notes_selected = new Array();
                                 $('#note_'+noteid_clicked).parent().addClass('note-selected');
                                 console.log("Select Mode On: " + selectModeEnabled + " @ " + noteid_clicked);
                                 notes_selected.push(noteid_clicked);
@@ -426,7 +427,6 @@
                                 menu_note_multiSelected.popup(remote.getCurrentWindow());
                             } else {
                                 selectModeEnabled = false;
-                                notes_selected = new Array();
                                 $('.note-wrapper').removeClass('note-selected');
                                 $(this).addClass('note-selected');
                                 menu_note.popup(remote.getCurrentWindow());
@@ -456,7 +456,6 @@
                     if (selectModeEnabled){
                         selectModeEnabled = false;
                         $('.note-wrapper').removeClass('note-selected');
-                        notes_selected = new Array();
                         $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
                             $('.toast-multiselected').removeClass('toast-active');
                         });
