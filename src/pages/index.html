@@ -19,6 +19,7 @@
     <script src="static/array.js"></script>
     <script src="static/han.simple.js"></script>
     <script src="static/notes.render.js"></script>
+    <script src="static/mousetrap.min.js"></script>
     <script>
         //define const
         const remote = require('electron').remote;
@@ -46,6 +47,8 @@
         $.getScript('static/menu.textarea.js');
 
         var settings;
+
+        //auto update
 
         storage.get('settings', function (error, data) {
             if (error) {
@@ -276,7 +279,7 @@
         </div>
         <!-- empty -->
         <div class="note-empty col-lg-12" id="note-empty">
-            <span>您还没有建立任何的便签<br/>在下方你可以快速新建新便签</span>
+            <span>您还没有建立任何的便签<br />在下方你可以快速新建新便签</span>
         </div>
         <div class="note-list" id="note-list"></div>
         <script>
@@ -347,7 +350,7 @@
                 });
             }
 
-            //异步执行notes的替换
+            //执行notes的替换
             async function updateEditNoteinArray(data) {
                 for (var i = 0; i < notes.length; i++) {
                     if (notes[i].id == data.id) {
@@ -380,13 +383,14 @@
 
             //笔记鼠标点击事件绑定
             function bindNoteClickEvent() {
-                $('.note-wrapper').mousedown(function (e) {
+                $('.note-wrapper').off('mousedown').on('mousedown', function (e) {
                     //提取点击的id
                     noteid_clicked = parseInt($(this).children('.note').attr("data-id"));
                     if (e.which == 1){
                         if (selectModeEnabled){
                             //多选模式下，单击，如果选中则取消，未选中则选中
                             var index = notes_selected.indexOf(noteid_clicked);
+                            console.log(index);
                             if (index != -1){
                                 $('#note_'+noteid_clicked).parent().removeClass('note-selected');
                                 notes_selected.removeAt(index);
@@ -396,13 +400,13 @@
                                     $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
                                         $('.toast-multiselected').removeClass('toast-active');
                                     });
-                                } else{
+                                } else {
                                     $('#toast-multiselected-text').html('当前选择了<handefault/>'+notes_selected.length+"<handefault/>个便签");
                                 }
                             } else {
                                 $('#note_'+noteid_clicked).parent().addClass('note-selected');
                                 notes_selected.push(noteid_clicked);
-                                //set up toast
+                                    //set up toast
                                 $('#toast-multiselected-text').html('当前选择了<handefault/>'+notes_selected.length+"<handefault/>个便签");
                             }
                         } else {
@@ -410,16 +414,15 @@
                                 selectModeEnabled = true;
                                 notes_selected = new Array();
                                 $('#note_'+noteid_clicked).parent().addClass('note-selected');
-                                console.log("Select Mode On: " + selectModeEnabled + " @ " + noteid_clicked);
                                 notes_selected.push(noteid_clicked);
                                 //set up toast
                                 $('.toast-multiselected').addClass('toast-active');
                                 $('#toast-multiselected-text').html('当前选择了<handefault/>'+notes_selected.length+"<handefault/>个便签");
                                 $('.toast-multiselected').animateCss('fadeInRight faster');
+                                window.getSelection().removeAllRanges();
                             }, 1000);
                         }
-                    }
-                    if (e.which == 3) {
+                    } else if (e.which == 3) {
                         if (selectModeEnabled){
                             let index = notes_selected.indexOf(noteid_clicked);
                             //如果是选中的，弹出菜单，如果不是选中的，取消
@@ -443,16 +446,16 @@
                     //阻止事件冒泡到父元素
                     e.stopPropagation();
                 });
-                $('.note-wrapper').mouseup(function (e){
+                $('.note-wrapper').off('mouseup').on('mouseup', function (e){
                     if (e.which == 1){
                         clearTimeout(noteLongClickTimeout);
                     }
                 });
             }
 
-            //绑定note-list的鼠标点击
             $(document).ready(function(){
-                $('#note-list').mousedown(function(){
+                //绑定note-list的鼠标点击
+                $('#note-list').mousedown(function(e){
                     if (selectModeEnabled){
                         selectModeEnabled = false;
                         $('.note-wrapper').removeClass('note-selected');
@@ -461,6 +464,22 @@
                         });
                     }
                 });
+            });
+
+            //绑定全选快捷键
+            Mousetrap.bind('ctrl+a',function(){
+                selectModeEnabled = true;
+                notes_selected = new Array();
+                notes.forEach(note => {
+                    notes_selected.push(note.id);
+                });
+                $('.note-wrapper').addClass('note-selected');
+                if (!$('.toast-multiselected').hasClass('toast-active')){
+                    $('.toast-multiselected').addClass('toast-active');
+                    $('.toast-multiselected').animateCss('fadeInRight faster');
+                }
+                $('#toast-multiselected-text').html('当前选择了<handefault/>'+notes_selected.length+"<handefault/>个便签");
+                return false;
             });
         </script>
     </div>
@@ -655,8 +674,22 @@
                     console.log("update-avaliable");
                     $('.container-updater').css('display', 'block');
                     $('.container-updater').animateCss('fadeIn', function () {
-                        var path_varfile =
-                            `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=`;
+                        var path_varfile = ``;
+                        if (typeof settings != 'undefined'){
+                            switch(settings.autoUpdateChannel){
+                                case 0:
+                                    path_varfile = `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=`;
+                                    break;
+                                case 100:
+                                    path_varfile = `http://update.backrunner.top/fastnote/pre-release/${process.platform}/var.json?time=`;
+                                    break;
+                                default:
+                                    path_varfile = `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=`;
+                                    break;
+                            }
+                        } else {
+                            path_varfile = `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=`;
+                        }
                         $.getJSON(path_varfile + time.getRawCurrentMillTime(), //时间戳避免缓存
                             function (result) {
                                 if (result != null && result != "" && typeof (result) !=
@@ -725,8 +758,8 @@
     <div class="container-mainmenu">
         <div class="mainmenu-panel">
             <div class="mainmenu-logo">
-                <img src="static/images/logo.png" class="mainmenu-logo-default"/>
-                <img src="static/images/logo.blackwhite.png" class="mainmenu-logo-blackwhite"/>
+                <img src="static/images/logo.png" class="mainmenu-logo-default" />
+                <img src="static/images/logo.blackwhite.png" class="mainmenu-logo-blackwhite" />
                 <h1>Fastnote</h1>
                 <span id="mainmenu-version"></span>
                 <script>
@@ -765,23 +798,43 @@
         $('.mainmenu-background').on('mousedown', function () {
             closeMainMenu();
         });
+        //打开主菜单
         $('#btn-mainmenu-trigger').on('click', function () {
             if (!isMainMenuOpen) {
-                $('.mainmenu-background').css('display', 'block');
-                $('.mainmenu-background').animateCss('fadeIn');
-                $('.container-mainmenu').css('display', 'block');
-                $('.container-mainmenu').animateCss('fadeInLeft');
-                isMainMenuOpen = true;
+                openMainMenu();
             }
         });
+        //绑定主菜单快捷键
+        Mousetrap.bind('esc', function(){
+            if (isMainMenuOpen){
+                closeMainMenu();
+            } else {
+                openMainMenu();
+            }
+        });
+        function openMainMenu(){
+            $('.mainmenu-background').css('display', 'block');
+            $('.mainmenu-background').animateCss('fadeIn');
+            $('.container-mainmenu').css('display', 'block');
+            $('.container-mainmenu').animateCss('fadeInLeft');
+            isMainMenuOpen = true;
+        }
         //绑定菜单项
         $('#mainmenu-btn-recycle').click(function () {
             ipcRenderer.send("openRecycleWindow");
             closeMainMenu();
         });
+        //打开回收站的全局快捷键
+        Mousetrap.bind('shift+r', function(){
+            ipcRenderer.send("openRecycleWindow");
+        });
         $('#mainmenu-btn-settings').click(function () {
             ipcRenderer.send("openSettingsWindow"); //打开关于窗口
             closeMainMenu();
+        });
+        //打开的设置全局快捷键
+        Mousetrap.bind('shift+s', function(){
+            ipcRenderer.send("openSettingsWindow");
         });
         $('#mainmenu-btn-about').click(function () {
             ipcRenderer.send("openAboutWindow"); //打开关于窗口
@@ -842,6 +895,6 @@
     </script>
 
     <span id="filter-x" style="display:none"></span>
-</body>
 
+</body>
 </html>

@@ -167,7 +167,7 @@ function refreshNoteList(callback) {
     notes.forEach(function (note) {
         renderNote(note.id, note.time, note.updatetime, note.text);
     });
-    //绑定右键事件
+    //绑定Note的点击事件
     bindNoteClickEvent();
     //callback
     if (typeof (callback) === 'function') {

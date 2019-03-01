@@ -133,6 +133,10 @@
                 } else {
                     initAutoUpdate(true);   //default true
                 }
+                //init auto update channel
+                if (typeof settings.autoUpdateChannel != 'undefined'){
+                    initAutoUpdateChannel(settings.autoUpdateChannel);
+                }
 
                 if (typeof settings.fontsize != 'undefined'){
                     initFontSize(settings.fontsize);
@@ -195,6 +199,12 @@
                 } else {
                     document.getElementById('select-updateChannel').disabled = true;
                 }
+            });
+        }
+
+        function initAutoUpdateChannel(channel){
+            $(document).ready(function(){
+                $('#select-updateChannel').val(channel);
             });
         }
 
@@ -315,7 +325,8 @@
                 <div></div>
                 <div class="settings-item-child settings-item-control">
                     <select class="form-control settings-select" id="select-updateChannel">
-                        <option>Alpha</option>
+                        <option value="0">Alpha</option>
+                        <option value="100">Pre-Release-Test</option>
                     </select>
                 </div>
             </div>
@@ -457,6 +468,7 @@
         function saveSettings() {
             //获取通用设置
             var autoUpdateStatus = document.getElementById('cb-autoUpdateEnabled').checked;
+            var autoUpdateChannel = $('#select-updateChannel').val();
             var theme = $("#select-themes").val();
 
             //获取显示设置
@@ -469,6 +481,7 @@
             //构造设置obj
             var settings = {
                 autoUpdateStatus: autoUpdateStatus,
+                autoUpdateChannel: autoUpdateChannel,
                 theme: theme,
                 fontfamily: fontfamily,
                 fontsize: fontsize,

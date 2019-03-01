@@ -256,6 +256,8 @@ function saveNote(notetext) {
         }
         //在顶部渲染Note
         renderNoteAtTop(note.id, note.time, note.updatetime, note.text);
+        //绑定Note的点击事件
+        bindNoteClickEvent();
     } catch (e) {
         //重新读取Notes
         readNoteFiles();

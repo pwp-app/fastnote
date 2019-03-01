@@ -13,7 +13,7 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = true; //debug trigger
+global.indebug = false; //debug trigger
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
 
@@ -21,7 +21,23 @@ global.uuid = ""; //uuid storage
 const {
   autoUpdater
 } = require('electron-updater');
-const feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
+let feedUrl = ``;
+
+if (typeof settings != 'undefined'){
+  switch(settings.autoUpdateChannel){
+    case 0:
+      feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
+      break;
+    case 100:
+      feedUrl = `http://update.backrunner.top/fastnote/pre-release/${process.platform}`;
+      break;
+    default:
+      feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
+      break;
+  }
+} else {
+  feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
+}
 
 //import other window
 aboutWindow = require('./app/about');
@@ -75,7 +91,7 @@ function createWindow() {
     ipc.on('set-uuid', function (sender, data) {
       global.uuid = data;
     });
-    if (typeof settings != undefined) {
+    if (typeof settings != 'undefined') {
       if (settings.autoUpdateStatus) {
         checkForUpdates();
       }

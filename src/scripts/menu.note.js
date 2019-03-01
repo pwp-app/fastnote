@@ -48,7 +48,7 @@ menu_note.on('menu-will-close',(event, args)=>{
 //多选状态
 let menu_note_multiSelected = new Menu();
 menu_note_multiSelected.append(new MenuItem({
-    label: '删除',
+    label: '删除选中',
     click: function () {
         $('.note-wrapper').removeClass('note-selected');
         selectModeEnabled = false;
@@ -63,6 +63,33 @@ menu_note_multiSelected.append(new MenuItem({
             }
         });
     }
+}));
+menu_note_multiSelected.append(new MenuItem({
+    label: '编辑选中',
+    click: function () {
+        $('.note-wrapper').removeClass('note-selected');
+        selectModeEnabled = false;
+        $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
+            $('.toast-multiselected').removeClass('toast-active');
+        });
+        try{
+            for (var i=0;i<notes_selected.length;i++){
+                for (var j = 0; j < notes.length; j++) {
+                    if (notes[j].id == notes_selected[i]) {
+                        var note = notes[j];
+                        note.text = note.text.replace(/<br\/>/g, "\n")
+                        ipcRenderer.send("openEditWindow", notes[j]);
+                        continue;
+                    }
+                }
+            }
+        } catch (err){
+            console.log(err);
+        }
+    }
+}));
+menu_note_multiSelected.append(new MenuItem({
+    type:'separator'
 }));
 menu_note_multiSelected.append(new MenuItem({
     label: '取消',
