@@ -13,7 +13,7 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = false; //debug trigger
+global.indebug = true; //debug trigger
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
 
