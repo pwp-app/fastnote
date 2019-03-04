@@ -421,12 +421,24 @@
                                 if (typeof t == 'string'){
                                     //备份失败
                                     backupNotesErrorBox(t);
-                                } else {
+                                } else if (typeof t == 'boolean'){
                                     //备份成功
                                     dialog.showMessageBox({
                                         type: 'info',
                                         title: '成功',
-                                        message: '所有的便签已经备份成功，请妥善保管好您的备份文件。',
+                                        message: '便签已经备份成功，请妥善保管好您的备份文件。',
+                                        buttonlabel: '好的'
+                                    });
+                                } else if (typeof t == 'object'){
+                                    var failed = "";
+                                    t.failedNotes.forEach(function(filename){
+                                        failed = failed + filename + "\n";
+                                    })
+                                    dialog.showMessageBox({
+                                        type: 'info',
+                                        title: '成功',
+                                        message: "便签部分备份成功，"+t.failedNotes.length+"个便签在备份时出现错误。",
+                                        detail: "以下是出错的文件：\n"+failed,
                                         buttonlabel: '好的'
                                     });
                                 }
@@ -450,7 +462,12 @@
                         //当前Note的数目
                         var notes_count = 0;
                         files.forEach(function(file){
-                            if (!fs.statSync(storagePath+'/notes/'+file).isDirectory()){
+                            try{
+                                var file_stat = fs.statSync(storagePath+'/notes/'+file);
+                            } catch (err){
+                                return;
+                            }
+                            if (!file_stat.isDirectory()){
                                 notes_count++;  //计数
                                 try{
                                     var data = fs.readFileSync(storagePath + '/notes/' + file, 'utf-8');
@@ -464,6 +481,7 @@
                                 notes_backup.push({
                                     filename: file,
                                     content: data,
+                                    updatetime: file_stat.mtime.getTime(),
                                     check: hmac.digest('hex')
                                 });
                             }
@@ -472,14 +490,16 @@
                             return '没有可以备份的便签。';
                         } else {
                             //写入备份到文件
-                            console.log(notes_backup);
-                            console.log(JSON.stringify(notes_backup));
                             var backup_string = Buffer.from(JSON.stringify(notes_backup)).toString('base64');
                             fs.writeFile(backup_filename, backup_string, 'utf8', function (err) {
                                 if (err) {
                                     return '写入备份文件时发生错误。';
                                 } else {
-                                    return true;
+                                    //判断是不是没有出错
+                                    if (notes_backup_failed.length < 1){
+                                        return true;
+                                    } else {
+                                        return notes_backup_failed;                                    }
                                 }
                             });
                         }
@@ -517,7 +537,6 @@
                         properties: ["openFile"]
                     },function(filePath){
                         isImportDialogOpened = false;
-                        console.log(filePath);
                         if (filePath.length > 0){
                             filePath = filePath[0];
                             dialog.showMessageBox({
@@ -529,6 +548,12 @@
                             }, function (res){
                                 if (res == 0){
                                     //确认导入
+                                    try{
+                                        //读取备份文件
+
+                                    } catch (err){
+                                        importNotesErrorBox('打开备份文件时出现错误。');
+                                    }
                                 }
                             });
                         }
