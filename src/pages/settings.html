@@ -11,6 +11,8 @@
     <script>
         window.$ = window.jQuery = require('./static/jquery.min.js');
         require('./static/bootstrap.min.js');
+        //requirements
+        var moment = require('./static/moment.min.js');
     </script>
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
     <link rel="stylesheet" href="static/font-awesome.min.css">
@@ -49,6 +51,10 @@
         //import json storage
         const storage = require('electron-json-storage');
 
+        //crypto
+        const crypto = require('crypto');
+        const hmac = crypto.createHmac('sha256','fastnote');
+
         const {dialog} = require('electron').remote;
 
         const {
@@ -56,6 +62,8 @@
         } = require('electron');
 
         const WebFont = require('webfontloader');
+
+        var storagePath = app.getPath('userData');
 
         var settings;
 
@@ -281,6 +289,7 @@
             </div>
         </div>
         <script>
+            var settings_window_height = [430, 390, 430];
             //绑定点击事件
             $('.settings-titles-block').click(function(){
                 $('.settings-titles-block').removeClass('settings-titles-clicked');
@@ -289,13 +298,13 @@
                 $('.'+$(this).attr('data-target')).removeClass('settings-sections-hidden');
             });
             $('.settings-titles-general').click(function(){
-                ipcRenderer.send("settings-window-heightChange",430);
+                ipcRenderer.send("settings-window-heightChange",settings_window_height[0]);
             })
             $('.settings-titles-notes').click(function(){
-                ipcRenderer.send("settings-window-heightChange",285);
+                ipcRenderer.send("settings-window-heightChange",settings_window_height[1]);
             });
             $('.settings-titles-display').click(function(){
-                ipcRenderer.send("settings-window-heightChange",430);
+                ipcRenderer.send("settings-window-heightChange",settings_window_height[2]);
             });
         </script>
         <!-- sections -->
@@ -382,7 +391,169 @@
                     <button class="btn btn-danger brbtn-danger" id="btn-resetNotes">重置</button>
                 </div>
             </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span>备份/恢复便签</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <button class="btn btn-primary brbtn-primary" id="btn-backupNotes" onclick="backupNotes();" style="margin-bottom: 12px;">备份</button>
+                    <button class="btn btn-primary brbtn-primary" id="btn-importNotes" onclick="importNotes();">导入</button>
+                </div>
+            </div>
         </div>
+        <script>
+            var isBackupDialogOpened = false;
+            function backupNotes(){
+                if (!isBackupDialogOpened){
+                    isBackupDialogOpened = true;
+                    dialog.showSaveDialog({
+                        title: "备份便签",
+                        defaultPath: "fastnote-backup-" + moment().format('YYYYMMDDHHmmss') + ".fnbak",
+                        buttonlabel: "保存备份",
+                        filters: [{name:'Fastnote 备份',extensions: ['fnbak']}]
+                    },function(filename){
+                        isBackupDialogOpened = false;
+                        if (typeof filename == "string" && filename.length > 0){
+                            //保存备份
+                            try{
+                                let t = _backupNotes(filename);
+                                if (typeof t == 'string'){
+                                    //备份失败
+                                    backupNotesErrorBox(t);
+                                } else {
+                                    //备份成功
+                                    dialog.showMessageBox({
+                                        type: 'info',
+                                        title: '成功',
+                                        message: '所有的便签已经备份成功，请妥善保管好您的备份文件。',
+                                        buttonlabel: '好的'
+                                    });
+                                }
+                            }
+                            catch(err){
+                                backupNotesErrorBox(err);
+                            }
+                        }
+                    });
+                }
+            }
+
+            function _backupNotes(backup_filename){
+                var notes_backup = new Array();
+                var notes_backup_failed = new Array();  //备份失败的notes
+                if (fs.existsSync(storagePath + '/notes/')) {
+                    fs.readdir(storagePath + '/notes/', function(err, files){
+                        if (err){
+                            return '目录读取错误。';
+                        }
+                        //当前Note的数目
+                        var notes_count = 0;
+                        files.forEach(function(file){
+                            if (!fs.statSync(storagePath+'/notes/'+file).isDirectory()){
+                                notes_count++;  //计数
+                                try{
+                                    var data = fs.readFileSync(storagePath + '/notes/' + file, 'utf-8');
+                                } catch(err){
+                                    notes_backup_failed.push(file);
+                                    return;
+                                }
+                                //计算校验哈希
+                                hmac.update(file+data);
+                                //构造备份便签对向并推入内容到数组
+                                notes_backup.push({
+                                    filename: file,
+                                    content: data,
+                                    check: hmac.digest('hex')
+                                });
+                            }
+                        });
+                        if (notes_count < 1){
+                            return '没有可以备份的便签。';
+                        } else {
+                            //写入备份到文件
+                            console.log(notes_backup);
+                            console.log(JSON.stringify(notes_backup));
+                            var backup_string = Buffer.from(JSON.stringify(notes_backup)).toString('base64');
+                            fs.writeFile(backup_filename, backup_string, 'utf8', function (err) {
+                                if (err) {
+                                    return '写入备份文件时发生错误。';
+                                } else {
+                                    return true;
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    return '便签目录不存在。';
+                }
+            }
+
+            function backupNotesErrorBox(err){
+                if (typeof err == 'string'){
+                    dialog.showMessageBox({
+                        type: 'error',
+                        title: 'Fastnote 运行时出现错误',
+                        message: '在保存便签时出现错误。',
+                        detail: err
+                    });
+                } else {
+                    dialog.showMessageBox({
+                        type: 'error',
+                        title: 'Fastnote 运行时出现错误',
+                        message: '在保存便签时出现未知错误。'
+                    });
+                }
+            }
+
+            var isImportDialogOpened = false;
+            function importNotes(){
+                if (!isImportDialogOpened){
+                    isImportDialogOpened = true;
+                    dialog.showOpenDialog({
+                        title: '导入便签备份',
+                        buttonlabel: '导入',
+                        filters: [{name:'Fastnote 备份',extensions: ['fnbak']}, {name:'所有文件',extensions:['*']}],
+                        properties: ["openFile"]
+                    },function(filePath){
+                        isImportDialogOpened = false;
+                        console.log(filePath);
+                        if (filePath.length > 0){
+                            filePath = filePath[0];
+                            dialog.showMessageBox({
+                                type: 'warning',
+                                buttons: ['确定', '取消'],
+                                title: '确认',
+                                message: '确定要导入这个备份吗？',
+                                detail: '备份文件路径: '+filePath
+                            }, function (res){
+                                if (res == 0){
+                                    //确认导入
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+            function importNotesErrorBox(err){
+                if (typeof err == 'string'){
+                    dialog.showMessageBox({
+                        type: 'error',
+                        title: 'Fastnote 运行时出现错误',
+                        message: '在导入便签时出现错误。',
+                        buttons: '确定',
+                        detail: err
+                    });
+                } else {
+                    dialog.showMessageBox({
+                        type: 'error',
+                        title: 'Fastnote 运行时出现错误',
+                        message: '在保存便签时出现未知错误。',
+                        buttons: '确定'
+                    });
+                }
+            }
+        </script>
         <div class="settings-sections settings-display settings-sections-hidden">
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">

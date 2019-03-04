@@ -4,6 +4,7 @@ var cssmin = require('gulp-clean-css');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var htmlmin = require('gulp-htmlmin');
+var rename = require('gulp-rename');
 
 //jquery
 gulp.task('jquery',async function(){
@@ -33,8 +34,13 @@ gulp.task('animate-css',async function(){
         .pipe(gulp.dest('public/static'));
 });
 
+//moment.js
+gulp.task('momentjs', async function(){
+    await gulp.src('node_modules/moment/moment.js').pipe(concat('node_modules/moment/locale/zh-cn.js'))
+        .pipe(uglify()).pipe(rename('moment.min.js')).pipe(gulp.dest('public/static'));
+});
 
-gulp.task('requirements', gulp.parallel(['jquery','bootstrap','fontawesome','animate-css']));
+gulp.task('requirements', gulp.parallel(['jquery','bootstrap','fontawesome','animate-css', 'momentjs']));
 gulp.task('less',function(){
     return gulp.src(['src/less/main.*.less', '!src/less/main.common.less'])
         .pipe(less())
