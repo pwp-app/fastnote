@@ -23,8 +23,8 @@ const {
 } = require('electron-updater');
 let feedUrl = ``;
 
-if (typeof settings != 'undefined'){
-  switch(settings.autoUpdateChannel){
+if (typeof settings != 'undefined') {
+  switch (settings.autoUpdateChannel) {
     case 0:
       feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
       break;
@@ -96,7 +96,7 @@ function createWindow() {
         checkForUpdates();
       }
     }
-    ipc.on('main-window-ready',function(sender, data){
+    ipc.on('main-window-ready', function (sender, data) {
       //show main window
       win.show();
     });
@@ -142,6 +142,12 @@ function createWindow() {
           });
         }
       }
+    });
+
+    //backup recovered
+    ipc.on('backup-recover-completed', function(){
+      //转送消息给主窗口
+      win.webContents.send('backup-recover-completed');
     });
 
     //quit now

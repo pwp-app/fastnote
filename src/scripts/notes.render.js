@@ -92,7 +92,6 @@ function renderNoteAtTop(id, time, updatetime, text) {
     final_text = "";
     for (var i = 0; i < temp.length; i++) {
         s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
-        console.log(s);
         final_text += s;
         final_text += "<br/>";
     }

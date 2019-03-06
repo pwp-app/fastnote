@@ -27,6 +27,9 @@
         //import json storage
         const storage = require('electron-json-storage');
 
+        //dialog
+        const {dialog} = require('electron').remote;
+
         const Menu = remote.Menu;
         const MenuItem = remote.MenuItem;
 
@@ -884,6 +887,52 @@
                     $(this).css('height', 'auto');
                 }
             });
+        });
+    </script>
+
+    <script>
+        //backup recovered
+        ipcRenderer.on('backup-recover-completed',function(){
+            console.log('backup recovered');
+            //刷新便签列表
+            readNoteFiles();
+            //获取最大的便签id，刷新为新的便签id
+            var maxNoteId = 0;
+            //检测NoteID冲突
+            var existedNoteId = new Array();
+            var conflictNotes = new Array();
+            //遍历现有的便签
+            notes.forEach(note => {
+                if (note.id > maxNoteId){
+                    maxNoteId = note.id;
+                }
+                //检测noteid是否有冲突，用户在本地的noteid应尽可能保持唯一。
+                if (existedNoteId.indexOf(note.id) != -1){
+                    existedNoteId.push(note.id);
+                } else {
+                    //存在冲突
+                    conflictNotes.push(note);
+                }
+            });
+            if (conflictNotes.length > 0){
+                //存在冲突的便签
+                //构造细节
+                var detail = "存在冲突的便签：\n";
+                conflictNotes.forEach(note => {
+                    detail += "ID: " + note.id + "，内容: "+(note.text.length>20?note.text.substring(0,20)+"...":note.text) + "\n";
+                });
+                dialog.showMessageBox({
+                    title: '便签冲突',
+                    message: '恢复备份中的一些便签在ID上和现有便签产生冲突',
+                    detail: detail,
+                    buttons: ['处理冲突', '不做改变']
+                }, function(res){
+                    if (res == 0){
+                        //处理冲突
+                        
+                    }
+                });
+            }
         });
     </script>
 
