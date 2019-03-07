@@ -179,6 +179,11 @@
                 } else {
                     initLetterSpacing("0.06");
                 }
+                if (typeof settings.datedisplay != 'undefined'){
+                    initDateDisplay(settings.datedisplay);
+                } else {
+                    initDateDisplay("all");
+                }
             }
         }
 
@@ -274,6 +279,11 @@
                 $('#select-letterspacing').val(letterspacing);
             });
         }
+        function initDateDisplay(datedisplay){
+            $(document).ready(function(){
+                $('#select-datedisplay').val(datedisplay);
+            });
+        }
 
         function initLastBackupTime(lasttime){
             if (typeof lasttime == 'string'){
@@ -310,7 +320,7 @@
             </div>
         </div>
         <script>
-            var settings_window_height = [430, 390, 430];
+            var settings_window_height = [430, 390, 480];   //general notes display
             //绑定点击事件
             $('.settings-titles-block').click(function(){
                 $('.settings-titles-block').removeClass('settings-titles-clicked');
@@ -852,6 +862,19 @@
                     </select>
                 </div>
             </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span>日期显示</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-datedisplay">
+                        <option value="all">显示所有</option>
+                        <option value="createonly">仅显示创建日期</option>
+                        <option value="updateonly">仅显示更新日期</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -873,6 +896,7 @@
             var textalign = $('#select-textalign').val();
             var lineheight = $('#select-lineheight').val();
             var letterspacing = $('#select-letterspacing').val();
+            var datedisplay = $('#select-datedisplay').val();
 
             //构造设置obj
             var settings = {
@@ -883,7 +907,8 @@
                 fontsize: fontsize,
                 textalign: textalign,
                 lineheight: lineheight,
-                letterspacing: letterspacing
+                letterspacing: letterspacing,
+                datedisplay: datedisplay
             };
 
             //保存设置

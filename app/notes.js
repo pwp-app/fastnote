@@ -266,6 +266,19 @@ function saveNote(notetext) {
     }
 }
 
+//基于note obj保存便签
+function saveNoteByObj(note){
+    //保存路径
+    var path = storagePath + '/notes/' + note.rawTime +(typeof note.offset != 'undefined'?"."+note.offset:"")+ '.json';
+    //计算文件的offset
+    var json = json.stringify(note);
+    fs.writeFile(path, json, 'utf-8', function (err, data) {
+        if (err) {
+            console.error(err);
+        }
+    });
+}
+
 //保存ID
 function saveNotesId() {
     var data = {

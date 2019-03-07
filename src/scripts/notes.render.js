@@ -44,9 +44,8 @@ function renderNote(id, time, updatetime, text) {
     html += '#' + id + '</p>';
     //选择性显示时间
     if (typeof (updatetime) != 'undefined') {
-        html += '<time><p class="note-time note-updatetime han-element">更新：' + updatetime,
-            +'</p>';
-        html += '<p class="note-time han-element">创建：' + time + '</p></time>';
+        html += '<time><p class="note-time note-updatetime han-element"><span class="note-updatetime-label">更新：</span>' + updatetime + '</p>';
+        html += '<p class="note-time note-createtime han-element"><span class="note-createtime-label">创建：</span>' + time + '</p></time>';
     } else {
         html += '<time><p class="note-time han-element">' + time + '</p></time>';
     }
@@ -81,8 +80,8 @@ function renderNoteAtTop(id, time, updatetime, text) {
     html += '#' + id + '</p>';
     //选择性显示时间
     if (typeof (updatetime) != 'undefined') {
-        html += '<time><p class="note-time note-updatetime han-element">更新：' + updatetime + '</p>';
-        html += '<p class="note-time han-element">创建：' + time + '</p></time>';
+        html += '<time><p class="note-time note-updatetime han-element"><span class="note-updatetime-label">更新：</span>' + updatetime + '</p>';
+        html += '<p class="note-time note-createtime han-element"><span class="note-createtime-label">创建：</span>' + time + '</p></time>';
     } else {
         html += '<time><p class="note-time han-element">' + time + '</p></time>';
     }

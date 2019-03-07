@@ -121,6 +121,20 @@
                     cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
                 }
                 cssText += '}'
+
+                //日期显示初始化
+                if (typeof settings.datedisplay != 'undefined'){
+                    switch (settings.datedisplay){
+                        case 'createonly':
+                            cssText += '.note-updatetime {display:none !important;}';
+                            cssText += '.note-createtime-label {display:none !important;}';
+                        break;
+                        case 'updateonly':
+                            cssText += '.note-createtime {display:none !important;}';
+                            cssText += '.note-updatetime-label {display:none !important;}';
+                        break;
+                    }
+                }
             }
             var modStyle = document.querySelector('#modCSS');
             if (modStyle === null) {
@@ -914,8 +928,10 @@
                     conflictNotes.push(note);
                 }
             });
+            //重新设置noteid
+            notesid = maxNoteId+1;
+            //检测是否存在冲突的便签
             if (conflictNotes.length > 0){
-                //存在冲突的便签
                 //构造细节
                 var detail = "存在冲突的便签：\n";
                 conflictNotes.forEach(note => {
@@ -929,10 +945,18 @@
                 }, function(res){
                     if (res == 0){
                         //处理冲突
-                        
+                        conflictNotes.forEach(note => {
+                            note.id = notesid;
+                            saveNoteByObj(note);
+                            notesid++;
+                        });
+                        //冲突处理完毕
+                        refreshNoteList();
+                        saveNotesId();
                     }
                 });
             }
+            saveNotesId();
         });
     </script>
 
