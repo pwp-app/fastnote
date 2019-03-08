@@ -28,9 +28,13 @@ global.indebug = true;  //将false改为true
 
 ## 项目目录结构
 
-app -> 应用源码
-assets -> 图片素材
-src -> 页面源码
+app     ->  应用源码
+    app/tools   ->  工具脚本
+assets  ->  图片素材
+src     ->  页面源码
+    src/less    ->  页面样式
+    src/pages   ->  页面文件
+    src/scripts ->  页面脚本
 
 ## 开发命令
 
@@ -47,7 +51,7 @@ gulp build
 gulp clean-build    //清理环境后生成
 ```
 
-监控文件改动实时生成
+监控文件改动实时生成（页面部分）
 
 ```
 gulp watch
@@ -61,7 +65,7 @@ gulp watch
 - [ ] 匿名分享
 - [ ] 支持部分的Markdown（便签标题、分割线、markdown式链接）
 - [x] 预发布通道
-- [ ] 菜单全部模板化
+- [x] 菜单全部模板化
 - [ ] 分栏编辑模式
 - [ ] 多种排序选项
 - [ ] 便签分类或便签标签
