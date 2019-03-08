@@ -140,7 +140,7 @@ function putNotesToRecyclebin(notes, callback){
                     callback(true);
                     return;
                 }
-            }catch(err){
+            } catch (err){
                 console.error(err);
             }
         }

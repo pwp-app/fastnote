@@ -271,12 +271,12 @@
                         let index = notes_selected.indexOf(noteid_clicked);
                         //如果是选中的，弹出菜单，如果不是选中的，取消
                         if (index != -1) {
-                            menu_recyclebin_multiselected.popup(remote.getCurrentWindow());
+                            popup_menu_recyclebin_multiSelected();
                         } else {
                             selectModeEnabled = false;
                             $('.note-wrapper').removeClass('note-selected');
                             $(this).addClass('note-selected');
-                            menu_recyclebin.popup(remote.getCurrentWindow());
+                            popup_menu_recyclebin();
                             $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
                                 $('.toast-multiselected').removeClass('toast-active');
                             });
@@ -284,7 +284,7 @@
                     } else {
                         $('#note_' + noteid_clicked).parent().removeClass('note-selected');
                         $(this).addClass('note-selected');
-                        menu_recyclebin.popup(remote.getCurrentWindow());
+                        popup_menu_recyclebin();
                     }
                 }
                 //阻止事件冒泡到父元素
@@ -296,6 +296,18 @@
                 }
             });
         }
+
+        $(document).ready(function(){
+            $('#note-list').mousedown(function (e) {
+                if (selectModeEnabled) {
+                    selectModeEnabled = false;
+                    $('.note-wrapper').removeClass('note-selected');
+                    $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
+                        $('.toast-multiselected').removeClass('toast-active');
+                    });
+                }
+            });
+        });
 
         bindNoteClickEvent();
     </script>

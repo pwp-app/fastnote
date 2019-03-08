@@ -239,12 +239,12 @@
             if (e.which == 3) {
                 if ($('#text-edit').val().trim().length > 0) {
                     if (getSelectText('text-edit').length > 0) {
-                        menu_textarea_selected.popup(remote.getCurrentWindow());
+                        popup_menu_textarea_selected();
                     } else {
-                        menu_textarea.popup(remote.getCurrentWindow());
+                        popup_menu_textarea();
                     }
                 } else {
-                    menu_textarea_empty.popup(remote.getCurrentWindow());
+                    popup_menu_textarea_empty();
                 }
             }
         });

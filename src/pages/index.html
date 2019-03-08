@@ -12,6 +12,7 @@
         window.$ = window.jQuery = require('./static/jquery.min.js');
         require('./static/bootstrap.min.js');
     </script>
+
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css">
     <link rel="stylesheet" href="static/font-awesome.min.css">
     <link rel="stylesheet" href="static/bootstrap.min.css">
@@ -444,20 +445,32 @@
                             let index = notes_selected.indexOf(noteid_clicked);
                             //如果是选中的，弹出菜单，如果不是选中的，取消
                             if (index != -1){
-                                menu_note_multiSelected.popup(remote.getCurrentWindow());
+                                popup_menu_note_multiSelected();
                             } else {
                                 selectModeEnabled = false;
                                 $('.note-wrapper').removeClass('note-selected');
                                 $(this).addClass('note-selected');
-                                menu_note.popup(remote.getCurrentWindow());
+                                if ($(this).hasClass('note-forcetop')){
+                                    //是置顶便签
+                                    popup_menu_note(true);
+                                } else {
+                                    //不是置顶便签
+                                    popup_menu_note(false);
+                                }
                                 $('.toast-multiselected').animateCss('fadeOutRight faster',function(){
                                     $('.toast-multiselected').removeClass('toast-active');
                                 });
                             }
                         } else {
-                            $('#note_'+noteid_clicked).parent().removeClass('note-selected');
+                            $('.note-wrapper').removeClass('note-selected');
                             $(this).addClass('note-selected');
-                            menu_note.popup(remote.getCurrentWindow());
+                            if ($(this).hasClass('note-forcetop')){
+                                //是置顶便签
+                                popup_menu_note(true);
+                            } else {
+                                //不是置顶便签
+                                popup_menu_note(false);
+                            }
                         }
                     }
                     //阻止事件冒泡到父元素
@@ -639,12 +652,12 @@
                 if (e.which == 3) {
                     if ($('#note-text').val().trim().length>0){
                         if (getSelectText('note-text').length>0){
-                            menu_textarea_selected.popup(remote.getCurrentWindow());
+                            popup_menu_textarea_selected();
                         } else {
-                            menu_textarea.popup(remote.getCurrentWindow());
+                            popup_menu_textarea();
                         }
                     } else {
-                        menu_textarea_empty.popup(remote.getCurrentWindow());
+                        popup_menu_textarea_empty();
                     }
                 }
             });
