@@ -23,22 +23,6 @@ const {
 } = require('electron-updater');
 let feedUrl = ``;
 
-if (typeof settings != 'undefined') {
-  switch (settings.autoUpdateChannel) {
-    case 0:
-      feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
-      break;
-    case 100:
-      feedUrl = `http://update.backrunner.top/fastnote/pre-release/${process.platform}`;
-      break;
-    default:
-      feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
-      break;
-  }
-} else {
-  feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
-}
-
 //import other window
 aboutWindow = require('./app/about');
 editWindow = require('./app/edit');
@@ -70,15 +54,30 @@ function createWindow() {
     win.webContents.openDevTools();
   }
   var settings;
-  storage.get('settings', function (error, data) {
-    if (!error) {
+  storage.get('settings', function (err, data) {
+    if (err) {
       //获取callback回传的json
-      settings = data;
+      console.error(err);
     }
+    settings = data;
+    if (typeof settings != 'undefined') {
+      switch (settings.autoUpdateChannel) {
+        case "0":
+          feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
+          break;
+        case "100":
+          feedUrl = `http://update.backrunner.top/fastnote/pre-release/${process.platform}`;
+          break;
+        default:
+          feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
+          break;
+      }
+    } else {
+      feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
+    }
+    // 加载应用的 index.html。
+    win.loadFile('public/index.html');
   });
-
-  // 然后加载应用的 index.html。
-  win.loadFile('public/index.html');
 
   // 当 window 被关闭，这个事件会被触发。
   win.on('closed', () => {
@@ -169,7 +168,7 @@ app.on('window-all-closed', () => {
 
 //自动更新事件定义
 let sendUpdateMessage = (message, data) => {
-  win.webContents.send('message', {
+  win.webContents.send('update-message', {
     message,
     data
   });
@@ -179,6 +178,10 @@ let checkForUpdates = () => {
   autoUpdater.setFeedURL(feedUrl);
   autoUpdater.autoDownload = false;
 
+  ipc.on('downloadNow', function () {
+    autoUpdater.downloadUpdate();
+  });
+
   autoUpdater.on('error', function (message) {
     sendUpdateMessage('error', message);
   });
@@ -187,9 +190,6 @@ let checkForUpdates = () => {
   });
   autoUpdater.on('update-available', function (message) {
     sendUpdateMessage('update-available', message);
-    ipc.on('downloadNow', function () {
-      autoUpdater.downloadUpdate();
-    });
   });
   autoUpdater.on('update-not-available', function (message) {
     sendUpdateMessage('update-not-available', message);

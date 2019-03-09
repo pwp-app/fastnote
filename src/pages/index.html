@@ -694,7 +694,7 @@
     <!-- ipcRenderer -->
     <script>
         let time = require('../app/tools/time.js');
-        ipcRenderer.on('message', (event, {
+        ipcRenderer.on('update-message', (event, {
             message,
             data
         }) => {
@@ -703,16 +703,16 @@
                     console.log('checking for update...');
                     break;
                 case 'update-available':
-                    console.log("update-avaliable");
+                    console.log("update-avaliable...");
                     $('.container-updater').css('display', 'block');
                     $('.container-updater').animateCss('fadeIn', function () {
                         var path_varfile = ``;
                         if (typeof settings != 'undefined'){
                             switch(settings.autoUpdateChannel){
-                                case 0:
+                                case "0":
                                     path_varfile = `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=`;
                                     break;
-                                case 100:
+                                case "100":
                                     path_varfile = `http://update.backrunner.top/fastnote/pre-release/${process.platform}/var.json?time=`;
                                     break;
                                 default:
