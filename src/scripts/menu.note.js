@@ -66,10 +66,14 @@ function popup_menu_note(isForceTop){
                 notes.every(function (note, i) {
                     if (note.id == noteid_clicked) {
                         //处理页面显示
-                        if (b_nearestID - noteid_clicked < noteid_clicked - s_nearestID){
-                            putNoteToNormal(noteid_clicked, b_nearestID, "b");
+                        if (s_nearestID == -1 && b_nearestID == Number.MAX_VALUE){
+                            putNoteToNormal(noteid_clicked);
                         } else {
-                            putNoteToNormal(noteid_clicked, s_nearestID, "s");
+                            if (b_nearestID - noteid_clicked < noteid_clicked - s_nearestID){
+                                putNoteToNormal(noteid_clicked, b_nearestID, "b");
+                            } else {
+                                putNoteToNormal(noteid_clicked, s_nearestID, "s");
+                            }
                         }
                         //处理note文件
                         note.forceTop = false;
@@ -85,10 +89,32 @@ function popup_menu_note(isForceTop){
         menu_note.insert(1, new MenuItem({
             label: '置顶',
             click: function(){
+                var s_nearestID = -1;
+                var b_nearestID = Number.MAX_VALUE;
+                //寻找合适的插入位置
+                notes.forEach(note => {
+                    if (typeof note.forceTop != 'undefined' && note.forceTop){
+                        if (note.id < noteid_clicked && note.id > s_nearestID){
+                            s_nearestID = note.id;
+                        }
+                        if (note.id > noteid_clicked && note.id < b_nearestID){
+                            b_nearestID = note.id;
+                        }
+                    }
+                });
+                console.log(s_nearestID, b_nearestID);
                 notes.every(function (note, i) {
                     if (note.id == noteid_clicked) {
                         //处理页面显示
-                        putNoteToForceTop(noteid_clicked);
+                        if (s_nearestID == -1 && b_nearestID == Number.MAX_VALUE){
+                            putNoteToForceTop(noteid_clicked);
+                        } else {
+                            if (b_nearestID - noteid_clicked < noteid_clicked - s_nearestID){
+                                putNoteToForceTop(noteid_clicked, b_nearestID, "b");
+                            } else {
+                                putNoteToForceTop(noteid_clicked, s_nearestID, "s");
+                            }
+                        }
                         //处理note文件
                         note.forceTop = true;
                         saveNoteByObj(note);
