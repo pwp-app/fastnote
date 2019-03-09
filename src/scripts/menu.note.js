@@ -50,14 +50,53 @@ function popup_menu_note(isForceTop){
         menu_note.insert(1, new MenuItem({
             label: '取消置顶',
             click: function(){
-
+                var s_nearestID = -1;
+                var b_nearestID = Number.MAX_VALUE;
+                //寻找合适的插入位置
+                notes.forEach(note => {
+                    if (typeof note.forceTop != 'undefined' && !note.forceTop){
+                        if (note.id < noteid_clicked && note.id > s_nearestID){
+                            s_nearestID = note.id;
+                        }
+                        if (note.id > noteid_clicked && note.id < b_nearestID){
+                            b_nearestID = note.id;
+                        }
+                    }
+                });
+                notes.every(function (note, i) {
+                    if (note.id == noteid_clicked) {
+                        //处理页面显示
+                        if (b_nearestID - noteid_clicked < noteid_clicked - s_nearestID){
+                            putNoteToNormal(noteid_clicked, b_nearestID, "b");
+                        } else {
+                            putNoteToNormal(noteid_clicked, s_nearestID, "s");
+                        }
+                        //处理note文件
+                        note.forceTop = false;
+                        saveNoteByObj(note);
+                        return false;
+                    } else {
+                        return true;
+                    }
+                });
             }
         }));
     } else {
         menu_note.insert(1, new MenuItem({
             label: '置顶',
             click: function(){
-
+                notes.every(function (note, i) {
+                    if (note.id == noteid_clicked) {
+                        //处理页面显示
+                        putNoteToForceTop(noteid_clicked);
+                        //处理note文件
+                        note.forceTop = true;
+                        saveNoteByObj(note);
+                        return false;
+                    } else {
+                        return true;
+                    }
+                });
             }
         }));
     }

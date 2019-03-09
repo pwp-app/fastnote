@@ -181,7 +181,7 @@ function readNoteFiles() {
                         var note_json = data;
                         if (typeof (note_json) != 'undefined' && note_json != null) {
                             note_json = JSON.parse(note_json);
-                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.text, note_json.offset, note_json.timezone);
+                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop);
                             if (notes.length + countOffset == fileArr.length) {
                                 //结束文件遍历，渲染列表
                                 refreshNoteList(function(){
@@ -234,8 +234,9 @@ function saveNote(notetext) {
         rawtime: alltime.rawTime,
         timezone: time.getTimeZone(),
         text: notetext,
-        offset: offset
-    }
+        offset: offset,
+        forceTop: false
+    };
     var json = JSON.stringify(note);
     fs.writeFile(path, json, 'utf-8', function (err, data) {
         if (err) {
@@ -255,7 +256,7 @@ function saveNote(notetext) {
             showNoteList();
         }
         //在顶部渲染Note
-        renderNoteAtTop(note.id, note.time, note.updatetime, note.text);
+        renderNoteAtTop(note.id, note.time, note.updatetime, note.text, note.forceTop);
         //绑定Note的点击事件
         bindNoteClickEvent();
     } catch (e) {
@@ -269,14 +270,26 @@ function saveNote(notetext) {
 //基于note obj保存便签
 function saveNoteByObj(note){
     //保存路径
-    var path = storagePath + '/notes/' + note.rawTime +(typeof note.offset != 'undefined'?"."+note.offset:"")+ '.json';
+    var path = storagePath + '/notes/' + note.rawtime +(typeof note.offset != undefined?note.offset>0?"."+note.offset:"":"")+ '.json';
     //计算文件的offset
-    var json = json.stringify(note);
+    var json = JSON.stringify(note);
     fs.writeFile(path, json, 'utf-8', function (err, data) {
         if (err) {
             console.error(err);
         }
     });
+}
+
+//基于obj删除note
+function deleteNoteByObj(note){
+    var note_path = storagePath + "/notes/" + note.rawtime + (typeof note.offset != undefined?note.offset>0?"."+note.offset:"":"")+".json";
+    if (fs.existsSync(note_path)){
+        fs.unlink(note_path, function(err){
+            if (err){
+                console.error(err);
+            }
+        });
+    }
 }
 
 //保存ID

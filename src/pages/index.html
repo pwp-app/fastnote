@@ -299,7 +299,10 @@
         <div class="note-empty col-lg-12" id="note-empty">
             <span>您还没有建立任何的便签<br />在下方你可以快速新建新便签</span>
         </div>
-        <div class="note-list" id="note-list"></div>
+        <div class="note-list" id="note-list">
+            <div class="note-list-forceTop" id="note-list-forceTop"></div>
+            <div class="note-list-normal" id="note-list-normal"></div>
+        </div>
         <script>
             //编辑笔记
             ipcRenderer.on('update-edit-note', (event, data) => {
@@ -408,7 +411,6 @@
                         if (selectModeEnabled){
                             //多选模式下，单击，如果选中则取消，未选中则选中
                             var index = notes_selected.indexOf(noteid_clicked);
-                            console.log(index);
                             if (index != -1){
                                 $('#note_'+noteid_clicked).parent().removeClass('note-selected');
                                 notes_selected.removeAt(index);
@@ -450,7 +452,7 @@
                                 selectModeEnabled = false;
                                 $('.note-wrapper').removeClass('note-selected');
                                 $(this).addClass('note-selected');
-                                if ($(this).hasClass('note-forcetop')){
+                                if ($('#note_'+noteid_clicked).hasClass('note-forceTop')){
                                     //是置顶便签
                                     popup_menu_note(true);
                                 } else {
@@ -464,7 +466,7 @@
                         } else {
                             $('.note-wrapper').removeClass('note-selected');
                             $(this).addClass('note-selected');
-                            if ($(this).hasClass('note-forcetop')){
+                            if ($('#note_'+noteid_clicked).hasClass('note-forceTop')){
                                 //是置顶便签
                                 popup_menu_note(true);
                             } else {
@@ -952,9 +954,9 @@
                 });
                 dialog.showMessageBox({
                     title: '便签冲突',
-                    message: '恢复备份中的一些便签在ID上和现有便签产生冲突',
+                    message: '恢复备份中的一些便签在ID上和现有便签产生冲突\n便签的ID应是唯一的，否则程序将出现错误。\n请处理冲突',
                     detail: detail,
-                    buttons: ['处理冲突', '不做改变']
+                    buttons: ['处理冲突', '删除']
                 }, function(res){
                     if (res == 0){
                         //处理冲突
@@ -964,8 +966,24 @@
                             notesid++;
                         });
                         //冲突处理完毕
-                        refreshNoteList();
+                        readNoteFiles();
                         saveNotesId();
+                    } else if (res == 1) {
+                        dialog.showMessageBox({
+                            type: 'warning',
+                            message: '你确定要自动删除存在冲突的便签吗？',
+                            detail: detail,
+                            buttons: ['确定','取消']
+                        },function(res){
+                            if (res == 0){
+                                conflictNotes.forEach(note => {
+                                    deleteNoteByObj(note);
+                                });
+                                //删除完毕
+                                readNoteFiles();
+                                saveNotesId();
+                            }
+                        });
                     }
                 });
             }
