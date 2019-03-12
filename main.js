@@ -14,6 +14,7 @@ const {
 
 //global settings
 global.indebug = false; //debug trigger
+global.isOS64 = false; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
 
@@ -63,13 +64,25 @@ function createWindow() {
     if (typeof settings != 'undefined') {
       switch (settings.autoUpdateChannel) {
         case "0":
-          feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
+          if (isOS64){
+            feedUrl = `http://update.backrunner.top/fastnote/${process.platform}/x64`;
+          } else {
+            feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
+          }
           break;
         case "100":
-          feedUrl = `http://update.backrunner.top/fastnote/pre-release/${process.platform}`;
+          if (isOS64){
+            feedUrl = `http://update.backrunner.top/fastnote/pre-release/${process.platform}/x64`;
+          } else {
+            feedUrl = `http://update.backrunner.top/fastnote/pre-release/${process.platform}`;
+          }
           break;
         default:
-          feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
+          if (isOS64){
+            feedUrl = `http://update.backrunner.top/fastnote/${process.platform}/x64`;
+          } else {
+            feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
+          }
           break;
       }
     } else {

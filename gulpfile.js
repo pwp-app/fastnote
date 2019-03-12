@@ -5,6 +5,8 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var htmlmin = require('gulp-htmlmin');
 var rename = require('gulp-rename');
+var replace = require('gulp-replace');
+var shell = require('gulp-shell');
 
 //jquery
 gulp.task('jquery',async function(){
@@ -80,8 +82,38 @@ gulp.task('watch',function(){
 });
 
 gulp.task('clean', function(){
-    return del('public/**/*');
+    return del('public/**');
 });
+
+//build
+gulp.task('win32', function(){
+    return gulp.src('main.js')
+    .pipe(replace('global.indebug = true','global.indebug = false'))
+    .pipe(replace('global.isOS64 = true', 'global.isOS64 = false'))
+    .pipe(gulp.dest('./'));
+});
+gulp.task('win64',function(){
+    return gulp.src('main.js')
+        .pipe(replace('global.indebug = true','global.indebug = false'))
+        .pipe(replace('global.isOS64 = false', 'global.isOS64 = true'))
+        .pipe(gulp.dest('./'));
+});
+gulp.task('debug',function(){
+    return gulp.src('main.js')
+        .pipe(replace('global.indebug = false','global.indebug = true'))
+        .pipe(gulp.dest('./'));
+});
+
+//pack
+gulp.task('clean dist',function(){
+    return del(['dist/**','!dist/var.json']);
+});
+gulp.task('build win32', shell.task('npm run build32'));
+gulp.task('build win64', shell.task('npm run build'));
+gulp.task('pack win32',gulp.series(['clean','build','clean-dist','win32','build win32']));
+gulp.task('pack win64',gulp.series(['clean','build','clean-dist','win64','build win64']));
+
+//publish
 
 
 gulp.task('build', gulp.series(['requirements','less','scripts','pages','assets']));
