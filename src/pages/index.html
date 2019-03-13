@@ -216,7 +216,7 @@
                 });
             } else {
                 uuid = UUID.gen();
-                var json = {
+                ver.json = {
                     uuid: uuid
                 }
                 storage.set('uuid', json);
@@ -706,23 +706,23 @@
                     console.log("update-avaliable...");
                     $('.container-updater').css('display', 'block');
                     $('.container-updater').animateCss('fadeIn', function () {
-                        var path_varfile = ``;
+                        var path_verfile = ``;
                         if (typeof settings != 'undefined'){
                             switch(settings.autoUpdateChannel){
                                 case "0":
-                                    path_varfile = `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=`;
+                                    path_verfile = `http://update.backrunner.top/fastnote/${process.platform}/ver.json?time=`;
                                     break;
                                 case "100":
-                                    path_varfile = `http://update.backrunner.top/fastnote/pre-release/${process.platform}/var.json?time=`;
+                                    path_verfile = `http://update.backrunner.top/fastnote/pre-release/${process.platform}/ver.json?time=`;
                                     break;
                                 default:
-                                    path_varfile = `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=`;
+                                    path_verfile = `http://update.backrunner.top/fastnote/${process.platform}/ver.json?time=`;
                                     break;
                             }
                         } else {
-                            path_varfile = `http://update.backrunner.top/fastnote/${process.platform}/var.json?time=`;
+                            path_verfile = `http://update.backrunner.top/fastnote/${process.platform}/ver.json?time=`;
                         }
-                        $.getJSON(path_varfile + time.getRawCurrentMillTime(), //时间戳避免缓存
+                        $.getJSON(path_verfile + time.getRawCurrentMillTime(), //时间戳避免缓存
                             function (result) {
                                 if (result != null && result != "" && typeof (result) !=
                                     'undefined') {

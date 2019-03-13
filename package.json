@@ -11,12 +11,14 @@
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {
-    "electron": "^4.0.8",
-    "bootstrap": "^4.3.1",
-    "font-awesome": "^4.7.0",
     "animate.css": "^3.7.0",
-    "jquery": "^3.3.1",
+    "bootstrap": "^4.3.1",
+    "electron": "^4.0.8",
     "electron-builder": "^20.39.0",
+    "font-awesome": "^4.7.0",
+    "gulp-qiniu-up": "^1.0.2",
+    "jquery": "^3.3.1",
+    "merge": "^1.2.1",
     "moment": "^2.24.0"
   },
   "name": "fastnote",
