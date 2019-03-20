@@ -20,6 +20,9 @@
     <script src="static/notes.render.js"></script>
     <script src="static/mousetrap.min.js"></script>
     <script>
+        //recyclebin flag
+        var inRecyclebin = true;
+
         //load Animate CSS
         $.fn.extend({
             animateCss: function (animationName, callback) {
@@ -50,7 +53,9 @@
         const remote = require('electron').remote;
         const app = remote.app;
         //import json storage
-        const storage = require('electron-json-storage');
+        if (typeof storage != 'undefined'){
+            var storage = require('electron-json-storage');
+        }
         let time = require('../app/tools/time.js');
 
         const Menu = remote.Menu;
@@ -189,7 +194,10 @@
             <div class="note-empty recycle-empty col-lg-12">
                 <span>回收站内没有便签</span>
             </div>
-            <div class="note-list recycle-list">
+            <div class="note-list recycle-list" id="note-list">
+                <div class="note-list-forceTop" id="note-list-forceTop"></div>
+                <div class="note-list-normal" id="note-list-normal"></div>
+            </div>
             </div>
         </div>
     </div>

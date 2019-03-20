@@ -21,6 +21,37 @@ var menu_note_template = [
         }
     },
     {
+        label: '排序方式',
+        submenu: [
+            {
+                id: 'cb_sort_id',
+                label: 'ID',
+                type: 'checkbox',
+                click: function(){
+                    sort_mode = 'id';
+                    var sortModeJson = {
+                        mode:sort_mode
+                    };
+                    storage.set('sortMode',sortModeJson);
+                    refreshNoteList();
+                }
+            },
+            {
+                id: 'cb_sort_updateDate',
+                label: '更新日期',
+                type: 'checkbox',
+                click: function(){
+                    sort_mode = 'updateDate';
+                    var sortModeJson = {
+                        mode:sort_mode
+                    };
+                    storage.set('sortMode',sortModeJson);
+                    refreshNoteList();
+                }
+            }
+        ]
+    },
+    {
         label: '编辑',
         click: function () {
             for (var i = 0; i < notes.length; i++) {
@@ -125,6 +156,18 @@ function popup_menu_note(isForceTop){
                 });
             }
         }));
+    }
+    //设置排序选项
+    var sortMenuItem;
+    switch(sort_mode){
+        case 'id':
+        sortMenuItem = menu_note.getMenuItemById('cb_sort_id');
+        sortMenuItem.checked = true;
+        break;
+        case 'updateDate':
+        sortMenuItem = menu_note.getMenuItemById('cb_sort_updateDate');
+        sortMenuItem.checked = true;
+        break;
     }
     menu_note.on('menu-will-close',(event, args)=>{
         $('.note-wrapper').removeClass('note-selected');

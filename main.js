@@ -13,8 +13,8 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = false; //debug trigger
-global.isOS64 = false; //OS flag
+global.indebug = true; //debug trigger
+global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
 
@@ -92,6 +92,66 @@ function createWindow() {
     win.loadFile('public/index.html');
   });
 
+  //uuid recevier
+  ipc.on('set-uuid', function (sender, data) {
+    global.uuid = data;
+  });
+  ipc.on('main-window-ready', function (sender, data) {
+    //show main window
+    win.show();
+  });
+  //bind restore note event
+  ipc.on('restore-note', function (sender, data) {
+    win.webContents.send('restore-note', data);
+  });
+  //open about window
+  ipc.on('openAboutWindow', () => {
+    aboutWindow();
+  });
+  ipc.on('openRecycleWindow', () => {
+    recycleWindow.create();
+  });
+  //open edit window
+  ipc.on('openEditWindow', function (sender, data) {
+    editWindow.showWindow(data);
+  });
+  ipc.on('openSettingsWindow', () => {
+    settingsWindow();
+  });
+
+  ipc.on('reloadMainWindow', function (sender, data) {
+    win.reload();
+    if (typeof settings != undefined) {
+      if (settings.autoUpdateStatus) {
+        checkForUpdates();
+      }
+    }
+  });
+  //when recycle close edit
+  ipc.on('recycle-note', function (sender, data) {
+    var editWins = editWindow.getWins();
+    for (var i = 0; i < editWins.length; i++) {
+      if (typeof editWins[i] != undefined && editWins[i] != null) {
+        editWins[i].webContents.send('message', {
+          type: 'note-recycled',
+          data: data
+        });
+      }
+    }
+  });
+
+  //backup recovered
+  ipc.on('backup-recover-completed', function(){
+    //转送消息给主窗口
+    win.webContents.send('backup-recover-completed');
+  });
+
+  //quit now
+  ipc.on('app-quitNow', () => {
+    app.quit();
+  });
+
+
   // 当 window 被关闭，这个事件会被触发。
   win.on('closed', () => {
     win = null;
@@ -99,72 +159,14 @@ function createWindow() {
   })
   //getfocus
   win.on('ready-to-show', () => {
-    //uuid recevier
-    ipc.on('set-uuid', function (sender, data) {
-      global.uuid = data;
-    });
     if (typeof settings != 'undefined') {
       if (settings.autoUpdateStatus) {
         checkForUpdates();
       }
     }
-    ipc.on('main-window-ready', function (sender, data) {
-      //show main window
-      win.show();
-    });
-    //bind restore note event
-    ipc.on('restore-note', function (sender, data) {
-      win.webContents.send('restore-note', data);
-    });
-    //open about window
-    ipc.on('openAboutWindow', () => {
-      aboutWindow();
-    });
-    ipc.on('openRecycleWindow', () => {
-      recycleWindow.create();
-    });
-    //open edit window
-    ipc.on('openEditWindow', function (sender, data) {
-      editWindow.showWindow(data);
-    });
-    ipc.on('openSettingsWindow', () => {
-      settingsWindow();
-    });
     //bind update event
     editWindow.bindEditEvent(function (data) {
       win.webContents.send('update-edit-note', data);
-    });
-    ipc.on('reloadMainWindow', function (sender, data) {
-      win.reload();
-      if (typeof settings != undefined) {
-        if (settings.autoUpdateStatus) {
-          checkForUpdates();
-        }
-      }
-    });
-
-    //when recycle close edit
-    ipc.on('recycle-note', function (sender, data) {
-      var editWins = editWindow.getWins();
-      for (var i = 0; i < editWins.length; i++) {
-        if (typeof editWins[i] != undefined && editWins[i] != null) {
-          editWins[i].webContents.send('message', {
-            type: 'note-recycled',
-            data: data
-          });
-        }
-      }
-    });
-
-    //backup recovered
-    ipc.on('backup-recover-completed', function(){
-      //转送消息给主窗口
-      win.webContents.send('backup-recover-completed');
-    });
-
-    //quit now
-    ipc.on('app-quitNow', () => {
-      app.quit();
     });
   });
 }

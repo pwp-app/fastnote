@@ -1,11 +1,24 @@
+var storage = require('electron-json-storage');
+
 //保存所有的notes
 var notes = new Array();
 
-let selectModeEnabled = false;
+var selectModeEnabled = false;
+//存放长按的setTimeout
 var noteLongClickTimeout;
 
 var notes_selected = new Array();
 
+var sort_mode = null;
+//初始化排序模式
+storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
+    if (err){
+        console.log(err);
+        sort_mode = 'id';   //设置为默认值
+        return;
+    }
+    sort_mode = data.mode;
+});
 //显示没有笔记的界面
 function showNoteEmpty() {
     var note_empty = document.getElementsByClassName('note-empty')[0];
@@ -31,22 +44,24 @@ function showNoteList() {
 function clearNoteList() {
     var note_list_forceTop = document.getElementById('note-list-forceTop');
     var note_list_normal = document.getElementById('note-list-normal');
-    note_list_forceTop.innerHTML = "";
+    if (typeof note_list_forceTop != 'undefined' && note_list_forceTop != null) { //if用来兼容recyclebin
+        note_list_forceTop.innerHTML = "";
+    }
     note_list_normal.innerHTML = "";
+    selectModeEnabled = false; //刷新页面/列表时重置多选开关
 }
 
 //定义url过滤正则
-let reg_url =
-    /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
+var reg_url = /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
 
 //渲染一条笔记
 function renderNote(id, time, updatetime, text, forceTop) {
-    var html = '<div class="note-wrapper"><div class="note'+ (typeof forceTop != 'undefined'?forceTop?" note-forceTop":"":"")+'" id="note_' + id +
-        '" data-id="'+ id +'"><div class="note-header"><p class="note-no">';
+    var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
+        '" data-id="' + id + '"><div class="note-header"><p class="note-no">';
     html += '#' + id + '</p>';
     //选择性显示时间
-    if (typeof forceTop != 'undefined'){
-        if (forceTop){
+    if (typeof forceTop != 'undefined') {
+        if (forceTop) {
             html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
         }
     }
@@ -72,8 +87,8 @@ function renderNote(id, time, updatetime, text, forceTop) {
         return '<a href="' + result + '">' + result + '</a>';
     });
     html += '</p></div></div></div>';
-    if (typeof forceTop != 'undefined'){
-        if (forceTop){
+    if (typeof forceTop != 'undefined') {
+        if (forceTop) {
             $('.note-list-forceTop').append($(html));
         } else {
             $('.note-list-normal').append($(html));
@@ -90,12 +105,12 @@ function renderNote(id, time, updatetime, text, forceTop) {
 //在顶部渲染Note
 function renderNoteAtTop(id, time, updatetime, text, forceTop) {
     //构造html
-    var html = '<div class="note-wrapper"><div class="note'+ (typeof forceTop != 'undefined'?forceTop?" note-forceTop":"":"")+'" id="note_' + id +
-        '" data-id="'+ id +'"><div class="note-header"><p class="note-no">';
+    var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
+        '" data-id="' + id + '"><div class="note-header"><p class="note-no">';
     html += '#' + id + '</p>';
     //置顶标志
-    if (typeof forceTop != 'undefined'){
-        if (forceTop){
+    if (typeof forceTop != 'undefined') {
+        if (forceTop) {
             html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
         }
     }
@@ -124,8 +139,8 @@ function renderNoteAtTop(id, time, updatetime, text, forceTop) {
     });
     html += '</p></div></div></div>';
     //置顶
-    if (typeof forceTop != 'undefined'){
-        if (forceTop){
+    if (typeof forceTop != 'undefined') {
+        if (forceTop) {
             $('.note-list-forceTop').prepend($(html));
         } else {
             $('.note-list-normal').prepend($(html));
@@ -194,15 +209,41 @@ function addNoteObjToArray(note) {
 //刷新note-list
 function refreshNoteList(callback) {
     clearNoteList(); //先清空
-    notes.sort(sortNotes); //排序
-    notes.forEach(function (note) {
-        renderNote(note.id, note.time, note.updatetime, note.text, note.forceTop);
-    });
-    //绑定Note的点击事件
-    bindNoteClickEvent();
-    //callback
-    if (typeof (callback) === 'function') {
-        callback();
+    if (typeof sort_mode != 'string') {
+
+        //recyclebin
+        storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            sort_mode = data.mode;
+            if (typeof sort_mode != 'string') {
+                sort_mode = 'id';
+            }
+            sortNotes(sort_mode); //排序
+            notes.forEach(function (note) {
+                renderNote(note.id, note.time, note.updatetime, note.text, note.forceTop);
+            });
+            //绑定Note的点击事件
+            bindNoteClickEvent();
+            //callback
+            if (typeof (callback) === 'function') {
+                callback();
+            }
+        });
+
+    } else {
+        sortNotes(sort_mode); //排序
+        notes.forEach(function (note) {
+            renderNote(note.id, note.time, note.updatetime, note.text, note.forceTop);
+        });
+        //绑定Note的点击事件
+        bindNoteClickEvent();
+        //callback
+        if (typeof (callback) === 'function') {
+            callback();
+        }
     }
 }
 
@@ -212,10 +253,34 @@ function clearNoteArray() {
 }
 
 //排序笔记
-function sortNotes(a, b) {
+function sortNotes(mode) {
+    switch (mode) {
+        default:
+        case 'id':
+            notes.sort(sortNotesById);
+            break;
+        case 'updateDate':
+            notes.sort(sortNotesByUpdateDate);
+            break;
+    }
+}
+
+function sortNotesById(a, b) {
     if (a.id > b.id) {
         return -1;
     } else if (a.id < b.id) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+function sortNotesByUpdateDate(a, b) {
+    var temp_a = typeof a.updaterawtime != 'undefined' ? a.updaterawtime : a.rawtime;
+    var temp_b = typeof b.updaterawtime != 'undefined' ? b.updaterawtime : b.rawtime;
+    if (temp_a > temp_b) {
+        return -1;
+    } else if (temp_a < temp_b) {
         return 1;
     } else {
         return 0;
@@ -234,17 +299,17 @@ function deleteNoteFromArr(id) {
 }
 
 //将便签渲染到置顶
-function putNoteToForceTop(id, nearestID, s_or_b){
+function putNoteToForceTop(id, nearestID, s_or_b) {
     //获取便签的内容
-    var html = '<div class="note-wrapper">'+$('#note_'+id).parent().html() + '</div>';
+    var html = '<div class="note-wrapper">' + $('#note_' + id).parent().html() + '</div>';
     //移除normal列表中的便签
-    $('#note_'+id).parent().remove();
+    $('#note_' + id).parent().remove();
     //添加到forceTop
-    if (arguments.length == 3){
-        if (s_or_b == "s"){
-            $('#note_'+nearestID).parent().before($(html));
-        } else if (s_or_b == "b"){
-            $('#note_'+nearestID).parent().after($(html));
+    if (arguments.length == 3) {
+        if (s_or_b == "s") {
+            $('#note_' + nearestID).parent().before($(html));
+        } else if (s_or_b == "b") {
+            $('#note_' + nearestID).parent().after($(html));
         }
     } else {
         $('.note-list-forceTop').prepend($(html));
@@ -252,7 +317,7 @@ function putNoteToForceTop(id, nearestID, s_or_b){
     $('#note_' + id).addClass('note-forceTop');
     //插入图标
     var icon = '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
-    $('#note_' + id+" time").before($(icon));
+    $('#note_' + id + " time").before($(icon));
     //bind events
     bindNoteClickEvent();
     bindNoteFoldDBL(id);
@@ -262,16 +327,16 @@ function putNoteToForceTop(id, nearestID, s_or_b){
     });
 }
 
-function putNoteToNormal(id, nearestID, s_or_b){
-    var html = '<div class="note-wrapper">'+$('#note_'+id).parent().html() + '</div>';
+function putNoteToNormal(id, nearestID, s_or_b) {
+    var html = '<div class="note-wrapper">' + $('#note_' + id).parent().html() + '</div>';
     //从置顶内移除
-    $('#note_'+id).parent().remove();
+    $('#note_' + id).parent().remove();
     //添加到normal
-    if (arguments.length == 3){
-        if (s_or_b == "s"){
-            $('#note_'+nearestID).parent().before($(html));
-        } else if (s_or_b == "b"){
-            $('#note_'+nearestID).parent().after($(html));
+    if (arguments.length == 3) {
+        if (s_or_b == "s") {
+            $('#note_' + nearestID).parent().before($(html));
+        } else if (s_or_b == "b") {
+            $('#note_' + nearestID).parent().after($(html));
         }
     } else {
         $('.note-list-normal').prepend($(html));
