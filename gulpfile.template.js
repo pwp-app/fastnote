@@ -8,6 +8,8 @@ var rename = require('gulp-rename');
 var replace = require('gulp-replace');
 var shell = require('gulp-shell');
 var qn = require('gulp-qiniu-up');
+var fs = require('fs');
+var del = require('del');
 
 //jquery
 gulp.task('jquery',async function(){
@@ -118,32 +120,22 @@ gulp.task('pack win64',gulp.series(['clean','build','clean dist','win64','build 
 
 //publish
 gulp.task('upload win32', function(){
-    return gulp.src(['dist/*.exe','dist/*.yml','dist/var.json'])
+    var version = fs.readFileSync('dist/ver.json');
+    version = JSON.parse(version);
+    return gulp.src(['dist/'+version.ver+'.exe','dist/*.yml','dist/ver.json'])
         .pipe(qn({
-            qiniu: {
-                accessKey: '',
-                secretKey: '',
-                bucket: '',
-                origin: '',
-                uploadURL: '',
-            },
-            prefix: '',
-            forceUpload: true
+            //qiniu set
         }));
 });
 gulp.task('upload win64', function(){
-    return gulp.src(['dist/*.exe','dist/*.yml','dist/var.json'])
+    var version = fs.readFileSync('dist/ver.json');
+    version = JSON.parse(version);
+    return gulp.src(['dist/'+version.ver+'.exe','dist/*.yml','dist/ver.json'])
         .pipe(qn({
-            qiniu: {
-                accessKey: '',
-                secretKey: '',
-                bucket: '',
-                origin: '',
-                uploadURL: '',
-            },
-            prefix: '',
-            forceUpload: true
+            //qiniu set
         }));
 });
+
 gulp.task('publish',gulp.series(['pack win32','upload win32']));
 gulp.task('publish64',gulp.series(['pack win64','upload win64']));
+gulp.task('publish',gulp.series(['publish','publish64']));

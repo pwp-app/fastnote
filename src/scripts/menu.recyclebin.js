@@ -1,19 +1,5 @@
 var menu_recyclebin_template = [
     {
-        label: '还原',
-        click: function () {
-            restoreNote(noteid_clicked);
-            noteid_clicked = -1;
-        }
-    },
-    {
-        label: '彻底删除',
-        click: function () {
-            deleteNote(noteid_clicked);
-            noteid_clicked = -1;
-        }
-    },
-    {
         label: '排序方式',
         submenu: [
             {
@@ -43,6 +29,23 @@ var menu_recyclebin_template = [
                 }
             }
         ]
+    },
+    {
+        type: 'separator'
+    },
+    {
+        label: '还原',
+        click: function () {
+            restoreNote(noteid_clicked);
+            noteid_clicked = -1;
+        }
+    },
+    {
+        label: '彻底删除',
+        click: function () {
+            deleteNote(noteid_clicked);
+            noteid_clicked = -1;
+        }
     },
 ];
 

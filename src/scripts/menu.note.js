@@ -1,26 +1,5 @@
 var menu_note_template = [
     {
-        label: '复制',
-        click: function () {
-            for (var i = 0; i < notes.length; i++) {
-                if (notes[i].id == noteid_clicked) {
-                    var note = notes[i];
-                    note.text = note.text.replace(/(<br\/>)/gi, "\r");
-                    copyToClipboard(note.text, {
-                        success: function () {
-                            displayInfobar('success', '内容已复制到剪贴板');
-                        },
-                        error: function () {
-                            displayInfobar('success', '复制内容时出现错误');
-                        }
-                    });
-                    return;
-                }
-            }
-            noteid_clicked = -1;
-        }
-    },
-    {
         label: '排序方式',
         submenu: [
             {
@@ -52,6 +31,30 @@ var menu_note_template = [
         ]
     },
     {
+        type: 'separator'
+    },
+    {
+        label: '复制',
+        click: function () {
+            for (var i = 0; i < notes.length; i++) {
+                if (notes[i].id == noteid_clicked) {
+                    var note = notes[i];
+                    note.text = note.text.replace(/(<br\/>)/gi, "\r");
+                    copyToClipboard(note.text, {
+                        success: function () {
+                            displayInfobar('success', '内容已复制到剪贴板');
+                        },
+                        error: function () {
+                            displayInfobar('success', '复制内容时出现错误');
+                        }
+                    });
+                    return;
+                }
+            }
+            noteid_clicked = -1;
+        }
+    },
+    {
         label: '编辑',
         click: function () {
             for (var i = 0; i < notes.length; i++) {
@@ -78,7 +81,7 @@ function popup_menu_note(isForceTop){
     var menu_note = Menu.buildFromTemplate(menu_note_template);
     if (isForceTop){
         //当前便签是置顶
-        menu_note.insert(1, new MenuItem({
+        menu_note.insert(3, new MenuItem({
             label: '取消置顶',
             click: function(){
                 var s_nearestID = -1;
@@ -119,7 +122,7 @@ function popup_menu_note(isForceTop){
             }
         }));
     } else {
-        menu_note.insert(1, new MenuItem({
+        menu_note.insert(3, new MenuItem({
             label: '置顶',
             click: function(){
                 var s_nearestID = -1;
