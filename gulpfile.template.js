@@ -111,7 +111,7 @@ gulp.task('debug',function(){
 
 //pack
 gulp.task('clean dist',function(){
-    return del(['dist/**','!dist/var.json']);
+    return del(['dist/**','!dist','!dist/ver.json']);
 });
 gulp.task('build win32', shell.task('npm run build32'));
 gulp.task('build win64', shell.task('npm run build'));
