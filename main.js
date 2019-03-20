@@ -14,7 +14,7 @@ const {
 
 //global settings
 global.indebug = false; //debug trigger
-global.isOS64 = false; //OS flag
+global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
 
