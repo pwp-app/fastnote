@@ -60,7 +60,7 @@ function renderNote(id, time, updatetime, text, forceTop) {
         '" data-id="' + id + '"><div class="note-header"><p class="note-no">';
     html += '#' + id + '</p>';
     //选择性显示时间
-    if (typeof forceTop != 'undefined') {
+    if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
             html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
         }
@@ -87,7 +87,7 @@ function renderNote(id, time, updatetime, text, forceTop) {
         return '<a href="' + result + '">' + result + '</a>';
     });
     html += '</p></div></div></div>';
-    if (typeof forceTop != 'undefined') {
+    if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
             $('.note-list-forceTop').append($(html));
         } else {
@@ -109,7 +109,7 @@ function renderNoteAtTop(id, time, updatetime, text, forceTop) {
         '" data-id="' + id + '"><div class="note-header"><p class="note-no">';
     html += '#' + id + '</p>';
     //置顶标志
-    if (typeof forceTop != 'undefined') {
+    if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
             html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
         }
@@ -139,7 +139,7 @@ function renderNoteAtTop(id, time, updatetime, text, forceTop) {
     });
     html += '</p></div></div></div>';
     //置顶
-    if (typeof forceTop != 'undefined') {
+    if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
             $('.note-list-forceTop').prepend($(html));
         } else {

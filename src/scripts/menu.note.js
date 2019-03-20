@@ -133,7 +133,6 @@ function popup_menu_note(isForceTop){
                         }
                     }
                 });
-                console.log(s_nearestID, b_nearestID);
                 notes.every(function (note, i) {
                     if (note.id == noteid_clicked) {
                         //处理页面显示
