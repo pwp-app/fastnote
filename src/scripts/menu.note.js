@@ -85,7 +85,7 @@ function popup_menu_note(isForceTop){
                 var b_nearestID = Number.MAX_VALUE;
                 //寻找合适的插入位置
                 notes.forEach(note => {
-                    if (typeof note.forceTop != 'undefined' && !note.forceTop){
+                    if (typeof note.forceTop == 'undefined' || !note.forceTop){
                         if (note.id < noteid_clicked && note.id > s_nearestID){
                             s_nearestID = note.id;
                         }
@@ -94,13 +94,15 @@ function popup_menu_note(isForceTop){
                         }
                     }
                 });
+                //console.log(s_nearestID, b_nearestID);
+                //console.log(Math.abs(b_nearestID - noteid_clicked),Math.abs(noteid_clicked - s_nearestID));
                 notes.every(function (note, i) {
                     if (note.id == noteid_clicked) {
                         //处理页面显示
                         if (s_nearestID == -1 && b_nearestID == Number.MAX_VALUE){
                             putNoteToNormal(noteid_clicked);
                         } else {
-                            if (b_nearestID - noteid_clicked < noteid_clicked - s_nearestID){
+                            if (Math.abs(b_nearestID - noteid_clicked) <= Math.abs(noteid_clicked - s_nearestID)){
                                 putNoteToNormal(noteid_clicked, b_nearestID, "b");
                             } else {
                                 putNoteToNormal(noteid_clicked, s_nearestID, "s");
@@ -139,7 +141,7 @@ function popup_menu_note(isForceTop){
                         if (s_nearestID == -1 && b_nearestID == Number.MAX_VALUE){
                             putNoteToForceTop(noteid_clicked);
                         } else {
-                            if (b_nearestID - noteid_clicked < noteid_clicked - s_nearestID){
+                            if (Math.abs(b_nearestID - noteid_clicked) <= Math.abs(noteid_clicked - s_nearestID)){
                                 putNoteToForceTop(noteid_clicked, b_nearestID, "b");
                             } else {
                                 putNoteToForceTop(noteid_clicked, s_nearestID, "s");

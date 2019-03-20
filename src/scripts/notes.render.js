@@ -210,8 +210,6 @@ function addNoteObjToArray(note) {
 function refreshNoteList(callback) {
     clearNoteList(); //先清空
     if (typeof sort_mode != 'string') {
-
-        //recyclebin
         storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
             if (err) {
                 console.error(err);
