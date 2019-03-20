@@ -122,7 +122,7 @@ gulp.task('pack win64',gulp.series(['clean','build','clean dist','win64','build 
 gulp.task('upload win32', function(){
     var version = fs.readFileSync('dist/ver.json');
     version = JSON.parse(version);
-    return gulp.src(['dist/'+version.ver+'.exe','dist/*.yml','dist/ver.json'])
+    return gulp.src(['dist/Fastnote Setup '+version.ver+'.exe','dist/*.yml','dist/ver.json'])
         .pipe(qn({
             //qiniu set
         }));
@@ -130,7 +130,7 @@ gulp.task('upload win32', function(){
 gulp.task('upload win64', function(){
     var version = fs.readFileSync('dist/ver.json');
     version = JSON.parse(version);
-    return gulp.src(['dist/'+version.ver+'.exe','dist/*.yml','dist/ver.json'])
+    return gulp.src(['dist/Fastnote Setup '+version.ver+'.exe','dist/*.yml','dist/ver.json'])
         .pipe(qn({
             //qiniu set
         }));
