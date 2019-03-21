@@ -110,6 +110,9 @@ gulp.task('debug',function(){
 });
 
 //pack
+gulp.task('move old', function(){
+    return gulp.src('dist/*.exe').pipe(gulp.dest('old_version'));
+});
 gulp.task('clean dist',function(){
     return del(['dist/**','!dist','!dist/ver.json']);
 });
