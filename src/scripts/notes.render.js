@@ -12,9 +12,9 @@ var notes_selected = new Array();
 var sort_mode = null;
 //初始化排序模式
 storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
-    if (err){
+    if (err) {
         console.log(err);
-        sort_mode = 'id';   //设置为默认值
+        sort_mode = 'id'; //设置为默认值
         return;
     }
     sort_mode = data.mode;
@@ -326,6 +326,7 @@ function putNoteToForceTop(id, nearestID, s_or_b) {
 }
 
 function putNoteToNormal(id, nearestID, s_or_b) {
+    //console.log(nearestID, s_or_b);
     var html = '<div class="note-wrapper">' + $('#note_' + id).parent().html() + '</div>';
     //从置顶内移除
     $('#note_' + id).parent().remove();
@@ -349,4 +350,32 @@ function putNoteToNormal(id, nearestID, s_or_b) {
         ipcRenderer.send('openExternalURL', $(this).attr('href'));
         e.preventDefault();
     });
+}
+
+function forceTopNote(noteid) {
+    notes.every(function (note, i) {
+        if (note.id == noteid) {
+            //处理note文件
+            note.forceTop = true;
+            saveNoteByObj(note);
+            return false;
+        } else {
+            return true;
+        }
+    });
+    refreshNoteList();
+}
+
+function removeForceTopNote(noteid) {
+    notes.every(function (note, i) {
+        if (note.id == noteid) {
+            //处理note文件
+            note.forceTop = false;
+            saveNoteByObj(note);
+            return false;
+        } else {
+            return true;
+        }
+    });
+    refreshNoteList();
 }

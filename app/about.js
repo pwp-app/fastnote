@@ -36,6 +36,7 @@ function createAboutWindow() {
     win_about.on('ready-to-show', () => {
         win_about.show();
         win_about.webContents.send('set-uuid',global.uuid);
+        win_about.webContents.send('os-status',global.isOS64);
     });
 }
 
