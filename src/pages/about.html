@@ -153,6 +153,11 @@
                         $('#about-uuid-text').text('UUID：' + data);
                     }
                 });
+                ipcRenderer.on('os-status', (event,data)=>{
+                    if (data){
+                        $('#about-version').text($('#about-version').text() + ' (x64)');
+                    }
+                });
             </script>
             <div class="about-author">
                 <span>Developed by BackRunner</span>
