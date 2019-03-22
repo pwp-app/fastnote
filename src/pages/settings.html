@@ -68,6 +68,9 @@
 
         var settings;
 
+        //获取indebug
+        global.indebug = remote.getGlobal('indebug');
+
         //读取设置
         storage.get('settings', function (error, data) {
             if (error) {
@@ -85,7 +88,7 @@
         });
 
         //读取noteid
-        storage.get('notesid', function (error, data) {
+        storage.get('notesid'+(global.indebug?'_dev':''), function (error, data) {
             if (error) {
                 console.error(error);
                 initNotesId(null);
@@ -500,9 +503,9 @@
             function _backupNotes(backup_filename) {
                 var notes_backup = new Array();
                 var notes_backup_failed = new Array(); //备份失败的notes
-                if (fs.existsSync(storagePath + '/notes/')) {
+                if (fs.existsSync(storagePath + (global.indebug?'/devTemp':'') + '/notes/')) {
                     try {
-                        var files = fs.readdirSync(storagePath + '/notes/');
+                        var files = fs.readdirSync(storagePath + (global.indebug?'/devTemp':'') + '/notes/');
                     } catch {
                         return '目录读取错误。';
                     }
@@ -510,14 +513,14 @@
                     var notes_count = 0;
                     files.forEach(function (file) {
                         try {
-                            var file_stat = fs.statSync(storagePath + '/notes/' + file);
+                            var file_stat = fs.statSync(storagePath  + (global.indebug?'/devTemp':'')+ '/notes/' + file);
                         } catch (err) {
                             return;
                         }
                         if (!file_stat.isDirectory()) {
                             notes_count++; //计数
                             try {
-                                var data = fs.readFileSync(storagePath + '/notes/' + file, 'utf-8');
+                                var data = fs.readFileSync(storagePath  + (global.indebug?'/devTemp':'')+ '/notes/' + file, 'utf-8');
                             } catch (err) {
                                 notes_backup_failed.push(file);
                                 return;
@@ -609,9 +612,9 @@
                                         }
                                         if (data != undefined) {
                                             //检测便签目录是否是存在的
-                                            if (!fs.existsSync(storagePath + '/notes/')) {
+                                            if (!fs.existsSync(storagePath  + (global.indebug?'/devTemp':'')+ '/notes/')) {
                                                 try {
-                                                    fs.mkdirSync(storagePath + '/notes/');
+                                                    fs.mkdirSync(storagePath  + (global.indebug?'/devTemp':'')+ '/notes/');
                                                 } catch (err) {
                                                     importNotesErrorBox('创建便签目录时出现错误');
                                                     return;
@@ -641,10 +644,10 @@
                                                     return;
                                                 }
                                                 //先判断文件是否存在
-                                                if (fs.existsSync(storagePath + "/notes/" + backup.filename)) {
+                                                if (fs.existsSync(storagePath  + (global.indebug?'/devTemp':'')+ "/notes/" + backup.filename)) {
                                                     //获取修改时间
                                                     try {
-                                                        var note_data = fs.readFileSync(storagePath + "/notes/" + backup.filename);
+                                                        var note_data = fs.readFileSync(storagePath  + (global.indebug?'/devTemp':'')+ "/notes/" + backup.filename);
                                                     } catch {
                                                         recover_count++;
                                                         recover_failed_count++;
@@ -660,7 +663,7 @@
                                                     //检查修改时间
                                                     if (backup.updateTime > mtime) {
                                                         //备份文件较新，直接覆盖
-                                                        fs.writeFile(storagePath + "/notes/" + backup.filename, backup.content, (err) => {
+                                                        fs.writeFile(storagePath  + (global.indebug?'/devTemp':'')+ "/notes/" + backup.filename, backup.content, (err) => {
                                                             recover_count++;
                                                             if (err) {
                                                                 recover_failed_count++;
@@ -684,7 +687,7 @@
                                                         }, function (res) {
                                                             switch (res) {
                                                                 case 0:
-                                                                    fs.writeFile(storagePath + "/notes/" + backup.filename, backup.content, (err) => {
+                                                                    fs.writeFile(storagePath  + (global.indebug?'/devTemp':'')+ "/notes/" + backup.filename, backup.content, (err) => {
                                                                         recover_count++;
                                                                         if (err) {
                                                                             recover_failed_count++;
@@ -704,7 +707,7 @@
                                                     }
                                                 } else {
                                                     //便签文件不存在，直接写入
-                                                    fs.writeFile(storagePath + "/notes/" + backup.filename, backup.content, (err) => {
+                                                    fs.writeFile(storagePath  + (global.indebug?'/devTemp':'')+ "/notes/" + backup.filename, backup.content, (err) => {
                                                         recover_count++;
                                                         if (err) {
                                                             recover_failed_count++;
@@ -937,7 +940,7 @@
         $.getScript('../app/notes_reset.js');
 
         function reloadNotesId() {
-            storage.get('notesid', function (error, data) {
+            storage.get('notesid'+(global.indebug?'_dev':''), function (error, data) {
                 if (error) {
                     console.error(error);
                     initNotesId(null);

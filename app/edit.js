@@ -44,8 +44,10 @@ function createEditWindow(data) {
     })
 
     win_edit.on('ready-to-show', () => {
-        win_edit.show();
         type = 'init';
+        ipc.once('edit-window-ready',()=>{
+            win_edit.show();
+        });
         win_edit.webContents.send('message', {
             type,
             data

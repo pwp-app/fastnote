@@ -75,3 +75,4 @@ gulp publish
 - [ ] 整理/app目录
 - [ ] 新建便签的独立窗口
 - [ ] 循环的优化（改成for，Electron/Chrome下for是最快的）
+- [x] 优化其他窗口打开时的闪屏

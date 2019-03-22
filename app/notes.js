@@ -9,8 +9,17 @@ let notesid = 0;
 //标记
 let isNotesEmpty;
 
+//从主线程获取global
+global.indebug = remote.getGlobal('indebug');
+
+if (global.indebug){
+    if (!fs.existsSync()){
+        fs.mkdirSync(storagePath+'/devTemp/');
+    }
+}
+
 //获取notesid的数据
-storage.get('notesid', function (error, data) {
+storage.get('notesid'+(global.indebug?'_dev':''), function (error, data) {
     if (error) {
         notesid = 0;
         return;
@@ -64,9 +73,9 @@ function putToRecyclebin(id, infoEnabled=true) {
             } else {
                 path = note.rawtime + '.json';
             }
-            if (fs.existsSync(storagePath + '/notes/' + path)) {
-                if (fs.existsSync(storagePath + '/notes/recyclebin/')) {
-                    fs.rename(storagePath + '/notes/' + path, storagePath + '/notes/recyclebin/' + path, function (err) {
+            if (fs.existsSync(storagePath + (global.indebug?'/devTemp':'') + '/notes/' + path)) {
+                if (fs.existsSync(storagePath (global.indebug?'/devTemp':'') + '/notes/recyclebin/')) {
+                    fs.rename(storagePath + (global.indebug?'/devTemp':'') + '/notes/' + path, storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/' + path, function (err) {
                         if (err) {
                             displayInfobar('error', '放入回收站失败');
                             readNoteFiles();
@@ -89,8 +98,8 @@ function putToRecyclebin(id, infoEnabled=true) {
                         }
                     });
                 } else {
-                    fs.mkdirSync(storagePath + '/notes/recyclebin/');
-                    fs.rename(storagePath + '/notes/' + path, storagePath + '/notes/recyclebin/' + path, function (err) {
+                    fs.mkdirSync(storagePath + (global.indebug?'/devTemp':'') + '/notes/recyclebin/');
+                    fs.rename(storagePath + (global.indebug?'/devTemp':'') + '/notes/' + path, storagePath + '/notes/recyclebin/' + path, function (err) {
                         if (err) {
                             if (infoEnabled){
                                 displayInfobar('error', '放入回收站失败');
@@ -155,12 +164,12 @@ function readNoteFiles() {
     //重新读取需要清空notes Array
     clearNoteArray();
     //判断是否存在notes文件夹，不存在代表没有笔记
-    if (!fs.existsSync(storagePath + '/notes/')) {
+    if (!fs.existsSync(storagePath + (global.indebug?'/devTemp':'')+ '/notes/')) {
         showNoteEmpty();
         isNotesEmpty = true;
-        fs.mkdirSync(storagePath + '/notes/');
+        fs.mkdirSync(storagePath +(global.indebug?'/devTemp':'') + '/notes/');
     } else {
-        fs.readdir(storagePath + '/notes/', function (err, fileArr) {
+        fs.readdir(storagePath + (global.indebug?'/devTemp':'') +'/notes/', function (err, fileArr) {
             if (err) {
                 throw (err);
             }
@@ -172,8 +181,8 @@ function readNoteFiles() {
             //执行初始化
             let countOffset = 0;
             fileArr.forEach(element => {
-                if (!fs.statSync(storagePath + '/notes/' + element).isDirectory()) {
-                    fs.readFile(storagePath + '/notes/' + element, 'utf-8', function (err, data) {
+                if (!fs.statSync(storagePath + (global.indebug?'/devTemp':'') + '/notes/' + element).isDirectory()) {
+                    fs.readFile(storagePath + (global.indebug?'/devTemp':'') + '/notes/' + element, 'utf-8', function (err, data) {
                         if (err) {
                             countOffset++;
                             console.error(err);
@@ -212,17 +221,17 @@ function readNoteFiles() {
 function saveNote(notetext) {
     var alltime = time.getAllTime();
     //保存路径
-    var path = storagePath + '/notes/' + alltime.rawTime + '.json';
+    var path = storagePath + (global.indebug?'/devTemp':'') + '/notes/' + alltime.rawTime + '.json';
     //计算文件的offset
     var offset = 0;
     if (fs.existsSync(path)) {
         offset++;
     }
     if (offset > 0) {
-        path = storagePath + '/notes/' + alltime.rawTime + '.' + offset + '.json';
+        path = storagePath + (global.indebug?'/devTemp':'') + '/notes/' + alltime.rawTime + '.' + offset + '.json';
         while (fs.existsSync(path)) {
             offset++;
-            path = storagePath + '/notes/' + alltime.rawTime + '.' + offset + '.json';
+            path = storagePath + (global.indebug?'/devTemp':'') + '/notes/' + alltime.rawTime + '.' + offset + '.json';
         }
     }
     //转换回车
@@ -270,7 +279,7 @@ function saveNote(notetext) {
 //基于note obj保存便签
 function saveNoteByObj(note){
     //保存路径
-    var path = storagePath + '/notes/' + note.rawtime +(typeof note.offset != undefined?note.offset>0?"."+note.offset:"":"")+ '.json';
+    var path = storagePath + (global.indebug?'/devTemp':'') + '/notes/' + note.rawtime +(typeof note.offset != undefined?note.offset>0?"."+note.offset:"":"")+ '.json';
     //计算文件的offset
     var json = JSON.stringify(note);
     fs.writeFile(path, json, 'utf-8', function (err, data) {
@@ -282,7 +291,7 @@ function saveNoteByObj(note){
 
 //基于obj删除note
 function deleteNoteByObj(note){
-    var note_path = storagePath + "/notes/" + note.rawtime + (typeof note.offset != undefined?note.offset>0?"."+note.offset:"":"")+".json";
+    var note_path = storagePath + (global.indebug?'/devTemp':'') + "/notes/" + note.rawtime + (typeof note.offset != undefined?note.offset>0?"."+note.offset:"":"")+".json";
     if (fs.existsSync(note_path)){
         fs.unlink(note_path, function(err){
             if (err){
@@ -297,5 +306,5 @@ function saveNotesId() {
     var data = {
         id: notesid
     };
-    storage.set('notesid', data);
+    storage.set('notesid'+(global.indebug?'_dev':''), data);
 }

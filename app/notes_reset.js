@@ -12,7 +12,7 @@ $('#btn-resetNotes').click(function(){
         detail:'所有已保存的便签、回收站内的便签将全部清除，重置后便签序号从0开始重新计算。'
     }, function(response){
         if (response == 1){
-            storage.remove('notesid', function(error){
+            storage.remove('notesid'+(global.indebug?'_dev':''), function(error){
                 if (error){
                     console.error(error);
                     dialog.showMessageBox({
@@ -22,7 +22,7 @@ $('#btn-resetNotes').click(function(){
                         detail:error
                     });
                 } else {
-                    deleteall(storagePath + '/notes');
+                    deleteall(storagePath  + (global.indebug?'/devTemp':'')+ '/notes');
                     //通知其他窗体重新载入
                     ipcRenderer.send('reloadMainWindow');
                     ipcRenderer.send('reloadRecycleWindow');

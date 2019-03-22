@@ -15,9 +15,9 @@ var notesEdit = {
         var path;
         //检查offset
         if (note.offset>0){
-            path = storagePath+'/notes/'+note.rawtime+'.'+note.offset+'.json';
+            path = storagePath + (global.indebug?'/devTemp':'')+'/notes/'+note.rawtime+'.'+note.offset+'.json';
         } else {
-            path = storagePath+'/notes/'+note.rawtime+'.json';
+            path = storagePath + (global.indebug?'/devTemp':'')+'/notes/'+note.rawtime+'.json';
         }
         //replace char
         note.text = note.text.replace(/\n/g, '<br/>');

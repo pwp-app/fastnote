@@ -67,6 +67,9 @@
                 settings = data;
                 settingsInit(settings);
             }
+            $(document).ready(function(){
+                ipcRenderer.send("about-window-ready");
+            });
         });
 
         function settingsInit(settings) {
