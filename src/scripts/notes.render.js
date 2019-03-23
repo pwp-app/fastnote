@@ -163,7 +163,7 @@ function renderNoteAtTop(id, time, updatetime, text, forceTop) {
 function bindNoteFoldDBL(id) {
     if ($('#note_' + id + ' .note-content').height() > 250) {
         $('#note_' + id + ' .note-content').addClass("note-overheight"); //process css
-        $('#note_' + id + ' .note-content').dblclick(function () {
+        $('#note_' + id + ' .note-content').dblclick(function (e) {
             //process double click
             if ($('#note_' + id + ' .note-content').height() > 250) {
                 $('#note_' + id + ' .note-content').animate({
@@ -178,6 +178,12 @@ function bindNoteFoldDBL(id) {
                     height: animate_height
                 });
                 $('#note_' + id + ' .note-content').removeClass("note-overheight");
+            }
+        });
+        //在双击折叠/展开时不选中文本
+        $('#note_' + id + ' .note-content p').mousedown(function (e){
+            if (e.detail > 1){
+                e.preventDefault();
             }
         });
     } else {

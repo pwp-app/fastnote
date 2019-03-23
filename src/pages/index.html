@@ -496,12 +496,18 @@
                     //阻止事件冒泡到父元素
                     e.stopPropagation();
                 });
+                //取消长按的计时器
                 $('.note-wrapper').off('mouseup').on('mouseup', function (e){
                     if (e.which == 1){
                         clearTimeout(noteLongClickTimeout);
                     }
                 });
             }
+
+            //如果移动了鼠标则取消长按计时
+            $('body').on('mousemove',function(e){
+                clearTimeout(noteLongClickTimeout);
+            });
 
             $(document).ready(function(){
                 //绑定note-list的鼠标点击
@@ -541,8 +547,13 @@
             <label id="lbl-newnote" title="使用 Ctrl+Enter 提交便签">新建便签</label>
             <!-- fold -->
             <div class="newnote-fold">
-                <button class="br-btn btn-noback bottombar-trigger" id="btn-newnote-fold">
-                    <i class="fa fa-chevron-down"></i>
+                <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-fold">
+                    <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="newnote-info">
+                <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-info">
+                    <i class= "fa fa-info-circle" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
