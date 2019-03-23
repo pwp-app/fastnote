@@ -96,6 +96,7 @@ function renderNote(id, time, updatetime, text, forceTop) {
     } else {
         $('.note-list-normal').append($(html));
     }
+    bindNoteFoldDBL(id);
     //open external on os default webbrowser
     $('#note_' + id + ' a').click(function (e) {
         ipcRenderer.send('openExternalURL', $(this).attr('href'));
@@ -299,62 +300,6 @@ function deleteNoteFromArr(id) {
             return false;
         }
         return true; //every是true继续循环 false跳出
-    });
-}
-
-//将便签渲染到置顶
-function putNoteToForceTop(id, nearestID, s_or_b) {
-    //获取便签的内容
-    var html = '<div class="note-wrapper">' + $('#note_' + id).parent().html() + '</div>';
-    //移除normal列表中的便签
-    $('#note_' + id).parent().remove();
-    //添加到forceTop
-    if (arguments.length == 3) {
-        if (s_or_b == "s") {
-            $('#note_' + nearestID).parent().before($(html));
-        } else if (s_or_b == "b") {
-            $('#note_' + nearestID).parent().after($(html));
-        }
-    } else {
-        $('.note-list-forceTop').prepend($(html));
-    }
-    $('#note_' + id).addClass('note-forceTop');
-    //插入图标
-    var icon = '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
-    $('#note_' + id + " time").before($(icon));
-    //bind events
-    bindNoteClickEvent();
-    bindNoteFoldDBL(id);
-    $('#note_' + id + ' a').click(function (e) {
-        ipcRenderer.send('openExternalURL', $(this).attr('href'));
-        e.preventDefault();
-    });
-}
-
-function putNoteToNormal(id, nearestID, s_or_b) {
-    //console.log(nearestID, s_or_b);
-    var html = '<div class="note-wrapper">' + $('#note_' + id).parent().html() + '</div>';
-    //从置顶内移除
-    $('#note_' + id).parent().remove();
-    //添加到normal
-    if (arguments.length == 3) {
-        if (s_or_b == "s") {
-            $('#note_' + nearestID).parent().before($(html));
-        } else if (s_or_b == "b") {
-            $('#note_' + nearestID).parent().after($(html));
-        }
-    } else {
-        $('.note-list-normal').prepend($(html));
-    }
-    //去除置顶相关的类和图表
-    $('#note_' + id).removeClass('note-forceTop');
-    $('#note_' + id).children('.note-header').children('i').remove();
-    //rebind events
-    bindNoteClickEvent();
-    bindNoteFoldDBL(id);
-    $('#note_' + id + ' a').click(function (e) {
-        ipcRenderer.send('openExternalURL', $(this).attr('href'));
-        e.preventDefault();
     });
 }
 

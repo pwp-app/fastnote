@@ -184,13 +184,7 @@ function readNoteFiles() {
                                 addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.text, note_json.offset, note_json.timezone);
                                 if (notes.length + countOffset == fileArr.length) {
                                     //结束文件遍历，渲染列表
-                                    refreshNoteList(function(){
-                                        $(document).ready(function(){
-                                            notes.forEach(function (note) {
-                                                bindNoteFoldDBL(note.id);
-                                            });
-                                        });
-                                    });
+                                    refreshNoteList();
                                     //显示列表
                                     showNoteList();
                                 }
