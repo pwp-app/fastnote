@@ -13,7 +13,7 @@ let isNotesEmpty;
 global.indebug = remote.getGlobal('indebug');
 
 if (global.indebug){
-    if (!fs.existsSync()){
+    if (!fs.existsSync(storagePath+'/devTemp/')){
         fs.mkdirSync(storagePath+'/devTemp/');
     }
 }
@@ -74,7 +74,7 @@ function putToRecyclebin(id, infoEnabled=true) {
                 path = note.rawtime + '.json';
             }
             if (fs.existsSync(storagePath + (global.indebug?'/devTemp':'') + '/notes/' + path)) {
-                if (fs.existsSync(storagePath (global.indebug?'/devTemp':'') + '/notes/recyclebin/')) {
+                if (fs.existsSync(storagePath + (global.indebug?'/devTemp':'') + '/notes/recyclebin/')) {
                     fs.rename(storagePath + (global.indebug?'/devTemp':'') + '/notes/' + path, storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/' + path, function (err) {
                         if (err) {
                             displayInfobar('error', '放入回收站失败');

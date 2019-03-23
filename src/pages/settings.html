@@ -239,6 +239,9 @@
 
         //初始化Notesid
         function initNotesId(id){
+            if (typeof id == 'undefined'){
+                id = 0;
+            }
             $(document).ready(function(){
                 id = id - 1;    //存储的id是当前最后一个id+1
                 if (typeof id == 'number' && id >= 0){
