@@ -579,6 +579,9 @@
             <textarea id="note-text"></textarea>
         </div>
     </div>
+    <script>
+        
+    </script>
     <div class="container-bottombar">
         <div class="trigger-mainmenu">
             <button class="br-btn btn-noback bottombar-trigger" id="btn-mainmenu-trigger">
@@ -596,7 +599,7 @@
 
     <script>
         //折叠开关
-        let isNoteFolded = false;
+        var isNoteFolded = false;
         //init
         storage.get('newnoteconfig', function (err, data) {
             if (err || typeof (data) == 'undefined' || data == null || data == "") {
