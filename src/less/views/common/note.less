@@ -69,6 +69,54 @@
     display: inline-flex;
 }
 
+.note-title{
+    font-size: 14px;
+    margin-left: 8px;
+}
+
+//title的自定义标签样式
+titlesusp1, titlesusp2,titlesusp3{
+    display: none;
+}
+
+@media(max-width: 1300px){
+    titlep4{
+        display: none;
+    }
+    titlesusp3{
+        display: initial;
+    }
+}
+
+@media(max-width: 1135px){
+    titlep3{
+        display: none;
+    }
+    titlesusp3{
+        display: none;
+    }
+    titlesusp2{
+        display: initial;
+    }
+}
+
+@media(max-width: 890px){
+    titlep2{
+        display: none;
+    }
+    titlesusp2{
+        display: none;
+    }
+    titlesusp1{
+        display: initial;
+    }
+}
+@media(max-width: 660px){
+    .note-title{
+        display: none;
+    }
+}
+
 .note-no {
     font-size: 15px;
 }

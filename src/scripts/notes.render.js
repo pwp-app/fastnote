@@ -55,10 +55,24 @@ function clearNoteList() {
 var reg_url = /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
 
 //渲染一条笔记
-function renderNote(id, time, updatetime, text, forceTop) {
+function renderNote(id, time, updatetime, title, text, forceTop) {
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '"><div class="note-header"><p class="note-no">';
-    html += '#' + id + '</p>';
+        '" data-id="' + id + '"><div class="note-header"><span class="note-no">';
+    html += '#' + id + '</span>';
+    //渲染note-title
+    if (typeof title != 'undefined'){
+        var titletext = "";
+        if (title.length > 50){
+            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18,32)+'</titlep2><titlesusp2>...</titlesusp2><titlep3>'+title.substring(32,50)+'</titlep3><titlesusp3>...</titlesusp3><titlep4>'+ title.substring(50)+'</titlep4>';
+        } else if (title.length>32){
+            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18,32)+'<titlesusp2>...</titlesusp2><titlep3>'+title.substring(32)+'</titlep3>';
+        } else if (title.length>16){
+            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18)+'</titlep2>';
+        } else {
+            titletext = titletext;
+        }
+        html += '<span class="note-title">'+titletext+'</span>';
+    }
     //选择性显示时间
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
@@ -104,11 +118,25 @@ function renderNote(id, time, updatetime, text, forceTop) {
     });
 }
 //在顶部渲染Note
-function renderNoteAtTop(id, time, updatetime, text, forceTop) {
+function renderNoteAtTop(id, time, updatetime, title, text, forceTop) {
     //构造html
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '"><div class="note-header"><p class="note-no">';
-    html += '#' + id + '</p>';
+        '" data-id="' + id + '"><div class="note-header"><span class="note-no">';
+    html += '#' + id + '</span>';
+    //渲染note-title
+    if (typeof title != 'undefined'){
+        var titletext = "";
+        if (title.length > 50){
+            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18,32)+'</titlep2><titlesusp2>...</titlesusp2><titlep3>'+title.substring(32,50)+'</titlep3><titlesusp3>...</titlesusp3><titlep4>'+ title.substring(50)+'</titlep4>';
+        } else if (title.length>32){
+            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18,32)+'<titlesusp2>...</titlesusp2><titlep3>'+title.substring(32)+'</titlep3>';
+        } else if (title.length>16){
+            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18)+'</titlep2>';
+        } else {
+            titletext = titletext;
+        }
+        html += '<span class="note-title">'+titletext+'</span>';
+    }
     //置顶标志
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
@@ -193,13 +221,14 @@ function bindNoteFoldDBL(id) {
 }
 
 //添加笔记至Array
-function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, text, offset, timezone, forceTop) {
+function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, text, offset, timezone, forceTop) {
     var note = {
         id: id,
         time: time,
         rawtime: rawtime,
         updatetime: updatetime,
         updaterawtime: updaterawtime,
+        title: title,
         text: text,
         offset: offset,
         timezone: timezone,
@@ -228,7 +257,7 @@ function refreshNoteList(callback) {
             }
             sortNotes(sort_mode); //排序
             notes.forEach(function (note) {
-                renderNote(note.id, note.time, note.updatetime, note.text, note.forceTop);
+                renderNote(note.id, note.time, note.updatetime, note.title, note.text, note.forceTop);
             });
             //绑定Note的点击事件
             bindNoteClickEvent();
@@ -241,7 +270,7 @@ function refreshNoteList(callback) {
     } else {
         sortNotes(sort_mode); //排序
         notes.forEach(function (note) {
-            renderNote(note.id, note.time, note.updatetime, note.text, note.forceTop);
+            renderNote(note.id, note.time, note.updatetime, note.title, note.text, note.forceTop);
         });
         //绑定Note的点击事件
         bindNoteClickEvent();
