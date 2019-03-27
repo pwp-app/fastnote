@@ -18,7 +18,8 @@ function createAboutWindow() {
         maximazable: false,
         minHeight: 0,
         useContentSize: true,
-        show: false
+        show: false,
+        transparent: true
     };
     //标题栏的选用
     if (process.platform == 'darwin')

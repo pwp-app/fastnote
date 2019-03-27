@@ -18,7 +18,8 @@ function createEditWindow(data) {
         height: 430,
         minWidth:480,
         minHeight:200,
-        show: false
+        show: false,
+        transparent: true
     };
     //标题栏的选用
     if (process.platform == 'darwin')
