@@ -167,12 +167,20 @@
     </div>
     <script>
         var nowNoteId = 0;
+        var text_edited = false;
+
+        //文本是否编辑过
+        $("#text-edit").one('change',function(){
+            text_edited = true;
+        });
 
         $("#edit-btn-save").click(function () {
             var text = $("#text-edit").val().trim();
             if (text != null && text != "") {
-                note.text = text;
-                ipcRenderer.send('update-edit-note', note);
+                if (text_edited){
+                    note.text = text;
+                    ipcRenderer.send('update-edit-note', note);
+                }
                 window.close();
             } else {
                 //error
@@ -183,13 +191,16 @@
         var isComboKey = false;
         $("#text-edit").keydown(function (e) {
             var ctrlKey = e.ctrlKey || e.metaKey;
-            if (ctrlKey && e.keyCode == 13) {
+            //ctrl+enter 或 ctrl+s
+            if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
                 var text = $("#text-edit").val().trim();
                 if (!isComboKey) {
                     isComboKey = true;
                     if (text != null && text != "") {
-                        note.text = text;
-                        ipcRenderer.send('update-edit-note', note);
+                        if (text_edited){
+                            note.text = text;
+                            ipcRenderer.send('update-edit-note', note);
+                        }
                         isComboKey = false;
                         window.close();
                     } else {
