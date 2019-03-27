@@ -107,7 +107,6 @@ function putToRecyclebin(id, infoEnabled=true) {
                             readNoteFiles();
                             throw (err);
                         } else {
-                            console.log(id);
                             //从数组里删除
                             deleteNoteFromArr(id);
                             //动画

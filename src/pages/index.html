@@ -513,7 +513,6 @@
 
             //如果移动了鼠标则取消长按计时
             $('body').on('mousemove',function(e){
-                console.log(1);
                 clearTimeout(noteLongClickTimeout);
             });
 
@@ -561,26 +560,54 @@
                 </div>
             </div>
         </div>
-        <div class="lbl">
-            <label id="lbl-newnote" title="使用 Ctrl+Enter 提交便签">新建便签</label>
-            <!-- fold -->
-            <div class="newnote-fold">
-                <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-fold">
-                    <i class="fa fa-chevron-down" aria-hidden="true"></i>
-                </button>
+        <div class="newnote-main">
+            <div class="lbl">
+                <label id="lbl-newnote" title="使用 Ctrl+Enter 提交便签">新建便签</label>
+                <!-- fold -->
+                <div class="newnote-fold">
+                    <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-fold">
+                        <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="newnote-info">
+                    <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-info">
+                        <i class= "fa fa-info-circle" aria-hidden="true"></i>
+                    </button>
+                </div>
             </div>
-            <div class="newnote-info">
-                <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-info">
-                    <i class= "fa fa-info-circle" aria-hidden="true"></i>
-                </button>
+            <div class="control">
+                <textarea id="note-text"></textarea>
             </div>
-        </div>
-        <div class="control">
-            <textarea id="note-text"></textarea>
         </div>
     </div>
     <script>
-        
+        var newnote_info_opened = false;
+        //绑定btn-newnote-info
+        $('#btn-newnote-info').click(function(){
+            if (newnote_info_opened){
+                $('.newnote-info-float').animateCss('fadeOutDown faster',function(){
+                    $('.newnote-info-float').css('display','none');
+                    newnote_info_opened = false;
+                });
+            } else {
+                $('.newnote-info-float').css('display','block');
+                $('.newnote-info-float').animateCss('fadeInUp faster',function(){
+                    newnote_info_opened = true;
+                });
+            }
+        });
+        $('.container-newnote').click(function(){
+            if (newnote_info_opened){
+                $('.newnote-info-float').animateCss('fadeOutDown faster',function(){
+                    $('.newnote-info-float').css('display','none');
+                    newnote_info_opened = false;
+                });
+            }
+        });
+        //newnote-info-float 阻止冒泡到上面的事件
+        $('.newnote-info-float').click(function(e){
+            e.stopPropagation();
+        })
     </script>
     <div class="container-bottombar">
         <div class="trigger-mainmenu">
