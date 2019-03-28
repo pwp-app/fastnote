@@ -14,6 +14,7 @@ var notesEdit = {
         //保存路径
         var path;
         //检查offset
+        console.log(global.indebug);
         if (note.offset>0){
             path = storagePath + (global.indebug?'/devTemp':'')+'/notes/'+note.rawtime+'.'+note.offset+'.json';
         } else {

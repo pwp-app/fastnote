@@ -285,12 +285,16 @@
             ipcRenderer.send('readyToReloadEditWindow', note);
         });
 
+        //窗口大小变化
         $(window).resize(function () {
+            resizeContent();
+        });
+        function resizeContent(){
             var h_container = $(window).height() - $('.container-titlebar').height() - 48;
             $('.container-edit').css('height', h_container);
             var h_textedit = h_container - $('.container-edit-header').height() - $('.container-edit-info').height() - 39;
             $('#text-edit').css('height', h_textedit);
-        });
+        }
 
         //右键菜单相关事件绑定
         $('#text-edit').mousedown(function (e) {
