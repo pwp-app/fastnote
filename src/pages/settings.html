@@ -117,9 +117,9 @@
             //build css
             if (settings == null) {
                 //read error
-                $('#main-style').attr('href','static/main.default.css');
+                $('#main-style').attr('href','static/main.blackwhite.css');
 
-                initTheme('default');
+                initTheme('blackwhite');
                 initFont('Source Han Sans CN');
                 //初始化设置
                 //init auto update
@@ -137,8 +137,8 @@
                     initTheme(settings.theme);
                     $('#main-style').attr('href','static/main.'+settings.theme+'.css');
                 } else {
-                    initTheme('default');
-                    $('#main-style').attr('href','static/main.default.css');
+                    initTheme('blackwhite');
+                    $('#main-style').attr('href','static/main.blackwhite.css');
                 }
 
                 //init font family
@@ -239,6 +239,9 @@
 
         //初始化Notesid
         function initNotesId(id){
+            if (typeof id == 'undefined'){
+                id = 0;
+            }
             $(document).ready(function(){
                 id = id - 1;    //存储的id是当前最后一个id+1
                 if (typeof id == 'number' && id >= 0){
@@ -380,8 +383,8 @@
                 <div></div>
                 <div class="settings-item-child settings-item-control">
                     <select class="form-control settings-select" id="select-themes">
-                        <option value="default">默认（蓝白）</option>
-                        <option value="blackwhite">黑白</option>
+                        <option value="blackwhite">黑白（默认）</option>
+                        <option value="default">蓝白</option>
                     </select>
                 </div>
             </div>
@@ -456,7 +459,6 @@
                             //保存备份
                             try {
                                 let t = _backupNotes(filename);
-                                console.log(t);
                                 if (typeof t == 'string') {
                                     //备份失败
                                     backupNotesErrorBox(t);

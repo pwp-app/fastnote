@@ -67,11 +67,69 @@
 
 .newnote-fold{
     float: right;
-    display: block;
+    display: inline-block;
     width: 32px;
     height:24px;
     text-align: right;
     right: 0px;
     margin-right: -5px;
-    margin-bottom: 2px;
+}
+
+.newnote-info{
+    float: right;
+    display: inline-block;
+    width: 32px;
+    height:24px;
+    text-align: right;
+    right: 0px;
+    margin-right: -5px;
+}
+
+.newnote-trigger{
+    color: @color-trigger-primary;
+}
+.newnote-trigger:hover{
+    color: @color-trigger-hover-primary;
+}
+
+//浮动信息框
+.newnote-info-float{
+    width: 320px;
+    height: auto;
+    margin: 10px;
+    padding: 8px 12px;
+    position: absolute;
+    right: 52px;
+    background: @color-primary;
+    border: @color-newnote-float-border;
+    display: none;
+}
+
+.newnote-info-item{
+    display:flex;
+}
+
+.newnote-info-item label{
+    color: @color-text-primary;
+    font-size: 14px;
+    line-height: 28px;
+    margin-bottom: 0;
+    .no-select-and-drag();
+}
+
+.newnote-info-item input{
+    height: 28px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: @color-control-text;
+    background: @color-textarea-background;
+    border:none;
+}
+
+.newnote-info-item input:focus{
+    font-size: 14px;
+    color: @color-control-text;
+    background: @color-textarea-background;
+    border:none;
+    box-shadow: none;
 }

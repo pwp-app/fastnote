@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Fastnote - 编辑</title>
+    <title>编辑</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--import requirements-->
     <script>
@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
     <script src="static/han.simple.js"></script>
+    <script src="static/mousetrap.min.js"></script>
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -92,7 +93,7 @@
             //build css
             if (settings == null) {
                 //read error
-                $('#main-style').attr('href','static/main.default.css');
+                $('#main-style').attr('href','static/main.blackwhite.css');
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
 
@@ -102,7 +103,7 @@
                 if (typeof settings.theme != 'undefined'){
                     $('#main-style').attr('href','static/main.'+settings.theme+'.css');
                 } else {
-                    $('#main-style').attr('href','static/main.default.css');
+                    $('#main-style').attr('href','static/main.blackwhite.css');
                 }
 
                 if (typeof settings.fontfamily != 'undefined') {
@@ -155,7 +156,17 @@
     <!-- main -->
     <div class="container-edit">
         <div class="container-edit-header">
-            <span id="edit-header-time">创建时间：</span>
+            <span id="edit-header-time"></span>
+        </div>
+        <div class="container-edit-info">
+            <div class="edit-info-item">
+                <div class="edit-info-col-lbl">
+                    <label>标题</label>
+                </div>
+                <div class="edit-info-col-control">
+                    <input class="form-control" id="input-title" maxlength="64" placeholder="(无标题)">
+                </div>
+            </div>
         </div>
         <textarea class="text-edit" id="text-edit"></textarea>
     </div>
@@ -167,42 +178,66 @@
     </div>
     <script>
         var nowNoteId = 0;
+        var text_edited = false;
 
-        $("#edit-btn-save").click(function () {
-            var text = $("#text-edit").val().trim();
-            if (text != null && text != "") {
-                note.text = text;
-                ipcRenderer.send('update-edit-note', note);
-                window.close();
-            } else {
-                //error
-                displayInfobar("error", "笔记内容不能为空");
-            }
+        //文本是否编辑过
+        $("#text-edit").one('input',function(){
+            text_edited = true;
         });
 
-        var isComboKey = false;
-        $("#text-edit").keydown(function (e) {
-            var ctrlKey = e.ctrlKey || e.metaKey;
-            if (ctrlKey && e.keyCode == 13) {
-                var text = $("#text-edit").val().trim();
-                if (!isComboKey) {
-                    isComboKey = true;
-                    if (text != null && text != "") {
-                        note.text = text;
-                        ipcRenderer.send('update-edit-note', note);
-                        isComboKey = false;
-                        window.close();
-                    } else {
-                        isComboKey = false;
-                        displayInfobar("error", "便签内容不能为空");
-                    }
-                }
-            }
+        $("#input-title").one('input',function(){
+            text_edited = true;
+        });
+        //footer按钮事件绑定
+        $("#edit-btn-save").click(function () {
+            submitSave();
         });
 
         $("#edit-btn-cancel").click(function () {
             window.close();
         });
+
+        var isComboKey = false;
+        Mousetrap.bind(['ctrl+s','ctrl+enter'],function(){
+            submitSave();
+            return false;
+        });
+
+        $("#text-edit").keydown(function (e) {
+            var ctrlKey = e.ctrlKey || e.metaKey;
+            //ctrl+enter 或 ctrl+s
+            if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
+                submitSave();
+            }
+        });
+
+        $("#input-title").keydown(function (e) {
+            var ctrlKey = e.ctrlKey || e.metaKey;
+            //ctrl+enter 或 ctrl+s
+            if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
+                submitSave();
+            }
+        });
+
+        function submitSave(){
+            var text = $("#text-edit").val().trim();
+            var title = $('#input-title').val().trim();
+            if (text != null && text != "") {
+                if (text_edited){
+                    note.text = text;
+                    if (title.length > 0){
+                        note.title = title;
+                    } else {
+                        note.title = undefined;
+                    }
+                    ipcRenderer.send('update-edit-note', note);
+                }
+                window.close();
+            } else {
+                //error
+                displayInfobar("error", "笔记内容不能为空");
+            }
+        }
 
         ipcRenderer.on('message', (event, {
             type,
@@ -210,7 +245,6 @@
         }) => {
             switch (type) {
                 case 'init':
-                    console.log(1);
                     note = data;
                     nowNoteId = note.id;
                     //初始化textarea
@@ -219,7 +253,25 @@
                     $("#edit-title").append(" #" + note.id);
                     $("title").append(" - #" + note.id);
                     //初始化header
-                    $("#edit-header-time").append(note.time);
+                    if (typeof note.updatetime == 'undefined'){
+                        $("#edit-header-time").append('创建时间：'+note.time);
+                    } else {
+                        $("#edit-header-time").append('最近一次编辑：'+note.updatetime);
+                    }
+                    //初始化title
+                    if (typeof note.title != 'undefined'){
+                        if (note.title.length>20){
+                            var t = ' '+note.title.substring(0,20)+'...';
+                            $("#edit-title").append(t);
+                            $("title").append(t);
+                        } else {
+                            $("#edit-title").append(note.title);
+                            $("title").append(note.title);
+                        }
+                        if (note.title.length > 0){
+                            $('#input-title').val(note.title);
+                        }
+                    }
                     break;
                 case 'note-recycled':
                     if (data.id == nowNoteId){
@@ -233,12 +285,16 @@
             ipcRenderer.send('readyToReloadEditWindow', note);
         });
 
+        //窗口大小变化
         $(window).resize(function () {
-            var h_container = $(window).height() - $('.container-titlebar').height() - 40;
-            $('.container-edit').css('height', h_container);
-            var h_textedit = h_container - $('.container-edit-header').height() - 34;
-            $('#text-edit').css('height', h_textedit);
+            resizeContent();
         });
+        function resizeContent(){
+            var h_container = $(window).height() - $('.container-titlebar').height() - 48;
+            $('.container-edit').css('height', h_container);
+            var h_textedit = h_container - $('.container-edit-header').height() - $('.container-edit-info').height() - 39;
+            $('#text-edit').css('height', h_textedit);
+        }
 
         //右键菜单相关事件绑定
         $('#text-edit').mousedown(function (e) {

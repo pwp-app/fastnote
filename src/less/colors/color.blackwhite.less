@@ -20,6 +20,8 @@
 //text
 @color-text-primary: rgb(213,210,205);
 @color-text-secondary: rgb(150,150,150);
+@color-control-text: @color-text-primary;
+@color-control-placeholder: darken(@color-control-text,10%);
 @color-textarea-color: @color-text-primary;
 @color-textarea-background: @color-notelist-background;
 
@@ -43,6 +45,7 @@
 @color-note-empty: @color-text-primary;
 @color-note-selected: darken(@color-notelist-background, 3%);
 @color-notelist-background: #2e2e2e;
+@color-newnote-float-border: 1px solid #4e4e4e;
 
 //toast
 @color-toast-bg: #2e2e2e;
@@ -51,6 +54,7 @@
 
 //bottombar
 @color-trigger-primary: @color-text-primary;
+@color-trigger-hover-primary: lighten(@color-trigger-primary, 15%);
 
 //about
 @color-about-primary: @color-text-primary;
@@ -66,3 +70,6 @@
 //updater
 @color-updater-text: @color-text-primary;
 @color-updater-text-red: @color-error;
+
+//edit
+@color-edit-top-border: #2f2f2f;

@@ -4,7 +4,7 @@
     display: block;
     background-color: @color-primary;
     padding: 12px 13px;
-    border-top: solid 1px @color-secondary;
+    border-top: solid 1px @color-edit-top-border;
 }
 .container-edit span{
     font-size:13px;
@@ -12,7 +12,7 @@
 }
 .container-edit textarea{
     width: 100%;
-    height: 300px;
+    height: 256px;
     margin-top:8px;
     text-align: justify;
     border: 0;
@@ -51,18 +51,19 @@
 }
 .container-footer{
     width: 100%;
-    height:40px;
+    height:48px;
     position: absolute;
     display: block;
     background-color: @color-primary;
     bottom: 0px;
-    padding: 0 12px;
+    padding: 8px 12px;
 }
 .container-footer button{
     float: right;
     font-size: 14px;
     margin-left: 8px;
-    border:solid 1px @color-white;
+    color: @color-text-primary;
+    border:solid 1px @color-text-primary;
     text-align: center;
     padding:3px 13px !important;
     border-radius: 5px !important;
@@ -74,4 +75,56 @@
 }
 #edit-header-time{
     .no-select-and-drag();
+}
+
+//info
+.container-edit-info{
+    margin: 12px 0px;
+}
+.edit-info-item{
+    display:flex;
+}
+.edit-info-col-lbl{
+    .br-col-percent(3%);
+    @media(max-width: 1920px){
+        .br-col-percent(6%);
+    }
+    @media(max-width: 1100px){
+        .br-col-percent(10%);
+    }
+}
+.edit-info-col-control{
+    .br-col-percent(97%);
+    @media(max-width: 1920px){
+        .br-col-percent(94%);
+    }
+    @media(max-width: 1100px){
+        .br-col-percent(90%);
+    }
+}
+
+.edit-info-item label{
+    color: @color-text-primary;
+    font-size: 13px;
+    margin-bottom: 0;
+    line-height: 28px;
+    .no-select-and-drag();
+}
+.edit-info-item input{
+    height: 28px;
+    padding: 8px 10px;
+    font-size: 14px;
+    color: @color-control-text;
+    background: @color-textarea-background;
+    border:none;
+}
+.edit-info-item input::-webkit-input-placeholder { /* WebKit browsers */
+    color: @color-control-placeholder;
+}
+.edit-info-item input:focus{
+    font-size: 14px;
+    color: @color-control-text;
+    background: @color-textarea-background;
+    border:none;
+    box-shadow: none;
 }

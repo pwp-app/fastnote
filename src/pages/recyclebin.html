@@ -96,7 +96,7 @@
             //build css
             if (settings == null) {
                 //read error
-                $('#main-style').attr('href', 'static/main.default.css');
+                $('#main-style').attr('href', 'static/main.blackwhite.css');
 
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
@@ -107,7 +107,7 @@
                 if (typeof settings.theme != 'undefined') {
                     $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
                 } else {
-                    $('#main-style').attr('href', 'static/main.default.css');
+                    $('#main-style').attr('href', 'static/main.blackwhite.css');
                 }
 
                 if (typeof settings.fontfamily != 'undefined') {

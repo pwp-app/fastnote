@@ -20,6 +20,8 @@
 //text
 @color-text-primary: @color-white;
 @color-text-secondary: @color-black;
+@color-control-text: @color-text-secondary;
+@color-control-placeholder: lighten(@color-control-text,20%);
 @color-textarea-color: @color-text-secondary;
 @color-textarea-background: @color-secondary;
 
@@ -43,9 +45,11 @@
 @color-note-selected: @color-lightblack;
 @color-notelist-background: @color-white;
 @color-note-empty: @color-text-secondary;
+@color-newnote-float-border: 1px solid darken(@color-primary, 10%);
 
 //bottombar
 @color-trigger-primary: @color-secondary;
+@color-trigger-hover-primary: darken(@color-trigger-primary, 10%);
 
 //toast
 @color-toast-bg: @color-primary;
@@ -66,3 +70,6 @@
 //updater
 @color-updater-text: @color-darkgray;
 @color-updater-text-red: @color-red;
+
+//edit
+@color-edit-top-border: @color-secondary;

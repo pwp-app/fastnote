@@ -13,7 +13,7 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = true; //debug trigger
+global.indebug = false; //debug trigger
 global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
@@ -41,7 +41,8 @@ function createWindow() {
     height: 800,
     minWidth: 480,
     minHeight: 600,
-    show: false
+    show: false,
+    transparent: true
   };
   //标题栏的选用
   if (process.platform == 'darwin')

@@ -13,7 +13,7 @@ let isNotesEmpty;
 global.indebug = remote.getGlobal('indebug');
 
 if (global.indebug){
-    if (!fs.existsSync()){
+    if (!fs.existsSync(storagePath+'/devTemp/')){
         fs.mkdirSync(storagePath+'/devTemp/');
     }
 }
@@ -48,8 +48,10 @@ textarea.keydown(function (e) {
     if (ctrlKey && e.keyCode == 13 && !isComboKeyDown) {
         isComboKeyDown = true;
         var text = textarea.val().trim();
-        if (text != null && text != "")
-            saveNote(text);
+        var title = $('#input-note-title').val().trim();
+        if (text != null && text != ""){
+            saveNote(text, title);
+        }
     }
 });
 //按键弹起解除锁
@@ -74,7 +76,7 @@ function putToRecyclebin(id, infoEnabled=true) {
                 path = note.rawtime + '.json';
             }
             if (fs.existsSync(storagePath + (global.indebug?'/devTemp':'') + '/notes/' + path)) {
-                if (fs.existsSync(storagePath (global.indebug?'/devTemp':'') + '/notes/recyclebin/')) {
+                if (fs.existsSync(storagePath + (global.indebug?'/devTemp':'') + '/notes/recyclebin/')) {
                     fs.rename(storagePath + (global.indebug?'/devTemp':'') + '/notes/' + path, storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/' + path, function (err) {
                         if (err) {
                             displayInfobar('error', '放入回收站失败');
@@ -107,7 +109,6 @@ function putToRecyclebin(id, infoEnabled=true) {
                             readNoteFiles();
                             throw (err);
                         } else {
-                            console.log(id);
                             //从数组里删除
                             deleteNoteFromArr(id);
                             //动画
@@ -190,16 +191,10 @@ function readNoteFiles() {
                         var note_json = data;
                         if (typeof (note_json) != 'undefined' && note_json != null) {
                             note_json = JSON.parse(note_json);
-                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop);
+                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.title, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop);
                             if (notes.length + countOffset == fileArr.length) {
                                 //结束文件遍历，渲染列表
-                                refreshNoteList(function(){
-                                    $(document).ready(function(){
-                                        notes.forEach(function (note) {
-                                            bindNoteFoldDBL(note.id);
-                                        });
-                                    });
-                                });
+                                refreshNoteList();
                                 //显示列表
                                 showNoteList();
                             }
@@ -218,7 +213,7 @@ function readNoteFiles() {
 }
 
 //保存note为json
-function saveNote(notetext) {
+function saveNote(notetext, notetitle) {
     var alltime = time.getAllTime();
     //保存路径
     var path = storagePath + (global.indebug?'/devTemp':'') + '/notes/' + alltime.rawTime + '.json';
@@ -243,6 +238,7 @@ function saveNote(notetext) {
         rawtime: alltime.rawTime,
         timezone: time.getTimeZone(),
         text: notetext,
+        title: (notetitle.length>0?notetitle:undefined),
         offset: offset,
         forceTop: false
     };
@@ -265,7 +261,7 @@ function saveNote(notetext) {
             showNoteList();
         }
         //在顶部渲染Note
-        renderNoteAtTop(note.id, note.time, note.updatetime, note.text, note.forceTop);
+        renderNoteAtTop(note.id, note.time, note.updatetime, note.title, note.text, note.forceTop);
         //绑定Note的点击事件
         bindNoteClickEvent();
     } catch (e) {

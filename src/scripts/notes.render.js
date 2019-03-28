@@ -55,10 +55,24 @@ function clearNoteList() {
 var reg_url = /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
 
 //渲染一条笔记
-function renderNote(id, time, updatetime, text, forceTop) {
+function renderNote(id, time, updatetime, title, text, forceTop) {
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '"><div class="note-header"><p class="note-no">';
-    html += '#' + id + '</p>';
+        '" data-id="' + id + '"><div class="note-header"><span class="note-no">';
+    html += '#' + id + '</span>';
+    //渲染note-title
+    var titletext = "";
+    if (typeof title != 'undefined'){
+        if (title.length > 50){
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'</titlep2><titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32,50),0.12)+'</titlep3><titlesusp3>...</titlesusp3><titlep4>'+insert_spacing(title.substring(50),0.12)+'</titlep4>';
+        } else if (title.length>32){
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'<titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32),0.12)+'</titlep3>';
+        } else if (title.length>16){
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18), 0.12)+'</titlep2>';
+        } else {
+            titletext = insert_spacing(title,0.12);
+        }
+    }
+    html += '<span class="note-title">'+titletext+'</span>';
     //选择性显示时间
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
@@ -96,6 +110,7 @@ function renderNote(id, time, updatetime, text, forceTop) {
     } else {
         $('.note-list-normal').append($(html));
     }
+    bindNoteFoldDBL(id);
     //open external on os default webbrowser
     $('#note_' + id + ' a').click(function (e) {
         ipcRenderer.send('openExternalURL', $(this).attr('href'));
@@ -103,11 +118,25 @@ function renderNote(id, time, updatetime, text, forceTop) {
     });
 }
 //在顶部渲染Note
-function renderNoteAtTop(id, time, updatetime, text, forceTop) {
+function renderNoteAtTop(id, time, updatetime, title, text, forceTop) {
     //构造html
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '"><div class="note-header"><p class="note-no">';
-    html += '#' + id + '</p>';
+        '" data-id="' + id + '"><div class="note-header"><span class="note-no">';
+    html += '#' + id + '</span>';
+    //渲染note-title
+    var titletext = "";
+    if (typeof title != 'undefined'){
+        if (title.length > 50){
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'</titlep2><titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32,50),0.12)+'</titlep3><titlesusp3>...</titlesusp3><titlep4>'+insert_spacing(title.substring(50),0.12)+'</titlep4>';
+        } else if (title.length>32){
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'<titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32),0.12)+'</titlep3>';
+        } else if (title.length>16){
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18), 0.12)+'</titlep2>';
+        } else {
+            titletext = insert_spacing(title,0.12);
+        }
+    }
+    html += '<span class="note-title">'+titletext+'</span>';
     //置顶标志
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
@@ -163,7 +192,7 @@ function renderNoteAtTop(id, time, updatetime, text, forceTop) {
 function bindNoteFoldDBL(id) {
     if ($('#note_' + id + ' .note-content').height() > 250) {
         $('#note_' + id + ' .note-content').addClass("note-overheight"); //process css
-        $('#note_' + id + ' .note-content').dblclick(function () {
+        $('#note_' + id + ' .note-content').dblclick(function (e) {
             //process double click
             if ($('#note_' + id + ' .note-content').height() > 250) {
                 $('#note_' + id + ' .note-content').animate({
@@ -180,19 +209,26 @@ function bindNoteFoldDBL(id) {
                 $('#note_' + id + ' .note-content').removeClass("note-overheight");
             }
         });
+        //在双击折叠/展开时不选中文本
+        $('#note_' + id + ' .note-content p').mousedown(function (e){
+            if (e.detail > 1){
+                e.preventDefault();
+            }
+        });
     } else {
         $('#note_' + id + ' .note-content').removeClass("note-overheight");
     }
 }
 
 //添加笔记至Array
-function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, text, offset, timezone, forceTop) {
+function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, text, offset, timezone, forceTop) {
     var note = {
         id: id,
         time: time,
         rawtime: rawtime,
         updatetime: updatetime,
         updaterawtime: updaterawtime,
+        title: title,
         text: text,
         offset: offset,
         timezone: timezone,
@@ -220,9 +256,9 @@ function refreshNoteList(callback) {
                 sort_mode = 'id';
             }
             sortNotes(sort_mode); //排序
-            notes.forEach(function (note) {
-                renderNote(note.id, note.time, note.updatetime, note.text, note.forceTop);
-            });
+            for(var i=0;i<notes.length;i++){
+                renderNote(notes[i].id, notes[i].time, notes[i].updatetime, notes[i].title, notes[i].text, notes[i].forceTop);
+            }
             //绑定Note的点击事件
             bindNoteClickEvent();
             //callback
@@ -233,9 +269,9 @@ function refreshNoteList(callback) {
 
     } else {
         sortNotes(sort_mode); //排序
-        notes.forEach(function (note) {
-            renderNote(note.id, note.time, note.updatetime, note.text, note.forceTop);
-        });
+        for(var i=0;i<notes.length;i++){
+            renderNote(notes[i].id, notes[i].time, notes[i].updatetime, notes[i].title, notes[i].text, notes[i].forceTop);
+        }
         //绑定Note的点击事件
         bindNoteClickEvent();
         //callback
@@ -293,62 +329,6 @@ function deleteNoteFromArr(id) {
             return false;
         }
         return true; //every是true继续循环 false跳出
-    });
-}
-
-//将便签渲染到置顶
-function putNoteToForceTop(id, nearestID, s_or_b) {
-    //获取便签的内容
-    var html = '<div class="note-wrapper">' + $('#note_' + id).parent().html() + '</div>';
-    //移除normal列表中的便签
-    $('#note_' + id).parent().remove();
-    //添加到forceTop
-    if (arguments.length == 3) {
-        if (s_or_b == "s") {
-            $('#note_' + nearestID).parent().before($(html));
-        } else if (s_or_b == "b") {
-            $('#note_' + nearestID).parent().after($(html));
-        }
-    } else {
-        $('.note-list-forceTop').prepend($(html));
-    }
-    $('#note_' + id).addClass('note-forceTop');
-    //插入图标
-    var icon = '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
-    $('#note_' + id + " time").before($(icon));
-    //bind events
-    bindNoteClickEvent();
-    bindNoteFoldDBL(id);
-    $('#note_' + id + ' a').click(function (e) {
-        ipcRenderer.send('openExternalURL', $(this).attr('href'));
-        e.preventDefault();
-    });
-}
-
-function putNoteToNormal(id, nearestID, s_or_b) {
-    //console.log(nearestID, s_or_b);
-    var html = '<div class="note-wrapper">' + $('#note_' + id).parent().html() + '</div>';
-    //从置顶内移除
-    $('#note_' + id).parent().remove();
-    //添加到normal
-    if (arguments.length == 3) {
-        if (s_or_b == "s") {
-            $('#note_' + nearestID).parent().before($(html));
-        } else if (s_or_b == "b") {
-            $('#note_' + nearestID).parent().after($(html));
-        }
-    } else {
-        $('.note-list-normal').prepend($(html));
-    }
-    //去除置顶相关的类和图表
-    $('#note_' + id).removeClass('note-forceTop');
-    $('#note_' + id).children('.note-header').children('i').remove();
-    //rebind events
-    bindNoteClickEvent();
-    bindNoteFoldDBL(id);
-    $('#note_' + id + ' a').click(function (e) {
-        ipcRenderer.send('openExternalURL', $(this).attr('href'));
-        e.preventDefault();
     });
 }
 
