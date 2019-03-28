@@ -60,19 +60,19 @@ function renderNote(id, time, updatetime, title, text, forceTop) {
         '" data-id="' + id + '"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
     //渲染note-title
+    var titletext = "";
     if (typeof title != 'undefined'){
-        var titletext = "";
         if (title.length > 50){
-            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18,32)+'</titlep2><titlesusp2>...</titlesusp2><titlep3>'+title.substring(32,50)+'</titlep3><titlesusp3>...</titlesusp3><titlep4>'+ title.substring(50)+'</titlep4>';
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'</titlep2><titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32,50),0.12)+'</titlep3><titlesusp3>...</titlesusp3><titlep4>'+insert_spacing(title.substring(50),0.12)+'</titlep4>';
         } else if (title.length>32){
-            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18,32)+'<titlesusp2>...</titlesusp2><titlep3>'+title.substring(32)+'</titlep3>';
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'<titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32),0.12)+'</titlep3>';
         } else if (title.length>16){
-            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18)+'</titlep2>';
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18), 0.12)+'</titlep2>';
         } else {
-            titletext = titletext;
+            titletext = insert_spacing(title,0.12);
         }
-        html += '<span class="note-title">'+titletext+'</span>';
     }
+    html += '<span class="note-title">'+titletext+'</span>';
     //选择性显示时间
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
@@ -124,19 +124,19 @@ function renderNoteAtTop(id, time, updatetime, title, text, forceTop) {
         '" data-id="' + id + '"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
     //渲染note-title
+    var titletext = "";
     if (typeof title != 'undefined'){
-        var titletext = "";
         if (title.length > 50){
-            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18,32)+'</titlep2><titlesusp2>...</titlesusp2><titlep3>'+title.substring(32,50)+'</titlep3><titlesusp3>...</titlesusp3><titlep4>'+ title.substring(50)+'</titlep4>';
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'</titlep2><titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32,50),0.12)+'</titlep3><titlesusp3>...</titlesusp3><titlep4>'+insert_spacing(title.substring(50),0.12)+'</titlep4>';
         } else if (title.length>32){
-            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18,32)+'<titlesusp2>...</titlesusp2><titlep3>'+title.substring(32)+'</titlep3>';
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'<titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32),0.12)+'</titlep3>';
         } else if (title.length>16){
-            titletext = '<titlep1>'+title.substring(0,16)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+title.substring(18)+'</titlep2>';
+            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18), 0.12)+'</titlep2>';
         } else {
-            titletext = titletext;
+            titletext = insert_spacing(title,0.12);
         }
-        html += '<span class="note-title">'+titletext+'</span>';
     }
+    html += '<span class="note-title">'+titletext+'</span>';
     //置顶标志
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
@@ -256,9 +256,9 @@ function refreshNoteList(callback) {
                 sort_mode = 'id';
             }
             sortNotes(sort_mode); //排序
-            notes.forEach(function (note) {
-                renderNote(note.id, note.time, note.updatetime, note.title, note.text, note.forceTop);
-            });
+            for(var i=0;i<notes.length;i++){
+                renderNote(notes[i].id, notes[i].time, notes[i].updatetime, notes[i].title, notes[i].text, notes[i].forceTop);
+            }
             //绑定Note的点击事件
             bindNoteClickEvent();
             //callback
@@ -269,9 +269,9 @@ function refreshNoteList(callback) {
 
     } else {
         sortNotes(sort_mode); //排序
-        notes.forEach(function (note) {
-            renderNote(note.id, note.time, note.updatetime, note.title, note.text, note.forceTop);
-        });
+        for(var i=0;i<notes.length;i++){
+            renderNote(notes[i].id, notes[i].time, notes[i].updatetime, notes[i].title, notes[i].text, notes[i].forceTop);
+        }
         //绑定Note的点击事件
         bindNoteClickEvent();
         //callback
