@@ -130,6 +130,7 @@
                 initTextAlign("justify");
                 initLineHeight("24");
                 initLetterSpacing("0.06");
+                initDateDisplay("all");
             } else {
                 //read success
                 //init themes
@@ -186,6 +187,11 @@
                     initDateDisplay(settings.datedisplay);
                 } else {
                     initDateDisplay("all");
+                }
+                if (typeof settings.timedisplay != 'undefined'){
+                    initTimeDisplay(settings.timedisplay);
+                } else {
+                    initTimeDisplay("all");
                 }
             }
         }
@@ -290,6 +296,11 @@
                 $('#select-datedisplay').val(datedisplay);
             });
         }
+        function initTimeDisplay(timedisplay){
+            $(document).ready(function(){
+                $('#select-timedisplay').val(timedisplay);
+            });
+        }
 
         function initLastBackupTime(lasttime){
             if (typeof lasttime == 'string'){
@@ -326,7 +337,7 @@
             </div>
         </div>
         <script>
-            var settings_window_height = [430, 390, 480];   //general notes display
+            var settings_window_height = [430, 380, 530];   //general notes display
             //绑定点击事件
             $('.settings-titles-block').click(function(){
                 $('.settings-titles-block').removeClass('settings-titles-clicked');
@@ -880,6 +891,20 @@
                     </select>
                 </div>
             </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span>时间显示</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-timedisplay">
+                        <option value="all">YYYY年MM月DD日 HH:mm:ss</option>
+                        <option value="noyear">MM月DD日 HH:mm:ss</option>
+                        <option value="notime">YYYY年MM月DD日</option>
+                        <option value="noyearandtime">MM月DD日</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -902,6 +927,7 @@
             var lineheight = $('#select-lineheight').val();
             var letterspacing = $('#select-letterspacing').val();
             var datedisplay = $('#select-datedisplay').val();
+            var timedisplay = $('#select-timedisplay').val();
 
             //构造设置obj
             var settings = {
@@ -913,7 +939,8 @@
                 textalign: textalign,
                 lineheight: lineheight,
                 letterspacing: letterspacing,
-                datedisplay: datedisplay
+                datedisplay: datedisplay,
+                timedisplay: timedisplay
             };
 
             //保存设置

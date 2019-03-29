@@ -55,7 +55,7 @@ function clearNoteList() {
 var reg_url = /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
 
 //渲染一条笔记
-function renderNote(id, time, updatetime, title, text, forceTop) {
+function renderNote(id, rawtime, updaterawtime, title, text, forceTop) {
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
         '" data-id="' + id + '"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
@@ -79,11 +79,13 @@ function renderNote(id, time, updatetime, title, text, forceTop) {
             html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
         }
     }
-    if (typeof (updatetime) != 'undefined') {
-        html += '<time><p class="note-time note-updatetime han-element"><span class="note-updatetime-label">更新：</span>' + updatetime + '</p>';
-        html += '<p class="note-time note-createtime han-element"><span class="note-createtime-label">创建：</span>' + time + '</p></time>';
+    var m_time = moment(rawtime,'YYYYMMDDHHmmss');
+    if (typeof (updaterawtime) != 'undefined') {
+        var m_updatetime = moment(updaterawtime,'YYYYMMDDHHmmss');
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>]HH:mm:ss[</timeclock>]') + '</p>';
+        html += '<p class="note-time note-createtime"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
-        html += '<time><p class="note-time han-element">' + time + '</p></time>';
+        html += '<time><p class="note-time">'+ m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>]HH:mm:ss[</timeclock>]') +'</p></time>';
     }
     html += '</div><div class="note-content"><p class="note-text">';
     //process html tag
@@ -118,7 +120,7 @@ function renderNote(id, time, updatetime, title, text, forceTop) {
     });
 }
 //在顶部渲染Note
-function renderNoteAtTop(id, time, updatetime, title, text, forceTop) {
+function renderNoteAtTop(id, rawtime, updaterawtime, title, text, forceTop) {
     //构造html
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
         '" data-id="' + id + '"><div class="note-header"><span class="note-no">';
@@ -144,11 +146,13 @@ function renderNoteAtTop(id, time, updatetime, title, text, forceTop) {
         }
     }
     //选择性显示时间
-    if (typeof (updatetime) != 'undefined') {
-        html += '<time><p class="note-time note-updatetime han-element"><span class="note-updatetime-label">更新：</span>' + updatetime + '</p>';
-        html += '<p class="note-time note-createtime han-element"><span class="note-createtime-label">创建：</span>' + time + '</p></time>';
+    var m_time = moment(rawtime,'YYYYMMDDHHmmss');
+    if (typeof (updaterawtime) != 'undefined') {
+        var m_updatetime = moment(updaterawtime,'YYYYMMDDHHmmss');
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>]HH:mm:ss[</timeclock>]') + '</p>';
+        html += '<p class="note-time note-createtime"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
-        html += '<time><p class="note-time han-element">' + time + '</p></time>';
+        html += '<time><p class="note-time">'+ m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>]HH:mm:ss[</timeclock>]') +'</p></time>';
     }
     html += '</div><div class="note-content"><p class="note-text">';
 
@@ -257,7 +261,7 @@ function refreshNoteList(callback) {
             }
             sortNotes(sort_mode); //排序
             for(var i=0;i<notes.length;i++){
-                renderNote(notes[i].id, notes[i].time, notes[i].updatetime, notes[i].title, notes[i].text, notes[i].forceTop);
+                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
             }
             //绑定Note的点击事件
             bindNoteClickEvent();
@@ -270,7 +274,7 @@ function refreshNoteList(callback) {
     } else {
         sortNotes(sort_mode); //排序
         for(var i=0;i<notes.length;i++){
-            renderNote(notes[i].id, notes[i].time, notes[i].updatetime, notes[i].title, notes[i].text, notes[i].forceTop);
+            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
         }
         //绑定Note的点击事件
         bindNoteClickEvent();
