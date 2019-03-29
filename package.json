@@ -12,8 +12,9 @@
   },
   "devDependencies": {
     "animate.css": "^3.7.0",
+    "awesome-bootstrap-checkbox": "^1.0.1",
     "bootstrap": "^4.3.1",
-    "electron": "^4.0.8",
+    "electron": "^4.1.2",
     "electron-builder": "^20.39.0",
     "font-awesome": "^4.7.0",
     "gulp-qiniu-up": "^1.0.2",
