@@ -130,13 +130,31 @@
                 if (typeof settings.datedisplay != 'undefined') {
                     switch (settings.datedisplay) {
                         case 'createonly':
-                            cssText += '.note-updatetime {display:none !important;}';
-                            cssText += '.note-createtime-label {display:none !important;}';
-                            break;
+                        cssText += '.note-updatetime {display:none !important;}';
+                        cssText += '.note-createtime-label {display:none !important;}';
+                        break;
                         case 'updateonly':
-                            cssText += '.note-createtime {display:none !important;}';
-                            cssText += '.note-updatetime-label {display:none !important;}';
-                            break;
+                        cssText += '.note-createtime {display:none !important;}';
+                        cssText += '.note-updatetime-label {display:none !important;}';
+                        break;
+                        case 'none':
+                        cssText += 'time {display:none !important;}';
+                        break;
+                    }
+                }
+
+                //时间显示初始化
+                if (typeof settings.timedisplay != 'undefined'){
+                    switch(settings.timedisplay){
+                        case 'noyear':
+                        cssText += 'timeyear {display:none !important;}';
+                        break;
+                        case 'notime':
+                        cssText += 'timeclock {display:none !important;}';
+                        break;
+                        case 'noyearandtime':
+                        cssText += 'timeyear, timeclock {display:none !important;}';
+                        break;
                     }
                 }
             }
