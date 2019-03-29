@@ -67,16 +67,20 @@
     font-size: 13px;
     color: @color-settings-text;
     background: @color-settings-background;
-    border: 1px solid @color-settings-selectborder;
+    border: 1px solid @color-settings-controlborder;
     vertical-align: middle;
 }
-.settings-item-control select:hover{
+.settings-item-control select:disabled{
+    cursor: not-allowed;
+    background: @color-settings-select-disabled;
+}
+.settings-item-control select:hover:enabled{
     background: darken(@color-settings-background, 5%);
 }
 .settings-item-control select:focus{
     color: @color-settings-text;
     background: darken(@color-settings-background, 5%);
-    border: 1px solid darken(@color-settings-selectborder, 20%);
+    border: 1px solid darken(@color-settings-controlborder, 20%);
     outline: none !important;
     box-shadow: none !important;
 }
@@ -95,7 +99,20 @@
     width:90%;
 }
 .settings-control-checkbox{
-    margin-top:10px;
+    margin-top: 7px;
+    .no-select-and-drag();
+}
+.settings-control-checkbox input[type="checkbox"]+label::before{
+    background-color: @color-settings-background !important;
+    border-color: @color-settings-controlborder !important;
+}
+.settings-control-checkbox input[type="checkbox"]+label{
+    font-size: 14px;
+    padding-top: 4px;
+    color: @color-settings-text !important;
+}
+.settings-control-checkbox input[type="checkbox"]:checked+label::after {
+    color: @color-settings-text !important;
 }
 .setting-buttons{
     right:15px;

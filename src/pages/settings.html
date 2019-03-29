@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="static/font-awesome.min.css">
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
+    <link rel="stylesheet" href="static/awesome-bootstrap-checkbox.min.css">
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -363,7 +364,12 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <input class="settings-control-checkbox" type="checkbox" id="cb-autoUpdateEnabled" onclick="updateEnabledChanged(this);" />
+                    <div class="abc-checkbox abc-checkbox-primary settings-control-checkbox">
+                        <input type="checkbox" id="cb-autoUpdateEnabled" onclick="updateEnabledChanged(this);">
+                        <label for="cb-autoUpdateEnabled">
+                            启用
+                        </label>
+                    </div>
                     <script>
                         function updateEnabledChanged(checkbox) {
                             if (checkbox.checked) {
