@@ -62,6 +62,25 @@
     color: @color-settings-text;
     .no-select-and-drag();
 }
+.settings-item-control input{
+    height: 34px;
+    font-size: 13px;
+    color: @color-settings-text;
+    background: @color-settings-background;
+    border: 1px solid @color-settings-controlborder;
+    vertical-align: middle;
+    padding-left: 16px;
+}
+.settings-item-control input:focus{
+    color: @color-settings-text;
+    background: darken(@color-settings-background, 5%);
+    border: 1px solid darken(@color-settings-controlborder, 20%);
+    outline: none !important;
+    box-shadow: none !important;
+}
+.settings-item-control input::-webkit-input-placeholder { /* WebKit browsers */
+    color: @color-control-placeholder;
+}
 .settings-item-control select{
     height: 34px;
     font-size: 13px;
@@ -127,4 +146,17 @@
     text-align: center;
     padding:3px 15px !important;
     letter-spacing: 0.05em;
+}
+
+//lock screen
+#settings-item-lockscreen-enabled{
+    display: none;
+}
+#settings-item-lockscreen-default-reset{
+    display: none;
+}
+.settings-button-lockscreen-icon{
+    margin-left: 10px;
+    width: 36px !important;
+    height: 34px !important;
 }
