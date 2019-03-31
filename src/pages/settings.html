@@ -274,6 +274,11 @@
                 case 'enabled':
                 $('#settings-item-lockscreen-enabled').css('display','block');
                 $('#settings-item-lockscreen-default').css('display','none');
+                if (typeof settings.locktype != 'undefined'){
+                    $('#select-locktype').val(settings.locktype);
+                } else {
+                    $('#select-locktype').val('minimize');
+                }
                 break;
             }
         }
@@ -470,12 +475,19 @@
                 </div>
                 <div class="settings-item-child settings-item-control" id="settings-item-lockscreen-enabled">
                     <div style="display:flex;">
-                        <div style="flex: 0 0 48.5%">
+                        <div style="flex: 0 0 30%">
                             <button class="btn btn-danger brbtn-danger" id="btn-resetLockScreen" onclick="resetLockScreen();">重置密码</button>
                         </div>
                         <div style="flex: 0 0 3%"></div>
-                        <div style="flex: 0 0 48.5%">
+                        <div style="flex: 0 0 30%">
                             <button class="btn btn-danger brbtn-danger" id="btn-disableLockScreen" onclick="disableLockScreen();">禁用</button>
+                        </div>
+                        <div style="flex: 0 0 3%"></div>
+                        <div style="flex: 0 0 34%">
+                            <select class="form-control settings-select" id="select-locktype">
+                                <option value="minimize">仅最小化时</option>
+                                <option value="blur">失去焦点时</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -500,6 +512,12 @@
                                     //设置界面为已开启锁屏后的样式
                                     $('#settings-item-lockscreen-default').css('display','none');
                                     $('#settings-item-lockscreen-enabled').css('display','block');
+                                    //设置locktype
+                                    if (typeof settings.locktype != 'undefined'){
+                                        $('#select-locktype').val(settings.locktype);
+                                    } else {
+                                        $('#select-locktype').val('minimize');
+                                    }
                                 }
                             });
                         }
@@ -1058,6 +1076,7 @@
             var letterspacing = $('#select-letterspacing').val();
             var datedisplay = $('#select-datedisplay').val();
             var timedisplay = $('#select-timedisplay').val();
+            var locktype = $('#select-locktype').val();
 
             //构造设置obj
             settings.autoUpdateStatus = autoUpdateStatus;
@@ -1070,6 +1089,7 @@
             settings.letterspacing = letterspacing;
             settings.datedisplay = datedisplay;
             settings.timedisplay = timedisplay;
+            settings.locktype = locktype;
 
             //保存设置
             storage.set('settings', settings, function (error) {

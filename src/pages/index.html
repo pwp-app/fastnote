@@ -60,6 +60,7 @@
 
         //设置项
         var settings;
+
         storage.get('settings', function (error, data) {
             if (error) {
                 console.error(error);
@@ -328,6 +329,27 @@
                 }
             }
         });
+        ipcRenderer.on('enable-lockscreen-hide',function(){
+            if ($('.container-lockscreen').css('display') == 'none'){
+                enableLockScreen();
+            }
+        });
+        ipcRenderer.on('enable-lockscreen-blur', function(){
+            if (settings.locktype == 'blur' && $('.container-lockscreen').css('display') == 'none'){
+                enableLockScreen();
+            }
+        });
+
+        function enableLockScreen(){
+            if (isMainMenuOpen){
+                closeMainMenu();
+            }
+            $('#input-lockscreen').val('');
+            $('#input-lockscreen').removeClass('invalid');
+            $('.container-lockscreen').css('display', 'block');
+            $('.container-lockscreen').animateCss('fadeIn faster');
+            $('#input-lockscreen').focus();
+        }
     </script>
     <!-- infobar -->
     <div class="container-infobar">

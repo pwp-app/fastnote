@@ -170,6 +170,17 @@ function createWindow() {
       win.webContents.send('update-edit-note', data);
     });
   });
+  win.on('hide', ()=>{
+    win.webContents.send('enable-lockscreen-hide');
+  })
+  win.on('minimize', ()=>{
+    win.webContents.send('enable-lockscreen-hide');
+  })
+  win.on('blur',()=>{
+    if (BrowserWindow.getFocusedWindow() == null){
+      win.webContents.send('enable-lockscreen-blur');
+    }
+  })
 }
 
 // Electron 会在初始化后并准备
