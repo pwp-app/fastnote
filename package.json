@@ -54,8 +54,7 @@
       "allowToChangeInstallationDirectory": true,
       "allowElevation": true,
       "differentialPackage": false,
-      "createDesktopShortcut": true,
-      "license": "LICENSE"
+      "createDesktopShortcut": true
     }
   },
   "description": ""
