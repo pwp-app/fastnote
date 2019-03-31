@@ -486,7 +486,7 @@
                             //输入不对
                             $('#input-lockscreen-password').addClass('is-invalid');
                         } else {
-                            settings.lockpassword = crypto.createHmac('sha256', 'fastnote').update(lockpassword);
+                            settings.lockpassword = crypto.createHmac('sha256', 'fastnote').update(lockpassword).digest('hex');
                             storage.set('settings', settings, function (error) {
                                 if (error) {
                                     dialog.showMessageBox({

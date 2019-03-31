@@ -119,6 +119,7 @@
 }
 .settings-control-checkbox{
     margin-top: 7px;
+    margin-left: -1px;
     .no-select-and-drag();
 }
 .settings-control-checkbox input[type="checkbox"]+label::before{
@@ -132,6 +133,14 @@
 }
 .settings-control-checkbox input[type="checkbox"]:checked+label::after {
     color: @color-settings-text !important;
+}
+.settings-control-checkbox input[type="checkbox"]:focus+label::before {
+    border-color: @color-settings-controlborder !important;
+    outline: none !important;
+}
+.settings-control-checkbox input[type="checkbox"]:focus+label::after {
+    border-color: @color-settings-controlborder !important;
+    outline: none !important;
 }
 .setting-buttons{
     right:15px;

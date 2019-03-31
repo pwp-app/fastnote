@@ -4,6 +4,7 @@
     position: absolute;
     background: @color-primary;
     z-index: 999;
+    display: none;
 }
 .lockscreen{
     width: 35%;
@@ -23,11 +24,19 @@
 .lockscreen-icon .fa{
     font-size: 54px;
 }
-#input-lockscreen{
+.lockscreen-form input{
     color: @color-control-text;
     background: @color-textarea-background;
-    border:none;
     border-radius: 50px;
     text-align: center;
-    font-size:18px !important;
+    font-size:18px;
+    height: 42px;
+}
+.lockscreen-form input:focus{
+    color: @color-control-text;
+    background: @color-textarea-background;
+}
+.lockscreen-form input.invalid{
+    border: 1px solid @color-error !important;
+    box-shadow: 0 0 1.5em fade(@color-error,58%) !important;
 }

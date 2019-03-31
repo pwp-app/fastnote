@@ -36,6 +36,9 @@
             dialog
         } = require('electron').remote;
 
+        //crypto
+        const crypto = require('crypto');
+
         const Menu = remote.Menu;
         const MenuItem = remote.MenuItem;
 
@@ -86,6 +89,11 @@
 
                 console.error('A error occured when reading settings.');
             } else {
+                //优先初始化锁屏
+                if (typeof settings.lockpassword != 'undefined'){
+                    $('.container-lockscreen').css('display','block');
+                    $('#input-lockscreen').focus();
+                }
                 //read success
                 if (typeof settings.theme != 'undefined') {
                     $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
@@ -291,7 +299,7 @@
                 <i class="fa fa-lock" aria-hidden="true"></i>
             </div>
             <div class="lockscreen-form">
-                <input type="password" class="form-control brcontrol-input" id="input-lockscreen">
+                <input type="password" class="brcontrol-input" id="input-lockscreen">
             </div>
         </div>
     </div>
@@ -299,6 +307,26 @@
         $('.container-lockscreen').mousedown(function (e){
             $('#input-lockscreen').focus();
             return false;
+        });
+        $('#input-lockscreen').keypress(function (e){
+            if (e.which == 13){
+                var t = $('#input-lockscreen').val().trim();
+                if (t.length > 0){
+                    var p = crypto.createHmac('sha256', 'fastnote').update(t).digest('hex');
+                    if (p == settings.lockpassword){
+                        $('.container-lockscreen').animateCss('fadeOut faster',function(){
+                            $('.container-lockscreen').css('display', 'none');
+                        })
+                        $('#input-lockscreen').removeClass('invalid');
+                    } else {
+                        if (!$('#input-lockscreen').hasClass('invalid')){
+                            $('#input-lockscreen').addClass('invalid');
+                        }
+                    }
+                } else {
+                    $('#input-lockscreen').addClass('invalid');
+                }
+            }
         });
     </script>
     <!-- infobar -->
