@@ -1067,6 +1067,10 @@
         Mousetrap.bind('shift+s', function () {
             ipcRenderer.send("openSettingsWindow");
         });
+        //锁屏全局快捷键
+        Mousetrap.bind('ctrl+l', function(){
+            enableLockScreen();
+        });
         $('#mainmenu-btn-about').click(function () {
             ipcRenderer.send("openAboutWindow"); //打开关于窗口
             closeMainMenu();
@@ -1201,5 +1205,4 @@
     <span id="filter-x" style="display:none"></span>
 
 </body>
-
 </html>
