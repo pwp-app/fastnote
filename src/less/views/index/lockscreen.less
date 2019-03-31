@@ -1,0 +1,33 @@
+.container-lockscreen{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: @color-primary;
+    z-index: 999;
+}
+.lockscreen{
+    width: 35%;
+    top:42%;
+    left:50%;
+    position: absolute;
+    transform: translateX(-50%) translateY(-50%);
+}
+.lockscreen-form{
+    display: flex;
+    margin-top: 18px;
+}
+.lockscreen-icon {
+    text-align: center;
+    color: @color-control-text;
+}
+.lockscreen-icon .fa{
+    font-size: 54px;
+}
+#input-lockscreen{
+    color: @color-control-text;
+    background: @color-textarea-background;
+    border:none;
+    border-radius: 50px;
+    text-align: center;
+    font-size:18px !important;
+}

@@ -130,31 +130,31 @@
                 if (typeof settings.datedisplay != 'undefined') {
                     switch (settings.datedisplay) {
                         case 'createonly':
-                        cssText += '.note-updatetime {display:none !important;}';
-                        cssText += '.note-createtime-label {display:none !important;}';
-                        break;
+                            cssText += '.note-updatetime {display:none !important;}';
+                            cssText += '.note-createtime-label {display:none !important;}';
+                            break;
                         case 'updateonly':
-                        cssText += '.note-createtime {display:none !important;}';
-                        cssText += '.note-updatetime-label {display:none !important;}';
-                        break;
+                            cssText += '.note-createtime {display:none !important;}';
+                            cssText += '.note-updatetime-label {display:none !important;}';
+                            break;
                         case 'none':
-                        cssText += 'time {display:none !important;}';
-                        break;
+                            cssText += 'time {display:none !important;}';
+                            break;
                     }
                 }
 
                 //时间显示初始化
-                if (typeof settings.timedisplay != 'undefined'){
-                    switch(settings.timedisplay){
+                if (typeof settings.timedisplay != 'undefined') {
+                    switch (settings.timedisplay) {
                         case 'noyear':
-                        cssText += 'timeyear {display:none !important;}';
-                        break;
+                            cssText += 'timeyear {display:none !important;}';
+                            break;
                         case 'notime':
-                        cssText += 'timeclock {display:none !important;}';
-                        break;
+                            cssText += 'timeclock {display:none !important;}';
+                            break;
                         case 'noyearandtime':
-                        cssText += 'timeyear, timeclock {display:none !important;}';
-                        break;
+                            cssText += 'timeyear, timeclock {display:none !important;}';
+                            break;
                     }
                 }
             }
@@ -284,6 +284,23 @@
     <script>
         require('electron-titlebar');
     </script>
+    <!-- lockscreen -->
+    <div class="container-lockscreen">
+        <div class="lockscreen">
+            <div class="lockscreen-icon">
+                <i class="fa fa-lock" aria-hidden="true"></i>
+            </div>
+            <div class="lockscreen-form">
+                <input type="password" class="form-control brcontrol-input" id="input-lockscreen">
+            </div>
+        </div>
+    </div>
+    <script>
+        $('.container-lockscreen').mousedown(function (e){
+            $('#input-lockscreen').focus();
+            return false;
+        });
+    </script>
     <!-- infobar -->
     <div class="container-infobar">
     </div>
@@ -412,7 +429,7 @@
                 for (var i = 0; i < notes.length; i++) {
                     if (notes[i].id == data.id) {
                         notes[i] = data;
-                        if (refreshList){
+                        if (refreshList) {
                             refreshNoteList();
                         }
                         return;
@@ -683,10 +700,8 @@
                 $('.container-newnote').css('display', 'block');
                 $('.trigger-expandnewnote').css('display', 'none');
                 setTimeout(function () {
-                    $('.note-list').css('height', $(window).height() - $('.container-titlebar')
-                    .height() - 207);
-                    $('.note-empty').css('height', $(window).height() - $('.container-titlebar')
-                    .height() - 207);
+                    $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 207);
+                    $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 207);
                 }, 50);
             } else {
                 if (data.isFolded) {
@@ -868,10 +883,7 @@
                                             0].innerHTML = insert_spacing(result.text, 0.08);
                                         //check show full
                                         if (result.showfull) {
-                                            document.getElementsByClassName(
-                                                    'update-contents-details')[
-                                                    0].innerHTML +=
-                                                '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">详细更新日志</button>'
+                                            document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">详细更新日志</button>'
                                         }
                                         $('.update-contents-loading').css('display', 'none');
                                     } catch (err) {
