@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="static/font-awesome.min.css">
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
+    <link rel="stylesheet" href="static/awesome-bootstrap-checkbox.min.css">
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -130,6 +131,7 @@
                 initTextAlign("justify");
                 initLineHeight("24");
                 initLetterSpacing("0.06");
+                initDateDisplay("all");
             } else {
                 //read success
                 //init themes
@@ -186,6 +188,15 @@
                     initDateDisplay(settings.datedisplay);
                 } else {
                     initDateDisplay("all");
+                }
+                if (typeof settings.timedisplay != 'undefined'){
+                    initTimeDisplay(settings.timedisplay);
+                } else {
+                    initTimeDisplay("all");
+                }
+                //init lockscreen
+                if (typeof settings.lockpassword != 'undefined'){
+                    initLockScreen("enabled");
                 }
             }
         }
@@ -258,6 +269,19 @@
                 $('#select-themes').val(theme);
             });
         }
+        function initLockScreen(status){
+            switch(status){
+                case 'enabled':
+                $('#settings-item-lockscreen-enabled').css('display','block');
+                $('#settings-item-lockscreen-default').css('display','none');
+                if (typeof settings.locktype != 'undefined'){
+                    $('#select-locktype').val(settings.locktype);
+                } else {
+                    $('#select-locktype').val('minimize');
+                }
+                break;
+            }
+        }
 
         //初始化显示设置选项
         function initFontFamilySetting(font){
@@ -288,6 +312,11 @@
         function initDateDisplay(datedisplay){
             $(document).ready(function(){
                 $('#select-datedisplay').val(datedisplay);
+            });
+        }
+        function initTimeDisplay(timedisplay){
+            $(document).ready(function(){
+                $('#select-timedisplay').val(timedisplay);
             });
         }
 
@@ -326,7 +355,7 @@
             </div>
         </div>
         <script>
-            var settings_window_height = [430, 390, 480];   //general notes display
+            var settings_window_height = [480, 380, 530];   //general notes display
             //绑定点击事件
             $('.settings-titles-block').click(function(){
                 $('.settings-titles-block').removeClass('settings-titles-clicked');
@@ -352,7 +381,12 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <input class="settings-control-checkbox" type="checkbox" id="cb-autoUpdateEnabled" onclick="updateEnabledChanged(this);" />
+                    <div class="abc-checkbox abc-checkbox-primary settings-control-checkbox">
+                        <input type="checkbox" id="cb-autoUpdateEnabled" onclick="updateEnabledChanged(this);">
+                        <label for="cb-autoUpdateEnabled">
+                            启用
+                        </label>
+                    </div>
                     <script>
                         function updateEnabledChanged(checkbox) {
                             if (checkbox.checked) {
@@ -398,6 +432,130 @@
                         <option>简体中文</option>
                     </select>
                 </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span>锁屏</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control" id="settings-item-lockscreen-default">
+                    <div style="display: flex;">
+                        <div class="br-col-10" id="settings-item-lockscreen-input">
+                            <input type="password" class="form-control" placeholder="(锁屏密码)" id="input-lockscreen-password">
+                        </div>
+                        <div class="br-col-2" id="settings-item-lockscreen-default-enable">
+                            <button class="btn btn-primary brbtn-primary" id="btn-enableLockScreen" onclick="submitLockScreen();" style="width:54px;margin-left:7px;">启用</button>
+                        </div>
+                        <div id="settings-item-lockscreen-default-reset">
+                            <div class="br-col-3" style="display:flex;">
+                                <button class="btn btn-primary brbtn-primary settings-button-lockscreen-icon" onclick="submitLockScreen();">
+                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn btn-primary brbtn-primary settings-button-lockscreen-icon" onclick="resetLockScreenCancel();">
+                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <script>
+                            function resetLockScreen(){
+                                $('#settings-item-lockscreen-enabled').css('display','none');
+                                $('#settings-item-lockscreen-default').css('display','block');
+                                $('#settings-item-lockscreen-input').removeAttr('class');
+                                $('#settings-item-lockscreen-input').addClass('br-col-9');
+                                $('#settings-item-lockscreen-default-enable').css('display', 'none');
+                                $('#settings-item-lockscreen-default-reset').css('display','block');
+                                $('#input-lockscreen-password').val('');
+                            }
+                            function resetLockScreenCancel(){
+                                $('#settings-item-lockscreen-default').css('display','none');
+                                $('#settings-item-lockscreen-enabled').css('display','block');
+                            }
+                        </script>
+                    </div>
+                </div>
+                <div class="settings-item-child settings-item-control" id="settings-item-lockscreen-enabled">
+                    <div style="display:flex;">
+                        <div style="flex: 0 0 30%">
+                            <button class="btn btn-danger brbtn-danger" id="btn-resetLockScreen" onclick="resetLockScreen();">重置密码</button>
+                        </div>
+                        <div style="flex: 0 0 3%"></div>
+                        <div style="flex: 0 0 30%">
+                            <button class="btn btn-danger brbtn-danger" id="btn-disableLockScreen" onclick="disableLockScreen();">禁用</button>
+                        </div>
+                        <div style="flex: 0 0 3%"></div>
+                        <div style="flex: 0 0 34%">
+                            <select class="form-control settings-select" id="select-locktype">
+                                <option value="minimize">仅最小化时</option>
+                                <option value="blur">失去焦点时</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    function submitLockScreen(){
+                        var lockpassword = $('#input-lockscreen-password').val().trim();
+                        if (lockpassword.length<1){
+                            //输入不对
+                            $('#input-lockscreen-password').addClass('is-invalid');
+                        } else {
+                            settings.lockpassword = crypto.createHmac('sha256', 'fastnote').update(lockpassword).digest('hex');
+                            storage.set('settings', settings, function (error) {
+                                if (error) {
+                                    dialog.showMessageBox({
+                                        type: 'error',
+                                        title: '错误',
+                                        message: '启用锁屏时发生错误。',
+                                        detail: error
+                                    });
+                                } else {
+                                    $('#input-lockscreen-password').removeClass('is-invalid');
+                                    //设置界面为已开启锁屏后的样式
+                                    $('#settings-item-lockscreen-default').css('display','none');
+                                    $('#settings-item-lockscreen-enabled').css('display','block');
+                                    //设置locktype
+                                    if (typeof settings.locktype != 'undefined'){
+                                        $('#select-locktype').val(settings.locktype);
+                                    } else {
+                                        $('#select-locktype').val('minimize');
+                                    }
+                                }
+                            });
+                        }
+                    }
+
+                    function disableLockScreen(){
+                        dialog.showMessageBox({
+                            type: "warning",
+                            buttons: ['取消', '确认'],
+                            defaultId: 0,
+                            title: '确认操作',
+                            message: '确定要取消锁屏密码吗？',
+                            detail: '这会使你保存的便签变得不安全。'
+                        }, function(res){
+                            if (res == 1){
+                                settings.lockpassword = undefined;
+                                storage.set('settings', settings, function (error) {
+                                    if (error) {
+                                        dialog.showMessageBox({
+                                            type: 'error',
+                                            title: '错误',
+                                            message: '禁用锁屏时发生错误。',
+                                            detail: error
+                                        });
+                                    } else {
+                                        $('#settings-item-lockscreen-enabled').css('display','none');
+                                        $('#settings-item-lockscreen-default').css('display','block');
+                                        $('#settings-item-lockscreen-input').removeAttr('class');
+                                        $('#settings-item-lockscreen-input').addClass('br-col-10');
+                                        $('#input-lockscreen-password').val('');
+                                        $('#settings-item-lockscreen-default-reset').css('display','none');
+                                        $('#settings-item-lockscreen-default-enable').css('display','block');
+                                    }
+                                });
+                            }
+                        });
+                    }
+                </script>
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
@@ -877,6 +1035,21 @@
                         <option value="all">显示所有</option>
                         <option value="createonly">仅显示创建日期</option>
                         <option value="updateonly">仅显示更新日期</option>
+                        <option value="none">不显示</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span>时间显示</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-timedisplay">
+                        <option value="all">YYYY年MM月DD日 HH:mm:ss</option>
+                        <option value="noyear">MM月DD日 HH:mm:ss</option>
+                        <option value="notime">YYYY年MM月DD日</option>
+                        <option value="noyearandtime">MM月DD日</option>
                     </select>
                 </div>
             </div>
@@ -902,19 +1075,21 @@
             var lineheight = $('#select-lineheight').val();
             var letterspacing = $('#select-letterspacing').val();
             var datedisplay = $('#select-datedisplay').val();
+            var timedisplay = $('#select-timedisplay').val();
+            var locktype = $('#select-locktype').val();
 
             //构造设置obj
-            var settings = {
-                autoUpdateStatus: autoUpdateStatus,
-                autoUpdateChannel: autoUpdateChannel,
-                theme: theme,
-                fontfamily: fontfamily,
-                fontsize: fontsize,
-                textalign: textalign,
-                lineheight: lineheight,
-                letterspacing: letterspacing,
-                datedisplay: datedisplay
-            };
+            settings.autoUpdateStatus = autoUpdateStatus;
+            settings.autoUpdateChannel = autoUpdateChannel;
+            settings.theme = theme;
+            settings.fontfamily = fontfamily;
+            settings.fontsize = fontsize;
+            settings.textalign = textalign;
+            settings.lineheight = lineheight;
+            settings.letterspacing = letterspacing;
+            settings.datedisplay = datedisplay;
+            settings.timedisplay = timedisplay;
+            settings.locktype = locktype;
 
             //保存设置
             storage.set('settings', settings, function (error) {

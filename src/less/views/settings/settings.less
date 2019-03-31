@@ -62,21 +62,44 @@
     color: @color-settings-text;
     .no-select-and-drag();
 }
+.settings-item-control input{
+    height: 34px;
+    font-size: 13px;
+    color: @color-settings-text;
+    background: @color-settings-background;
+    border: 1px solid @color-settings-controlborder;
+    vertical-align: middle;
+    padding-left: 16px;
+}
+.settings-item-control input:focus{
+    color: @color-settings-text;
+    background: darken(@color-settings-background, 5%);
+    border: 1px solid darken(@color-settings-controlborder, 20%);
+    outline: none !important;
+    box-shadow: none !important;
+}
+.settings-item-control input::-webkit-input-placeholder {
+    color: @color-control-placeholder;
+}
 .settings-item-control select{
     height: 34px;
     font-size: 13px;
     color: @color-settings-text;
     background: @color-settings-background;
-    border: 1px solid @color-settings-selectborder;
+    border: 1px solid @color-settings-controlborder;
     vertical-align: middle;
 }
-.settings-item-control select:hover{
+.settings-item-control select:disabled{
+    cursor: not-allowed;
+    background: @color-settings-select-disabled;
+}
+.settings-item-control select:hover:enabled{
     background: darken(@color-settings-background, 5%);
 }
 .settings-item-control select:focus{
     color: @color-settings-text;
     background: darken(@color-settings-background, 5%);
-    border: 1px solid darken(@color-settings-selectborder, 20%);
+    border: 1px solid darken(@color-settings-controlborder, 20%);
     outline: none !important;
     box-shadow: none !important;
 }
@@ -95,7 +118,29 @@
     width:90%;
 }
 .settings-control-checkbox{
-    margin-top:10px;
+    margin-top: 7px;
+    margin-left: -1px;
+    .no-select-and-drag();
+}
+.settings-control-checkbox input[type="checkbox"]+label::before{
+    background-color: @color-settings-background !important;
+    border-color: @color-settings-controlborder !important;
+}
+.settings-control-checkbox input[type="checkbox"]+label{
+    font-size: 14px;
+    padding-top: 4px;
+    color: @color-settings-text !important;
+}
+.settings-control-checkbox input[type="checkbox"]:checked+label::after {
+    color: @color-text-primary !important;
+}
+.settings-control-checkbox input[type="checkbox"]:focus+label::before {
+    border-color: @color-settings-controlborder !important;
+    outline: none !important;
+}
+.settings-control-checkbox input[type="checkbox"]:focus+label::after {
+    border-color: @color-settings-controlborder !important;
+    outline: none !important;
 }
 .setting-buttons{
     right:15px;
@@ -110,4 +155,17 @@
     text-align: center;
     padding:3px 15px !important;
     letter-spacing: 0.05em;
+}
+
+//lock screen
+#settings-item-lockscreen-enabled{
+    display: none;
+}
+#settings-item-lockscreen-default-reset{
+    display: none;
+}
+.settings-button-lockscreen-icon{
+    margin-left: 10px;
+    width: 36px !important;
+    height: 34px !important;
 }

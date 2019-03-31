@@ -1,0 +1,12 @@
+.abc-checkbox-primary input[type="checkbox"]:checked+label::before {
+    background-color: @color-primary !important;
+}
+
+.abc-checkbox-primary input[type="checkbox"]:checked+label::after {
+    color: #fff;
+}
+
+.abc-checkbox-primary input[type="checkbox"]:indeterminate+label::before {
+    background-color: @color-primary;
+    border-color: @color-primary;
+}

@@ -261,7 +261,7 @@ function saveNote(notetext, notetitle) {
             showNoteList();
         }
         //在顶部渲染Note
-        renderNoteAtTop(note.id, note.time, note.updatetime, note.title, note.text, note.forceTop);
+        renderNoteAtTop(note.id, note.rawtime, note.updaterawtime, note.title, note.text, note.forceTop);
         //绑定Note的点击事件
         bindNoteClickEvent();
     } catch (e) {

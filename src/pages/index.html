@@ -21,6 +21,7 @@
     <script src="static/han.simple.js"></script>
     <script src="static/notes.render.js"></script>
     <script src="static/mousetrap.min.js"></script>
+    <script src="static/moment.min.js"></script>
     <script>
         //define const
         const remote = require('electron').remote;
@@ -34,6 +35,9 @@
         const {
             dialog
         } = require('electron').remote;
+
+        //crypto
+        const crypto = require('crypto');
 
         const Menu = remote.Menu;
         const MenuItem = remote.MenuItem;
@@ -56,6 +60,7 @@
 
         //设置项
         var settings;
+
         storage.get('settings', function (error, data) {
             if (error) {
                 console.error(error);
@@ -85,6 +90,11 @@
 
                 console.error('A error occured when reading settings.');
             } else {
+                //优先初始化锁屏
+                if (typeof settings.lockpassword != 'undefined'){
+                    $('.container-lockscreen').css('display','block');
+                    $('#input-lockscreen').focus();
+                }
                 //read success
                 if (typeof settings.theme != 'undefined') {
                     $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
@@ -135,6 +145,24 @@
                         case 'updateonly':
                             cssText += '.note-createtime {display:none !important;}';
                             cssText += '.note-updatetime-label {display:none !important;}';
+                            break;
+                        case 'none':
+                            cssText += 'time {display:none !important;}';
+                            break;
+                    }
+                }
+
+                //时间显示初始化
+                if (typeof settings.timedisplay != 'undefined') {
+                    switch (settings.timedisplay) {
+                        case 'noyear':
+                            cssText += 'timeyear {display:none !important;}';
+                            break;
+                        case 'notime':
+                            cssText += 'timeclock {display:none !important;}';
+                            break;
+                        case 'noyearandtime':
+                            cssText += 'timeyear, timeclock {display:none !important;}';
                             break;
                     }
                 }
@@ -265,6 +293,64 @@
     <script>
         require('electron-titlebar');
     </script>
+    <!-- lockscreen -->
+    <div class="container-lockscreen">
+        <div class="lockscreen">
+            <div class="lockscreen-icon">
+                <i class="fa fa-lock" aria-hidden="true"></i>
+            </div>
+            <div class="lockscreen-form">
+                <input type="password" class="brcontrol-input" id="input-lockscreen">
+            </div>
+        </div>
+    </div>
+    <script>
+        $('.container-lockscreen').mousedown(function (e){
+            $('#input-lockscreen').focus();
+            return false;
+        });
+        $('#input-lockscreen').keypress(function (e){
+            if (e.which == 13){
+                var t = $('#input-lockscreen').val().trim();
+                if (t.length > 0){
+                    var p = crypto.createHmac('sha256', 'fastnote').update(t).digest('hex');
+                    if (p == settings.lockpassword){
+                        $('.container-lockscreen').animateCss('fadeOut faster',function(){
+                            $('.container-lockscreen').css('display', 'none');
+                        })
+                        $('#input-lockscreen').removeClass('invalid');
+                    } else {
+                        if (!$('#input-lockscreen').hasClass('invalid')){
+                            $('#input-lockscreen').addClass('invalid');
+                        }
+                    }
+                } else {
+                    $('#input-lockscreen').addClass('invalid');
+                }
+            }
+        });
+        ipcRenderer.on('enable-lockscreen-hide',function(){
+            if ($('.container-lockscreen').css('display') == 'none'){
+                enableLockScreen();
+            }
+        });
+        ipcRenderer.on('enable-lockscreen-blur', function(){
+            if (settings.locktype == 'blur' && $('.container-lockscreen').css('display') == 'none'){
+                enableLockScreen();
+            }
+        });
+
+        function enableLockScreen(){
+            if (isMainMenuOpen){
+                closeMainMenu();
+            }
+            $('#input-lockscreen').val('');
+            $('#input-lockscreen').removeClass('invalid');
+            $('.container-lockscreen').css('display', 'block');
+            $('.container-lockscreen').animateCss('fadeIn faster');
+            $('#input-lockscreen').focus();
+        }
+    </script>
     <!-- infobar -->
     <div class="container-infobar">
     </div>
@@ -393,7 +479,7 @@
                 for (var i = 0; i < notes.length; i++) {
                     if (notes[i].id == data.id) {
                         notes[i] = data;
-                        if (refreshList){
+                        if (refreshList) {
                             refreshNoteList();
                         }
                         return;
@@ -664,10 +750,8 @@
                 $('.container-newnote').css('display', 'block');
                 $('.trigger-expandnewnote').css('display', 'none');
                 setTimeout(function () {
-                    $('.note-list').css('height', $(window).height() - $('.container-titlebar')
-                    .height() - 207);
-                    $('.note-empty').css('height', $(window).height() - $('.container-titlebar')
-                    .height() - 207);
+                    $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 207);
+                    $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 207);
                 }, 50);
             } else {
                 if (data.isFolded) {
@@ -849,10 +933,7 @@
                                             0].innerHTML = insert_spacing(result.text, 0.08);
                                         //check show full
                                         if (result.showfull) {
-                                            document.getElementsByClassName(
-                                                    'update-contents-details')[
-                                                    0].innerHTML +=
-                                                '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">详细更新日志</button>'
+                                            document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">详细更新日志</button>'
                                         }
                                         $('.update-contents-loading').css('display', 'none');
                                     } catch (err) {
@@ -985,6 +1066,10 @@
         //打开的设置全局快捷键
         Mousetrap.bind('shift+s', function () {
             ipcRenderer.send("openSettingsWindow");
+        });
+        //锁屏全局快捷键
+        Mousetrap.bind('ctrl+l', function(){
+            enableLockScreen();
         });
         $('#mainmenu-btn-about').click(function () {
             ipcRenderer.send("openAboutWindow"); //打开关于窗口
@@ -1120,5 +1205,4 @@
     <span id="filter-x" style="display:none"></span>
 
 </body>
-
 </html>
