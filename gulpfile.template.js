@@ -21,7 +21,12 @@ gulp.task('jquery',async function(){
 gulp.task('bootstrap',async function(){
     gulp.src('node_modules/bootstrap/dist/js/bootstrap.min.js')
         .pipe(gulp.dest('public/static'));
-    await gulp.src('node_modules/bootstrap/dist/css/bootstrap.min.css')
+    gulp.src('node_modules/bootstrap/dist/css/bootstrap.min.css')
+        .pipe(gulp.dest('public/static'));
+    //checkbox
+    await gulp.src('node_modules/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css')
+        .pipe(cssmin())
+        .pipe(rename('awesome-bootstrap-checkbox.min.css'))
         .pipe(gulp.dest('public/static'));
 });
 
@@ -111,7 +116,10 @@ gulp.task('debug',function(){
 
 //pack
 gulp.task('move old', function(){
-    return gulp.src('dist/*.exe').pipe(gulp.dest('old_version'));
+    return gulp.src('dist/*.exe').pipe(gulp.dest('../fastnote_old_version'));
+});
+gulp.task('move old x86', function(){
+    return gulp.src('dist/*.exe').pipe(gulp.dest('../fastnote_old_version/x86'));
 });
 gulp.task('clean dist',function(){
     return del(['dist/**','!dist','!dist/ver.json']);
