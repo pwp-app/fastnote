@@ -330,12 +330,12 @@
             }
         });
         ipcRenderer.on('enable-lockscreen-hide',function(){
-            if ($('.container-lockscreen').css('display') == 'none'){
+            if (typeof settings.lockpassword != 'undefined' && $('.container-lockscreen').css('display') == 'none'){
                 enableLockScreen();
             }
         });
         ipcRenderer.on('enable-lockscreen-blur', function(){
-            if (settings.locktype == 'blur' && $('.container-lockscreen').css('display') == 'none'){
+            if (typeof settings.lockpassword != 'undefined' && settings.locktype == 'blur' && $('.container-lockscreen').css('display') == 'none'){
                 enableLockScreen();
             }
         });

@@ -73,19 +73,19 @@ function renderNote(id, rawtime, updaterawtime, title, text, forceTop) {
         }
     }
     html += '<span class="note-title">'+titletext+'</span>';
-    //选择性显示时间
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
             html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
         }
     }
+    //选择性显示时间
     var m_time = moment(rawtime,'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
         var m_updatetime = moment(updaterawtime,'YYYYMMDDHHmmss');
-        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>] HH:mm:ss[</timeclock>]') + '</p>';
-        html += '<p class="note-time note-createtime"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>] HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
+        html += '<p class="note-time note-createtime"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
-        html += '<time><p class="note-time">'+ m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>] HH:mm:ss[</timeclock>]') +'</p></time>';
+        html += '<time><p class="note-time">'+ m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') +'</p></time>';
     }
     html += '</div><div class="note-content"><p class="note-text">';
     //process html tag
@@ -149,10 +149,10 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, text, forceTop) {
     var m_time = moment(rawtime,'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
         var m_updatetime = moment(updaterawtime,'YYYYMMDDHHmmss');
-        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>] HH:mm:ss[</timeclock>]') + '</p>';
-        html += '<p class="note-time note-createtime"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>] HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
+        html += '<p class="note-time note-createtime"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
-        html += '<time><p class="note-time">'+ m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>] HH:mm:ss[</timeclock>]') +'</p></time>';
+        html += '<time><p class="note-time">'+ m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') +'</p></time>';
     }
     html += '</div><div class="note-content"><p class="note-text">';
 

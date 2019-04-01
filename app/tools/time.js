@@ -34,6 +34,9 @@ var Time = {
         var m = date.getMinutes();
         var s = date.getSeconds();
 
+        if (day<10){
+            day="0"+day;
+        }
         if (h<10){
             h="0"+h;
         }
