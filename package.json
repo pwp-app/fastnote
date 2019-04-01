@@ -24,6 +24,7 @@
   },
   "name": "fastnote",
   "version": "0.1.6",
+  "homepage": "https://note.pwp.app",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -34,8 +35,16 @@
   "author": "BackRunner",
   "license": "MIT",
   "build": {
+    "files": [
+      "!.vscode/**/*",
+      "!**/Readme*",
+      "!**/gulpfile*.js",
+      "!start.bat",
+      "!old_version/**/*",
+      "!icon.ico"
+    ],
     "appId": "app.pwp.fastnote",
-    "copyright": "BackRunner",
+    "compression": "maximum",
     "productName": "Fastnote",
     "publish": [
       {

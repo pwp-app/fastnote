@@ -116,10 +116,10 @@ gulp.task('debug',function(){
 
 //pack
 gulp.task('move old', function(){
-    return gulp.src('dist/*.exe').pipe(gulp.dest('../fastnote_old_version'));
+    return gulp.src('dist/*.exe').pipe(gulp.dest('old_version'));
 });
 gulp.task('move old x86', function(){
-    return gulp.src('dist/*.exe').pipe(gulp.dest('../fastnote_old_version/x86'));
+    return gulp.src('dist/*.exe').pipe(gulp.dest('old_version/x86'));
 });
 gulp.task('clean dist',function(){
     return del(['dist/**','!dist','!dist/ver.json']);
