@@ -16,8 +16,8 @@ function createEditWindow(data) {
     var conf = {
         width: 800,
         height: 430,
-        minWidth:480,
-        minHeight:200,
+        minWidth: 480,
+        minHeight: 200,
         show: false,
         transparent: true
     };
@@ -46,7 +46,7 @@ function createEditWindow(data) {
 
     win_edit.on('ready-to-show', () => {
         type = 'init';
-        ipc.once('edit-window-ready',()=>{
+        ipc.once('edit-window-ready', () => {
             win_edit.show();
         });
         win_edit.webContents.send('message', {
@@ -54,16 +54,36 @@ function createEditWindow(data) {
             data
         });
     });
+
+    win_edit.on('minimize', () => {
+        var windows = BrowserWindow.getAllWindows();
+        for (var i = 0; i < windows.length; i++) {
+            if (!windows[i].isMinimized()) {
+                return;
+            }
+        }
+        for (var i = 0; i < windows.length; i++) {
+            windows[i].webContents.send('enable-lockscreen-minimize');
+        }
+    })
+    win_edit.on('blur', () => {
+        var windows = BrowserWindow.getAllWindows();
+        if (BrowserWindow.getFocusedWindow() == null) {
+            for (var i = 0; i < windows.length; i++) {
+                windows[i].webContents.send('enable-lockscreen-blur');
+            }
+        }
+    })
 }
 
 var editWindow = {
-    getWins: function(){
+    getWins: function () {
         return win_edits;
     },
-    showWindow: function(data){
+    showWindow: function (data) {
         var index = edit_noteid.indexOf(data.id);
-        if (index != -1){
-            if (win_edits[index]==null){
+        if (index != -1) {
+            if (win_edits[index] == null) {
                 edit_noteid[index] = null;
                 createEditWindow(data);
             } else {
@@ -73,32 +93,32 @@ var editWindow = {
             createEditWindow(data);
         }
     },
-    bindEditEvent: function(callback){
-        ipc.on('update-edit-note',function(sys,data){
-            if (typeof(callback)!='undefined'){
+    bindEditEvent: function (callback) {
+        ipc.on('update-edit-note', function (sys, data) {
+            if (typeof (callback) != 'undefined') {
                 callback(data);
             }
         });
     }
 };
 
-ipc.on('closeAllEditWindow',function(event,data){
-    for (var i=0;i<win_edits.length;i++){
-        if (win_edits[i] != null){
+ipc.on('closeAllEditWindow', function (event, data) {
+    for (var i = 0; i < win_edits.length; i++) {
+        if (win_edits[i] != null) {
             win_edits[i].close();
             win_edits[i] = null;
             edit_noteid[i] = null;
         }
     }
 });
-ipc.on('reloadAllEditWindow',function(event,data){
-    for (var i=0;i<win_edits.length;i++){
-        if (win_edits[i] != null){
+ipc.on('reloadAllEditWindow', function (event, data) {
+    for (var i = 0; i < win_edits.length; i++) {
+        if (win_edits[i] != null) {
             win_edits[i].send('readyToReload');
         }
     }
 });
-ipc.on('readyToReloadEditWindow',function(event,data){
+ipc.on('readyToReloadEditWindow', function (event, data) {
     event.sender.reload();
     event.sender.once('did-finish-load', () => {
         var type = 'init';
