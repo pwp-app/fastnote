@@ -275,12 +275,12 @@
                     //初始化title
                     if (typeof note.title != 'undefined'){
                         if (note.title.length>20){
-                            var t = ' '+note.title.substring(0,20)+'...';
-                            $("#edit-title").append(t);
-                            $("title").append(t);
+                            var t = note.title.substring(0,20)+'...';
+                            $("#edit-title").append(' '+t);
+                            $("title").append(' '+t);
                         } else {
-                            $("#edit-title").append(note.title);
-                            $("title").append(note.title);
+                            $("#edit-title").append(' '+note.title);
+                            $("title").append(' '+note.title);
                         }
                         if (note.title.length > 0){
                             $('#input-title').val(note.title);

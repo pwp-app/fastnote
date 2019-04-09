@@ -364,20 +364,35 @@
                 var origin_height = $('#note_' + data.id + ' .note-content').height(); //get origin height
                 //reset note content on page
                 $("#note_" + data.id + " .note-content p").html(html);
-                $('#note_' + data.id + ' .note-content').removeClass('note-overheight');
-                $('#note_' + data.id + ' .note-content').removeAttr('style');
+                //移除overheight标签获取便签编辑后的内容实际高度
+                let flag_overheight;
+                if ($('#note_' + data.id + ' .note-content').hasClass('note-overheight')){
+                    flag_overheight = true;
+                    $('#note_' + data.id + ' .note-content').removeClass('note-overheight');
+                    $('#note_' + data.id + ' .note-content').removeAttr('style');
+                }
                 var after_height = $('#note_' + data.id + ' .note-content').height();
+                //还原被移除的overheight标签
+                if (flag_overheight){
+                    $('#note_' + data.id + ' .note-content').addClass('note-overheight');
+                }
                 //reset content of updatetime
                 var timeContent = '<p class="note-time note-updatetime han-element">更新：' +
                     data.updatetime +
                     '</p>' +
                     '<p class="note-time han-element">创建：' + data.time + '</p>';
+                let m_updatetime = moment(data.updaterawtime,'YYYYMMDDHHmmss');
+                let m_time = moment(data.rawtime, 'YYYYMMDDHHmmss');
+                var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>'+
+                '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
                 $('#note_' + data.id + ' .note-header time').html(timeContent);
                 //open external event rebind
                 $('#note_' + data.id + ' a').click(function (e) {
                     ipcRenderer.send('openExternalURL', $(this).attr('href'));
                     e.preventDefault();
                 });
+                //timeevent rebind
+                bindNoteTimeClick(data.id);
                 //处理标题
                 if (typeof data.title != 'undefined') {
                     var titletext = "";
@@ -404,13 +419,15 @@
                 }
                 var tag_class = $('#note_' + data.id + ' .note-content').attr('class');
                 //fix note status
-                if (after_height >= 250) {
+                if (after_height > 250) {
                     if (origin_height <= 250) {
-                        bindNoteFoldDBL(data.id);
-                        $('#note_' + data.id + ' .note-content').css('height', origin_height);
-                        $('#note_' + data.id + ' .note-content').animate({
-                            height: "250px"
-                        });
+                        if (!$('#note_' + data.id + ' .note-content').hasClass('note-overheight')){
+                            bindNoteFoldDBL(data.id);
+                            $('#note_' + data.id + ' .note-content').css('height', origin_height);
+                            $('#note_' + data.id + ' .note-content').animate({
+                                height: "250px"
+                            });
+                        }
                     } else {
                         //already expanded
                         $('#note_' + data.id + ' .note-content').css('height', origin_height);
