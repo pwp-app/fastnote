@@ -82,8 +82,8 @@ function renderNote(id, rawtime, updaterawtime, title, text, forceTop) {
     var m_time = moment(rawtime,'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
         var m_updatetime = moment(updaterawtime,'YYYYMMDDHHmmss');
-        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
-        html += '<p class="note-time note-createtime"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>'+
+                '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
         html += '<time><p class="note-time">'+ m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') +'</p></time>';
     }
@@ -118,6 +118,8 @@ function renderNote(id, rawtime, updaterawtime, title, text, forceTop) {
         ipcRenderer.send('openExternalURL', $(this).attr('href'));
         e.preventDefault();
     });
+
+    bindNoteTimeClick(id);
 }
 //在顶部渲染Note
 function renderNoteAtTop(id, rawtime, updaterawtime, title, text, forceTop) {
@@ -149,8 +151,8 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, text, forceTop) {
     var m_time = moment(rawtime,'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
         var m_updatetime = moment(updaterawtime,'YYYYMMDDHHmmss');
-        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
-        html += '<p class="note-time note-createtime"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>'+
+                '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
         html += '<time><p class="note-time">'+ m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') +'</p></time>';
     }
@@ -189,6 +191,20 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, text, forceTop) {
     $('#note_' + id + ' a').click(function (e) {
         ipcRenderer.send('openExternalURL', $(this).attr('href'));
         e.preventDefault();
+    });
+
+    //绑定时间
+    bindNoteTimeClick(id);
+}
+
+function bindNoteTimeClick(id){
+    $('#note_' + id +' .note-updatetime').click(function(){
+        $('#note_' + id +' .note-header .note-updatetime').css('display', 'none');
+        $('#note_' + id +' .note-header .note-createtime').css('display', 'initial');
+    });
+    $('#note_' + id +' .note-createtime').click(function(){
+        $('#note_' + id +' .note-header .note-updatetime').css('display', 'initial');
+        $('#note_' + id +' .note-header .note-createtime').css('display', 'none');
     });
 }
 

@@ -32,7 +32,7 @@ var RecycleWindow = {
         var viewpath = path.resolve(__dirname, '../public/recyclebin.html');
         win_recycle.loadFile(viewpath);
 
-        ipc.on('recyclebin-window-ready', function (sender, e){
+        ipc.on('recyclebin-window-ready', function (sender, e) {
             win_recycle.show();
         });
 
@@ -42,18 +42,39 @@ var RecycleWindow = {
         win_recycle.on('closed', () => {
             win_recycle = null;
         });
+
+        //锁屏
+        win_recycle.on('minimize', () => {
+            var windows = BrowserWindow.getAllWindows();
+            for (var i = 0; i < windows.length; i++) {
+                if (!windows[i].isMinimized()) {
+                    return;
+                }
+            }
+            for (var i = 0; i < windows.length; i++) {
+                windows[i].webContents.send('enable-lockscreen-minimize');
+            }
+        })
+        win_recycle.on('blur', () => {
+            var windows = BrowserWindow.getAllWindows();
+            if (BrowserWindow.getFocusedWindow() == null) {
+                for (var i = 0; i < windows.length; i++) {
+                    windows[i].webContents.send('enable-lockscreen-blur');
+                }
+            }
+        })
     }
 }
 
 //ipc listen
-ipc.on('recycle-note',function(sender,data){
-    if (win_recycle!=null){
-        win_recycle.webContents.send('recycle-note',data);  //pass recycled note when window is opened;
+ipc.on('recycle-note', function (sender, data) {
+    if (win_recycle != null) {
+        win_recycle.webContents.send('recycle-note', data); //pass recycled note when window is opened;
     }
 });
 
-ipc.on('reloadRecycleWindow',function(sender,data){
-    if (win_recycle != null){
+ipc.on('reloadRecycleWindow', function (sender, data) {
+    if (win_recycle != null) {
         win_recycle.reload();
     }
 });

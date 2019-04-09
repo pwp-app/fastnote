@@ -277,7 +277,7 @@
                 if (typeof settings.locktype != 'undefined'){
                     $('#select-locktype').val(settings.locktype);
                 } else {
-                    $('#select-locktype').val('minimize');
+                    $('#select-locktype').val('manual');
                 }
                 break;
             }
@@ -485,7 +485,8 @@
                         <div style="flex: 0 0 3%"></div>
                         <div style="flex: 0 0 34%">
                             <select class="form-control settings-select" id="select-locktype">
-                                <option value="minimize">仅最小化时</option>
+                                <option value="manual">仅手动锁屏</option>
+                                <option value="minimize">最小化时</option>
                                 <option value="blur">失去焦点时</option>
                             </select>
                         </div>
@@ -516,7 +517,7 @@
                                     if (typeof settings.locktype != 'undefined'){
                                         $('#select-locktype').val(settings.locktype);
                                     } else {
-                                        $('#select-locktype').val('minimize');
+                                        $('#select-locktype').val('manual');
                                     }
                                 }
                             });

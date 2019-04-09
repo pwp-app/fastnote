@@ -170,18 +170,34 @@ function createWindow() {
       win.webContents.send('update-edit-note', data);
     });
   });
-  win.on('hide', ()=>{
-    win.webContents.send('enable-lockscreen-hide');
-  })
+  //锁屏
   win.on('minimize', ()=>{
-    win.webContents.send('enable-lockscreen-hide');
+    var windows = BrowserWindow.getAllWindows();
+    for (var i=0;i<windows.length;i++){
+      if (!windows[i].isMinimized()){
+        return;
+      }
+    }
+    for (var i=0;i<windows.length;i++){
+      windows[i].webContents.send('enable-lockscreen-minimize');
+    }
   })
   win.on('blur',()=>{
+    var windows = BrowserWindow.getAllWindows();
     if (BrowserWindow.getFocusedWindow() == null){
-      win.webContents.send('enable-lockscreen-blur');
+      for (var i=0;i<windows.length;i++){
+        windows[i].webContents.send('enable-lockscreen-blur');
+      }
     }
   })
 }
+
+ipc.on('disable-lockscreen',()=>{
+  var windows = BrowserWindow.getAllWindows();
+  for (var i=0;i<windows.length;i++){
+    windows[i].webContents.send('disable-lockscreen');
+  }
+})
 
 // Electron 会在初始化后并准备
 // 创建浏览器窗口时，调用这个函数。
