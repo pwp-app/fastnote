@@ -1,5 +1,5 @@
-let win_edits = new Array();
-let edit_noteid = new Array();
+let win_edits = [];
+let edit_noteid = [];
 
 const {
     BrowserWindow

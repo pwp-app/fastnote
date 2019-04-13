@@ -1,13 +1,13 @@
 var storage = require('electron-json-storage');
 
 //保存所有的notes
-var notes = new Array();
+var notes = [];
 
 var selectModeEnabled = false;
 //存放长按的setTimeout
 var noteLongClickTimeout;
 
-var notes_selected = new Array();
+var notes_selected = [];
 
 var sort_mode = null;
 //初始化排序模式
@@ -303,7 +303,7 @@ function refreshNoteList(callback) {
 
 //清空notes数组
 function clearNoteArray() {
-    notes = new Array();
+    notes = [];
 }
 
 //排序笔记

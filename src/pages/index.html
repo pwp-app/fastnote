@@ -529,7 +529,7 @@
                             noteLongClickTimeout = setTimeout(function () {
                                 //初始化值
                                 selectModeEnabled = true;
-                                notes_selected = new Array();
+                                notes_selected = [];
                                 hasNotesForceTop = false;
                                 hasNotesNotForceTop = false;
                                 //对当前所选进行对应处理
@@ -614,7 +614,7 @@
             //绑定全选快捷键
             Mousetrap.bind('ctrl+a', function () {
                 selectModeEnabled = true;
-                notes_selected = new Array();
+                notes_selected = [];
                 notes.forEach(note => {
                     notes_selected.push(note.id);
                 });
@@ -1199,8 +1199,8 @@
             //获取最大的便签id，刷新为新的便签id
             var maxNoteId = 0;
             //检测NoteID冲突
-            var existedNoteId = new Array();
-            var conflictNotes = new Array();
+            var existedNoteId = [];
+            var conflictNotes = [];
             //遍历现有的便签
             notes.forEach(note => {
                 if (note.id > maxNoteId) {

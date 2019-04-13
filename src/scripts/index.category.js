@@ -1,4 +1,4 @@
-var categories = new Array();
+var categories = [];
 
 //放置新的Category到数组
 function putNewCategory(name){

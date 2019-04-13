@@ -275,7 +275,7 @@
                         noteLongClickTimeout = setTimeout(function () {
                             selectModeEnabled = true;
                             $('#note_' + noteid_clicked).parent().addClass('note-selected');
-                            notes_selected = new Array();
+                            notes_selected = [];
                             notes_selected.push(noteid_clicked);
                             //set up toast
                             $('.toast-multiselected').addClass('toast-active');
