@@ -697,7 +697,7 @@
                 <i class="fa fa-bars" aria-hidden="true"></i>
             </button>
         </div>
-        <div class="trigger-category" style="display: none">
+        <div class="trigger-category">
             <button class="br-btn btn-noback bottombar-trigger" id="btn-category-trigger">
                 <i class="fa fa-book" aria-hidden="true"></i>
             </button>
@@ -993,6 +993,7 @@
             </div>
         </div>
     </div>
+
     <script>
         //绑定主菜单的动画事件
         let isMainMenuOpen = false;
@@ -1001,7 +1002,7 @@
         });
         //打开主菜单
         $('#btn-mainmenu-trigger').on('click', function () {
-            if (!isMainMenuOpen) {
+            if (!isMainMenuOpen && !isCategoryOpen) {
                 openMainMenu();
             }
         });
@@ -1091,6 +1092,75 @@
                     $(this).css('height', 'auto');
                 }
             });
+        });
+    </script>
+
+    <div class="category-background"></div>
+    <div class="container-category">
+        <div class="category-panel">
+            <div class="category-header">
+                <p>便签分类</p>
+            </div>
+            <div class="category-split"></div>
+            <div class="category-body">
+                <ul id="category-menu">
+                    <div class="category-menu-fixed">
+                        <li>
+                            <div class="category-item-name">
+                                <span>所有便签</span>
+                            </div>
+                            <div class="category-item-count">
+                                <span id="category-count-all"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="category-item-name">
+                                <span>未分类</span>
+                            </div>
+                            <div class="category-item-count">
+                                <span id="category-count-notalloc"></span>
+                            </div>
+                        </li>
+                    </div>
+                    <div class="category-split"></div>
+                    <div class="category-menu-custom"></div>
+                    <div class="category-menu-system">
+                        <li>
+                            <div class="category-icon-add"><i class="fa fa-plus" aria-hidden="true"></i></div>
+                        </li>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        var isCategoryOpen = false;
+        function openCategory() {
+            $('.category-background').css('display', 'block');
+            $('.category-background').animateCss('fadeIn');
+            $('.container-category').css('display', 'block');
+            $('.container-category').animateCss('fadeInLeft');
+            isCategoryOpen = true;
+        }
+        function closeCategory() {
+            if (isCategoryOpen) {
+                $('.category-background').css('width', '100%'); //动态修改宽度防止阻挡
+                $('.category-background').animateCss('fadeOut', function () {
+                    $('.category-background').css('display', 'none');
+                })
+                $('.container-category').animateCss('fadeOutLeft', function () {
+                    $('.container-category').css('display', 'none');
+                    isCategoryOpen = false;
+                })
+            }
+        }
+        $('#btn-category-trigger').on('click', function () {
+            if (!isMainMenuOpen && !isCategoryOpen) {
+                openCategory();
+            }
+        });
+        $('.category-background').on('mousedown', function () {
+            closeCategory();
         });
     </script>
 
