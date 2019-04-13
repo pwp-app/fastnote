@@ -20,6 +20,7 @@
     <script src="static/array.js"></script>
     <script src="static/han.simple.js"></script>
     <script src="static/notes.render.js"></script>
+    <script src="static/index.category.js"></script>
     <script src="static/mousetrap.min.js"></script>
     <script src="static/moment.min.js"></script>
     <script>
@@ -541,10 +542,9 @@
                                     hasNotesNotForceTop = true;
                                 }
                                 //set up toast
-                                $('.toast-multiselected').addClass('toast-active');
                                 $('#toast-multiselected-text').html('当前选择了<handefault/>' +
                                     notes_selected.length + "<handefault/>个便签");
-                                $('.toast-multiselected').animateCss('fadeInRight faster');
+                                $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                                 window.getSelection().removeAllRanges();
                             }, 1000);
                         }
@@ -620,8 +620,7 @@
                 });
                 $('.note-wrapper').addClass('note-selected');
                 if (!$('.toast-multiselected').hasClass('toast-active')) {
-                    $('.toast-multiselected').addClass('toast-active');
-                    $('.toast-multiselected').animateCss('fadeInRight faster');
+                    $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                 }
                 $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected.length +
                     "<handefault/>个便签");
@@ -672,8 +671,7 @@
                     newnote_info_opened = false;
                 });
             } else {
-                $('.newnote-info-float').css('display', 'block');
-                $('.newnote-info-float').animateCss('fadeInUp faster', function () {
+                $('.newnote-info-float').css('display', 'block').animateCss('fadeInUp faster', function () {
                     newnote_info_opened = true;
                 });
             }
@@ -767,8 +765,7 @@
                     $('.container-newnote').css('display', 'none');
                     isNoteFolded = true;
                 });
-                $('.trigger-expandnewnote').css('display', 'block');
-                $('.trigger-expandnewnote').animateCss('fadeIn');
+                $('.trigger-expandnewnote').css('display', 'block').animateCss('fadeIn');
             }
         });
         $('#btn-newnote-expand').click(function () {
@@ -784,8 +781,7 @@
                 $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 207) +
                     'px');
                 //animate
-                $('.container-newnote').css('display', 'block');
-                $('.container-newnote').animateCss('fadeInUp');
+                $('.container-newnote').css('display', 'block').animateCss('fadeInUp');
                 $('.trigger-expandnewnote').animateCss('fadeOut', function () {
                     $('.trigger-expandnewnote').css('display', 'none');
                     isNoteFolded = false;
@@ -872,8 +868,7 @@
                     break;
                 case 'update-available':
                     console.log("update-avaliable...");
-                    $('.container-updater').css('display', 'block');
-                    $('.container-updater').animateCss('fadeIn', function () {
+                    $('.container-updater').css('display', 'block').animateCss('fadeIn', function () {
                         var path_verfile = ``;
                         if (typeof settings != 'undefined') {
                             switch (settings.autoUpdateChannel) {
@@ -1016,10 +1011,8 @@
         });
 
         function openMainMenu() {
-            $('.mainmenu-background').css('display', 'block');
-            $('.mainmenu-background').animateCss('fadeIn');
-            $('.container-mainmenu').css('display', 'block');
-            $('.container-mainmenu').animateCss('fadeInLeft');
+            $('.mainmenu-background').css('display', 'block').animateCss('fadeIn');
+            $('.container-mainmenu').css('display', 'block').animateCss('fadeInLeft');
             isMainMenuOpen = true;
         }
         //绑定菜单项
@@ -1125,9 +1118,42 @@
                     <div class="category-split"></div>
                     <div class="category-menu-custom"></div>
                     <div class="category-menu-system">
-                        <li>
+                        <li id="category-add">
                             <div class="category-icon-add"><i class="fa fa-plus" aria-hidden="true"></i></div>
                         </li>
+                        <li id="category-add-inside">
+                            <div class="category-ctrl-add">
+                                <div class="category-add-input">
+                                    <input id="input-category-add">
+                                </div>
+                                <div class="category-add-btn">
+                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </li>
+                        <script>
+                            $('#category-add-inside').mouseenter(function(){
+                                $('.category-add-input input').addClass('category-focused');
+                            });
+                            $('#category-add-inside').mouseleave(function(){
+                                $('.category-add-input input').removeClass('category-focused');
+                            })
+                            $('#category-add').click(function(){
+                                $('#category-add').animateCss('fadeOut morefaster',function(){
+                                    $('#category-add').hide();
+                                    $('#category-add-inside').show();
+                                    $('#input-category-add').focus().val("");
+                                    $('#category-add-inside').animateCss('fadeIn morefaster');
+                                });
+                            });
+                            $('.category-add-btn').click(function(){
+                                $('#category-add-inside').animateCss('fadeOut morefaster',function(){
+                                    $('#category-add-inside').hide();
+                                    $('#category-add').show();
+                                    $('#category-add').animateCss('fadeIn morefaster');
+                                });
+                            });
+                        </script>
                     </div>
                 </ul>
             </div>

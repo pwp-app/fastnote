@@ -4,13 +4,18 @@
 @color-category-text: @color-mainmenu-primary;
 @color-category-hover: @color-mainmenu-hover;
 //values
+@category-width: 250px;
 @category-item-height: 40px;
+
+.category-focused{
+    background: @color-category-hover !important;
+}
 
 //classes
 .container-category{
     display: none;
     position: absolute;
-    width: 250px;
+    width: @category-width;
     height: 100%;
     top:0;
     bottom:0;
@@ -75,4 +80,26 @@
 .category-item-count{
     float: right;
     margin-right: 18px;
+}
+
+#category-add-inside{
+    display: none;
+}
+.category-add-input{
+    display: inline-block;
+    width: @category-width - 90px;
+    margin-left: 18px;
+}
+.category-add-btn{
+    float: right;
+    padding-right: 18px;
+}
+.category-add-input input{
+    line-height: @category-item-height - 12px;
+    border: none;
+    color: @color-category-text;
+    background: @color-category-background;
+}
+.category-add-input input:focus{
+    outline: 0 !important;
 }
