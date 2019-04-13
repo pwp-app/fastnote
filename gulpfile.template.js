@@ -50,7 +50,13 @@ gulp.task('momentjs', async function(){
         .pipe(uglify()).pipe(rename('moment.min.js')).pipe(gulp.dest('public/static'));
 });
 
-gulp.task('requirements', gulp.parallel(['jquery','bootstrap','fontawesome','animate-css', 'momentjs']));
+//3rdparty
+gulp.task('3rdparty', function(){
+    return gulp.src('src/scripts/3rdparty*.js')
+        .pipe(gulp.dest('public/static'));
+});
+
+gulp.task('requirements', gulp.parallel(['jquery','bootstrap','fontawesome','animate-css', 'momentjs','3rdparty']));
 gulp.task('less',function(){
     return gulp.src(['src/less/main.*.less', '!src/less/main.common.less'])
         .pipe(less())
