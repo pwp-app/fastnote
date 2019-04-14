@@ -61,31 +61,31 @@ function renderNote(id, rawtime, updaterawtime, title, text, forceTop) {
     html += '#' + id + '</span>';
     //渲染note-title
     var titletext = "";
-    if (typeof title != 'undefined'){
-        if (title.length > 50){
-            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'</titlep2><titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32,50),0.12)+'</titlep3><titlesusp3>...</titlesusp3><titlep4>'+insert_spacing(title.substring(50),0.12)+'</titlep4>';
-        } else if (title.length>32){
-            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'<titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32),0.12)+'</titlep3>';
-        } else if (title.length>16){
-            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18), 0.12)+'</titlep2>';
+    if (typeof title != 'undefined') {
+        if (title.length > 50) {
+            titletext = '<titlep1>' + insert_spacing(title.substring(0, 16), 0.12) + '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(title.substring(18, 32), 0.12) + '</titlep2><titlesusp2>...</titlesusp2><titlep3>' + insert_spacing(title.substring(32, 50), 0.12) + '</titlep3><titlesusp3>...</titlesusp3><titlep4>' + insert_spacing(title.substring(50), 0.12) + '</titlep4>';
+        } else if (title.length > 32) {
+            titletext = '<titlep1>' + insert_spacing(title.substring(0, 16), 0.12) + '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(title.substring(18, 32), 0.12) + '<titlesusp2>...</titlesusp2><titlep3>' + insert_spacing(title.substring(32), 0.12) + '</titlep3>';
+        } else if (title.length > 16) {
+            titletext = '<titlep1>' + insert_spacing(title.substring(0, 16), 0.12) + '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(title.substring(18), 0.12) + '</titlep2>';
         } else {
-            titletext = insert_spacing(title,0.12);
+            titletext = insert_spacing(title, 0.12);
         }
     }
-    html += '<span class="note-title">'+titletext+'</span>';
+    html += '<span class="note-title">' + titletext + '</span>';
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
             html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
         }
     }
     //选择性显示时间
-    var m_time = moment(rawtime,'YYYYMMDDHHmmss');
+    var m_time = moment(rawtime, 'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
-        var m_updatetime = moment(updaterawtime,'YYYYMMDDHHmmss');
-        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>'+
-                '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        var m_updatetime = moment(updaterawtime, 'YYYYMMDDHHmmss');
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+            '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
-        html += '<time><p class="note-time">'+ m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') +'</p></time>';
+        html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
     html += '</div><div class="note-content"><p class="note-text">';
     //process html tag
@@ -129,18 +129,18 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, text, forceTop) {
     html += '#' + id + '</span>';
     //渲染note-title
     var titletext = "";
-    if (typeof title != 'undefined'){
-        if (title.length > 50){
-            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'</titlep2><titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32,50),0.12)+'</titlep3><titlesusp3>...</titlesusp3><titlep4>'+insert_spacing(title.substring(50),0.12)+'</titlep4>';
-        } else if (title.length>32){
-            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18,32),0.12)+'<titlesusp2>...</titlesusp2><titlep3>'+insert_spacing(title.substring(32),0.12)+'</titlep3>';
-        } else if (title.length>16){
-            titletext = '<titlep1>'+insert_spacing(title.substring(0,16), 0.12)+'</titlep1><titlesusp1>...</titlesusp1><titlep2>'+insert_spacing(title.substring(18), 0.12)+'</titlep2>';
+    if (typeof title != 'undefined') {
+        if (title.length > 50) {
+            titletext = '<titlep1>' + insert_spacing(title.substring(0, 16), 0.12) + '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(title.substring(18, 32), 0.12) + '</titlep2><titlesusp2>...</titlesusp2><titlep3>' + insert_spacing(title.substring(32, 50), 0.12) + '</titlep3><titlesusp3>...</titlesusp3><titlep4>' + insert_spacing(title.substring(50), 0.12) + '</titlep4>';
+        } else if (title.length > 32) {
+            titletext = '<titlep1>' + insert_spacing(title.substring(0, 16), 0.12) + '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(title.substring(18, 32), 0.12) + '<titlesusp2>...</titlesusp2><titlep3>' + insert_spacing(title.substring(32), 0.12) + '</titlep3>';
+        } else if (title.length > 16) {
+            titletext = '<titlep1>' + insert_spacing(title.substring(0, 16), 0.12) + '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(title.substring(18), 0.12) + '</titlep2>';
         } else {
-            titletext = insert_spacing(title,0.12);
+            titletext = insert_spacing(title, 0.12);
         }
     }
-    html += '<span class="note-title">'+titletext+'</span>';
+    html += '<span class="note-title">' + titletext + '</span>';
     //置顶标志
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
@@ -148,13 +148,13 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, text, forceTop) {
         }
     }
     //选择性显示时间
-    var m_time = moment(rawtime,'YYYYMMDDHHmmss');
+    var m_time = moment(rawtime, 'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
-        var m_updatetime = moment(updaterawtime,'YYYYMMDDHHmmss');
-        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>'+
-                '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        var m_updatetime = moment(updaterawtime, 'YYYYMMDDHHmmss');
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+            '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
-        html += '<time><p class="note-time">'+ m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') +'</p></time>';
+        html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
     html += '</div><div class="note-content"><p class="note-text">';
 
@@ -197,14 +197,14 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, text, forceTop) {
     bindNoteTimeClick(id);
 }
 
-function bindNoteTimeClick(id){
-    $('#note_' + id +' .note-updatetime').click(function(){
-        $('#note_' + id +' .note-header .note-updatetime').css('display', 'none');
-        $('#note_' + id +' .note-header .note-createtime').css('display', 'initial');
+function bindNoteTimeClick(id) {
+    $('#note_' + id + ' .note-updatetime').click(function () {
+        $('#note_' + id + ' .note-header .note-updatetime').css('display', 'none');
+        $('#note_' + id + ' .note-header .note-createtime').css('display', 'initial');
     });
-    $('#note_' + id +' .note-createtime').click(function(){
-        $('#note_' + id +' .note-header .note-updatetime').css('display', 'initial');
-        $('#note_' + id +' .note-header .note-createtime').css('display', 'none');
+    $('#note_' + id + ' .note-createtime').click(function () {
+        $('#note_' + id + ' .note-header .note-updatetime').css('display', 'initial');
+        $('#note_' + id + ' .note-header .note-createtime').css('display', 'none');
     });
 }
 
@@ -230,8 +230,8 @@ function bindNoteFoldDBL(id) {
             }
         });
         //在双击折叠/展开时不选中文本
-        $('#note_' + id + ' .note-content p').mousedown(function (e){
-            if (e.detail > 1){
+        $('#note_' + id + ' .note-content p').mousedown(function (e) {
+            if (e.detail > 1) {
                 e.preventDefault();
             }
         });
@@ -257,20 +257,37 @@ function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, cat
     };
     notes.push(note);
     //分类计数
-    if (typeof category != 'undefined'){
-        addCategoryCount(category);
-    } else {
+    if (typeof category == 'undefined') {
         notalloc_count++;
     }
+}
+
+function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, title, category, text, offset, timezone, forceTop) {
+    var note = {
+        id: id,
+        time: time,
+        rawtime: rawtime,
+        updatetime: updatetime,
+        updaterawtime: updaterawtime,
+        title: title,
+        category: category,
+        text: text,
+        offset: offset,
+        timezone: timezone,
+        forceTop: forceTop
+    };
+    notes.push(note);
 }
 
 //添加Note Obj至Array
 function addNoteObjToArray(note) {
     notes.push(note);
+    //计数器增加
+    addCategoryCount(note.category, true, true);
 }
 
 //刷新note-list
-function refreshNoteList(callback) {
+function refreshNoteList(category = null, callback) {
     clearNoteList(); //先清空
     if (typeof sort_mode != 'string') {
         storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
@@ -283,8 +300,15 @@ function refreshNoteList(callback) {
                 sort_mode = 'id';
             }
             sortNotes(sort_mode); //排序
-            for(var i=0;i<notes.length;i++){
-                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+            if (category != null) {
+                for (var i = 0; i < notes.length; i++) {
+                    if (notes[i].category == category)
+                        renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+                }
+            } else {
+                for (var i = 0; i < notes.length; i++) {
+                    renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+                }
             }
             //绑定Note的点击事件
             bindNoteClickEvent();
@@ -296,8 +320,22 @@ function refreshNoteList(callback) {
 
     } else {
         sortNotes(sort_mode); //排序
-        for(var i=0;i<notes.length;i++){
-            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+        if (category != null) {
+            for (var i = 0; i < notes.length; i++) {
+                if (notes[i].category == category)
+                    renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+            }
+        } else {
+            if (category == 'notalloc'){
+                for (var i = 0; i < notes.length; i++) {
+                    if (typeof notes[i].category == 'undefined')
+                        renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+                }
+            } else {
+                for (var i = 0; i < notes.length; i++) {
+                    renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+                }
+            }
         }
         //绑定Note的点击事件
         bindNoteClickEvent();
@@ -350,16 +388,30 @@ function sortNotesByUpdateDate(a, b) {
 
 //从数组中删除一项
 function deleteNoteFromArr(id) {
-    for (var i=0;i<notes.length;i++){
-        if (notes[i].id == id) {
+    notes.every(function(note, i){
+        if (note.id == id){
             notes.splice(i, 1);
-            return;
+            minorCategoryCount(note.category, true, true);
+            return false;
+        } else {
+            return true;
         }
-    }
+    });
+}
+
+function deleteNoteFromArr_recycle(id) {
+    notes.every(function(note, i){
+        if (note.id == id){
+            notes.splice(i, 1);
+            return false;
+        } else {
+            return true;
+        }
+    });
 }
 
 function forceTopNote(noteid) {
-    for (var i=0;i<notes.length;i++){
+    for (var i = 0; i < notes.length; i++) {
         if (note.id == noteid) {
             //处理note文件
             note.forceTop = true;

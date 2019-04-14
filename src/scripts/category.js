@@ -20,6 +20,9 @@ function readCategoriesFile(){
             }
             categories = JSON.parse(data);
             renderCategoryList();
+            renderCategorySelect();
+            renderSystemCategoryCount();
+            renderCustomCategoryCount();
         });
     }
 
@@ -74,6 +77,11 @@ function renderCategoryToList(name, count, animate=false){
     }
 }
 
+function renderCategoryToSelect(name){
+    var html = '<option value="'+name+'">'+name+'</option>';
+    $('#select-note-category').append(html);
+}
+
 async function renderCategoryList(){
     $('.category-menu-custom').html('');    //先清空
     for (var i=0;i<categories.length;i++){
@@ -81,11 +89,50 @@ async function renderCategoryList(){
     }
 }
 
-async function addCategoryCount(name){
+async function renderCategorySelect(){
+    $('#select-note-category').html('<option value="notalloc">未分类</option>');
+    for (var i=0;i<categories.length;i++){
+        renderCategoryToSelect(categories[i].name);
+    }
+}
+
+async function addCategoryCount(name, render=false, save=false){
+    if (typeof name == 'undefined'){
+        notalloc_count++;
+        renderSystemCategoryCount();
+        return;
+    }
     for (var i=0;i<categories.length;i++){
         if (categories[i].name == name){
             categories[i].count = categories[i].count + 1;
-            $('#category-custom-'+categories[i].name+' .category-item-count span').html(categories[i].count);   //渲染到UI上
+            if (render){
+                $('#category-custom-'+categories[i].name+' .category-item-count span').html(categories[i].count);   //渲染到UI上
+                renderSystemCategoryCount();
+            }
+            if (save){
+                saveCategories();
+            }
+            return;
+        }
+    }
+}
+
+async function minorCategoryCount(name, render=false, save=false){
+    if (typeof name == 'undefined'){
+        notalloc_count--;
+        renderSystemCategoryCount();
+        return;
+    }
+    for (var i=0;i<categories.length;i++){
+        if (categories[i].name == name){
+            categories[i].count = categories[i].count - 1;
+            if (render){
+                $('#category-custom-'+categories[i].name+' .category-item-count span').html(categories[i].count);   //渲染到UI上
+                renderSystemCategoryCount();
+            }
+            if (save){
+                saveCategories();
+            }
             return;
         }
     }
@@ -97,5 +144,7 @@ async function renderSystemCategoryCount(){
 }
 
 async function renderCustomCategoryCount(){
-    
+    for (var i=0;i<categories.length;i++){
+        $('#category-custom-'+categories[i].name+' .category-item-count span').html(categories[i].count);
+    }
 }

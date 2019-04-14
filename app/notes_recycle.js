@@ -28,7 +28,7 @@ function deleteNote(id, infoEnabled=true) {
                         throw(err);
                     } else {
                         //删除成功
-                        deleteNoteFromArr(id);
+                        deleteNoteFromArr_recycle(id);
                         //动画
                         $('#note_' + id).animateCss('fadeOutLeft', function () {
                             $('#note_' + id).parent().remove(); //动画结束后删除div
@@ -96,7 +96,7 @@ function restoreNote(id, infoEnabled=true){
                         readNoteFiles();
                         throw(err);
                     } else {
-                        deleteNoteFromArr(id);
+                        deleteNoteFromArr_recycle(id);
                         //动画
                         $('#note_' + id).animateCss('fadeOutLeft', function () {
                             $('#note_' + id).parent().remove(); //动画结束后删除div
@@ -128,9 +128,9 @@ function restoreNotes(notes, callback){
     if (Object.prototype.toString.call(notes) === '[object Array]'){
         if(notes.length>0){
             try{
-                notes.forEach(noteid => {
-                    restoreNote(noteid, false);
-                });
+                for (var i=0;i<notes.length;i++){
+                    restoreNote(notes[i], false);
+                }
                 if (typeof(callback) == 'function'){
                     callback(true);
                     return;
@@ -181,7 +181,7 @@ function readNoteFiles() {
                             var note_json = data;
                             if (typeof (note_json) != 'undefined' && note_json != null) {
                                 note_json = JSON.parse(note_json);
-                                addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.title, note_json.text, note_json.offset, note_json.timezone);
+                                addNoteToArray_recycle(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.title, note_json.category, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop);
                                 if (notes.length + countOffset == fileArr.length) {
                                     //结束文件遍历，渲染列表
                                     refreshNoteList();

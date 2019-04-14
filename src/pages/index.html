@@ -473,7 +473,7 @@
                     showNoteList();
                 }
                 addNoteObjToArray(data);
-                refreshNoteList(function () {
+                refreshNoteList(null, function () {
                     bindNoteFoldDBL(data.id);
                 });
                 //animate
@@ -637,7 +637,17 @@
                     <label>标题</label>
                 </div>
                 <div class="br-col-10">
-                    <input type="text" class="form-control" id="input-note-title" maxlength="64">
+                    <input type="text" class="form-control" id="input-note-title" maxlength="64" placeholder="(无标题)">
+                </div>
+            </div>
+            <div class="newnote-info-item" style="margin-top: 8px;">
+                <div class="br-col-2">
+                    <label>分类</label>
+                </div>
+                <div class="br-col-10">
+                    <select class="form-control" id="select-note-category">
+                        <option value="notalloc">未分类</option>
+                    </select>
                 </div>
             </div>
         </div>
