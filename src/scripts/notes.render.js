@@ -241,7 +241,7 @@ function bindNoteFoldDBL(id) {
 }
 
 //添加笔记至Array
-function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, text, offset, timezone, forceTop) {
+function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, category, text, offset, timezone, forceTop) {
     var note = {
         id: id,
         time: time,
@@ -249,12 +249,19 @@ function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, tex
         updatetime: updatetime,
         updaterawtime: updaterawtime,
         title: title,
+        category: category,
         text: text,
         offset: offset,
         timezone: timezone,
         forceTop: forceTop
     };
     notes.push(note);
+    //分类计数
+    if (typeof category != 'undefined'){
+        addCategoryCount(category);
+    } else {
+        notalloc_count++;
+    }
 }
 
 //添加Note Obj至Array
@@ -343,26 +350,23 @@ function sortNotesByUpdateDate(a, b) {
 
 //从数组中删除一项
 function deleteNoteFromArr(id) {
-    notes.every(function (note, i) {
-        if (note.id == id) {
+    for (var i=0;i<notes.length;i++){
+        if (notes[i].id == id) {
             notes.splice(i, 1);
-            return false;
+            return;
         }
-        return true; //every是true继续循环 false跳出
-    });
+    }
 }
 
 function forceTopNote(noteid) {
-    notes.every(function (note, i) {
+    for (var i=0;i<notes.length;i++){
         if (note.id == noteid) {
             //处理note文件
             note.forceTop = true;
             saveNoteByObj(note);
-            return false;
-        } else {
-            return true;
+            break;
         }
-    });
+    }
     refreshNoteList();
 }
 

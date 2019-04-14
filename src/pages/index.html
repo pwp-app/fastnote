@@ -20,13 +20,13 @@
     <script src="static/array.js"></script>
     <script src="static/han.simple.js"></script>
     <script src="static/notes.render.js"></script>
-    <script src="static/index.category.js"></script>
+    <script src="static/category.js"></script>
     <script src="static/mousetrap.min.js"></script>
     <script src="static/moment.min.js"></script>
     <script>
         //define const
-        const remote = require('electron').remote;
-        const app = remote.app;
+        var remote = require('electron').remote;
+        var app = remote.app;
         //import json storage
         if (typeof storage != 'undefined') {
             var storage = require('electron-json-storage');
@@ -92,8 +92,8 @@
                 console.error('A error occured when reading settings.');
             } else {
                 //优先初始化锁屏
-                if (typeof settings.lockpassword != 'undefined'){
-                    $('.container-lockscreen').css('display','block');
+                if (typeof settings.lockpassword != 'undefined') {
+                    $('.container-lockscreen').css('display', 'block');
                     $('#input-lockscreen').focus();
                 }
                 //read success
@@ -367,14 +367,14 @@
                 $("#note_" + data.id + " .note-content p").html(html);
                 //移除overheight标签获取便签编辑后的内容实际高度
                 let flag_overheight;
-                if ($('#note_' + data.id + ' .note-content').hasClass('note-overheight')){
+                if ($('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
                     flag_overheight = true;
                     $('#note_' + data.id + ' .note-content').removeClass('note-overheight');
                     $('#note_' + data.id + ' .note-content').removeAttr('style');
                 }
                 var after_height = $('#note_' + data.id + ' .note-content').height();
                 //还原被移除的overheight标签
-                if (flag_overheight){
+                if (flag_overheight) {
                     $('#note_' + data.id + ' .note-content').addClass('note-overheight');
                 }
                 //reset content of updatetime
@@ -382,10 +382,10 @@
                     data.updatetime +
                     '</p>' +
                     '<p class="note-time han-element">创建：' + data.time + '</p>';
-                let m_updatetime = moment(data.updaterawtime,'YYYYMMDDHHmmss');
+                let m_updatetime = moment(data.updaterawtime, 'YYYYMMDDHHmmss');
                 let m_time = moment(data.rawtime, 'YYYYMMDDHHmmss');
-                var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>'+
-                '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
+                var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+                    '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
                 $('#note_' + data.id + ' .note-header time').html(timeContent);
                 //open external event rebind
                 $('#note_' + data.id + ' a').click(function (e) {
@@ -422,7 +422,7 @@
                 //fix note status
                 if (after_height > 250) {
                     if (origin_height <= 250) {
-                        if (!$('#note_' + data.id + ' .note-content').hasClass('note-overheight')){
+                        if (!$('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
                             bindNoteFoldDBL(data.id);
                             $('#note_' + data.id + ' .note-content').css('height', origin_height);
                             $('#note_' + data.id + ' .note-content').animate({
@@ -1033,7 +1033,7 @@
             ipcRenderer.send("openSettingsWindow");
         });
         //锁屏全局快捷键
-        Mousetrap.bind('ctrl+l', function(){
+        Mousetrap.bind('ctrl+l', function () {
             enableLockScreen();
         });
         $('#mainmenu-btn-about').click(function () {
@@ -1092,7 +1092,12 @@
     <div class="container-category">
         <div class="category-panel">
             <div class="category-header">
-                <p>便签分类</p>
+                <div class="category-header-title">
+                    <p>便签分类</p>
+                </div>
+                <div class="category-header-button">
+                    <i class="fa fa-edit" aria-hidden="true"></i>
+                </div>
             </div>
             <div class="category-split"></div>
             <div class="category-body">
@@ -1132,26 +1137,47 @@
                             </div>
                         </li>
                         <script>
-                            $('#category-add-inside').mouseenter(function(){
+                            $('#category-add-inside').mouseenter(function () {
                                 $('.category-add-input input').addClass('category-focused');
                             });
-                            $('#category-add-inside').mouseleave(function(){
+                            $('#category-add-inside').mouseleave(function () {
                                 $('.category-add-input input').removeClass('category-focused');
                             })
-                            $('#category-add').click(function(){
-                                $('#category-add').animateCss('fadeOut morefaster',function(){
+                            $('#category-add').click(function () {
+                                $('#category-add').animateCss('fadeOut morefaster', function () {
                                     $('#category-add').hide();
                                     $('#category-add-inside').show();
                                     $('#input-category-add').focus().val("");
                                     $('#category-add-inside').animateCss('fadeIn morefaster');
                                 });
                             });
-                            $('.category-add-btn').click(function(){
-                                $('#category-add-inside').animateCss('fadeOut morefaster',function(){
+                            $('.category-add-btn').click(function () {
+                                $('#category-add-inside').animateCss('fadeOut morefaster', function () {
+                                    $('#input-category-add').removeClass('br-invalid-underline');
                                     $('#category-add-inside').hide();
                                     $('#category-add').show();
                                     $('#category-add').animateCss('fadeIn morefaster');
                                 });
+                            });
+                            $('#input-category-add').keypress(function(e){
+                                if (e.which == 13){
+                                    var category_name = $('#input-category-add').val().trim();
+                                    if (existCategory(category_name)){
+                                        //仓库已存在
+                                        $('#input-category-add').addClass('br-invalid-underline');
+                                    } else {
+                                        //仓库不存在
+                                        $('#category-add-inside').animateCss('fadeOut morefaster', function () {
+                                            $('#input-category-add').removeClass('br-invalid-underline');
+                                            $('#category-add-inside').hide();
+                                            putCategoryToArr(category_name);    //添加到数组
+                                            renderCategoryToList(category_name, 0, true); //渲染到页面
+                                            saveCategories();   //保存便签
+                                            $('#category-add').show();
+                                            $('#category-add').animateCss('fadeIn morefaster');
+                                        });
+                                    }
+                                }
                             });
                         </script>
                     </div>
@@ -1161,6 +1187,7 @@
     </div>
     <script>
         var isCategoryOpen = false;
+
         function openCategory() {
             $('.category-background').css('display', 'block');
             $('.category-background').animateCss('fadeIn');
@@ -1168,6 +1195,7 @@
             $('.container-category').animateCss('fadeInLeft');
             isCategoryOpen = true;
         }
+
         function closeCategory() {
             if (isCategoryOpen) {
                 $('.category-background').css('width', '100%'); //动态修改宽度防止阻挡
@@ -1272,4 +1300,5 @@
     <span id="filter-x" style="display:none"></span>
 
 </body>
+
 </html>
