@@ -4,13 +4,27 @@ var app = remote.app;
 var storagePath = app.getPath('userData');
 
 var categories = [];
+var current_category;
+
 var notalloc_count = 0;
 
 global.indebug = remote.getGlobal('indebug');
 
+readCurrentCategory();
 readCategoriesFile();
 
 //读取
+function readCurrentCategory(){
+    if(fs.existsSync(storagePath + (global.indebug?'/devTemp':'')+ '/storage/current_category.json')){
+        fs.readFile(storagePath + (global.indebug?'/devTemp':'')+ '/storage/current_category.json', 'utf-8', function(err, data){
+            if (err){
+                console.error(err);
+                return;
+            }
+            current_category = JSON.parse(data).category;
+        });
+    }
+}
 function readCategoriesFile(){
     if(fs.existsSync(storagePath + (global.indebug?'/devTemp':'')+ '/storage/categories.json')){
         fs.readFile(storagePath + (global.indebug?'/devTemp':'')+ '/storage/categories.json', 'utf-8', function(err, data){

@@ -301,9 +301,18 @@ function refreshNoteList(category = null, callback) {
             }
             sortNotes(sort_mode); //排序
             if (category != null) {
-                for (var i = 0; i < notes.length; i++) {
-                    if (notes[i].category == category)
-                        renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+                if (category == 'notalloc') {
+                    for (var i = 0; i < notes.length; i++) {
+                        if (typeof notes[i].category == 'undefined') {
+                            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+                        }
+                    }
+                } else {
+                    for (var i = 0; i < notes.length; i++) {
+                        if (notes[i].category == category) {
+                            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+                        }
+                    }
                 }
             } else {
                 for (var i = 0; i < notes.length; i++) {
@@ -317,24 +326,25 @@ function refreshNoteList(category = null, callback) {
                 callback();
             }
         });
-
     } else {
         sortNotes(sort_mode); //排序
         if (category != null) {
-            for (var i = 0; i < notes.length; i++) {
-                if (notes[i].category == category)
-                    renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
-            }
-        } else {
-            if (category == 'notalloc'){
+            if (category == 'notalloc') {
                 for (var i = 0; i < notes.length; i++) {
-                    if (typeof notes[i].category == 'undefined')
+                    if (typeof notes[i].category == 'undefined') {
                         renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+                    }
                 }
             } else {
                 for (var i = 0; i < notes.length; i++) {
-                    renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+                    if (notes[i].category == category) {
+                        renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+                    }
                 }
+            }
+        } else {
+            for (var i = 0; i < notes.length; i++) {
+                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
             }
         }
         //绑定Note的点击事件
@@ -388,8 +398,8 @@ function sortNotesByUpdateDate(a, b) {
 
 //从数组中删除一项
 function deleteNoteFromArr(id) {
-    notes.every(function(note, i){
-        if (note.id == id){
+    notes.every(function (note, i) {
+        if (note.id == id) {
             notes.splice(i, 1);
             minorCategoryCount(note.category, true, true);
             return false;
@@ -400,8 +410,8 @@ function deleteNoteFromArr(id) {
 }
 
 function deleteNoteFromArr_recycle(id) {
-    notes.every(function(note, i){
-        if (note.id == id){
+    notes.every(function (note, i) {
+        if (note.id == id) {
             notes.splice(i, 1);
             return false;
         } else {
