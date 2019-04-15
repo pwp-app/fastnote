@@ -10,8 +10,8 @@ var notalloc_count = 0;
 
 global.indebug = remote.getGlobal('indebug');
 
-readCurrentCategory();
 readCategoriesFile();
+readCurrentCategory();
 
 //读取
 function readCurrentCategory(){
@@ -23,8 +23,14 @@ function readCurrentCategory(){
             }
             current_category = JSON.parse(data).category;
         });
+    } else {
+        current_category = "all";
     }
+    $(document).ready(function(){
+        renderCurrentCategory();
+    });
 }
+
 function readCategoriesFile(){
     if(fs.existsSync(storagePath + (global.indebug?'/devTemp':'')+ '/storage/categories.json')){
         fs.readFile(storagePath + (global.indebug?'/devTemp':'')+ '/storage/categories.json', 'utf-8', function(err, data){
@@ -33,10 +39,12 @@ function readCategoriesFile(){
                 return;
             }
             categories = JSON.parse(data);
-            renderCategoryList();
-            renderCategorySelect();
-            renderSystemCategoryCount();
-            renderCustomCategoryCount();
+            $(document).ready(function(){
+                renderCategoryList();
+                renderCategorySelect();
+                renderSystemCategoryCount();
+                renderCustomCategoryCount();
+            });
         });
     }
 
@@ -84,7 +92,7 @@ async function saveCategories(){
 }
 
 function renderCategoryToList(name, count, animate=false){
-    var html = '<li><div id="category-custom-'+name+'"><div class="category-item-name"><span>'+name+'</span></div><div class="category-item-count"><span>'+count+'</span></div></div></li>';
+    var html = '<li data-name="'+name+'"><div id="category-custom-'+name+'"><div class="category-item-name"><span>'+name+'</span></div><div class="category-item-count"><span>'+count+'</span></div></div></li>';
     $('.category-menu-custom').append(html);
     if (animate){
         $('#category-custom-'+name).animateCss('fadeIn morefaster');
@@ -107,6 +115,17 @@ async function renderCategorySelect(){
     $('#select-note-category').html('<option value="notalloc">未分类</option>');
     for (var i=0;i<categories.length;i++){
         renderCategoryToSelect(categories[i].name);
+    }
+}
+
+async function renderCurrentCategory(){
+    switch(current_category){
+        default:
+        $('#category-custom-'+current_category).addClass('category-selected');
+        break;
+        case 'all':case 'notalloc':
+        $('#category-system-'+current_category).addClass('category-selected');
+        break;
     }
 }
 

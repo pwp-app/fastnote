@@ -3,12 +3,16 @@
 @color-categroy-split: @color-mainmenu-split;
 @color-category-text: @color-mainmenu-primary;
 @color-category-hover: @color-mainmenu-hover;
+@color-category-selected: darken(@color-category-hover, 5%);
 //values
 @category-width: 250px;
 @category-item-height: 40px;
 
 .category-focused{
     background: @color-category-hover !important;
+}
+.category-selected{
+    background: @color-category-selected !important;
 }
 
 //classes
@@ -95,9 +99,6 @@
 .category-item-count{
     float: right;
     margin-right: 18px;
-}
-#category-add{
-    cursor: pointer;
 }
 .category-icon-add{
     text-align: center;

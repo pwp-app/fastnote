@@ -1113,20 +1113,24 @@
             <div class="category-body">
                 <ul id="category-menu">
                     <div class="category-menu-fixed">
-                        <li>
-                            <div class="category-item-name">
-                                <span>所有便签</span>
-                            </div>
-                            <div class="category-item-count">
-                                <span id="category-count-all"></span>
-                            </div>
+                        <li data-name="all">
+                            <div id="category-system-all">
+                                <div class="category-item-name">
+                                    <span>所有便签</span>
+                                </div>
+                                <div class="category-item-count">
+                                    <span id="category-count-all"></span>
+                                </div>
+                            <div>
                         </li>
-                        <li>
-                            <div class="category-item-name">
-                                <span>未分类</span>
-                            </div>
-                            <div class="category-item-count">
-                                <span id="category-count-notalloc"></span>
+                        <li data-name="notalloc">
+                            <div id="category-system-notalloc">
+                                <div class="category-item-name">
+                                    <span>未分类</span>
+                                </div>
+                                <div class="category-item-count">
+                                    <span id="category-count-notalloc"></span>
+                                </div>
                             </div>
                         </li>
                     </div>
@@ -1225,6 +1229,27 @@
         });
         $('.category-background').on('mousedown', function () {
             closeCategory();
+        });
+
+        //绑定每个li的点击
+        $(document).on('click','#category-menu li:not(#category-add):not(#category-add-inside)',function(){
+            var category_clicked = $(this).attr('data-name');
+            if (category_clicked != current_category){
+                //移除选中
+                switch (current_category){
+                    default:
+                    $('#category-custom-'+current_category).removeClass('category-selected');
+                    break;
+                    case 'all':case 'notalloc':
+                    $('#category-system-'+current_category).removeClass('category-selected');
+                    break;
+                }
+                //如果当前为all，则剔除掉不属于选中分类的便签
+                current_category = category_clicked;
+                renderCurrentCategory();
+                //隐藏不属于当前类别的
+                renderNotesOfCategory(current_category);
+            }
         });
     </script>
 

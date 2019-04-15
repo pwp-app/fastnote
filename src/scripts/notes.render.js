@@ -287,7 +287,7 @@ function addNoteObjToArray(note) {
 }
 
 //刷新note-list
-function refreshNoteList(category = null, callback) {
+function refreshNoteList(callback) {
     clearNoteList(); //先清空
     if (typeof sort_mode != 'string') {
         storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
@@ -300,24 +300,8 @@ function refreshNoteList(category = null, callback) {
                 sort_mode = 'id';
             }
             sortNotes(sort_mode); //排序
-            if (category != null) {
-                if (category == 'notalloc') {
-                    for (var i = 0; i < notes.length; i++) {
-                        if (typeof notes[i].category == 'undefined') {
-                            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
-                        }
-                    }
-                } else {
-                    for (var i = 0; i < notes.length; i++) {
-                        if (notes[i].category == category) {
-                            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
-                        }
-                    }
-                }
-            } else {
-                for (var i = 0; i < notes.length; i++) {
-                    renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
-                }
+            for (var i = 0; i < notes.length; i++) {
+                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
             }
             //绑定Note的点击事件
             bindNoteClickEvent();
@@ -328,24 +312,8 @@ function refreshNoteList(category = null, callback) {
         });
     } else {
         sortNotes(sort_mode); //排序
-        if (category != null) {
-            if (category == 'notalloc') {
-                for (var i = 0; i < notes.length; i++) {
-                    if (typeof notes[i].category == 'undefined') {
-                        renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
-                    }
-                }
-            } else {
-                for (var i = 0; i < notes.length; i++) {
-                    if (notes[i].category == category) {
-                        renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
-                    }
-                }
-            }
-        } else {
-            for (var i = 0; i < notes.length; i++) {
-                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
-            }
+        for (var i = 0; i < notes.length; i++) {
+            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
         }
         //绑定Note的点击事件
         bindNoteClickEvent();
@@ -444,4 +412,26 @@ function removeForceTopNote(noteid) {
         }
     });
     refreshNoteList();
+}
+
+async function renderNotesOfCategory(name){
+    if (name == 'all'){
+        $('.note').parent().show();
+    } else if (name == 'notalloc') {
+        for (var i=0;i<notes.length;i++){
+            if (typeof notes[i].category != 'undefined'){
+                $('#note_'+notes[i].id).parent().hide();
+            } else {
+                $('#note_'+notes[i].id).parent().show();
+            }
+        }
+    } else {
+        for (var i=0;i<notes.length;i++){
+            if (notes[i].category != name){
+                $('#note_'+notes[i].id).parent().hide();
+            } else {
+                $('#note_'+notes[i].id).parent().show();
+            }
+        }
+    }
 }

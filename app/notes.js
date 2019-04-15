@@ -198,19 +198,7 @@ function readNoteFiles() {
                             addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.title, note_json.category, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop);
                             if (notes.length + countOffset == fileArr.length) {
                                 //结束文件遍历，渲染列表
-                                if(fs.existsSync(storagePath + (global.indebug?'/devTemp':'')+ '/storage/current_category.json')){
-                                    fs.readFile(storagePath + (global.indebug?'/devTemp':'')+ '/storage/current_category.json', 'utf-8', function(err, data){
-                                        if (err){
-                                            console.error(err);
-                                            refreshNoteList();
-                                            return;
-                                        }
-                                        current_category = JSON.parse(data).category;
-                                        refreshNoteList(current_category);
-                                    });
-                                } else {
-                                    refreshNoteList();
-                                }
+                                refreshNoteList();
                                 //显示列表
                                 showNoteList();
                                 //渲染便签数量
@@ -319,3 +307,4 @@ function saveNotesId() {
     };
     storage.set('notesid' + (global.indebug ? '_dev' : ''), data);
 }
+
