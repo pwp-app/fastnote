@@ -1257,6 +1257,26 @@
             }
         });
 
+        //绑定每个自定义分类中的删除按钮
+        $(document).on('click', '.category-item-delbtn', function(){
+            //获取分类名称
+            var name = $(this).parent().parent().attr('data-name');
+            dialog.showMessageBox({
+                type:"warning",
+                buttons:['取消','删除','删除分类并删除该分类下的便签'],
+                defaultId:0,
+                title:'确认操作',
+                message:'确定要删除分类"'+name+'"吗？该操作将不可撤回。',
+                detail:'仅删除分类不影响便签，便签会被放入未分类中。'
+            }, function(res){
+                if (res == 1){
+
+                } else if (res == 2) {
+                    
+                }
+            });
+        });
+
         var categoryEditMode = false;
 
         //绑定编辑按钮
