@@ -1106,7 +1106,8 @@
                     <p>便签分类</p>
                 </div>
                 <div class="category-header-button">
-                    <i class="fa fa-edit" aria-hidden="true"></i>
+                    <i class="fa fa-edit" id="category-header-editbtn" aria-hidden="true"></i>
+                    <i class="fa fa-check" id="category-header-confirmbtn" aria-hidden="true"></i>
                 </div>
             </div>
             <div class="category-split"></div>
@@ -1150,50 +1151,6 @@
                                 </div>
                             </div>
                         </li>
-                        <script>
-                            $('#category-add-inside').mouseenter(function () {
-                                $('.category-add-input input').addClass('category-focused');
-                            });
-                            $('#category-add-inside').mouseleave(function () {
-                                $('.category-add-input input').removeClass('category-focused');
-                            })
-                            $('#category-add').click(function () {
-                                $('#category-add').animateCss('fadeOut morefaster', function () {
-                                    $('#category-add').hide();
-                                    $('#category-add-inside').show();
-                                    $('#input-category-add').focus().val("");
-                                    $('#category-add-inside').animateCss('fadeIn morefaster');
-                                });
-                            });
-                            $('.category-add-btn').click(function () {
-                                $('#category-add-inside').animateCss('fadeOut morefaster', function () {
-                                    $('#input-category-add').removeClass('br-invalid-underline');
-                                    $('#category-add-inside').hide();
-                                    $('#category-add').show();
-                                    $('#category-add').animateCss('fadeIn morefaster');
-                                });
-                            });
-                            $('#input-category-add').keypress(function(e){
-                                if (e.which == 13){
-                                    var category_name = $('#input-category-add').val().trim();
-                                    if (existCategory(category_name)){
-                                        //仓库已存在
-                                        $('#input-category-add').addClass('br-invalid-underline');
-                                    } else {
-                                        //仓库不存在
-                                        $('#category-add-inside').animateCss('fadeOut morefaster', function () {
-                                            $('#input-category-add').removeClass('br-invalid-underline');
-                                            $('#category-add-inside').hide();
-                                            putCategoryToArr(category_name);    //添加到数组
-                                            renderCategoryToList(category_name, 0, true); //渲染到页面
-                                            saveCategories();   //保存便签
-                                            $('#category-add').show();
-                                            $('#category-add').animateCss('fadeIn morefaster');
-                                        });
-                                    }
-                                }
-                            });
-                        </script>
                     </div>
                 </ul>
             </div>
@@ -1222,6 +1179,52 @@
                 })
             }
         }
+
+        $('#category-add-inside').mouseenter(function () {
+            $('.category-add-input input').addClass('category-focused');
+        });
+        $('#category-add-inside').mouseleave(function () {
+            $('.category-add-input input').removeClass('category-focused');
+        })
+        $('#category-add').click(function () {
+            $('#category-add').animateCss('fadeOut morefaster', function () {
+                $('#category-add').hide();
+                $('#category-add-inside').show();
+                $('#input-category-add').focus().val("");
+                $('#category-add-inside').animateCss('fadeIn morefaster');
+            });
+        });
+        $('.category-add-btn').click(function () {
+            $('#category-add-inside').animateCss('fadeOut morefaster', function () {
+                $('#input-category-add').removeClass('br-invalid-underline');
+                $('#category-add-inside').hide();
+                $('#category-add').show();
+                $('#category-add').animateCss('fadeIn morefaster');
+            });
+        });
+
+        $('#input-category-add').keypress(function (e) {
+            if (e.which == 13) {
+                var category_name = $('#input-category-add').val().trim();
+                if (existCategory(category_name)) {
+                    //仓库已存在
+                    $('#input-category-add').addClass('br-invalid-underline');
+                } else {
+                    //仓库不存在
+                    $('#category-add-inside').animateCss('fadeOut morefaster', function () {
+                        $('#input-category-add').removeClass('br-invalid-underline');
+                        $('#category-add-inside').hide();
+                        putCategoryToArr(category_name); //添加到数组
+                        renderCategoryToList(category_name, 0, true); //渲染到页面
+                        renderCategoryToSelect(category_name);  //渲染到select
+                        saveCategories(); //保存便签
+                        $('#category-add').show();
+                        $('#category-add').animateCss('fadeIn morefaster');
+                    });
+                }
+            }
+        });
+
         $('#btn-category-trigger').on('click', function () {
             if (!isMainMenuOpen && !isCategoryOpen) {
                 openCategory();
@@ -1231,24 +1234,50 @@
             closeCategory();
         });
 
-        //绑定每个li的点击
-        $(document).on('click','#category-menu li:not(#category-add):not(#category-add-inside)',function(){
+        //绑定除了add的每个li的点击
+        $(document).on('click', '#category-menu li:not(#category-add):not(#category-add-inside)', function () {
             var category_clicked = $(this).attr('data-name');
-            if (category_clicked != current_category){
+            if (category_clicked != current_category && !categoryEditMode) {
                 //移除选中
-                switch (current_category){
+                switch (current_category) {
                     default:
-                    $('#category-custom-'+current_category).removeClass('category-selected');
-                    break;
-                    case 'all':case 'notalloc':
-                    $('#category-system-'+current_category).removeClass('category-selected');
-                    break;
+                        $('#category-custom-' + current_category).removeClass('category-selected');
+                        break;
+                    case 'all':
+                    case 'notalloc':
+                        $('#category-system-' + current_category).removeClass('category-selected');
+                        break;
                 }
                 //如果当前为all，则剔除掉不属于选中分类的便签
                 current_category = category_clicked;
                 renderCurrentCategory();
                 //隐藏不属于当前类别的
                 renderNotesOfCategory(current_category);
+            }
+        });
+
+        var categoryEditMode = false;
+
+        //绑定编辑按钮
+        $('.category-header-button').click(function(){
+            if (categoryEditMode){
+                // == 分类编辑模式启用 ==
+                categoryEditMode = false;
+                //顶部按钮改变
+                $('#category-header-confirmbtn').hide();
+                $('#category-header-editbtn').show();
+                //更改底部便签的显示
+                $('.category-item-delbtn').hide();
+                $('.category-menu-custom .category-item-count').show();
+            } else {
+                // == 分类编辑模式禁用 ==
+                categoryEditMode = true;
+                //顶部按钮改变
+                $('#category-header-editbtn').hide();
+                $('#category-header-confirmbtn').show();
+                //更改底部便签的显示
+                $('.category-menu-custom .category-item-count').hide();
+                $('.category-item-delbtn').show();
             }
         });
     </script>
