@@ -23,6 +23,7 @@
     <script src="static/category.js"></script>
     <script src="static/mousetrap.min.js"></script>
     <script src="static/moment.min.js"></script>
+    <script src="static/html5sortable.min.js"></script>
     <script>
         //define const
         var remote = require('electron').remote;
@@ -1269,6 +1270,9 @@
                 //更改底部便签的显示
                 $('.category-item-delbtn').hide();
                 $('.category-menu-custom .category-item-count').show();
+                //sortable
+                $('.category-menu-custom li').css('-webkit-user-drag','none');
+                $('.category-menu-custom li').css('-webkit-user-select','none');
             } else {
                 // == 分类编辑模式禁用 ==
                 categoryEditMode = true;
@@ -1278,7 +1282,23 @@
                 //更改底部便签的显示
                 $('.category-menu-custom .category-item-count').hide();
                 $('.category-item-delbtn').show();
+                //sortable
+                $('.category-menu-custom li').css('-webkit-user-drag','auto');
+                $('.category-menu-custom li').css('-webkit-user-select','auto');
             }
+        });
+
+        //sortable
+        sortable('.category-menu-custom',{
+            items: 'li',
+            forcePlaceholderSize: true
+        })[0].addEventListener('sortupdate',function(e){
+            var name = $(e.detail.item).attr('data-name');  //获取拖动的名称
+            //列表的index和categories的index对应，交换
+            var t = categories[e.detail.origin.index];
+            categories[e.detail.origin.index] = categories[e.detail.destination.index];
+            categories[e.detail.destination.index] = t;
+            saveCategories();
         });
     </script>
 

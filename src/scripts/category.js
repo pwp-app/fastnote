@@ -92,7 +92,7 @@ async function saveCategories(){
 }
 
 function renderCategoryToList(name, count, animate=false){
-    var html = '<li data-name="'+name+'"><div id="category-custom-'+name+'"><div class="category-item-name"><span>'+name+'</span></div><div class="category-item-count"><span>'+count+'</span></div><div class="category-item-delbtn"><i class="fa fa-minus-circle" aria-hidden="true"></i></div></div></li>';
+    var html = '<li data-name="'+name+'" draggable="true"><div id="category-custom-'+name+'"><div class="category-item-name"><span>'+name+'</span></div><div class="category-item-count"><span>'+count+'</span></div><div class="category-item-delbtn"><i class="fa fa-minus-circle" aria-hidden="true"></i></div></div></li>';
     $('.category-menu-custom').append(html);
     if (animate){
         $('#category-custom-'+name).animateCss('fadeIn morefaster');

@@ -55,8 +55,10 @@
 }
 .category-header-button{
     float: right;
+    width: 24px;
+    text-align: center;
     color: @color-category-text;
-    margin-right: 13px;
+    margin-right: 9px;
     cursor: pointer;
 }
 .category-header-button i{
@@ -98,10 +100,15 @@
 .category-item-name{
     display: inline-block;
     margin-left: 18px;
+    pointer-events: none;
 }
 .category-item-count{
     float: right;
     margin-right: 18px;
+    pointer-events: none;
+}
+.category-item-name span,.category-item-count span{
+    .no-select();
 }
 .category-icon-add{
     text-align: center;
