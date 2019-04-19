@@ -22,13 +22,16 @@ function readCurrentCategory(){
                 return;
             }
             current_category = JSON.parse(data).category;
+            $(document).ready(function(){
+                renderCurrentCategory();
+            });
         });
     } else {
         current_category = "all";
+        $(document).ready(function(){
+            renderCurrentCategory();
+        });
     }
-    $(document).ready(function(){
-        renderCurrentCategory();
-    });
 }
 
 function readCategoriesFile(){
@@ -71,12 +74,60 @@ function existCategory(name){
     return false;
 }
 
+function indexOfCategory(name){
+    for (var i=0;i<categories.length;i++){
+        if (categories[i].name == name){
+            return i;
+        }
+    }
+    return false;
+}
+
+function getCountOfCategory(name){
+    if (name == 'notalloc'){
+        return notalloc_count;
+    } else if (name == 'all'){
+        return notes.length;
+    } else {
+        for (var i=0;i<categories.length;i++){
+            if (categories[i].name == name){
+                return categories[i].count;
+            }
+        }
+        return false;
+    }
+}
+
 function removeCategoryFromArr(name){
     for (var i=0;i<categories.length;i++){
-        if (categories.name == name){
+        if (categories[i].name == name){
             categories.splice(i,1);
         }
     }
+}
+
+async function setNotesCategory(name, category){
+    var index;
+    if (typeof category != "undefined"){
+        index = indexOfCategory(name);
+    }
+    for (var i=0;i<notes.length;i++){
+        if (notes[i].category == name){
+            notes[i].category = category;
+            saveNoteByObj(notes[i]);
+            if (typeof category == undefined){
+                notalloc_count++;
+            }
+            if (index){
+                categories[index].count++;
+            }
+        }
+    }
+    //保存分类
+    saveCategories();
+    //重新渲染计数
+    renderSystemCategoryCount();
+    renderCustomCategoryCount();
 }
 
 async function saveCategories(){

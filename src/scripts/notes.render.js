@@ -415,6 +415,14 @@ function removeForceTopNote(noteid) {
 }
 
 async function renderNotesOfCategory(name){
+    //判断是否为空
+    if (getCountOfCategory(name) < 1){
+        $('#note-empty-category').show();
+        return;
+    } else {
+        $('#note-empty-category').hide();
+    }
+    //渲染便签
     if (name == 'all'){
         $('.note').parent().show();
     } else if (name == 'notalloc') {
