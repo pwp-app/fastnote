@@ -648,7 +648,7 @@
                     <input type="text" class="form-control" id="input-note-title" maxlength="64" placeholder="(无标题)">
                 </div>
             </div>
-            <div class="newnote-info-item" style="margin-top: 8px;">
+            <div class="newnote-info-item" id="newnote-info-item-category" style="margin-top: 8px;">
                 <div class="br-col-2">
                     <label>分类</label>
                 </div>
@@ -716,6 +716,7 @@
         <div class="trigger-category">
             <button class="br-btn btn-noback bottombar-trigger" id="btn-category-trigger">
                 <i class="fa fa-book" aria-hidden="true"></i>
+                <span class="bottombar-category-name"></span>
             </button>
         </div>
         <div class="trigger-expandnewnote">
@@ -1249,8 +1250,6 @@
         //绑定除了add的每个li的点击
         $(document).on('click', '#category-menu li:not(#category-add):not(#category-add-inside)', function () {
             var category_clicked = $(this).attr('data-name');
-            console.log(category_clicked);
-            console.log(current_category);
             if (category_clicked != current_category && !categoryEditMode) {
                 //移除选中
                 switch (current_category) {

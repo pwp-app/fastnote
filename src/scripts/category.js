@@ -190,11 +190,20 @@ async function renderCategorySelect(){
 
 async function renderCurrentCategory(){
     switch(current_category){
-        default:
-        $('#category-custom-'+current_category).addClass('category-selected');
+        case 'all':
+            $('#category-system-'+current_category).addClass('category-selected');
+            $('.bottombar-category-name').html('');
+            $('#newnote-info-item-category').show();    //当前分类为所有便签时创建便签的分类可选
         break;
-        case 'all':case 'notalloc':
-        $('#category-system-'+current_category).addClass('category-selected');
+        case 'notalloc':
+            $('#category-system-'+current_category).addClass('category-selected');
+            $('.bottombar-category-name').html('未分类');
+            $('#newnote-info-item-category').hide();
+        break;
+        default:
+            $('#category-custom-'+current_category).addClass('category-selected');
+            $('.bottombar-category-name').html(current_category);
+            $('#newnote-info-item-category').hide();    //当前分类为其他分类时创建便签的分类不可选
         break;
     }
 }
