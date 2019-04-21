@@ -186,7 +186,7 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, text, forceTop) {
     //auto fold
     bindNoteFoldDBL(id);
     //animate
-    $('#note_' + id).animateCss('fadeInLeft');
+    $('#note_' + id).animateCss('fadeInLeft faster');
     //open external on os default webbrowser
     $('#note_' + id + ' a').click(function (e) {
         ipcRenderer.send('openExternalURL', $(this).attr('href'));
@@ -388,16 +388,17 @@ function deleteNoteFromArr_recycle(id) {
     });
 }
 
-function forceTopNote(noteid) {
+async function forceTopNote(noteid) {
     for (var i = 0; i < notes.length; i++) {
-        if (note.id == noteid) {
+        if (notes[i].id == noteid) {
             //处理note文件
-            note.forceTop = true;
-            saveNoteByObj(note);
+            notes[i].forceTop = true;
+            saveNoteByObj(notes[i]);
             break;
         }
     }
     refreshNoteList();
+    renderNotesOfCategory(current_category);
 }
 
 function removeForceTopNote(noteid) {
@@ -412,13 +413,13 @@ function removeForceTopNote(noteid) {
         }
     });
     refreshNoteList();
+    renderNotesOfCategory(current_category);
 }
 
 async function renderNotesOfCategory(name){
     //判断是否为空
     if (getCountOfCategory(name) < 1){
         $('#note-empty-category').show();
-        return;
     } else {
         $('#note-empty-category').hide();
     }

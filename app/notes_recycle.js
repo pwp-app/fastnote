@@ -30,7 +30,7 @@ function deleteNote(id, infoEnabled=true) {
                         //删除成功
                         deleteNoteFromArr_recycle(id);
                         //动画
-                        $('#note_' + id).animateCss('fadeOutLeft', function () {
+                        $('#note_' + id).animateCss('fadeOutLeft faster', function () {
                             $('#note_' + id).parent().remove(); //动画结束后删除div
                             if (notes.length <= 0) {
                                 showNoteEmpty_Anim();
@@ -98,7 +98,7 @@ function restoreNote(id, infoEnabled=true){
                     } else {
                         deleteNoteFromArr_recycle(id);
                         //动画
-                        $('#note_' + id).animateCss('fadeOutLeft', function () {
+                        $('#note_' + id).animateCss('fadeOutLeft faster', function () {
                             $('#note_' + id).parent().remove(); //动画结束后删除div
                             if (notes.length <= 0) {
                                 showNoteEmpty_Anim();

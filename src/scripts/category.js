@@ -34,6 +34,17 @@ function readCurrentCategory(){
     }
 }
 
+async function saveCurrentCategory(){
+    var data = {
+        category: current_category
+    };
+    fs.writeFile(storagePath + (global.indebug?'/devTemp':'')+ '/storage/current_category.json', JSON.stringify(data), 'utf-8', function(err){
+        if (err){
+            console.error(err);
+        }
+    });
+}
+
 function readCategoriesFile(){
     if(fs.existsSync(storagePath + (global.indebug?'/devTemp':'')+ '/storage/categories.json')){
         fs.readFile(storagePath + (global.indebug?'/devTemp':'')+ '/storage/categories.json', 'utf-8', function(err, data){
@@ -115,11 +126,12 @@ async function setNotesCategory(name, category){
         if (notes[i].category == name){
             notes[i].category = category;
             saveNoteByObj(notes[i]);
-            if (typeof category == undefined){
+            if (typeof category == "undefined"){
                 notalloc_count++;
-            }
-            if (index){
-                categories[index].count++;
+            } else {
+                if (index){
+                    categories[index].count++;
+                }
             }
         }
     }
@@ -145,6 +157,13 @@ async function saveCategories(){
 function renderCategoryToList(name, count, animate=false){
     var html = '<li data-name="'+name+'" draggable="true"><div id="category-custom-'+name+'"><div class="category-item-name"><span>'+name+'</span></div><div class="category-item-count"><span>'+count+'</span></div><div class="category-item-delbtn"><i class="fa fa-minus-circle" aria-hidden="true"></i></div></div></li>';
     $('.category-menu-custom').append(html);
+    //如果是编辑模式下添加的，样式和编辑模式统一
+    if (categoryEditMode){
+        $('#category-custom-'+name+' .category-item-count').hide();
+        $('#category-custom-'+name+' .category-item-delbtn').show();
+        $('#category-custom-'+name).parent().css('-webkit-user-drag','auto');
+        $('#category-custom-'+name).parent().css('-webkit-user-select','auto');
+    }
     if (animate){
         $('#category-custom-'+name).animateCss('fadeIn morefaster');
     }

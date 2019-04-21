@@ -485,7 +485,7 @@
                     bindNoteFoldDBL(data.id);
                 });
                 //animate
-                $('#note_' + data.id).animateCss('fadeInLeft');
+                $('#note_' + data.id).animateCss('fadeInLeft faster');
             });
 
             //记录是否有置顶便签
@@ -1130,7 +1130,7 @@
                                 <div class="category-item-count">
                                     <span id="category-count-all"></span>
                                 </div>
-                            <div>
+                            </div>
                         </li>
                         <li data-name="notalloc">
                             <div id="category-system-notalloc">
@@ -1214,8 +1214,12 @@
         $('#input-category-add').keypress(function (e) {
             if (e.which == 13) {
                 var category_name = $('#input-category-add').val().trim();
-                if (existCategory(category_name)) {
-                    //仓库已存在
+                $('#input-category-add').val('');
+                if (category_name < 1) {
+                    return;
+                }
+                if (existCategory(category_name) || category_name in new Array("all", "notalloc")) {
+                    //仓库已存在或属于保留字
                     $('#input-category-add').addClass('br-invalid-underline');
                 } else {
                     //仓库不存在
@@ -1224,7 +1228,7 @@
                         $('#category-add-inside').hide();
                         putCategoryToArr(category_name); //添加到数组
                         renderCategoryToList(category_name, 0, true); //渲染到页面
-                        renderCategoryToSelect(category_name);  //渲染到select
+                        renderCategoryToSelect(category_name); //渲染到select
                         saveCategories(); //保存便签
                         $('#category-add').show();
                         $('#category-add').animateCss('fadeIn morefaster');
@@ -1245,6 +1249,8 @@
         //绑定除了add的每个li的点击
         $(document).on('click', '#category-menu li:not(#category-add):not(#category-add-inside)', function () {
             var category_clicked = $(this).attr('data-name');
+            console.log(category_clicked);
+            console.log(current_category);
             if (category_clicked != current_category && !categoryEditMode) {
                 //移除选中
                 switch (current_category) {
@@ -1262,7 +1268,7 @@
                 //隐藏不属于当前类别的
                 renderNotesOfCategory(current_category);
                 //调整select
-                if (current_category != 'all'){
+                if (current_category != 'all') {
                     $('#select-note-category').val(current_category);
                 } else {
                     //为all则设置为未分类
@@ -1272,38 +1278,90 @@
         });
 
         //绑定每个自定义分类中的删除按钮
-        $(document).on('click', '.category-item-delbtn', function(){
+        $(document).on('click', '.category-item-delbtn', function () {
             //获取分类名称
             var name = $(this).parent().parent().attr('data-name');
             dialog.showMessageBox({
-                type:"warning",
-                buttons:['取消','删除','删除分类并删除该分类下的便签'],
-                defaultId:0,
-                title:'确认操作',
-                message:'确定要删除分类"'+name+'"吗？该操作将不可撤回。',
-                detail:'仅删除分类不影响便签，便签会被放入未分类中。'
-            }, function(res){
-                //删除分类
-                removeCategoryFromArr(name);
-                saveCategories();
-                $('#category-custom-'+name).parent().animateCss("fadeOutLeft faster",function(){
-                    $('#category-custom-'+name).parent().remove();
-                });
-                if (res == 1){
-                    //该分类下的便签分类全部修改为未分类
-                    setNotesCategory(name, undefined);
-                } else if (res == 2) {
-                    //删除分类的同时删除便签
-                    
+                type: "warning",
+                buttons: ['取消', '删除', '删除分类并删除该分类下的便签'],
+                defaultId: 0,
+                title: '确认操作',
+                message: '确定要删除分类"' + name + '"吗？该操作将不可撤回。',
+                detail: '仅删除分类不影响便签，便签会被放入未分类中。'
+            }, function (res) {
+                if (res != 0) {
+                    //确定删除
+                    if (res == 1) {
+                        removeCategory(name);
+                        //该分类下的便签分类全部修改为未分类
+                        setNotesCategory(name, undefined);
+                    } else if (res == 2) {
+                        removeNotesOfCategory(name);
+                        removeCategory(name, false);
+                    }
                 }
             });
         });
 
+        async function removeCategory(name, renderCount = true) {
+            //删除分类
+            removeCategoryFromArr(name);
+            saveCategories();
+            $('#category-custom-' + name).parent().animateCss("fadeOutLeft faster", function () {
+                $('#category-custom-' + name).parent().remove();
+            });
+            //删除select中的项
+            $('#select-note-category option[value="' + name + '"]').remove();
+            //如果当前分类为被删除的分类，则切换到所有便签
+            if (current_category == name) {
+                current_category = 'all';
+                if (renderCount) {
+                    renderCurrentCategory();
+                    renderNotesOfCategory(current_category);
+                }
+                $('#select-note-category').val('notalloc');
+            }
+        }
+
+        async function removeNotesOfCategory(name) {
+            var notes_tobeDeleted = [];
+            for (var i = 0; i < notes.length; i++) {
+                if (notes[i].category == name) {
+                    notes_tobeDeleted.push(i);
+                }
+            }
+            //删除便签
+            for (var i = 0; i < notes_tobeDeleted.length; i++) {
+                //检查offset
+                var path;
+                if (notes[notes_tobeDeleted[i]].offset > 0) {
+                    path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.' + notes[tobeDeleted[i]].offset + '.json';
+                } else {
+                    path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.json';
+                }
+                if (fs.existsSync(path)) {
+                    //删除文件
+                    fs.unlinkSync(path);
+                    //render
+                    console.log(notes_tobeDeleted[i]);
+                    if (current_category == 'all') {
+                        var noteid = notes[notes_tobeDeleted[i]].id;
+                        $('#note_' + noteid).parent().animateCss('fadeOutLeft faster', function () {
+                            $('#note_' + noteid).parent().remove();
+                        });
+                    }
+                    notes.splice(notes_tobeDeleted[i], 1);
+                }
+            }
+            renderCurrentCategory();
+            renderNotesOfCategory(current_category);
+        }
+
         var categoryEditMode = false;
 
         //绑定编辑按钮
-        $('.category-header-button').click(function(){
-            if (categoryEditMode){
+        $('.category-header-button').click(function () {
+            if (categoryEditMode) {
                 // == 分类编辑模式启用 ==
                 categoryEditMode = false;
                 //顶部按钮改变
@@ -1313,8 +1371,8 @@
                 $('.category-item-delbtn').hide();
                 $('.category-menu-custom .category-item-count').show();
                 //sortable
-                $('.category-menu-custom li').css('-webkit-user-drag','none');
-                $('.category-menu-custom li').css('-webkit-user-select','none');
+                $('.category-menu-custom li').css('-webkit-user-drag', 'none');
+                $('.category-menu-custom li').css('-webkit-user-select', 'none');
             } else {
                 // == 分类编辑模式禁用 ==
                 categoryEditMode = true;
@@ -1325,17 +1383,17 @@
                 $('.category-menu-custom .category-item-count').hide();
                 $('.category-item-delbtn').show();
                 //sortable
-                $('.category-menu-custom li').css('-webkit-user-drag','auto');
-                $('.category-menu-custom li').css('-webkit-user-select','auto');
+                $('.category-menu-custom li').css('-webkit-user-drag', 'auto');
+                $('.category-menu-custom li').css('-webkit-user-select', 'auto');
             }
         });
 
         //sortable
-        sortable('.category-menu-custom',{
+        sortable('.category-menu-custom', {
             items: 'li',
             forcePlaceholderSize: true
-        })[0].addEventListener('sortupdate',function(e){
-            var name = $(e.detail.item).attr('data-name');  //获取拖动的名称
+        })[0].addEventListener('sortupdate', function (e) {
+            var name = $(e.detail.item).attr('data-name'); //获取拖动的名称
             //列表的index和categories的index对应，交换
             var t = categories[e.detail.origin.index];
             categories[e.detail.origin.index] = categories[e.detail.destination.index];
