@@ -55,9 +55,9 @@ function clearNoteList() {
 var reg_url = /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
 
 //渲染一条笔记
-function renderNote(id, rawtime, updaterawtime, title, text, forceTop) {
+function renderNote(id, rawtime, updaterawtime, title, category, text, forceTop) {
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '"><div class="note-header"><span class="note-no">';
+    '" data-id="' + id + '" data-category="'+ (typeof category != 'undefined'?category:'notalloc')+'"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
     //渲染note-title
     var titletext = "";
@@ -122,10 +122,10 @@ function renderNote(id, rawtime, updaterawtime, title, text, forceTop) {
     bindNoteTimeClick(id);
 }
 //在顶部渲染Note
-function renderNoteAtTop(id, rawtime, updaterawtime, title, text, forceTop) {
+function renderNoteAtTop(id, rawtime, updaterawtime, title, category, text, forceTop) {
     //构造html
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '"><div class="note-header"><span class="note-no">';
+        '" data-id="' + id + '" data-category="'+ (typeof category != 'undefined'?category:'notalloc')+'"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
     //渲染note-title
     var titletext = "";
@@ -301,7 +301,7 @@ function refreshNoteList(callback) {
             }
             sortNotes(sort_mode); //排序
             for (var i = 0; i < notes.length; i++) {
-                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].text, notes[i].forceTop);
             }
             //绑定Note的点击事件
             bindNoteClickEvent();
@@ -313,7 +313,7 @@ function refreshNoteList(callback) {
     } else {
         sortNotes(sort_mode); //排序
         for (var i = 0; i < notes.length; i++) {
-            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].text, notes[i].forceTop);
+            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].text, notes[i].forceTop);
         }
         //绑定Note的点击事件
         bindNoteClickEvent();

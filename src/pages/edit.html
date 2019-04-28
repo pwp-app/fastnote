@@ -48,8 +48,11 @@
         //define const
         const remote = require('electron').remote;
         const app = remote.app;
+        var fs = require('fs');
         //import json storage
         const storage = require('electron-json-storage');
+        //get storagePath
+        var storagePath = app.getPath('userData');
 
         const Menu = remote.Menu;
         const MenuItem = remote.MenuItem;
@@ -174,12 +177,35 @@
         </div>
         <div class="container-edit-info">
             <div class="edit-info-item">
-                <div class="edit-info-col-lbl">
+                <div class="br-col-2">
                     <label>标题</label>
                 </div>
-                <div class="edit-info-col-control">
+                <div class="br-col-10">
                     <input class="form-control" id="input-title" maxlength="64" placeholder="(无标题)">
                 </div>
+            </div>
+            <div class="edit-info-item" style="margin-top: 8px;">
+                <div class="br-col-2">
+                    <label>分类</label>
+                </div>
+                <div class="br-col-10">
+                    <select class="form-control" id="select-category">
+                        <option value="notalloc">未分类</option>
+                    </select>
+                </div>
+                <script>
+                    if(fs.existsSync(storagePath + (global.indebug?'/devTemp':'')+ '/storage/categories.json')){
+                        var read_res = fs.readFileSync(storagePath + (global.indebug?'/devTemp':'')+ '/storage/categories.json', 'utf-8');  //这里有同步让后面的update可以选择
+                        if (read_res){
+                            categories = JSON.parse(read_res);
+                            for (var i=0;i<categories.length;i++){
+                                $('#select-category').append('<option value="'+categories[i].name+'">'+categories[i].name+'</option>');
+                            }
+                        } else {
+                            console.error(read_res);
+                        }
+                    }
+                </script>
             </div>
         </div>
         <textarea class="text-edit" id="text-edit"></textarea>
@@ -200,6 +226,9 @@
         });
 
         $("#input-title").one('input',function(){
+            text_edited = true;
+        });
+        $('#select-category').one('change',function(){
             text_edited = true;
         });
         //footer按钮事件绑定
@@ -236,6 +265,7 @@
         function submitSave(){
             var text = $("#text-edit").val().trim();
             var title = $('#input-title').val().trim();
+            var category = $('#select-category').val();
             if (text != null && text != "") {
                 if (text_edited){
                     note.text = text;
@@ -244,6 +274,8 @@
                     } else {
                         note.title = undefined;
                     }
+                    //修改分类
+                    note.category = category;
                     ipcRenderer.send('update-edit-note', note);
                 }
                 window.close();
@@ -286,6 +318,15 @@
                             $('#input-title').val(note.title);
                         }
                     }
+                    //初始化分类
+                    $(document).ready(function(){
+                        if (typeof note.category != 'undefined'){
+                            $('#select-category').val(note.category);
+                            console.log(1);
+                        } else {
+                            $('#select-category').val('notalloc');
+                        }
+                    });
                     break;
                 case 'note-recycled':
                     if (data.id == nowNoteId){

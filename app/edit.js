@@ -14,10 +14,10 @@ const path = require('path');
 function createEditWindow(data) {
     let win_edit = null;
     var conf = {
-        width: 800,
+        width: 600,
         height: 430,
-        minWidth: 480,
-        minHeight: 200,
+        minWidth: 400,
+        minHeight: 300,
         show: false,
         transparent: true
     };

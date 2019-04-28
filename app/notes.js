@@ -272,7 +272,7 @@ function saveNote(notetext, notetitle, notecategory) {
     //分类的empty隐藏
     $('#note-empty-category').hide();
     //在顶部渲染Note
-    renderNoteAtTop(note.id, note.rawtime, note.updaterawtime, note.title, note.text, note.forceTop);
+    renderNoteAtTop(note.id, note.rawtime, note.updaterawtime, note.title, note.category, note.text, note.forceTop);
     //绑定Note的点击事件
     bindNoteClickEvent();
 }

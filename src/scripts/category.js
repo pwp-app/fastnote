@@ -61,7 +61,6 @@ function readCategoriesFile(){
             });
         });
     }
-
 }
 
 function Category(name, count){

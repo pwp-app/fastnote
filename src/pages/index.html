@@ -359,6 +359,37 @@
                 });
             }
             async function reRenderEditedNote(data) {
+                //分类
+                if (current_category != 'all'){
+                    //便签编辑后已经不属于当前分类，从画面中移出并隐藏
+                    if (data.category != current_category){
+                        $('#note_'+data.id).animateCss('fadeOutLeft faster',function(){
+                            $('#note_'+data.id).hide();
+                        });
+                        //更新分类计数并保存
+                        minorCategoryCount(current_category, true, true);
+                        addCategoryCount(data.category, true, true);
+                        //当前分类是否为空
+                        if (getCountOfCategory(current_category) < 1){
+                            $('#note-empty-category').show();
+                        }
+                        //此处不return，后续更新仍然要处理，只是便签不显示
+                    } else {
+                        //便签可能是从其他类别改到当前类别的
+                        if($('#note_'+data.id).css('display') == 'none'){
+                            $('#note_'+data.id).animateCss('fadeInLeft faster',function(){
+                                $('#note_'+data.id).show();
+                            });
+                            //从data-category获取便签
+                            var category_name = $('#note_'+data.id).attr('data-category');
+                            minorCategoryCount(category_name, true, true);
+                            addCategoryCount(current_category, true, true);
+                            //有便签新加入必定不为空
+                            $('#note-empty-category').hide();
+                        }
+                    }
+                }
+                //处理内容
                 temp = data.text.split('<br/>');
                 text = "";
                 for (var i = 0; i < temp.length; i++) {
@@ -1178,14 +1209,15 @@
 
         function closeCategory() {
             if (isCategoryOpen) {
+                disableCategoryEditMode();  //关闭时禁用编辑模式
                 $('.category-background').css('width', '100%'); //动态修改宽度防止阻挡
                 $('.category-background').animateCss('fadeOut', function () {
                     $('.category-background').css('display', 'none');
-                })
+                });
                 $('.container-category').animateCss('fadeOutLeft', function () {
                     $('.container-category').css('display', 'none');
                     isCategoryOpen = false;
-                })
+                });
             }
         }
 
@@ -1361,29 +1393,9 @@
         //绑定编辑按钮
         $('.category-header-button').click(function () {
             if (categoryEditMode) {
-                // == 分类编辑模式启用 ==
-                categoryEditMode = false;
-                //顶部按钮改变
-                $('#category-header-confirmbtn').hide();
-                $('#category-header-editbtn').show();
-                //更改底部便签的显示
-                $('.category-item-delbtn').hide();
-                $('.category-menu-custom .category-item-count').show();
-                //sortable
-                $('.category-menu-custom li').css('-webkit-user-drag', 'none');
-                $('.category-menu-custom li').css('-webkit-user-select', 'none');
+                disableCategoryEditMode();
             } else {
-                // == 分类编辑模式禁用 ==
-                categoryEditMode = true;
-                //顶部按钮改变
-                $('#category-header-editbtn').hide();
-                $('#category-header-confirmbtn').show();
-                //更改底部便签的显示
-                $('.category-menu-custom .category-item-count').hide();
-                $('.category-item-delbtn').show();
-                //sortable
-                $('.category-menu-custom li').css('-webkit-user-drag', 'auto');
-                $('.category-menu-custom li').css('-webkit-user-select', 'auto');
+                enableCategoryEditMode();
             }
         });
 
@@ -1399,6 +1411,34 @@
             categories[e.detail.destination.index] = t;
             saveCategories();
         });
+
+        function enableCategoryEditMode() {
+            // == 分类编辑模式启用 ==
+            categoryEditMode = true;
+            //顶部按钮改变
+            $('#category-header-confirmbtn').show();
+            $('#category-header-editbtn').hide();
+            //更改底部便签的显示
+            $('.category-item-delbtn').show();
+            $('.category-menu-custom .category-item-count').hide();
+            //sortable
+            $('.category-menu-custom li').css('-webkit-user-drag', 'auto');
+            $('.category-menu-custom li').css('-webkit-user-select', 'auto');
+        }
+
+        function disableCategoryEditMode() {
+            // == 分类编辑模式禁用 ==
+            categoryEditMode = false;
+            //顶部按钮改变
+            $('#category-header-editbtn').show();
+            $('#category-header-confirmbtn').hide();
+            //更改底部便签的显示
+            $('.category-menu-custom .category-item-count').show();
+            $('.category-item-delbtn').hide();
+            //sortable
+            $('.category-menu-custom li').css('-webkit-user-drag', 'none');
+            $('.category-menu-custom li').css('-webkit-user-select', 'none');
+        }
     </script>
 
     <script>
