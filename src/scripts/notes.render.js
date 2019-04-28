@@ -305,6 +305,7 @@ function refreshNoteList(callback) {
             }
             //绑定Note的点击事件
             bindNoteClickEvent();
+            renderNotesOfCategory(current_category);
             //callback
             if (typeof (callback) === 'function') {
                 callback();
@@ -317,6 +318,7 @@ function refreshNoteList(callback) {
         }
         //绑定Note的点击事件
         bindNoteClickEvent();
+        renderNotesOfCategory(current_category);
         //callback
         if (typeof (callback) === 'function') {
             callback();
@@ -436,7 +438,7 @@ async function renderNotesOfCategory(name){
         }
     } else {
         for (var i=0;i<notes.length;i++){
-            if (notes[i].category != name){
+            if (typeof notes[i].category == 'undefined' || notes[i].category != name){
                 $('#note_'+notes[i].id).parent().hide();
             } else {
                 $('#note_'+notes[i].id).parent().show();

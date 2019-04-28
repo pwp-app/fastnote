@@ -25,6 +25,9 @@ var notesEdit = {
         //set time
         note.updatetime = alltime.currentTime;
         note.updaterawtime = alltime.rawTime;
+        if (note.category == 'notalloc'){
+            note.category = undefined;
+        }
         //get json
         var json = JSON.stringify(note);
         fs.writeFile(path, json, 'utf-8', function (err, data) {

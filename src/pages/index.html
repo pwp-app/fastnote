@@ -363,27 +363,20 @@
                 if (current_category != 'all'){
                     //便签编辑后已经不属于当前分类，从画面中移出并隐藏
                     if (data.category != current_category){
-                        $('#note_'+data.id).animateCss('fadeOutLeft faster',function(){
+                        $('#note_'+data.id).parent().animateCss('fadeOutLeft faster',function(){
                             $('#note_'+data.id).hide();
+                            //当前分类是否为空
+                            if (getCountOfCategory(current_category) < 1){
+                                $('#note-empty-category').show();
+                                $('#note-empty-category').animateCss('fadeIn');
+                            }
                         });
-                        //更新分类计数并保存
-                        minorCategoryCount(current_category, true, true);
-                        addCategoryCount(data.category, true, true);
-                        //当前分类是否为空
-                        if (getCountOfCategory(current_category) < 1){
-                            $('#note-empty-category').show();
-                        }
                         //此处不return，后续更新仍然要处理，只是便签不显示
                     } else {
                         //便签可能是从其他类别改到当前类别的
-                        if($('#note_'+data.id).css('display') == 'none'){
-                            $('#note_'+data.id).animateCss('fadeInLeft faster',function(){
-                                $('#note_'+data.id).show();
-                            });
-                            //从data-category获取便签
-                            var category_name = $('#note_'+data.id).attr('data-category');
-                            minorCategoryCount(category_name, true, true);
-                            addCategoryCount(current_category, true, true);
+                        if($('#note_'+data.id).parent().css('display') == 'none'){
+                            $('#note_'+data.id).parent().show();
+                            $('#note_'+data.id).parent().animateCss('fadeInLeft faster');
                             //有便签新加入必定不为空
                             $('#note-empty-category').hide();
                         }
@@ -483,6 +476,11 @@
                     $('#note_' + data.id + ' .note-content').dblclick = function () {}; //unbind event
                     $('#note_' + data.id + ' .note-content').unbind('dblclick');
                 }
+                //处理分类
+                var category_name = $('#note_'+data.id).attr('data-category');
+                minorCategoryCount(category_name, true, true);
+                addCategoryCount(data.category, true, true);
+                $('#note_'+data.id).attr('data-category',data.category);
             }
 
             //执行notes的替换
@@ -1305,6 +1303,8 @@
                     //为all则设置为未分类
                     $('#select-note-category').val('notalloc');
                 }
+                //写入current_category
+                saveCurrentCategory();
             }
         });
 
@@ -1374,7 +1374,6 @@
                     //删除文件
                     fs.unlinkSync(path);
                     //render
-                    console.log(notes_tobeDeleted[i]);
                     if (current_category == 'all') {
                         var noteid = notes[notes_tobeDeleted[i]].id;
                         $('#note_' + noteid).parent().animateCss('fadeOutLeft faster', function () {

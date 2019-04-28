@@ -23,12 +23,14 @@ function readCurrentCategory(){
             }
             current_category = JSON.parse(data).category;
             $(document).ready(function(){
+                //渲染一次current_category
                 renderCurrentCategory();
             });
         });
     } else {
         current_category = "all";
         $(document).ready(function(){
+            //渲染一次current_category
             renderCurrentCategory();
         });
     }
@@ -187,7 +189,7 @@ async function renderCategorySelect(){
     }
 }
 
-async function renderCurrentCategory(){
+function renderCurrentCategory(){
     switch(current_category){
         case 'all':
             $('#category-system-'+current_category).addClass('category-selected');
@@ -208,7 +210,7 @@ async function renderCurrentCategory(){
 }
 
 async function addCategoryCount(name, render=false, save=false){
-    if (typeof name == 'undefined'){
+    if (typeof name == 'undefined' || name == 'notalloc'){
         notalloc_count++;
         renderSystemCategoryCount();
         return;
@@ -229,7 +231,7 @@ async function addCategoryCount(name, render=false, save=false){
 }
 
 async function minorCategoryCount(name, render=false, save=false){
-    if (typeof name == 'undefined'){
+    if (typeof name == 'undefined' || name == 'notalloc'){
         notalloc_count--;
         renderSystemCategoryCount();
         return;
