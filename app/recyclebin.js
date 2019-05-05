@@ -18,8 +18,7 @@ var RecycleWindow = {
             width: 1200,
             height: 720,
             minWidth: 480,
-            show: false,
-            transparent: true
+            show: false
         };
         //标题栏的选用
         if (process.platform == 'darwin')

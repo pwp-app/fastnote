@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Fastnote</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--import requirements-->
+    <script>
+        window.$ = window.jQuery = require('./static/jquery.min.js');
+        require('./static/bootstrap.min.js');
+    </script>
+
+    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css">
+    <link rel="stylesheet" href="static/font-awesome.min.css">
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+    <link rel="stylesheet" href="static/animate.min.css">
+    <script src="static/array.js"></script>
+    <script src="static/han.simple.js"></script>
+    <script src="static/notes.render.js"></script>
+    <script src="static/category.js"></script>
+    <script src="static/mousetrap.min.js"></script>
+    <script src="static/moment.min.js"></script>
+    <script src="static/html5sortable.min.js"></script>
+</head>
+<body class="index-body">
+    <div class="container-titlebar col-lg-12 drag">
+        <div class="title" id="app-title">新建便签</div>
+        <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
+    </div>
+</body>

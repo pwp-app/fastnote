@@ -42,7 +42,9 @@ function createWindow() {
     minWidth: 480,
     minHeight: 600,
     show: false,
-    transparent: true
+    webPreferences: {
+      nodeIntegration: true
+    }
   };
   //标题栏的选用
   if (process.platform == 'darwin')
