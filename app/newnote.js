@@ -43,7 +43,9 @@ function createNewNoteWindow(data) {
         });
     });
     win_newnote.on('closed', () => {
-        wins_newnote[wins_newnote.indexOf(win_newnote)] = null;
+        let index = wins_newnote.indexOf(win_newnote);
+        wins_newnote[index] = null;
+        wins_newnote.splice(index, 1);
     });
 }
 

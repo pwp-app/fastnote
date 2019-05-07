@@ -306,11 +306,9 @@
                     }
                     break;
                 case 'category-added':
-                    console.log(data);
                     $('#select-category').append('<option value="'+data+'">'+data+'</option>');
                     break;
                 case 'category-removed':
-                    console.log(data);
                     $('#select-category option[value="'+data+'"]').remove();
                     break;
                 default:

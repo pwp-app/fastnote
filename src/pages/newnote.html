@@ -22,6 +22,7 @@
         //define const
         const remote = require('electron').remote;
         const app = remote.app;
+        var fs = require('fs');
         //import json storage
         const storage = require('electron-json-storage');
         //get storagePath
@@ -31,6 +32,9 @@
         const {
             ipcRenderer
         } = require('electron');
+
+        //获取indebug
+        global.indebug = remote.getGlobal('indebug');
 
         storage.get('settings', function (error, data) {
             if (error) {
@@ -117,7 +121,7 @@
     </div>
     <script src="static/lockscreen.js"></script>
     <!-- main -->
-    <div class="container-win-newnote">
+    <div class="container-newnotewin">
         <div class="container-newnotewin-info">
             <div class="edit-info-item">
                 <div class="br-col-1">
@@ -140,6 +144,7 @@
                     if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json')) {
                         var read_res = fs.readFileSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json', 'utf-8'); //这里有同步让后面的update可以选择
                         if (read_res) {
+                            console.log(read_res);
                             categories = JSON.parse(read_res);
                             for (var i = 0; i < categories.length; i++) {
                                 $('#select-category').append('<option value="' + categories[i].name + '">' + categories[i].name + '</option>');
@@ -148,8 +153,32 @@
                             console.error(read_res);
                         }
                     }
+                    ipcRenderer.on('category-added', (sender, data) => {
+                        $('#select-category').append('<option value="' + data + '">' + data + '</option>');
+                    });
+                    ipcRenderer.on('category-removed', (sender, data) => {
+                        $('#select-category option[value="' + data + '"]').remove();
+                    });
                 </script>
             </div>
         </div>
+        <div class="container-newnotewin-text">
+            <textarea class="text-newnote" id="text-newnote"></textarea>
+        </div>
+        <div class="container-newnotewin-button">
+            <button class="br-btn btn-noback" id="newnote-btn-save">保存</button>
+        </div>
+        <script>
+            $(window).resize(function () {
+                resizeContent();
+            });
+
+            function resizeContent() {
+                var h_container = $(window).height() - $('.container-titlebar').height();
+                $('.container-newnotewin').css('height', h_container);
+                var h_textedit = h_container - $('.container-newnotewin-info').height() - 71;
+                $('#text-newnote').css('height', h_textedit);
+            }
+        </script>
     </div>
 </body>

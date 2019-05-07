@@ -13,7 +13,7 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = false; //debug trigger
+global.indebug = true; //debug trigger
 global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
@@ -166,6 +166,12 @@ function createWindow() {
         });
       }
     }
+    let newnoteWins = newnoteWindow.getWins();
+    for (let i=0;i<newnoteWins.length;i++){
+      if (typeof newnoteWins[i] != 'undefined' && newnoteWins[i] != null){
+        newnoteWins[i].webContents.send('category-added', data);
+      }
+    }
   });
   ipc.on('category_removed', function(sender, data){
     let editWins = editWindow.getWins();
@@ -175,6 +181,12 @@ function createWindow() {
           type: 'category-removed',
           data: data
         });
+      }
+    }
+    let newnoteWins = newnoteWindow.getWins();
+    for (let i=0;i<newnoteWins.length;i++){
+      if (typeof newnoteWins[i] != 'undefined' && newnoteWins[i] != null){
+        newnoteWins[i].webContents.send('category-removed', data);
       }
     }
   });

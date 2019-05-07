@@ -1,4 +1,4 @@
-.container-win-newnote{
+.container-newnotewin{
     width:100%;
     height:100%;
     position: fixed;
@@ -13,4 +13,65 @@
 }
 #newnote-title {
     font-size: 14px !important;
+}
+
+.container-newnotewin-text{
+    width: 100%;
+    margin-top: 8px;
+}
+
+.container-newnotewin textarea{
+    width: 100%;
+    height: 280px;
+    text-align: justify;
+    border: 0;
+    padding: 8px 12px;
+    resize: none;
+    font-weight: normal;
+    font-size: 14px;
+    border-radius: 5px;
+    letter-spacing: 0.05em;
+    display: block;
+    background: @color-textarea-background;
+    color: @color-textarea-color;
+}
+
+.container-newnotewin textarea::-webkit-scrollbar {
+    width: 6.5px;
+}
+.container-newnotewin textarea::-webkit-scrollbar-track-piece {
+    background-color: @color-textarea-background;
+}
+
+.container-newnotewin textarea::-webkit-scrollbar-thumb {
+    border-radius: 9px;
+    background-color: @color-primary;
+}
+
+.container-newnotewin textarea::-webkit-scrollbar-button {
+    display: none;
+}
+.container-newnotewin textarea:focus {
+    outline: 0;
+}
+.container-newnotewin-button{
+    width: 100%;
+    position: absolute;
+    display: block;
+    background-color: @color-primary;
+    padding-right: 32px;
+}
+.container-newnotewin-button button{
+    float: right;
+    font-size: 14px;
+    color: @color-text-primary;
+    border:solid 1px @color-text-primary;
+    text-align: center;
+    padding:3px 13px !important;
+    border-radius: 5px !important;
+    letter-spacing: 0.05em;
+    margin-top: 8px;
+}
+.container-newnotewin-button button:hover{
+    background-color: @color-primary-hover;
 }
