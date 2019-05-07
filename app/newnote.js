@@ -15,7 +15,7 @@ function createNewNoteWindow(data) {
     var conf = {
         width: 680,
         height: 450,
-        minWidth: 400,
+        minWidth: 520,
         minHeight: 300,
         show: false,
         webPreferences: {

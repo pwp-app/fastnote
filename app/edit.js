@@ -16,7 +16,7 @@ function createEditWindow(data) {
     var conf = {
         width: 600,
         height: 430,
-        minWidth: 400,
+        minWidth: 460,
         minHeight: 300,
         show: false,
         webPreferences: {

@@ -42,7 +42,7 @@
                 settings = data;
                 settingsInit(settings);
             }
-            $(document).ready(function(){
+            $(document).ready(function () {
                 ipcRenderer.send("newnote-window-ready");
             });
         });
@@ -53,17 +53,17 @@
             //build css
             if (settings == null) {
                 //read error
-                $('#main-style').attr('href','static/main.blackwhite.css');
+                $('#main-style').attr('href', 'static/main.blackwhite.css');
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
 
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
-                if (typeof settings.theme != 'undefined'){
-                    $('#main-style').attr('href','static/main.'+settings.theme+'.css');
+                if (typeof settings.theme != 'undefined') {
+                    $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
                 } else {
-                    $('#main-style').attr('href','static/main.blackwhite.css');
+                    $('#main-style').attr('href', 'static/main.blackwhite.css');
                 }
 
                 if (typeof settings.fontfamily != 'undefined') {
@@ -82,12 +82,12 @@
             }
             modStyle.innerHTML = cssText;
 
-            if (font == 'Source Han Sans CN'){
+            if (font == 'Source Han Sans CN') {
                 loadWebfont(font);
             }
         }
 
-        function loadWebfont(font){
+        function loadWebfont(font) {
             WebFont.load({
                 custom: {
                     families: [font]
@@ -96,9 +96,10 @@
         }
     </script>
 </head>
+
 <body class="newnote-body">
     <div class="container-titlebar col-lg-12 drag">
-        <div class="title" id="app-title">新建便签</div>
+        <div class="title" id="newnote-title">新建便签</div>
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
     </div>
     <script>
@@ -117,6 +118,38 @@
     <script src="static/lockscreen.js"></script>
     <!-- main -->
     <div class="container-win-newnote">
-        
+        <div class="container-newnotewin-info">
+            <div class="edit-info-item">
+                <div class="br-col-1">
+                    <label>标题</label>
+                </div>
+                <div class="br-col-11">
+                    <input class="form-control" id="input-title" maxlength="64" placeholder="(无标题)">
+                </div>
+            </div>
+            <div class="edit-info-item" style="margin-top: 8px;">
+                <div class="br-col-1">
+                    <label>分类</label>
+                </div>
+                <div class="br-col-11">
+                    <select class="form-control" id="select-category">
+                        <option value="notalloc">未分类</option>
+                    </select>
+                </div>
+                <script>
+                    if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json')) {
+                        var read_res = fs.readFileSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json', 'utf-8'); //这里有同步让后面的update可以选择
+                        if (read_res) {
+                            categories = JSON.parse(read_res);
+                            for (var i = 0; i < categories.length; i++) {
+                                $('#select-category').append('<option value="' + categories[i].name + '">' + categories[i].name + '</option>');
+                            }
+                        } else {
+                            console.error(read_res);
+                        }
+                    }
+                </script>
+            </div>
+        </div>
     </div>
 </body>
