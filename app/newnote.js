@@ -13,8 +13,8 @@ const path = require('path');
 function createNewNoteWindow(data) {
     let win_newnote = null;
     var conf = {
-        width: 600,
-        height: 430,
+        width: 680,
+        height: 450,
         minWidth: 400,
         minHeight: 300,
         show: false,
@@ -37,12 +37,13 @@ function createNewNoteWindow(data) {
     if (indebug)
         win_newnote.webContents.openDevTools();
 
+    win_newnote.on('ready-to-show', () => {
+        ipc.once('newnote-window-ready', () => {
+            win_newnote.show();
+        });
+    });
     win_newnote.on('closed', () => {
         wins_newnote[wins_newnote.indexOf(win_newnote)] = null;
-    })
-
-    ipc.once('newnote-window-ready', () => {
-        win_newnote.show();
     });
 }
 
@@ -50,9 +51,9 @@ var newnoteWindow = {
     getWins: function () {
         return wins_newnote;
     },
-    createWindow: function () {
+    create: function () {
         createNewNoteWindow();
     }
-}
+};
 
 module.exports = newnoteWindow;

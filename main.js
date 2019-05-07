@@ -29,6 +29,7 @@ aboutWindow = require('./app/about');
 editWindow = require('./app/edit');
 recycleWindow = require('./app/recyclebin');
 settingsWindow = require('./app/settings');
+newnoteWindow = require('./app/newnote');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -118,8 +119,13 @@ function createWindow() {
   ipc.on('openEditWindow', function (sender, data) {
     editWindow.showWindow(data);
   });
+  //open settings window
   ipc.on('openSettingsWindow', () => {
     settingsWindow();
+  });
+  //open newnote window
+  ipc.on('openNewnoteWindow', ()=>{
+    newnoteWindow.create();
   });
 
   ipc.on('reloadMainWindow', function (sender, data) {
@@ -178,12 +184,12 @@ function createWindow() {
     app.quit();
   });
 
-
   // 当 window 被关闭，这个事件会被触发。
   win.on('closed', () => {
     win = null;
     app.quit();
   })
+
   //getfocus
   win.on('ready-to-show', () => {
     if (typeof settings != 'undefined') {
@@ -196,6 +202,7 @@ function createWindow() {
       win.webContents.send('update-edit-note', data);
     });
   });
+
   //锁屏
   win.on('minimize', ()=>{
     var windows = BrowserWindow.getAllWindows();

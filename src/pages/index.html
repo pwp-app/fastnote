@@ -691,6 +691,12 @@
         <div class="newnote-main">
             <div class="lbl">
                 <label id="lbl-newnote" title="使用 Ctrl+Enter 提交便签">新建便签</label>
+                <script>
+                    $('#lbl-newnote').dblclick(function(){
+                        //双击启动新建便签窗口
+                        ipcRenderer.send('openNewnoteWindow');
+                    });
+                </script>
                 <!-- fold -->
                 <div class="newnote-fold">
                     <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-fold">
