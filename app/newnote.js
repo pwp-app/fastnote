@@ -29,14 +29,14 @@ function createNewNoteWindow(data) {
         conf.frame = false;
 
     win_newnote = new BrowserWindow(conf);
-    wins_newnote.push(win_edit);
+    wins_newnote.push(win_newnote);
 
     var viewpath = path.resolve(__dirname, '../public/newnote.html');
     win_newnote.loadFile(viewpath);
 
     if (indebug)
         win_newnote.webContents.openDevTools();
-    
+
     win_newnote.on('closed', () => {
         wins_newnote[wins_newnote.indexOf(win_newnote)] = null;
     })
@@ -47,5 +47,12 @@ function createNewNoteWindow(data) {
 }
 
 var newnoteWindow = {
-
+    getWins: function () {
+        return wins_newnote;
+    },
+    createWindow: function () {
+        createNewNoteWindow();
+    }
 }
+
+module.exports = newnoteWindow;

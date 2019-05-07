@@ -1258,9 +1258,11 @@
                         $('#input-category-add').removeClass('br-invalid-underline');
                         $('#category-add-inside').hide();
                         putCategoryToArr(category_name); //添加到数组
+                        //通知主进程分类有更改
+                        ipcRenderer.send('category_added',category_name);
                         renderCategoryToList(category_name, 0, true); //渲染到页面
                         renderCategoryToSelect(category_name); //渲染到select
-                        saveCategories(); //保存便签
+                        saveCategories(); //保存便签分类
                         $('#category-add').show();
                         $('#category-add').animateCss('fadeIn morefaster');
                     });
@@ -1337,6 +1339,7 @@
         async function removeCategory(name, renderCount = true) {
             //删除分类
             removeCategoryFromArr(name);
+            ipcRenderer.send('category_removed',name);
             saveCategories();
             $('#category-custom-' + name).parent().animateCss("fadeOutLeft faster", function () {
                 $('#category-custom-' + name).parent().remove();

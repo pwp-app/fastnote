@@ -58,7 +58,7 @@ gulp.task('html5sortable', async function(){
 
 //3rdparty
 gulp.task('3rdparty', function(){
-    return gulp.src('src/scripts/3rdparty*.js')
+    return gulp.src('src/scripts/3rdparty/**/*.js')
         .pipe(gulp.dest('public/static'));
 });
 

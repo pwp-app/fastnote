@@ -124,7 +124,7 @@ function createWindow() {
 
   ipc.on('reloadMainWindow', function (sender, data) {
     win.reload();
-    if (typeof settings != undefined) {
+    if (typeof settings != 'undefined') {
       if (settings.autoUpdateStatus) {
         checkForUpdates();
       }
@@ -132,9 +132,9 @@ function createWindow() {
   });
   //when recycle close edit
   ipc.on('recycle-note', function (sender, data) {
-    var editWins = editWindow.getWins();
-    for (var i = 0; i < editWins.length; i++) {
-      if (typeof editWins[i] != undefined && editWins[i] != null) {
+    let editWins = editWindow.getWins();
+    for (let i = 0; i < editWins.length; i++) {
+      if (typeof editWins[i] != 'undefined' && editWins[i] != null) {
         editWins[i].webContents.send('message', {
           type: 'note-recycled',
           data: data
@@ -147,6 +147,30 @@ function createWindow() {
   ipc.on('backup-recover-completed', function(){
     //转送消息给主窗口
     win.webContents.send('backup-recover-completed');
+  });
+
+  //分类有修改
+  ipc.on('category_added', function(sender, data){
+    let editWins = editWindow.getWins();
+    for (let i=0;i<editWins.length;i++){
+      if (typeof editWins[i] != 'undefined' && editWins[i] != null){
+        editWins[i].webContents.send('message', {
+          type: 'category-added',
+          data: data
+        });
+      }
+    }
+  });
+  ipc.on('category_removed', function(sender, data){
+    let editWins = editWindow.getWins();
+    for (let i=0;i<editWins.length;i++){
+      if (typeof editWins[i] != 'undefined' && editWins[i] != null){
+        editWins[i].webContents.send('message', {
+          type: 'category-removed',
+          data: data
+        });
+      }
+    }
   });
 
   //quit now

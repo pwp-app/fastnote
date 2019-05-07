@@ -322,7 +322,6 @@
                     $(document).ready(function(){
                         if (typeof note.category != 'undefined'){
                             $('#select-category').val(note.category);
-                            console.log(1);
                         } else {
                             $('#select-category').val('notalloc');
                         }
@@ -332,6 +331,17 @@
                     if (data.id == nowNoteId){
                         window.close();
                     }
+                    break;
+                case 'category-added':
+                    console.log(data);
+                    $('#select-category').append('<option value="'+data+'">'+data+'</option>');
+                    break;
+                case 'category-removed':
+                    console.log(data);
+                    $('#select-category option[value="'+data+'"]').remove();
+                    break;
+                default:
+                    console.log('unknown message:'+type);
                     break;
             }
         });
