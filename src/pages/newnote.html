@@ -98,6 +98,15 @@
                 }
             });
         }
+
+        //init category
+        ipcRenderer.on('init-category', (sender, data)=>{
+            if (data != 'notalloc'){
+                $(document).ready(function(){
+                    $('#select-category').val(data);
+                });
+            }
+        });
     </script>
 </head>
 
@@ -166,7 +175,7 @@
             <textarea class="text-newnote" id="text-newnote"></textarea>
         </div>
         <div class="container-newnotewin-button">
-            <button class="br-btn btn-noback" id="newnote-btn-save">保存</button>
+            <button class="br-btn btn-noback" id="newnote-btn-save" onclick="submitSave();">保存</button>
         </div>
         <script>
             $(window).resize(function () {
@@ -178,6 +187,37 @@
                 $('.container-newnotewin').css('height', h_container);
                 var h_textedit = h_container - $('.container-newnotewin-info').height() - 71;
                 $('#text-newnote').css('height', h_textedit);
+            }
+
+            //事件绑定
+            $("#text-newnote").keydown(function (e) {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                //ctrl+enter 或 ctrl+s
+                if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
+                    submitSave();
+                }
+            });
+
+            //提交保存
+            function submitSave(){
+                //获取title和分类
+                var title = $('#input-title').val().trim();
+                var category = $('#select-category').val();
+                if (title.length<1){
+                    title = undefined;
+                }
+                if (category == 'notalloc'){
+                    category = undefined;
+                }
+                var text = $('#text-newnote').val();
+                var note = {
+                    title: title,
+                    category: category,
+                    text: text
+                };
+                ipcRenderer.send('newnotewin-save',note);
+                //关闭窗口
+                window.close();
             }
         </script>
     </div>

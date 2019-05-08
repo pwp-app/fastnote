@@ -124,8 +124,8 @@ function createWindow() {
     settingsWindow();
   });
   //open newnote window
-  ipc.on('openNewnoteWindow', ()=>{
-    newnoteWindow.create();
+  ipc.on('openNewnoteWindow', (sender, data)=>{
+    newnoteWindow.create(data);
   });
 
   ipc.on('reloadMainWindow', function (sender, data) {
@@ -243,6 +243,11 @@ ipc.on('disable-lockscreen',()=>{
     windows[i].webContents.send('disable-lockscreen');
   }
 })
+
+//捕捉新建便签窗口的消息
+ipc.on('newnotewin-save', (sender, data)=>{
+  win.webContents.send('newnotewin-save', data);
+});
 
 // Electron 会在初始化后并准备
 // 创建浏览器窗口时，调用这个函数。

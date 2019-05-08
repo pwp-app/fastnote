@@ -41,6 +41,9 @@ function createNewNoteWindow(data) {
         ipc.once('newnote-window-ready', () => {
             win_newnote.show();
         });
+        if (typeof data != 'undefined' && data != null && data != 'notalloc'){
+            win_newnote.webContents.send('init-category', data);
+        }
     });
     win_newnote.on('closed', () => {
         let index = wins_newnote.indexOf(win_newnote);
@@ -53,8 +56,8 @@ var newnoteWindow = {
     getWins: function () {
         return wins_newnote;
     },
-    create: function () {
-        createNewNoteWindow();
+    create: function (data) {
+        createNewNoteWindow(data);
     }
 };
 

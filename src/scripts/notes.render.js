@@ -29,7 +29,7 @@ function showNoteEmpty() {
 
 function showNoteEmpty_Anim() {
     $('.note-empty').css('display', 'flex');
-    $('.note-empty').animateCss('fadeIn');
+    $('.note-empty').animateCss('fadeIn faster');
     var note_list = document.getElementsByClassName('note-list')[0];
     note_list.setAttribute("style", "display:none;");
 }

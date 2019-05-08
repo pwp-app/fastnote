@@ -694,7 +694,11 @@
                 <script>
                     $('#lbl-newnote').dblclick(function(){
                         //双击启动新建便签窗口
-                        ipcRenderer.send('openNewnoteWindow');
+                        ipcRenderer.send('openNewnoteWindow', current_category);    //启动的时候传递当前分类
+                    });
+                    //接收回传的保存
+                    ipcRenderer.on('newnotewin-save', (sender, data) => {
+                        saveNote(data.text, data.title, data.category);
                     });
                 </script>
                 <!-- fold -->

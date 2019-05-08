@@ -25,6 +25,9 @@ function readCurrentCategory(){
             $(document).ready(function(){
                 //渲染一次current_category
                 renderCurrentCategory();
+                if (current_category != 'notalloc'){
+                    $('#select-note-category').val(current_category);
+                }
             });
         });
     } else {
@@ -234,6 +237,9 @@ async function minorCategoryCount(name, render=false, save=false){
     if (typeof name == 'undefined' || name == 'notalloc'){
         notalloc_count--;
         renderSystemCategoryCount();
+        if (current_category == 'notalloc'){
+            checkCategoryEmpty();
+        }
         return;
     }
     for (var i=0;i<categories.length;i++){
@@ -243,10 +249,24 @@ async function minorCategoryCount(name, render=false, save=false){
                 $('#category-custom-'+categories[i].name+' .category-item-count span').html(categories[i].count);   //渲染到UI上
                 renderSystemCategoryCount();
             }
+            checkCategoryEmpty();
             if (save){
                 saveCategories();
             }
             return;
+        }
+    }
+    
+}
+
+function checkCategoryEmpty(){
+    if (current_category == 'all' || notes.length < 1){
+        return;
+    }
+    if (getCountOfCategory(current_category) < 1){
+        if ($('#note-empty-category').css('display') == 'none'){
+            $('#note-empty-category').show();
+            $('#note-empty-category').animateCss('fadeIn faster');
         }
     }
 }
