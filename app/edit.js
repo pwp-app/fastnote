@@ -1,5 +1,5 @@
-let win_edits = new Array();
-let edit_noteid = new Array();
+let win_edits = [];
+let edit_noteid = [];
 
 const {
     BrowserWindow
@@ -14,12 +14,14 @@ const path = require('path');
 function createEditWindow(data) {
     let win_edit = null;
     var conf = {
-        width: 800,
+        width: 600,
         height: 430,
-        minWidth: 480,
-        minHeight: 200,
+        minWidth: 460,
+        minHeight: 300,
         show: false,
-        transparent: true
+        webPreferences: {
+            nodeIntegration: true
+        }
     };
     //标题栏的选用
     if (process.platform == 'darwin')

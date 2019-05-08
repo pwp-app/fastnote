@@ -14,7 +14,6 @@ var notesEdit = {
         //保存路径
         var path;
         //检查offset
-        console.log(global.indebug);
         if (note.offset>0){
             path = storagePath + (global.indebug?'/devTemp':'')+'/notes/'+note.rawtime+'.'+note.offset+'.json';
         } else {
@@ -26,6 +25,9 @@ var notesEdit = {
         //set time
         note.updatetime = alltime.currentTime;
         note.updaterawtime = alltime.rawTime;
+        if (note.category == 'notalloc'){
+            note.category = undefined;
+        }
         //get json
         var json = JSON.stringify(note);
         fs.writeFile(path, json, 'utf-8', function (err, data) {

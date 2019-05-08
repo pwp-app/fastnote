@@ -15,7 +15,10 @@ function createAboutWindow() {
         resizable: false,
         maximazable: false,
         show: false,
-        transparent: true
+        transparent: true,
+        webPreferences: {
+            nodeIntegration: true
+        }
     };
     //标题栏的选用
     if (process.platform == 'darwin')

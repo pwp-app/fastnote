@@ -20,12 +20,14 @@
     <script src="static/array.js"></script>
     <script src="static/han.simple.js"></script>
     <script src="static/notes.render.js"></script>
+    <script src="static/category.js"></script>
     <script src="static/mousetrap.min.js"></script>
     <script src="static/moment.min.js"></script>
+    <script src="static/html5sortable.min.js"></script>
     <script>
         //define const
-        const remote = require('electron').remote;
-        const app = remote.app;
+        var remote = require('electron').remote;
+        var app = remote.app;
         //import json storage
         if (typeof storage != 'undefined') {
             var storage = require('electron-json-storage');
@@ -91,8 +93,8 @@
                 console.error('A error occured when reading settings.');
             } else {
                 //优先初始化锁屏
-                if (typeof settings.lockpassword != 'undefined'){
-                    $('.container-lockscreen').css('display','block');
+                if (typeof settings.lockpassword != 'undefined') {
+                    $('.container-lockscreen').css('display', 'block');
                     $('#input-lockscreen').focus();
                 }
                 //read success
@@ -321,7 +323,14 @@
         </div>
         <!-- empty -->
         <div class="note-empty col-lg-12" id="note-empty">
-            <span>您还没有建立任何的便签<br />在下方你可以快速新建新便签</span>
+            <div class="note-empty-inner">
+                <span>您还没有建立任何的便签<br>在下方你可以快速创建便签</span>
+            </div>
+        </div>
+        <div class="note-empty col-lg-12" id="note-empty-category">
+            <div class="note-empty-inner">
+                <span>当前分类下没有任何便签<br>在下方你可以快速创建该分类的便签</span>
+            </div>
         </div>
         <div class="note-list" id="note-list">
             <div class="note-list-forceTop" id="note-list-forceTop"></div>
@@ -350,6 +359,30 @@
                 });
             }
             async function reRenderEditedNote(data) {
+                //分类
+                if (current_category != 'all'){
+                    //便签编辑后已经不属于当前分类，从画面中移出并隐藏
+                    if (data.category != current_category){
+                        $('#note_'+data.id).parent().animateCss('fadeOutLeft faster',function(){
+                            $('#note_'+data.id).hide();
+                            //当前分类是否为空
+                            if (getCountOfCategory(current_category) < 1){
+                                $('#note-empty-category').show();
+                                $('#note-empty-category').animateCss('fadeIn');
+                            }
+                        });
+                        //此处不return，后续更新仍然要处理，只是便签不显示
+                    } else {
+                        //便签可能是从其他类别改到当前类别的
+                        if($('#note_'+data.id).parent().css('display') == 'none'){
+                            $('#note_'+data.id).parent().show();
+                            $('#note_'+data.id).parent().animateCss('fadeInLeft faster');
+                            //有便签新加入必定不为空
+                            $('#note-empty-category').hide();
+                        }
+                    }
+                }
+                //处理内容
                 temp = data.text.split('<br/>');
                 text = "";
                 for (var i = 0; i < temp.length; i++) {
@@ -366,14 +399,14 @@
                 $("#note_" + data.id + " .note-content p").html(html);
                 //移除overheight标签获取便签编辑后的内容实际高度
                 let flag_overheight;
-                if ($('#note_' + data.id + ' .note-content').hasClass('note-overheight')){
+                if ($('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
                     flag_overheight = true;
                     $('#note_' + data.id + ' .note-content').removeClass('note-overheight');
                     $('#note_' + data.id + ' .note-content').removeAttr('style');
                 }
                 var after_height = $('#note_' + data.id + ' .note-content').height();
                 //还原被移除的overheight标签
-                if (flag_overheight){
+                if (flag_overheight) {
                     $('#note_' + data.id + ' .note-content').addClass('note-overheight');
                 }
                 //reset content of updatetime
@@ -381,10 +414,10 @@
                     data.updatetime +
                     '</p>' +
                     '<p class="note-time han-element">创建：' + data.time + '</p>';
-                let m_updatetime = moment(data.updaterawtime,'YYYYMMDDHHmmss');
+                let m_updatetime = moment(data.updaterawtime, 'YYYYMMDDHHmmss');
                 let m_time = moment(data.rawtime, 'YYYYMMDDHHmmss');
-                var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>'+
-                '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
+                var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+                    '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
                 $('#note_' + data.id + ' .note-header time').html(timeContent);
                 //open external event rebind
                 $('#note_' + data.id + ' a').click(function (e) {
@@ -421,7 +454,7 @@
                 //fix note status
                 if (after_height > 250) {
                     if (origin_height <= 250) {
-                        if (!$('#note_' + data.id + ' .note-content').hasClass('note-overheight')){
+                        if (!$('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
                             bindNoteFoldDBL(data.id);
                             $('#note_' + data.id + ' .note-content').css('height', origin_height);
                             $('#note_' + data.id + ' .note-content').animate({
@@ -443,6 +476,11 @@
                     $('#note_' + data.id + ' .note-content').dblclick = function () {}; //unbind event
                     $('#note_' + data.id + ' .note-content').unbind('dblclick');
                 }
+                //处理分类
+                var category_name = $('#note_'+data.id).attr('data-category');
+                minorCategoryCount(category_name, true, true);
+                addCategoryCount(data.category, true, true);
+                $('#note_'+data.id).attr('data-category',data.category);
             }
 
             //执行notes的替换
@@ -472,11 +510,11 @@
                     showNoteList();
                 }
                 addNoteObjToArray(data);
-                refreshNoteList(function () {
+                refreshNoteList(null, function () {
                     bindNoteFoldDBL(data.id);
                 });
                 //animate
-                $('#note_' + data.id).animateCss('fadeInLeft');
+                $('#note_' + data.id).animateCss('fadeInLeft faster');
             });
 
             //记录是否有置顶便签
@@ -528,7 +566,7 @@
                             noteLongClickTimeout = setTimeout(function () {
                                 //初始化值
                                 selectModeEnabled = true;
-                                notes_selected = new Array();
+                                notes_selected = [];
                                 hasNotesForceTop = false;
                                 hasNotesNotForceTop = false;
                                 //对当前所选进行对应处理
@@ -541,10 +579,9 @@
                                     hasNotesNotForceTop = true;
                                 }
                                 //set up toast
-                                $('.toast-multiselected').addClass('toast-active');
                                 $('#toast-multiselected-text').html('当前选择了<handefault/>' +
                                     notes_selected.length + "<handefault/>个便签");
-                                $('.toast-multiselected').animateCss('fadeInRight faster');
+                                $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                                 window.getSelection().removeAllRanges();
                             }, 1000);
                         }
@@ -614,14 +651,13 @@
             //绑定全选快捷键
             Mousetrap.bind('ctrl+a', function () {
                 selectModeEnabled = true;
-                notes_selected = new Array();
+                notes_selected = [];
                 notes.forEach(note => {
                     notes_selected.push(note.id);
                 });
                 $('.note-wrapper').addClass('note-selected');
                 if (!$('.toast-multiselected').hasClass('toast-active')) {
-                    $('.toast-multiselected').addClass('toast-active');
-                    $('.toast-multiselected').animateCss('fadeInRight faster');
+                    $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                 }
                 $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected.length +
                     "<handefault/>个便签");
@@ -638,13 +674,33 @@
                     <label>标题</label>
                 </div>
                 <div class="br-col-10">
-                    <input type="text" class="form-control" id="input-note-title" maxlength="64">
+                    <input type="text" class="form-control" id="input-note-title" maxlength="64" placeholder="(无标题)">
+                </div>
+            </div>
+            <div class="newnote-info-item" id="newnote-info-item-category" style="margin-top: 8px;">
+                <div class="br-col-2">
+                    <label>分类</label>
+                </div>
+                <div class="br-col-10">
+                    <select class="form-control" id="select-note-category">
+                        <option value="notalloc">未分类</option>
+                    </select>
                 </div>
             </div>
         </div>
         <div class="newnote-main">
             <div class="lbl">
                 <label id="lbl-newnote" title="使用 Ctrl+Enter 提交便签">新建便签</label>
+                <script>
+                    $('#lbl-newnote').dblclick(function(){
+                        //双击启动新建便签窗口
+                        ipcRenderer.send('openNewnoteWindow', current_category);    //启动的时候传递当前分类
+                    });
+                    //接收回传的保存
+                    ipcRenderer.on('newnotewin-save', (sender, data) => {
+                        saveNote(data.text, data.title, data.category);
+                    });
+                </script>
                 <!-- fold -->
                 <div class="newnote-fold">
                     <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-fold">
@@ -672,8 +728,7 @@
                     newnote_info_opened = false;
                 });
             } else {
-                $('.newnote-info-float').css('display', 'block');
-                $('.newnote-info-float').animateCss('fadeInUp faster', function () {
+                $('.newnote-info-float').css('display', 'block').animateCss('fadeInUp faster', function () {
                     newnote_info_opened = true;
                 });
             }
@@ -700,6 +755,7 @@
         <div class="trigger-category">
             <button class="br-btn btn-noback bottombar-trigger" id="btn-category-trigger">
                 <i class="fa fa-book" aria-hidden="true"></i>
+                <span class="bottombar-category-name"></span>
             </button>
         </div>
         <div class="trigger-expandnewnote">
@@ -767,8 +823,7 @@
                     $('.container-newnote').css('display', 'none');
                     isNoteFolded = true;
                 });
-                $('.trigger-expandnewnote').css('display', 'block');
-                $('.trigger-expandnewnote').animateCss('fadeIn');
+                $('.trigger-expandnewnote').css('display', 'block').animateCss('fadeIn');
             }
         });
         $('#btn-newnote-expand').click(function () {
@@ -784,8 +839,7 @@
                 $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 207) +
                     'px');
                 //animate
-                $('.container-newnote').css('display', 'block');
-                $('.container-newnote').animateCss('fadeInUp');
+                $('.container-newnote').css('display', 'block').animateCss('fadeInUp');
                 $('.trigger-expandnewnote').animateCss('fadeOut', function () {
                     $('.trigger-expandnewnote').css('display', 'none');
                     isNoteFolded = false;
@@ -872,8 +926,7 @@
                     break;
                 case 'update-available':
                     console.log("update-avaliable...");
-                    $('.container-updater').css('display', 'block');
-                    $('.container-updater').animateCss('fadeIn', function () {
+                    $('.container-updater').css('display', 'block').animateCss('fadeIn', function () {
                         var path_verfile = ``;
                         if (typeof settings != 'undefined') {
                             switch (settings.autoUpdateChannel) {
@@ -900,8 +953,22 @@
                                     'undefined') {
                                     try {
                                         $('#update-title-span').text('检测到新版本：' + result.ver);
-                                        document.getElementsByClassName('update-contents-details')[
-                                            0].innerHTML = insert_spacing(result.text, 0.08);
+                                        document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
+                                        //选择性显示更新日志，不同版本显示不同内容
+                                        var version_number = version.split('.').map(Number);    //获取现有的版本号
+                                        var update_logs = document.getElementsByClassName('update-contents-details')[0].children;   //获取更新日志板块的版本号
+                                        //使用try防止ver文件出错导致自动更新不能用
+                                        try{
+                                            for(var i=0;i<update_logs.length;i++){
+                                                var log_version = $(update_logs[i]).attr('data-ver').split('.').map(Number);
+                                                //判断现有版本是否已经大于更新日志的版本
+                                                if (version_number[0]>log_version[0] || version_number[1]>log_version[1] || version_number[2]>log_version[2]){
+                                                    $(update_logs[i]).hide();  //如果有就把这一部分隐藏掉
+                                                }
+                                            }
+                                        } catch (err){
+                                            console.error(err);
+                                        }
                                         //check show full
                                         if (result.showfull) {
                                             document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">详细更新日志</button>'
@@ -1016,10 +1083,8 @@
         });
 
         function openMainMenu() {
-            $('.mainmenu-background').css('display', 'block');
-            $('.mainmenu-background').animateCss('fadeIn');
-            $('.container-mainmenu').css('display', 'block');
-            $('.container-mainmenu').animateCss('fadeInLeft');
+            $('.mainmenu-background').css('display', 'block').animateCss('fadeIn');
+            $('.container-mainmenu').css('display', 'block').animateCss('fadeInLeft');
             isMainMenuOpen = true;
         }
         //绑定菜单项
@@ -1040,7 +1105,7 @@
             ipcRenderer.send("openSettingsWindow");
         });
         //锁屏全局快捷键
-        Mousetrap.bind('ctrl+l', function(){
+        Mousetrap.bind('ctrl+l', function () {
             enableLockScreen();
         });
         $('#mainmenu-btn-about').click(function () {
@@ -1099,34 +1164,54 @@
     <div class="container-category">
         <div class="category-panel">
             <div class="category-header">
-                <p>便签分类</p>
+                <div class="category-header-title">
+                    <p>便签分类</p>
+                </div>
+                <div class="category-header-button">
+                    <i class="fa fa-edit" id="category-header-editbtn" aria-hidden="true"></i>
+                    <i class="fa fa-check" id="category-header-confirmbtn" aria-hidden="true"></i>
+                </div>
             </div>
             <div class="category-split"></div>
             <div class="category-body">
                 <ul id="category-menu">
                     <div class="category-menu-fixed">
-                        <li>
-                            <div class="category-item-name">
-                                <span>所有便签</span>
-                            </div>
-                            <div class="category-item-count">
-                                <span id="category-count-all"></span>
+                        <li data-name="all">
+                            <div id="category-system-all">
+                                <div class="category-item-name">
+                                    <span>所有便签</span>
+                                </div>
+                                <div class="category-item-count">
+                                    <span id="category-count-all"></span>
+                                </div>
                             </div>
                         </li>
-                        <li>
-                            <div class="category-item-name">
-                                <span>未分类</span>
-                            </div>
-                            <div class="category-item-count">
-                                <span id="category-count-notalloc"></span>
+                        <li data-name="notalloc">
+                            <div id="category-system-notalloc">
+                                <div class="category-item-name">
+                                    <span>未分类</span>
+                                </div>
+                                <div class="category-item-count">
+                                    <span id="category-count-notalloc"></span>
+                                </div>
                             </div>
                         </li>
                     </div>
                     <div class="category-split"></div>
                     <div class="category-menu-custom"></div>
                     <div class="category-menu-system">
-                        <li>
+                        <li id="category-add">
                             <div class="category-icon-add"><i class="fa fa-plus" aria-hidden="true"></i></div>
+                        </li>
+                        <li id="category-add-inside">
+                            <div class="category-ctrl-add">
+                                <div class="category-add-input">
+                                    <input id="input-category-add">
+                                </div>
+                                <div class="category-add-btn">
+                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                </div>
+                            </div>
                         </li>
                     </div>
                 </ul>
@@ -1135,6 +1220,7 @@
     </div>
     <script>
         var isCategoryOpen = false;
+
         function openCategory() {
             $('.category-background').css('display', 'block');
             $('.category-background').animateCss('fadeIn');
@@ -1142,18 +1228,72 @@
             $('.container-category').animateCss('fadeInLeft');
             isCategoryOpen = true;
         }
+
         function closeCategory() {
             if (isCategoryOpen) {
+                disableCategoryEditMode();  //关闭时禁用编辑模式
                 $('.category-background').css('width', '100%'); //动态修改宽度防止阻挡
                 $('.category-background').animateCss('fadeOut', function () {
                     $('.category-background').css('display', 'none');
-                })
+                });
                 $('.container-category').animateCss('fadeOutLeft', function () {
                     $('.container-category').css('display', 'none');
                     isCategoryOpen = false;
-                })
+                });
             }
         }
+
+        $('#category-add-inside').mouseenter(function () {
+            $('.category-add-input input').addClass('category-focused');
+        });
+        $('#category-add-inside').mouseleave(function () {
+            $('.category-add-input input').removeClass('category-focused');
+        })
+        $('#category-add').click(function () {
+            $('#category-add').animateCss('fadeOut morefaster', function () {
+                $('#category-add').hide();
+                $('#category-add-inside').show();
+                $('#input-category-add').focus().val("");
+                $('#category-add-inside').animateCss('fadeIn morefaster');
+            });
+        });
+        $('.category-add-btn').click(function () {
+            $('#category-add-inside').animateCss('fadeOut morefaster', function () {
+                $('#input-category-add').removeClass('br-invalid-underline');
+                $('#category-add-inside').hide();
+                $('#category-add').show();
+                $('#category-add').animateCss('fadeIn morefaster');
+            });
+        });
+
+        $('#input-category-add').keypress(function (e) {
+            if (e.which == 13) {
+                var category_name = $('#input-category-add').val().trim();
+                $('#input-category-add').val('');
+                if (category_name < 1) {
+                    return;
+                }
+                if (existCategory(category_name) || category_name in new Array("all", "notalloc")) {
+                    //仓库已存在或属于保留字
+                    $('#input-category-add').addClass('br-invalid-underline');
+                } else {
+                    //仓库不存在
+                    $('#category-add-inside').animateCss('fadeOut morefaster', function () {
+                        $('#input-category-add').removeClass('br-invalid-underline');
+                        $('#category-add-inside').hide();
+                        putCategoryToArr(category_name); //添加到数组
+                        //通知主进程分类有更改
+                        ipcRenderer.send('category_added',category_name);
+                        renderCategoryToList(category_name, 0, true); //渲染到页面
+                        renderCategoryToSelect(category_name); //渲染到select
+                        saveCategories(); //保存便签分类
+                        $('#category-add').show();
+                        $('#category-add').animateCss('fadeIn morefaster');
+                    });
+                }
+            }
+        });
+
         $('#btn-category-trigger').on('click', function () {
             if (!isMainMenuOpen && !isCategoryOpen) {
                 openCategory();
@@ -1162,6 +1302,169 @@
         $('.category-background').on('mousedown', function () {
             closeCategory();
         });
+
+        //绑定除了add的每个li的点击
+        $(document).on('click', '#category-menu li:not(#category-add):not(#category-add-inside)', function () {
+            var category_clicked = $(this).attr('data-name');
+            if (category_clicked != current_category && !categoryEditMode) {
+                //移除选中
+                switch (current_category) {
+                    default:
+                        $('#category-custom-' + current_category).removeClass('category-selected');
+                        break;
+                    case 'all':
+                    case 'notalloc':
+                        $('#category-system-' + current_category).removeClass('category-selected');
+                        break;
+                }
+                current_category = category_clicked;
+                //渲染选择
+                renderCurrentCategory();
+                //隐藏不属于当前类别的
+                renderNotesOfCategory(current_category);
+                //调整select
+                if (current_category != 'all') {
+                    $('#select-note-category').val(current_category);
+                } else {
+                    //为all则设置为未分类
+                    $('#select-note-category').val('notalloc');
+                }
+                //写入current_category
+                saveCurrentCategory();
+            }
+        });
+
+        //绑定每个自定义分类中的删除按钮
+        $(document).on('click', '.category-item-delbtn', function () {
+            //获取分类名称
+            var name = $(this).parent().parent().attr('data-name');
+            dialog.showMessageBox({
+                type: "warning",
+                buttons: ['取消', '删除', '删除分类并删除该分类下的便签'],
+                defaultId: 0,
+                title: '确认操作',
+                message: '确定要删除分类"' + name + '"吗？该操作将不可撤回。',
+                detail: '仅删除分类不影响便签，便签会被放入未分类中。'
+            }, function (res) {
+                if (res != 0) {
+                    //确定删除
+                    if (res == 1) {
+                        removeCategory(name);
+                        //该分类下的便签分类全部修改为未分类
+                        setNotesCategory(name, undefined);
+                    } else if (res == 2) {
+                        removeNotesOfCategory(name);
+                        removeCategory(name, false);
+                    }
+                }
+            });
+        });
+
+        async function removeCategory(name, renderCount = true) {
+            //删除分类
+            removeCategoryFromArr(name);
+            ipcRenderer.send('category_removed',name);
+            saveCategories();
+            $('#category-custom-' + name).parent().animateCss("fadeOutLeft faster", function () {
+                $('#category-custom-' + name).parent().remove();
+            });
+            //删除select中的项
+            $('#select-note-category option[value="' + name + '"]').remove();
+            //如果当前分类为被删除的分类，则切换到所有便签
+            if (current_category == name) {
+                current_category = 'all';
+                if (renderCount) {
+                    renderCurrentCategory();
+                    renderNotesOfCategory(current_category);
+                }
+                $('#select-note-category').val('notalloc');
+            }
+        }
+
+        async function removeNotesOfCategory(name) {
+            var notes_tobeDeleted = [];
+            for (var i = 0; i < notes.length; i++) {
+                if (notes[i].category == name) {
+                    notes_tobeDeleted.push(i);
+                }
+            }
+            //删除便签
+            for (var i = 0; i < notes_tobeDeleted.length; i++) {
+                //检查offset
+                var path;
+                if (notes[notes_tobeDeleted[i]].offset > 0) {
+                    path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.' + notes[tobeDeleted[i]].offset + '.json';
+                } else {
+                    path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.json';
+                }
+                if (fs.existsSync(path)) {
+                    //删除文件
+                    fs.unlinkSync(path);
+                    //render
+                    if (current_category == 'all') {
+                        var noteid = notes[notes_tobeDeleted[i]].id;
+                        $('#note_' + noteid).parent().animateCss('fadeOutLeft faster', function () {
+                            $('#note_' + noteid).parent().remove();
+                        });
+                    }
+                    notes.splice(notes_tobeDeleted[i], 1);
+                }
+            }
+            renderCurrentCategory();
+            renderNotesOfCategory(current_category);
+        }
+
+        var categoryEditMode = false;
+
+        //绑定编辑按钮
+        $('.category-header-button').click(function () {
+            if (categoryEditMode) {
+                disableCategoryEditMode();
+            } else {
+                enableCategoryEditMode();
+            }
+        });
+
+        //sortable
+        sortable('.category-menu-custom', {
+            items: 'li',
+            forcePlaceholderSize: true
+        })[0].addEventListener('sortupdate', function (e) {
+            var name = $(e.detail.item).attr('data-name'); //获取拖动的名称
+            //列表的index和categories的index对应，交换
+            var t = categories[e.detail.origin.index];
+            categories[e.detail.origin.index] = categories[e.detail.destination.index];
+            categories[e.detail.destination.index] = t;
+            saveCategories();
+        });
+
+        function enableCategoryEditMode() {
+            // == 分类编辑模式启用 ==
+            categoryEditMode = true;
+            //顶部按钮改变
+            $('#category-header-confirmbtn').show();
+            $('#category-header-editbtn').hide();
+            //更改底部便签的显示
+            $('.category-item-delbtn').show();
+            $('.category-menu-custom .category-item-count').hide();
+            //sortable
+            $('.category-menu-custom li').css('-webkit-user-drag', 'auto');
+            $('.category-menu-custom li').css('-webkit-user-select', 'auto');
+        }
+
+        function disableCategoryEditMode() {
+            // == 分类编辑模式禁用 ==
+            categoryEditMode = false;
+            //顶部按钮改变
+            $('#category-header-editbtn').show();
+            $('#category-header-confirmbtn').hide();
+            //更改底部便签的显示
+            $('.category-menu-custom .category-item-count').show();
+            $('.category-item-delbtn').hide();
+            //sortable
+            $('.category-menu-custom li').css('-webkit-user-drag', 'none');
+            $('.category-menu-custom li').css('-webkit-user-select', 'none');
+        }
     </script>
 
     <script>
@@ -1173,8 +1476,8 @@
             //获取最大的便签id，刷新为新的便签id
             var maxNoteId = 0;
             //检测NoteID冲突
-            var existedNoteId = new Array();
-            var conflictNotes = new Array();
+            var existedNoteId = [];
+            var conflictNotes = [];
             //遍历现有的便签
             notes.forEach(note => {
                 if (note.id > maxNoteId) {
@@ -1246,4 +1549,5 @@
     <span id="filter-x" style="display:none"></span>
 
 </body>
+
 </html>

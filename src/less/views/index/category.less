@@ -3,14 +3,23 @@
 @color-categroy-split: @color-mainmenu-split;
 @color-category-text: @color-mainmenu-primary;
 @color-category-hover: @color-mainmenu-hover;
+@color-category-selected: darken(@color-category-hover, 5%);
 //values
+@category-width: 250px;
 @category-item-height: 40px;
+
+.category-focused{
+    background: @color-category-hover !important;
+}
+.category-selected{
+    background: @color-category-selected !important;
+}
 
 //classes
 .container-category{
     display: none;
     position: absolute;
-    width: 250px;
+    width: @category-width;
     height: 100%;
     top:0;
     bottom:0;
@@ -37,6 +46,23 @@
     margin-top:12px;
     margin-bottom:12px;
     background: @color-categroy-split;
+}
+.category-header-title{
+    display: inline-block;
+}
+.category-header-title p{
+    margin-bottom: 0;
+}
+.category-header-button{
+    float: right;
+    width: 24px;
+    text-align: center;
+    color: @color-category-text;
+    margin-right: 9px;
+    cursor: pointer;
+}
+.category-header-button i{
+    line-height: 1.5;
 }
 .category-body ul{
     width: 100%;
@@ -65,14 +91,59 @@
     letter-spacing: 0.05em;
     color: @color-category-text;
 }
-.category-icon-add{
-    text-align: center;
+.category-header-button:hover{
+    color: @color-trigger-hover-primary;
+}
+#category-header-confirmbtn{
+    display: none;
 }
 .category-item-name{
     display: inline-block;
     margin-left: 18px;
+    pointer-events: none;
 }
 .category-item-count{
     float: right;
     margin-right: 18px;
+    pointer-events: none;
+}
+.category-item-name span,.category-item-count span{
+    .no-select();
+}
+.category-icon-add{
+    text-align: center;
+}
+#category-add-inside{
+    display: none;
+}
+.category-add-input{
+    display: inline-block;
+    width: @category-width - 90px;
+    margin-left: 18px;
+}
+.category-add-btn{
+    float: right;
+    margin-right: 16px;
+    cursor: pointer;
+}
+.category-item-delbtn{
+    display: none;
+    float: right;
+    cursor: pointer;
+    margin-right: 16px;
+}
+.category-item-delbtn:hover{
+    color: @color-trigger-hover-primary;
+}
+.category-add-btn:hover{
+    color: @color-trigger-hover-primary;
+}
+.category-add-input input{
+    line-height: @category-item-height - 12px;
+    border: none;
+    color: @color-category-text;
+    background: @color-category-background;
+}
+.category-add-input input:focus{
+    outline: 0 !important;
 }

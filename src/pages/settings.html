@@ -662,8 +662,8 @@
 
             //执行备份
             function _backupNotes(backup_filename) {
-                var notes_backup = new Array();
-                var notes_backup_failed = new Array(); //备份失败的notes
+                var notes_backup = [];
+                var notes_backup_failed = []; //备份失败的notes
                 if (fs.existsSync(storagePath + (global.indebug?'/devTemp':'') + '/notes/')) {
                     try {
                         var files = fs.readdirSync(storagePath + (global.indebug?'/devTemp':'') + '/notes/');
@@ -788,7 +788,7 @@
                                             //计数变量
                                             var recover_count = 0;
                                             var recover_failed_count = 0;
-                                            var recover_failed_files = new Array();
+                                            var recover_failed_files = [];
                                             var all_recover = false;
                                             //执行恢复备份
                                             backups.forEach(backup => {

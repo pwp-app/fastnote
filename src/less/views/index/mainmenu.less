@@ -1,7 +1,7 @@
 .container-mainmenu{
     display: none;
     position: absolute;
-    width: 250px;
+    width: 220px;
     height: 100%;
     top:0;
     bottom:0;
@@ -25,7 +25,7 @@
     .duration(0.75s);
 }
 .mainmenu-panel{
-    width: 250px;
+    width: 220px;
     height: 100%;
     left:0;
     background: @color-mainmenu-background;
@@ -65,6 +65,7 @@
     margin-top:15px;
     margin-bottom:15px;
     background: @color-mainmenu-split;
+    .no-select-and-drag();
 }
 .mainmenu-menu{
     width: 100%;
@@ -73,7 +74,7 @@
     width: 100%;
     margin:0;
     padding:0;
-    -webkit-user-drag: none;
+    .no-select-and-drag();
 }
 .mainmenu-menu li{
     width: 100%;
@@ -83,11 +84,10 @@
     letter-spacing: 0.05em;
     font-size: 16px;
     line-height: 50px;
-    -webkit-user-drag: none;
 }
 .mainmenu-menu li span{
-    padding-left:42px;
-    -webkit-user-select: none;
+    padding-left:35px;
+    pointer-events: none;
 }
 .mainmenu-menu li:hover{
     background-color:@color-mainmenu-hover;

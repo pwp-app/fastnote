@@ -53,6 +53,7 @@
         //define const
         const remote = require('electron').remote;
         const app = remote.app;
+        global.indebug = remote.getGlobal('indebug');
         //import json storage
         if (typeof storage != 'undefined'){
             var storage = require('electron-json-storage');
@@ -220,11 +221,11 @@
                 showNoteList();
             }
             addNoteObjToArray(data);
-            refreshNoteList(function () {
+            refreshNoteList(null, function () {
                 bindNoteFoldDBL(data.id);
             });
             //animate
-            $('#note_' + data.id).animateCss('fadeInLeft');
+            $('#note_' + data.id).animateCss('fadeInLeft faster');
         });
     </script>
 
@@ -275,7 +276,7 @@
                         noteLongClickTimeout = setTimeout(function () {
                             selectModeEnabled = true;
                             $('#note_' + noteid_clicked).parent().addClass('note-selected');
-                            notes_selected = new Array();
+                            notes_selected = [];
                             notes_selected.push(noteid_clicked);
                             //set up toast
                             $('.toast-multiselected').addClass('toast-active');

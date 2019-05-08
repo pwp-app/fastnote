@@ -29,6 +29,7 @@ aboutWindow = require('./app/about');
 editWindow = require('./app/edit');
 recycleWindow = require('./app/recyclebin');
 settingsWindow = require('./app/settings');
+newnoteWindow = require('./app/newnote');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -42,7 +43,9 @@ function createWindow() {
     minWidth: 480,
     minHeight: 600,
     show: false,
-    transparent: true
+    webPreferences: {
+      nodeIntegration: true
+    }
   };
   //标题栏的选用
   if (process.platform == 'darwin')
@@ -116,13 +119,18 @@ function createWindow() {
   ipc.on('openEditWindow', function (sender, data) {
     editWindow.showWindow(data);
   });
+  //open settings window
   ipc.on('openSettingsWindow', () => {
     settingsWindow();
+  });
+  //open newnote window
+  ipc.on('openNewnoteWindow', (sender, data)=>{
+    newnoteWindow.create(data);
   });
 
   ipc.on('reloadMainWindow', function (sender, data) {
     win.reload();
-    if (typeof settings != undefined) {
+    if (typeof settings != 'undefined') {
       if (settings.autoUpdateStatus) {
         checkForUpdates();
       }
@@ -130,9 +138,9 @@ function createWindow() {
   });
   //when recycle close edit
   ipc.on('recycle-note', function (sender, data) {
-    var editWins = editWindow.getWins();
-    for (var i = 0; i < editWins.length; i++) {
-      if (typeof editWins[i] != undefined && editWins[i] != null) {
+    let editWins = editWindow.getWins();
+    for (let i = 0; i < editWins.length; i++) {
+      if (typeof editWins[i] != 'undefined' && editWins[i] != null) {
         editWins[i].webContents.send('message', {
           type: 'note-recycled',
           data: data
@@ -147,17 +155,53 @@ function createWindow() {
     win.webContents.send('backup-recover-completed');
   });
 
+  //分类有修改
+  ipc.on('category_added', function(sender, data){
+    let editWins = editWindow.getWins();
+    for (let i=0;i<editWins.length;i++){
+      if (typeof editWins[i] != 'undefined' && editWins[i] != null){
+        editWins[i].webContents.send('message', {
+          type: 'category-added',
+          data: data
+        });
+      }
+    }
+    let newnoteWins = newnoteWindow.getWins();
+    for (let i=0;i<newnoteWins.length;i++){
+      if (typeof newnoteWins[i] != 'undefined' && newnoteWins[i] != null){
+        newnoteWins[i].webContents.send('category-added', data);
+      }
+    }
+  });
+  ipc.on('category_removed', function(sender, data){
+    let editWins = editWindow.getWins();
+    for (let i=0;i<editWins.length;i++){
+      if (typeof editWins[i] != 'undefined' && editWins[i] != null){
+        editWins[i].webContents.send('message', {
+          type: 'category-removed',
+          data: data
+        });
+      }
+    }
+    let newnoteWins = newnoteWindow.getWins();
+    for (let i=0;i<newnoteWins.length;i++){
+      if (typeof newnoteWins[i] != 'undefined' && newnoteWins[i] != null){
+        newnoteWins[i].webContents.send('category-removed', data);
+      }
+    }
+  });
+
   //quit now
   ipc.on('app-quitNow', () => {
     app.quit();
   });
-
 
   // 当 window 被关闭，这个事件会被触发。
   win.on('closed', () => {
     win = null;
     app.quit();
   })
+
   //getfocus
   win.on('ready-to-show', () => {
     if (typeof settings != 'undefined') {
@@ -170,6 +214,7 @@ function createWindow() {
       win.webContents.send('update-edit-note', data);
     });
   });
+
   //锁屏
   win.on('minimize', ()=>{
     var windows = BrowserWindow.getAllWindows();
@@ -198,6 +243,11 @@ ipc.on('disable-lockscreen',()=>{
     windows[i].webContents.send('disable-lockscreen');
   }
 })
+
+//捕捉新建便签窗口的消息
+ipc.on('newnotewin-save', (sender, data)=>{
+  win.webContents.send('newnotewin-save', data);
+});
 
 // Electron 会在初始化后并准备
 // 创建浏览器窗口时，调用这个函数。
