@@ -953,8 +953,22 @@
                                     'undefined') {
                                     try {
                                         $('#update-title-span').text('检测到新版本：' + result.ver);
-                                        document.getElementsByClassName('update-contents-details')[
-                                            0].innerHTML = insert_spacing(result.text, 0.08);
+                                        document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
+                                        //选择性显示更新日志，不同版本显示不同内容
+                                        var version_number = version.split('.').map(Number);    //获取现有的版本号
+                                        var update_logs = document.getElementsByClassName('update-contents-details')[0].children;   //获取更新日志板块的版本号
+                                        //使用try防止ver文件出错导致自动更新不能用
+                                        try{
+                                            for(var i=0;i<update_logs.length;i++){
+                                                var log_version = $(update_logs[i]).attr('data-ver').split('.').map(Number);
+                                                //判断现有版本是否已经大于更新日志的版本
+                                                if (version_number[0]>log_version[0] || version_number[1]>log_version[1] || version_number[2]>log_version[2]){
+                                                    $(update_logs[i]).hide();  //如果有就把这一部分隐藏掉
+                                                }
+                                            }
+                                        } catch (err){
+                                            console.error(err);
+                                        }
                                         //check show full
                                         if (result.showfull) {
                                             document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">详细更新日志</button>'
