@@ -305,7 +305,9 @@ function refreshNoteList(callback) {
             }
             //绑定Note的点击事件
             bindNoteClickEvent();
-            renderNotesOfCategory(current_category);
+            if (typeof inRecyclebin == 'undefined'){    //回收站内不进行分类渲染
+                renderNotesOfCategory(current_category);
+            }
             //callback
             if (typeof (callback) === 'function') {
                 callback();

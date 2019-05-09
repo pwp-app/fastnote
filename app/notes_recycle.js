@@ -6,26 +6,26 @@ var storagePath = app.getPath('userData');
 readNoteFiles();
 
 //删除note
-function deleteNote(id, infoEnabled=true) {
+function deleteNote(id, infoEnabled = true) {
     notes.every(function (note, i) {
         if (note.id == id) {
             var path;
             //检查offset
             if (note.offset > 0) {
-                path = storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
+                path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
             } else {
-                path = storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/' + note.rawtime + '.json';
+                path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.json';
             }
             if (fs.existsSync(path)) {
                 //删除文件
                 fs.unlink(path, function (err) {
                     if (err) {
                         //文件删除失败
-                        if (infoEnabled){
+                        if (infoEnabled) {
                             displayInfobar('error', '文件删除失败');
                         }
                         readNoteFiles();
-                        throw(err);
+                        throw (err);
                     } else {
                         //删除成功
                         deleteNoteFromArr_recycle(id);
@@ -36,13 +36,13 @@ function deleteNote(id, infoEnabled=true) {
                                 showNoteEmpty_Anim();
                             }
                         });
-                        if (infoEnabled){
+                        if (infoEnabled) {
                             displayInfobar('success', '删除成功');
                         }
                     }
                 });
             } else {
-                if (infoEnabled){
+                if (infoEnabled) {
                     displayInfobar('error', '找不到文件，无法删除');
                 }
                 readNoteFiles();
@@ -54,47 +54,87 @@ function deleteNote(id, infoEnabled=true) {
     });
 }
 
+function deleteNoteByObj(note, infoEnabled = true) {
+    var path;
+    //检查offset
+    if (note.offset > 0) {
+        path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
+    } else {
+        path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.json';
+    }
+    if (fs.existsSync(path)) {
+        //删除文件
+        fs.unlink(path, function (err) {
+            if (err) {
+                //文件删除失败
+                if (infoEnabled) {
+                    displayInfobar('error', '文件删除失败');
+                }
+                readNoteFiles();
+                throw (err);
+            } else {
+                //删除成功
+                deleteNoteFromArr_recycle(note.id);
+                //动画
+                $('#note_' + note.id).animateCss('fadeOutLeft faster', function () {
+                    $('#note_' + note.id).parent().remove(); //动画结束后删除div
+                    if (notes.length <= 0) {
+                        showNoteEmpty_Anim();
+                    }
+                });
+                if (infoEnabled) {
+                    displayInfobar('success', '删除成功');
+                }
+            }
+        });
+    } else {
+        if (infoEnabled) {
+            displayInfobar('error', '找不到文件，无法删除');
+        }
+    }
+}
+
 //多选删除Note
-function deleteNotes(notes, callback){
-    if (Object.prototype.toString.call(notes) === '[object Array]'){
-        if (notes.length){
-            try{
+function deleteNotes(notes, callback) {
+    if (Object.prototype.toString.call(notes) === '[object Array]') {
+        if (notes.length) {
+            try {
                 notes.forEach(noteid => {
                     deleteNote(noteid, false);
                 });
-                if (typeof callback == 'function'){
+                if (typeof callback == 'function') {
                     callback(true);
                     return;
                 }
-            } catch (err){
+            } catch (err) {
                 console.error(err);
             }
         }
     }
-    if (typeof callback == 'function'){
+    if (typeof callback == 'function') {
         callback(false);
     }
 }
 
-function restoreNote(id, infoEnabled=true){
+function restoreNote(id, infoEnabled = true) {
     notes.every(function (note, i) {
         if (note.id == id) {
             var path;
             //检查offset
             if (note.offset > 0) {
-                path = storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
+                path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
             } else {
-                path = storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/' + note.rawtime + '.json';
+                path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.json';
             }
             if (fs.existsSync(path)) {
-                var newpath = path.replace('recyclebin/','');
-                fs.rename(path,newpath, function (err) {
+                var newpath = path.replace('recyclebin/', '');
+                fs.rename(path, newpath, function (err) {
                     if (err) {
-                        if (infoEnabled){
+                        if (infoEnabled) {
                             displayInfobar('error', '便签还原失败');
                         }
                         readNoteFiles();
-                        throw(err);
+                        throw (err);
                     } else {
                         deleteNoteFromArr_recycle(id);
                         //动画
@@ -104,14 +144,14 @@ function restoreNote(id, infoEnabled=true){
                                 showNoteEmpty_Anim();
                             }
                         });
-                        if (infoEnabled){
+                        if (infoEnabled) {
                             displayInfobar('success', '还原成功');
                         }
                         ipcRenderer.send('restore-note', note);
                     }
                 })
             } else {
-                if (infoEnabled){
+                if (infoEnabled) {
                     displayInfobar('error', '找不到文件，无法还原');
                 }
                 readNoteFiles();
@@ -124,23 +164,23 @@ function restoreNote(id, infoEnabled=true){
 }
 
 //多选回收便签
-function restoreNotes(notes, callback){
-    if (Object.prototype.toString.call(notes) === '[object Array]'){
-        if(notes.length>0){
-            try{
-                for (var i=0;i<notes.length;i++){
+function restoreNotes(notes, callback) {
+    if (Object.prototype.toString.call(notes) === '[object Array]') {
+        if (notes.length > 0) {
+            try {
+                for (var i = 0; i < notes.length; i++) {
                     restoreNote(notes[i], false);
                 }
-                if (typeof(callback) == 'function'){
+                if (typeof (callback) == 'function') {
                     callback(true);
                     return;
                 }
-            } catch (err){
+            } catch (err) {
                 console.error(err);
             }
         }
     }
-    if (typeof(callback == 'function')){
+    if (typeof (callback == 'function')) {
         callback(false);
     }
 }
@@ -150,12 +190,12 @@ function readNoteFiles() {
     //重新读取需要清空notes Array
     clearNoteArray();
     //判断是否存在notes文件夹，不存在代表没有笔记
-    if (!fs.existsSync(storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/')) {
+    if (!fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/')) {
         showNoteEmpty();
         isNotesEmpty = true;
-        fs.mkdirSync(storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/');
+        fs.mkdirSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/');
     } else {
-        fs.readdir(storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/', function (err, fileArr) {
+        fs.readdir(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/', function (err, fileArr) {
             if (err) {
                 throw (err);
             }
@@ -172,8 +212,8 @@ function readNoteFiles() {
                 //目录不是空的，代表有笔记，执行初始化
                 let countOffset = 0;
                 fileArr.forEach(element => {
-                    if (!fs.statSync(storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/' + element).isDirectory()) {
-                        fs.readFile(storagePath  + (global.indebug?'/devTemp':'')+ '/notes/recyclebin/' + element, 'utf-8', function (err, data) {
+                    if (!fs.statSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + element).isDirectory()) {
+                        fs.readFile(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + element, 'utf-8', function (err, data) {
                             if (err) {
                                 countOffset++;
                                 console.error(err);
