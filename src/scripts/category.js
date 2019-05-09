@@ -25,7 +25,7 @@ function readCurrentCategory(){
             $(document).ready(function(){
                 //渲染一次current_category
                 renderCurrentCategory();
-                if (current_category != 'notalloc'){
+                if (current_category != 'notalloc' && current_category != 'all'){
                     $('#select-note-category').val(current_category);
                 }
             });
