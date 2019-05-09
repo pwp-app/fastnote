@@ -130,11 +130,7 @@ function createWindow() {
 
   ipc.on('reloadMainWindow', function (sender, data) {
     win.reload();
-    if (typeof settings != 'undefined') {
-      if (settings.autoUpdateStatus) {
-        checkForUpdates();
-      }
-    }
+    checkForUpdates();
   });
   //when recycle close edit
   ipc.on('recycle-note', function (sender, data) {
@@ -204,11 +200,7 @@ function createWindow() {
 
   //getfocus
   win.on('ready-to-show', () => {
-    if (typeof settings != 'undefined') {
-      if (settings.autoUpdateStatus) {
-        checkForUpdates();
-      }
-    }
+    checkForUpdates();
     //bind update event
     editWindow.bindEditEvent(function (data) {
       win.webContents.send('update-edit-note', data);

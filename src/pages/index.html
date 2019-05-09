@@ -948,6 +948,13 @@
                     break;
                 case 'update-available':
                     console.log("update-avaliable...");
+                    if (typeof settings != 'undefined'){
+                        if (!settings.autoUpdateStatus){    //自动更新未启用
+                            return;
+                        }
+                    } else {
+                        return; //设置没有载入的情况下不触发更新
+                    }
                     $('.container-updater').css('display', 'block').animateCss('fadeIn', function () {
                         var path_verfile = ``;
                         if (typeof settings != 'undefined') {
@@ -971,8 +978,7 @@
                         }
                         $.getJSON(path_verfile + time.getRawCurrentMillTime(), //时间戳避免缓存
                             function (result) {
-                                if (result != null && result != "" && typeof (result) !=
-                                    'undefined') {
+                                if (result != null && result != "" && typeof (result) != 'undefined') {
                                     try {
                                         $('#update-title-span').text('检测到新版本：' + result.ver);
                                         document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
@@ -994,6 +1000,12 @@
                                         //check show full
                                         if (result.showfull) {
                                             document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">详细更新日志</button>'
+                                        }
+                                        //强制更新
+                                        if (typeof result.forceupdate != 'undefined' && result.forceupdate){
+                                            $('#btn-update-cancel').hide();
+                                        } else {
+                                            $('#btn-update-cancel').show();
                                         }
                                         $('.update-contents-loading').css('display', 'none');
                                     } catch (err) {
