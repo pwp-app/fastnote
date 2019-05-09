@@ -316,6 +316,23 @@
         <div class="container-right">
             <div class="right-wrapper">
                 <!-- multi-selected -->
+                <div class="brtoast toast-search">
+                    <div class="toast-search-icon">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </div>
+                    <div class="toast-control toast-search-control">
+                        <input type="text" class="form-control" id="input-search">
+                    </div>
+                    <script src="static/search.js"></script>
+                    <div class="toast-search-icon toast-search-close">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <script>
+                    $('.toast-search-close').click(function(){
+                        closeSearchToast();
+                    });
+                </script>
                 <div class="brtoast toast-multiselected">
                     <p class="brtoast-normaltext" id="toast-multiselected-text"></p>
                 </div>
