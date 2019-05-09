@@ -21,7 +21,7 @@ $('#input-search').bind('input propertychange', function () {
 });
 
 function popupSearchToast() {
-    $('.toast-search').show();
+    $('.toast-search').addClass('toast-active');
     $('#input-search').val(''); //清空
     $('.toast-search').animateCss('fadeInRight faster', function () {
         //focus the input
@@ -32,7 +32,7 @@ function popupSearchToast() {
 function closeSearchToast() {
     $('.toast-search').animateCss('fadeOutRight faster', function () {
         //focus the input
-        $('.toast-search').hide();
+        $('.toast-search').removeClass('toast-active');
         searchOpened = false;
     });
     //解除隐藏

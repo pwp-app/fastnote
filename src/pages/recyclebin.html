@@ -55,13 +55,18 @@
         const app = remote.app;
         global.indebug = remote.getGlobal('indebug');
         //import json storage
-        if (typeof storage != 'undefined'){
+        if (typeof storage != 'undefined') {
             var storage = require('electron-json-storage');
         }
         let time = require('../app/tools/time.js');
 
         const Menu = remote.Menu;
         const MenuItem = remote.MenuItem;
+
+        const {
+            dialog
+        } = require('electron').remote;
+
 
         const {
             ipcRenderer
@@ -211,8 +216,8 @@
                 <div class="note-list-forceTop" id="note-list-forceTop"></div>
                 <div class="note-list-normal" id="note-list-normal"></div>
             </div>
-            </div>
         </div>
+    </div>
     </div>
     <script>
         //event recycle
@@ -317,7 +322,7 @@
             });
         }
 
-        $(document).ready(function(){
+        $(document).ready(function () {
             $('#note-list').mousedown(function (e) {
                 if (selectModeEnabled) {
                     selectModeEnabled = false;
@@ -327,6 +332,21 @@
                     });
                 }
             });
+        });
+
+        Mousetrap.bind('ctrl+a', function () {
+            selectModeEnabled = true;
+            notes_selected = [];
+            notes.forEach(note => {
+                notes_selected.push(note.id);
+            });
+            $('.note-wrapper').addClass('note-selected');
+            if (!$('.toast-multiselected').hasClass('toast-active')) {
+                $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
+            }
+            $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected.length +
+                "<handefault/>个便签");
+            return false;
         });
 
         bindNoteClickEvent();
