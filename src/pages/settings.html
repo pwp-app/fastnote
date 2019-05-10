@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
     <link rel="stylesheet" href="static/awesome-bootstrap-checkbox.min.css">
+    <script src="static/encryption.js"></script>
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -51,9 +52,6 @@
         const app = remote.app;
         //import json storage
         const storage = require('electron-json-storage');
-
-        //crypto
-        const crypto = require('crypto');
 
         const {dialog} = require('electron').remote;
 
@@ -693,7 +691,7 @@
                                 filename: file,
                                 content: data,
                                 updatetime: typeof note.updaterawtime != 'undefined' ? note.updaterawtime : note.rawtime,
-                                check: crypto.createHmac('sha256', 'fastnote').update(file + data).digest('hex') //计算校验哈希
+                                check: sha256(file + data, 'fastnote') //计算校验哈希
                             });
                         }
                     });
@@ -793,7 +791,7 @@
                                             //执行恢复备份
                                             backups.forEach(backup => {
                                                 //文件校验
-                                                var check = crypto.createHmac('sha256', 'fastnote').update(backup.filename + backup.content).digest('hex');
+                                                var check = sha256(backup.filename + backup.content, 'fastnote');
                                                 if (check != backup.check) {
                                                     recover_count++;
                                                     recover_failed_count++;

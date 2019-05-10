@@ -50,11 +50,12 @@ textarea.keydown(function (e) {
         var text = textarea.val().trim();
         var title = $('#input-note-title').val().trim();
         var category = $('#select-note-category').val().trim();
+        var password = $('#input-note-password').val().trim();
         if (category == 'notalloc'){
             category = undefined;
         }
         if (text != null && text != "") {
-            saveNote(text, title, category);
+            saveNote(text, title, category, password);
         }
     }
 });
@@ -195,7 +196,7 @@ function readNoteFiles() {
                         var note_json = data;
                         if (typeof (note_json) != 'undefined' && note_json != null) {
                             note_json = JSON.parse(note_json);
-                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.title, note_json.category, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop);
+                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.title, note_json.category, note_json.password, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop);
                             if (notes.length + countOffset == fileArr.length) {
                                 //结束文件遍历，渲染列表
                                 refreshNoteList();
@@ -220,7 +221,7 @@ function readNoteFiles() {
 }
 
 //保存note为json
-function saveNote(notetext, notetitle, notecategory) {
+function saveNote(notetext, notetitle, notecategory, notepassword) {
     var alltime = time.getAllTime();
     //保存路径
     var path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + alltime.rawTime + '.json';
@@ -238,6 +239,14 @@ function saveNote(notetext, notetitle, notecategory) {
     }
     //转换回车
     notetext = notetext.replace(/(\r\n)|(\n)|(\r)/g, '<br/>');
+    if (typeof notepassword != 'undefined' && notepassword.length>0){
+        //密码不为空，对便签加密
+        notetext = aes_encrypt(notetext, notepassword);
+        //保存密码的哈希值
+        notepassword = sha256(notepassword, 'fastnote');
+    } else {
+        notepassword = undefined;
+    }
     //构造note
     var note = {
         id: notesid,
@@ -247,6 +256,7 @@ function saveNote(notetext, notetitle, notecategory) {
         text: notetext,
         title: (typeof notetitle == 'undefined' ? undefined : notetitle.length > 0 ? notetitle : undefined),
         category: (typeof notecategory == 'undefined' ? undefined : notecategory.length > 0 ? notecategory : undefined),
+        password: notepassword,
         offset: offset,
         forceTop: false
     };
@@ -272,7 +282,7 @@ function saveNote(notetext, notetitle, notecategory) {
     //分类的empty隐藏
     $('#note-empty-category').hide();
     //在顶部渲染Note
-    renderNoteAtTop(note.id, note.rawtime, note.updaterawtime, note.title, note.category, note.text, note.forceTop);
+    renderNoteAtTop(note.id, note.rawtime, note.updaterawtime, note.title, note.category, note.password, note.text, note.forceTop);
     //绑定Note的点击事件
     bindNoteClickEvent();
 }

@@ -55,7 +55,7 @@ function clearNoteList() {
 var reg_url = /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
 
 //渲染一条笔记
-function renderNote(id, rawtime, updaterawtime, title, category, text, forceTop) {
+function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop) {
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
     '" data-id="' + id + '" data-category="'+ (typeof category != 'undefined'?category:'notalloc')+'"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
@@ -87,22 +87,33 @@ function renderNote(id, rawtime, updaterawtime, title, category, text, forceTop)
     } else {
         html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
-    html += '</div><div class="note-content"><p class="note-text">';
-    //process html tag
-    temp = text.split('<br/>');
-    final_text = "";
-    for (var i = 0; i < temp.length; i++) {
-        s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
-        final_text += s;
-        final_text += "<br/>";
+    if (typeof password == 'undefined'){
+        html += '</div><div class="note-content"><p class="note-text">';
+        //process html tag
+        temp = text.split('<br/>');
+        final_text = "";
+        for (var i = 0; i < temp.length; i++) {
+            s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+            final_text += s;
+            final_text += "<br/>";
+        }
+        text = final_text;
+        text = insert_spacing(text, 0.15);
+        //自动识别网页
+        html += text.replace(reg_url, function (result) {
+            return '<a href="' + result + '">' + result + '</a>';
+        });
+        html += '</p></div></div></div>';
+    } else {
+        html += '</div><div class="note-content"><div class="note-password" data-password="'+password+'" data-encrypted="'+text+'">';
+        if (typeof inRecyclebin == 'undefined'){
+            html += '<span>密码：</span><input type="password" class="form-control" id="note_password_'+id+'" onkeydown="checkNotePassword(event, '+ id +');">';
+        } else {
+            html += '<p>[该便签已加密，无法查看。]</p>';
+        }
+        html += '</div></div></div></div>';
     }
-    text = final_text;
-    text = insert_spacing(text, 0.15);
-    //自动识别网页
-    html += text.replace(reg_url, function (result) {
-        return '<a href="' + result + '">' + result + '</a>';
-    });
-    html += '</p></div></div></div>';
+
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
             $('.note-list-forceTop').append($(html));
@@ -122,7 +133,7 @@ function renderNote(id, rawtime, updaterawtime, title, category, text, forceTop)
     bindNoteTimeClick(id);
 }
 //在顶部渲染Note
-function renderNoteAtTop(id, rawtime, updaterawtime, title, category, text, forceTop) {
+function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, text, forceTop) {
     //构造html
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
         '" data-id="' + id + '" data-category="'+ (typeof category != 'undefined'?category:'notalloc')+'"><div class="note-header"><span class="note-no">';
@@ -156,23 +167,32 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, text, forc
     } else {
         html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
-    html += '</div><div class="note-content"><p class="note-text">';
+    if (typeof password == 'undefined'){
+        html += '</div><div class="note-content"><p class="note-text">';
+        temp = text.split('<br/>');
+        final_text = "";
+        for (var i = 0; i < temp.length; i++) {
+            s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+            final_text += s;
+            final_text += "<br/>";
+        }
+        text = final_text;
 
-    temp = text.split('<br/>');
-    final_text = "";
-    for (var i = 0; i < temp.length; i++) {
-        s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
-        final_text += s;
-        final_text += "<br/>";
+        text = insert_spacing(text, 0.15);
+        //自动识别网页
+        html += text.replace(reg_url, function (result) {
+            return '<a href="' + result + '">' + result + '</a>';
+        });
+        html += '</p></div></div></div>';
+    } else {
+        html += '</div><div class="note-content"><div class="note-password" data-password="'+password+'" data-encrypted="'+text+'">';
+        if (typeof inRecyclebin == 'undefined'){
+            html += '<span>密码：</span><input type="password" class="form-control" id="note_password_'+id+'" onkeydown="checkNotePassword(event, '+ id +');">';
+        } else {
+            html += '<p>该便签已加密，无法查看。</p>';
+        }
+        html += '</div></div></div></div>';
     }
-    text = final_text;
-
-    text = insert_spacing(text, 0.15);
-    //自动识别网页
-    html += text.replace(reg_url, function (result) {
-        return '<a href="' + result + '">' + result + '</a>';
-    });
-    html += '</p></div></div></div>';
     //置顶
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
@@ -241,7 +261,7 @@ function bindNoteFoldDBL(id) {
 }
 
 //添加笔记至Array
-function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, category, text, offset, timezone, forceTop) {
+function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop) {
     var note = {
         id: id,
         time: time,
@@ -250,6 +270,7 @@ function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, cat
         updaterawtime: updaterawtime,
         title: title,
         category: category,
+        password: password,
         text: text,
         offset: offset,
         timezone: timezone,
@@ -262,7 +283,7 @@ function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, cat
     }
 }
 
-function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, title, category, text, offset, timezone, forceTop) {
+function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop) {
     var note = {
         id: id,
         time: time,
@@ -272,6 +293,7 @@ function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, ti
         title: title,
         category: category,
         text: text,
+        password: password,
         offset: offset,
         timezone: timezone,
         forceTop: forceTop
@@ -301,7 +323,7 @@ function refreshNoteList(callback) {
             }
             sortNotes(sort_mode); //排序
             for (var i = 0; i < notes.length; i++) {
-                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].text, notes[i].forceTop);
+                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop);
             }
             //绑定Note的点击事件
             bindNoteClickEvent();
@@ -316,7 +338,7 @@ function refreshNoteList(callback) {
     } else {
         sortNotes(sort_mode); //排序
         for (var i = 0; i < notes.length; i++) {
-            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].text, notes[i].forceTop);
+            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop);
         }
         //绑定Note的点击事件
         bindNoteClickEvent();
@@ -445,6 +467,48 @@ async function renderNotesOfCategory(name){
             } else {
                 $('#note_'+notes[i].id).parent().show();
             }
+        }
+    }
+}
+
+// noteid: string
+function checkNotePassword(e, noteid){
+    if (e.keyCode == 13){
+        var input_pwd = $('#note_password_'+noteid).val();
+        if (sha256(input_pwd, 'fastnote') == $('#note_password_'+noteid).parent().attr('data-password')){
+            //密码正确
+            //生成解密文本
+            var text = $('#note_password_'+noteid).parent().attr('data-encrypted');
+            var decrypted_text = aes_decrypt(text, input_pwd);
+
+            //生成html
+            var html = '<p class="note-text" style="display:none;">';
+            temp = decrypted_text.split('<br/>');
+            final_text = "";
+            for (var i = 0; i < temp.length; i++) {
+                s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+                final_text += s;
+                final_text += "<br/>";
+            }
+            decrypted_text = final_text;
+            decrypted_text = insert_spacing(decrypted_text, 0.15);
+            //自动识别网页
+            html += decrypted_text.replace(reg_url, function (result) {
+                return '<a href="' + result + '">' + result + '</a>';
+            });
+            html += '</p>';
+
+            //渲染
+            $('#note_password_'+noteid).parent().parent().append(html);
+
+            $('#note_password_'+noteid).parent().animateCss('fadeOut morefaster', function(){
+                $('#note_password_'+noteid).parent().hide();
+                $('#note_password_'+noteid).parent().parent().children('.note-text').show();
+                $('#note_password_'+noteid).parent().parent().children('.note-text').animateCss('fadeIn morefaster');
+            });
+        } else {
+            //密码不对
+            $('#note_password_'+noteid).addClass('is-invalid');
         }
     }
 }
