@@ -32,6 +32,27 @@ var menu_note_template = [{
         type: 'separator'
     },
     {
+        label: '复制',
+        click: function () {
+            for (var i = 0; i < notes.length; i++) {
+                if (notes[i].id == noteid_clicked) {
+                    var note = notes[i];
+                    note.text = note.text.replace(/(<br\/>)/gi, "\r");
+                    copyToClipboard(note.text, {
+                        success: function () {
+                            displayInfobar('success', '内容已复制到剪贴板');
+                        },
+                        error: function () {
+                            displayInfobar('success', '复制内容时出现错误');
+                        }
+                    });
+                    return;
+                }
+            }
+            noteid_clicked = -1;
+        }
+    },
+    {
         label: '编辑',
         click: function () {
             for (var i = 0; i < notes.length; i++) {
@@ -54,47 +75,80 @@ var menu_note_template = [{
     }
 ];
 
+var menu_note_hasPassword_template = [{
+        label: '排序方式',
+        submenu: [{
+                id: 'cb_sort_id',
+                label: 'ID',
+                type: 'checkbox',
+                click: function () {
+                    sort_mode = 'id';
+                    var sortModeJson = {
+                        mode: sort_mode
+                    };
+                    storage.set('sortMode', sortModeJson);
+                    refreshNoteList();
+                }
+            },
+            {
+                id: 'cb_sort_updateDate',
+                label: '更新日期',
+                type: 'checkbox',
+                click: function () {
+                    sort_mode = 'updateDate';
+                    var sortModeJson = {
+                        mode: sort_mode
+                    };
+                    storage.set('sortMode', sortModeJson);
+                    refreshNoteList();
+                }
+            }
+        ]
+    },
+    {
+        type: 'separator'
+    }
+];
+
 function popup_menu_note(isForceTop, hasPassword) {
-    var menu_note = Menu.buildFromTemplate(menu_note_template);
+    var menu_note;
     //如果是加密便签，则不显示复制
     if (!hasPassword) {
-        menu_note.insert(2, new MenuItem({
-            label: '复制',
-            click: function () {
-                for (var i = 0; i < notes.length; i++) {
-                    if (notes[i].id == noteid_clicked) {
-                        var note = notes[i];
-                        note.text = note.text.replace(/(<br\/>)/gi, "\r");
-                        copyToClipboard(note.text, {
-                            success: function () {
-                                displayInfobar('success', '内容已复制到剪贴板');
-                            },
-                            error: function () {
-                                displayInfobar('success', '复制内容时出现错误');
-                            }
-                        });
-                        return;
-                    }
+        menu_note = Menu.buildFromTemplate(menu_note_template);
+        if (isForceTop) {
+            //当前便签是置顶
+            menu_note.insert(3, new MenuItem({
+                label: '取消置顶',
+                click: function () {
+                    removeForceTopNote(noteid_clicked);
                 }
-                noteid_clicked = -1;
-            }
-        }));
-    }
-    if (isForceTop) {
-        //当前便签是置顶
-        menu_note.insert(3, new MenuItem({
-            label: '取消置顶',
-            click: function () {
-                removeForceTopNote(noteid_clicked);
-            }
-        }));
+            }));
+        } else {
+            menu_note.insert(3, new MenuItem({
+                label: '置顶',
+                click: function () {
+                    forceTopNote(noteid_clicked);
+                }
+            }));
+        }
     } else {
-        menu_note.insert(3, new MenuItem({
-            label: '置顶',
-            click: function () {
-                forceTopNote(noteid_clicked);
-            }
-        }));
+        menu_note = Menu.buildFromTemplate(menu_note_hasPassword_template);
+        if (isForceTop) {
+            //当前便签是置顶
+            menu_note.append(new MenuItem({
+                label: '取消置顶',
+                click: function () {
+                    removeForceTopNote(noteid_clicked);
+                }
+            }));
+        } else {
+            menu_note.append(new MenuItem({
+                label: '置顶',
+                click: function () {
+                    forceTopNote(noteid_clicked);
+                }
+            }));
+        }
     }
     //设置排序选项
     var sortMenuItem;

@@ -214,6 +214,7 @@ titlesusp1, titlesusp2,titlesusp3{
     color: @color-control-text;
     background: @color-textarea-background;
     border: none;
+    transition: none !important;
 }
 .note-password input:focus{
     font-size: 14px;
@@ -224,4 +225,15 @@ titlesusp1, titlesusp2,titlesusp3{
 }
 .note-password input::-webkit-input-placeholder {
     color: @color-control-placeholder;
+}
+.note-password-relock{
+    float: right;
+    margin-right: 10px;
+    font-size: 14px !important;
+    line-height: 24px !important;
+    cursor: pointer;
+    display: none !important;
+}
+.note-password-relock:hover{
+    color: @color-trigger-hover-primary;
 }
