@@ -6,7 +6,7 @@ $('#input-lockscreen').keypress(function (e){
     if (e.which == 13){
         var t = $('#input-lockscreen').val().trim();
         if (t.length > 0){
-            var p = crypto.createHmac('sha256', 'fastnote').update(t).digest('hex');
+            var p = sha256(t, 'fastnote');
             if (p == settings.lockpassword){
                 //解锁
                 disableLockScreen();

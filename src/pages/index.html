@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
     <script src="static/array.js"></script>
+    <script src="static/encryption.js"></script>
     <script src="static/han.simple.js"></script>
     <script src="static/notes.render.js"></script>
     <script src="static/category.js"></script>
@@ -37,9 +38,6 @@
         const {
             dialog
         } = require('electron').remote;
-
-        //crypto
-        const crypto = require('crypto');
 
         const Menu = remote.Menu;
         const MenuItem = remote.MenuItem;
@@ -113,7 +111,7 @@
                 }
 
                 //笔记显示设置初始化
-                cssText += '.note-content p{';
+                cssText += '.note-content p, .note-content span{';
                 if (typeof settings.fontsize != 'undefined') {
                     cssText += 'font-size:' + settings.fontsize + 'px !important;';
                 }
@@ -620,10 +618,10 @@
                                 $(this).addClass('note-selected');
                                 if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
                                     //是置顶便签
-                                    popup_menu_note(true);
+                                    popup_menu_note(true, $('#note_'+noteid_clicked+' .note-content .note-password').length>0 && $('#note_'+noteid_clicked+' .note-content .note-password').css('display') != 'none');
                                 } else {
                                     //不是置顶便签
-                                    popup_menu_note(false);
+                                    popup_menu_note(false, $('#note_'+noteid_clicked+' .note-content .note-password').length>0 && $('#note_'+noteid_clicked+' .note-content .note-password').css('display') != 'none');
                                 }
                                 $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
                                     $('.toast-multiselected').removeClass('toast-active');
@@ -634,10 +632,10 @@
                             $(this).addClass('note-selected');
                             if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
                                 //是置顶便签
-                                popup_menu_note(true);
+                                popup_menu_note(true, $('#note_'+noteid_clicked+' .note-content .note-password').length>0 && $('#note_'+noteid_clicked+' .note-content .note-password').css('display') != 'none');
                             } else {
                                 //不是置顶便签
-                                popup_menu_note(false);
+                                popup_menu_note(false, $('#note_'+noteid_clicked+' .note-content .note-password').length>0 && $('#note_'+noteid_clicked+' .note-content .note-password').css('display') != 'none');
                             }
                         }
                     }
@@ -707,6 +705,14 @@
                     <select class="form-control" id="select-note-category">
                         <option value="notalloc">未分类</option>
                     </select>
+                </div>
+            </div>
+            <div class="newnote-info-item" id="newnote-info-item-password" style="margin-top: 8px;">
+                <div class="br-col-2">
+                    <label>密码</label>
+                </div>
+                <div class="br-col-10">
+                    <input type="password" class="form-control" id="input-note-password" maxlength="64" placeholder="(未设置密码)">
                 </div>
             </div>
         </div>

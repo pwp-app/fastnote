@@ -200,3 +200,40 @@ titlesusp1, titlesusp2,titlesusp3{
 .note-overheight::-webkit-scrollbar-button {
     display: none;
 }
+
+//加密便签样式
+.note-password span{
+    font-size: 14px;
+}
+.note-password input{
+    width: 320px;
+    display: inline-block;
+    height: 32px;
+    line-height: 32px;
+    font-size: 14px;
+    color: @color-control-text;
+    background: @color-textarea-background;
+    border: none;
+    transition: none !important;
+}
+.note-password input:focus{
+    font-size: 14px;
+    color: @color-control-text;
+    background: @color-textarea-background;
+    border:none;
+    box-shadow: none;
+}
+.note-password input::-webkit-input-placeholder {
+    color: @color-control-placeholder;
+}
+.note-password-relock{
+    float: right;
+    margin-right: 10px;
+    font-size: 14px !important;
+    line-height: 24px !important;
+    cursor: pointer;
+    display: none !important;
+}
+.note-password-relock:hover{
+    color: @color-trigger-hover-primary;
+}
