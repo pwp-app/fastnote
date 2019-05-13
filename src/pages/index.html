@@ -564,23 +564,27 @@
                             var index = notes_selected.indexOf(noteid_clicked);
                             if (index != -1) {
                                 $('#note_' + noteid_clicked).parent().removeClass('note-selected');
-                                notes_selected.removeAt(index);
+                                //非加密便签才进行操作
+                                if ($('#note_'+noteid_clicked+' .note-content .note-text').length>0){
+                                    notes_selected.removeAt(index);
+                                }
                                 //如果没有选中则退出
-                                if (notes_selected.length <= 0) {
+                                if ($('.note-selected').length <= 0) {
                                     selectModeEnabled = false;
                                     $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
                                         $('.toast-multiselected').removeClass('toast-active');
                                     });
                                 } else {
-                                    $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected
-                                        .length + "<handefault/>个便签");
+                                    $('#toast-multiselected-text').html('当前选择了<handefault/>' + $('.note-selected').length + "<handefault/>个便签");
                                 }
                             } else {
                                 $('#note_' + noteid_clicked).parent().addClass('note-selected');
-                                notes_selected.push(noteid_clicked);
+                                //判断是否为加密便签，是则不操作
+                                if ($('#note_'+noteid_clicked+' .note-content .note-text').length>0){
+                                    notes_selected.push(noteid_clicked);
+                                }
                                 //set up toast
-                                $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected
-                                    .length + "<handefault/>个便签");
+                                $('#toast-multiselected-text').html('当前选择了<handefault/>' + $('.note-selected').length + "<handefault/>个便签");
                             }
                         } else {
                             noteLongClickTimeout = setTimeout(function () {
@@ -591,7 +595,9 @@
                                 hasNotesNotForceTop = false;
                                 //对当前所选进行对应处理
                                 $('#note_' + noteid_clicked).parent().addClass('note-selected');
-                                notes_selected.push(noteid_clicked);
+                                if($('#note_'+noteid_clicked+' .note-contenet .note-text').length>0){
+                                    notes_selected.push(noteid_clicked);
+                                }
                                 //判断是否为置顶
                                 if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
                                     hasNotesForceTop = true;
@@ -600,16 +606,15 @@
                                 }
                                 //set up toast
                                 $('#toast-multiselected-text').html('当前选择了<handefault/>' +
-                                    notes_selected.length + "<handefault/>个便签");
+                                $('.note-selected').length + "<handefault/>个便签");
                                 $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                                 window.getSelection().removeAllRanges();
                             }, 1000);
                         }
                     } else if (e.which == 3) {
                         if (selectModeEnabled) {
-                            let index = notes_selected.indexOf(noteid_clicked);
                             //如果是选中的，弹出菜单，如果不是选中的，取消
-                            if (index != -1) {
+                            if ($('#note_'+noteid_clicked).parent().hasClass('note-selected')) {
                                 //弹出多选下的右键菜单
                                 popup_menu_note_multiSelected(hasNotesForceTop, hasNotesNotForceTop);
                             } else {
@@ -673,13 +678,15 @@
                 selectModeEnabled = true;
                 notes_selected = [];
                 notes.forEach(note => {
-                    notes_selected.push(note.id);
+                    if (typeof note.password == "undefined"){
+                        notes_selected.push(note.id);
+                    }
                 });
                 $('.note-wrapper').addClass('note-selected');
                 if (!$('.toast-multiselected').hasClass('toast-active')) {
                     $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                 }
-                $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected.length +
+                $('#toast-multiselected-text').html('当前选择了<handefault/>' + $('.note-selected').length +
                     "<handefault/>个便签");
                 return false;
             });

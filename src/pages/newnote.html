@@ -154,7 +154,6 @@
                     if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json')) {
                         var read_res = fs.readFileSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json', 'utf-8'); //这里有同步让后面的update可以选择
                         if (read_res) {
-                            console.log(read_res);
                             categories = JSON.parse(read_res);
                             for (var i = 0; i < categories.length; i++) {
                                 $('#select-category').append('<option value="' + categories[i].name + '">' + categories[i].name + '</option>');
