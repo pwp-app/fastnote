@@ -165,7 +165,7 @@
                 <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
                     <label>密码</label>
                     <div class="edit-item-control-half-right">
-                        <input class="form-control" id="input-password" type="password" placeholder="(未修改)">
+                        <input class="form-control" id="input-password" type="password">
                     </div>
                 </div>
             </div>
@@ -194,13 +194,14 @@
     <script>
         var nowNoteId = 0;
         var text_edited = false;
-
         //文本是否编辑过
         $("#text-edit").one('input', function () {
             text_edited = true;
         });
-
         $("#input-title").one('input', function () {
+            text_edited = true;
+        });
+        $("#input-password").one('input', function () {
             text_edited = true;
         });
         $('#select-category').one('change', function () {
@@ -224,7 +225,7 @@
         $("#text-edit").keydown(function (e) {
             var ctrlKey = e.ctrlKey || e.metaKey;
             //ctrl+enter 或 ctrl+s
-            if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
+            if ((ctrlKey && e.keyCode == 13) || (ctrlKey && e.keyCode == 83)) {
                 submitSave();
             }
         });
@@ -232,7 +233,7 @@
         $("#input-title").keydown(function (e) {
             var ctrlKey = e.ctrlKey || e.metaKey;
             //ctrl+enter 或 ctrl+s
-            if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
+            if ((ctrlKey && e.keyCode == 13) || (ctrlKey && e.keyCode == 83)) {
                 submitSave();
             }
         });
@@ -241,6 +242,8 @@
             var text = $("#text-edit").val().trim();
             var title = $('#input-title').val().trim();
             var category = $('#select-category').val();
+            var password = $('#input-password').val().trim();
+
             if (text != null && text != "") {
                 if (text_edited) {
                     note.text = text;
@@ -251,6 +254,12 @@
                     }
                     //修改分类
                     note.category = category;
+                    //密码被修改或被设置
+                    if (password.length>1){
+                        //更改相关内容
+                        note.password = sha256(password);
+                        note.text = aes_encrypt(text, password);
+                    }
                     ipcRenderer.send('update-edit-note', note);
                 }
                 window.close();
@@ -266,10 +275,17 @@
         }) => {
             switch (type) {
                 case 'init':
-                    note = data;
+                    console.log(data);
+                    note = data.note;
+                    rawtext = data.rawtext;
+                    console.log(rawtext);
                     nowNoteId = note.id;
                     //初始化textarea
-                    $("#text-edit").text(note.text);
+                    if (typeof rawtext == "undefined"){
+                        $("#text-edit").text(note.text);
+                    } else {
+                        $("#text-edit").text(rawtext);
+                    }
                     //初始化title
                     $("#edit-title").append(" #" + note.id);
                     $("title").append(" - #" + note.id);
@@ -301,6 +317,12 @@
                             $('#select-category').val('notalloc');
                         }
                     });
+                    //初始化密码框
+                    if (typeof note.password == "undefined"){
+                        $('#input-password').attr('placeholder','(未设置)');
+                    } else {
+                        $('#input-password').attr('placeholder','(未更改)');
+                    }
                     break;
                 case 'note-recycled':
                     if (data.id == nowNoteId) {

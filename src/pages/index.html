@@ -368,7 +368,7 @@
                     switch (sort_mode) {
                         case 'id':
                             updateEditNoteinArray(data); //更新数组内容
-                            reRenderEditedNote(data);
+                            rerenderEditedNote(data);
                             break;
                         case 'updateDate':
                             updateEditNoteinArray(data, true);
@@ -377,130 +377,6 @@
                     //show infobar
                     displayInfobar("success", "笔记内容已保存");
                 });
-            }
-            async function reRenderEditedNote(data) {
-                //分类
-                if (current_category != 'all'){
-                    //便签编辑后已经不属于当前分类，从画面中移出并隐藏
-                    if (data.category != current_category){
-                        $('#note_'+data.id).parent().animateCss('fadeOutLeft faster',function(){
-                            $('#note_'+data.id).hide();
-                            //当前分类是否为空
-                            if (getCountOfCategory(current_category) < 1){
-                                $('#note-empty-category').show();
-                                $('#note-empty-category').animateCss('fadeIn');
-                            }
-                        });
-                        //此处不return，后续更新仍然要处理，只是便签不显示
-                    } else {
-                        //便签可能是从其他类别改到当前类别的
-                        if($('#note_'+data.id).parent().css('display') == 'none'){
-                            $('#note_'+data.id).parent().show();
-                            $('#note_'+data.id).parent().animateCss('fadeInLeft faster');
-                            //有便签新加入必定不为空
-                            $('#note-empty-category').hide();
-                        }
-                    }
-                }
-                //处理内容
-                temp = data.text.split('<br/>');
-                text = "";
-                for (var i = 0; i < temp.length; i++) {
-                    s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
-                    text += s;
-                    text += "<br/>";
-                }
-                final_text = insert_spacing(text, 0.12);
-                var html = final_text.replace(reg_url, function (result) {
-                    return '<a href="' + result + '">' + result + '</a>';
-                });
-                var origin_height = $('#note_' + data.id + ' .note-content').height(); //get origin height
-                //reset note content on page
-                $("#note_" + data.id + " .note-content p").html(html);
-                //移除overheight标签获取便签编辑后的内容实际高度
-                let flag_overheight;
-                if ($('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
-                    flag_overheight = true;
-                    $('#note_' + data.id + ' .note-content').removeClass('note-overheight');
-                    $('#note_' + data.id + ' .note-content').removeAttr('style');
-                }
-                var after_height = $('#note_' + data.id + ' .note-content').height();
-                //还原被移除的overheight标签
-                if (flag_overheight) {
-                    $('#note_' + data.id + ' .note-content').addClass('note-overheight');
-                }
-                //reset content of updatetime
-                var timeContent = '<p class="note-time note-updatetime han-element">更新：' +
-                    data.updatetime +
-                    '</p>' +
-                    '<p class="note-time han-element">创建：' + data.time + '</p>';
-                let m_updatetime = moment(data.updaterawtime, 'YYYYMMDDHHmmss');
-                let m_time = moment(data.rawtime, 'YYYYMMDDHHmmss');
-                var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
-                    '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
-                $('#note_' + data.id + ' .note-header time').html(timeContent);
-                //open external event rebind
-                $('#note_' + data.id + ' a').click(function (e) {
-                    ipcRenderer.send('openExternalURL', $(this).attr('href'));
-                    e.preventDefault();
-                });
-                //timeevent rebind
-                bindNoteTimeClick(data.id);
-                //处理标题
-                if (typeof data.title != 'undefined') {
-                    var titletext = "";
-                    if (data.title.length > 50) {
-                        titletext = '<titlep1>' + insert_spacing(data.title.substring(0, 16), 0.12) +
-                            '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(data.title.substring(
-                                18, 32), 0.12) + '</titlep2><titlesusp2>...</titlesusp2><titlep3>' + insert_spacing(
-                                data.title.substring(32, 50), 0.12) +
-                            '</titlep3><titlesusp3>...</titlesusp3><titlep4>' + insert_spacing(data.title.substring(
-                                50), 0.12) + '</titlep4>';
-                    } else if (data.title.length > 32) {
-                        titletext = '<titlep1>' + insert_spacing(data.title.substring(0, 16), 0.12) +
-                            '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(data.title.substring(
-                                18, 32), 0.12) + '<titlesusp2>...</titlesusp2><titlep3>' + insert_spacing(data.title
-                                .substring(32), 0.12) + '</titlep3>';
-                    } else if (data.title.length > 16) {
-                        titletext = '<titlep1>' + insert_spacing(data.title.substring(0, 16), 0.12) +
-                            '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(data.title.substring(
-                                18), 0.12) + '</titlep2>';
-                    } else {
-                        titletext = insert_spacing(data.title, 0.12);
-                    }
-                    $('#note_' + data.id + ' .note-header .note-title').html(titletext);
-                }
-                var tag_class = $('#note_' + data.id + ' .note-content').attr('class');
-                //fix note status
-                if (after_height > 250) {
-                    if (origin_height <= 250) {
-                        if (!$('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
-                            bindNoteFoldDBL(data.id);
-                            $('#note_' + data.id + ' .note-content').css('height', origin_height);
-                            $('#note_' + data.id + ' .note-content').animate({
-                                height: "250px"
-                            });
-                        }
-                    } else {
-                        //already expanded
-                        $('#note_' + data.id + ' .note-content').css('height', origin_height);
-                        $('#note_' + data.id + ' .note-content').animate({
-                            height: after_height
-                        });
-                    }
-                } else {
-                    $('#note_' + data.id + ' .note-content').css('height', origin_height);
-                    $('#note_' + data.id + ' .note-content').animate({
-                        height: after_height
-                    });
-                    $('#note_' + data.id + ' .note-content').dblclick = function () {}; //unbind event
-                    $('#note_' + data.id + ' .note-content').unbind('dblclick');
-                }
-                //处理分类
-                var category_name = $('#note_'+data.id).attr('data-category');
-                minorCategoryCount(category_name, true, true);
-                addCategoryCount(data.category, true, true);
-                $('#note_'+data.id).attr('data-category',data.category);
             }
 
             //执行notes的替换

@@ -36,8 +36,7 @@ var menu_note_template = [{
         click: function () {
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].id == noteid_clicked) {
-                    var note = notes[i];
-                    copyToClipboard(note.text.replace(/(\r\n)|(\n)/g,"\r"), {
+                    copyToClipboard(notes[i].text.replace(/(\r\n)|(\n)/g,"\r"), {
                         success: function () {
                             displayInfobar('success', '内容已复制到剪贴板');
                         },
@@ -56,8 +55,14 @@ var menu_note_template = [{
         click: function () {
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].id == noteid_clicked) {
-                    var note = notes[i];
-                    ipcRenderer.send("openEditWindow", notes[i]);
+                    var rawtext;
+                    if ($('#note_'+noteid_clicked+' .note-content .note-password').length>0){
+                        rawtext = $('#note_'+noteid_clicked).attr('data-decrypted');
+                    }
+                    ipcRenderer.send("openEditWindow", {
+                        note: notes[i],
+                        rawtext: rawtext
+                    });
                     return;
                 }
             }
@@ -224,9 +229,15 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
                     for (var i = 0; i < notes_selected.length; i++) {
                         for (var j = 0; j < notes.length; j++) {
                             if (notes[j].id == notes_selected[i]) {
-                                var note = notes[j];
-                                ipcRenderer.send("openEditWindow", notes[j]);
-                                continue;
+                                var rawtext;
+                                if ($('#note_'+notes_selected[i]+' .note-content .note-password').length>0){
+                                    rawtext = $('#note_'+notes_selected[i]).attr('data-decrypted');
+                                }
+                                ipcRenderer.send("openEditWindow", {
+                                    note: notes[j],
+                                    rawtext: rawtext
+                                });
+                                break;
                             }
                         }
                     }
