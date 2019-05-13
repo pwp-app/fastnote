@@ -169,46 +169,7 @@ function popup_menu_note(isForceTop, hasPassword) {
 }
 
 //多选状态
-var menu_note_multiSelected_template = [{
-        label: '删除选中',
-        click: function () {
-            $('.note-wrapper').removeClass('note-selected');
-            selectModeEnabled = false;
-            $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
-                $('.toast-multiselected').removeClass('toast-active');
-            });
-            putNotesToRecyclebin(notes_selected, function (res) {
-                if (res) {
-                    displayInfobar('success', '选中的便签均已放入回收站');
-                } else {
-                    displayInfobar('error', '将便签放入回收站时出现错误');
-                }
-            });
-        }
-    }, {
-        label: '编辑选中',
-        click: function () {
-            $('.note-wrapper').removeClass('note-selected');
-            selectModeEnabled = false;
-            $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
-                $('.toast-multiselected').removeClass('toast-active');
-            });
-            try {
-                for (var i = 0; i < notes_selected.length; i++) {
-                    for (var j = 0; j < notes.length; j++) {
-                        if (notes[j].id == notes_selected[i]) {
-                            var note = notes[j];
-                            note.text = note.text.replace(/<br\/>/g, "\n")
-                            ipcRenderer.send("openEditWindow", notes[j]);
-                            continue;
-                        }
-                    }
-                }
-            } catch (err) {
-                console.log(err);
-            }
-        }
-    },
+var menu_note_multiSelected_template = [
     {
         type: 'separator'
     },
@@ -235,22 +196,65 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
             });
         }
     });
+    if (!(notes_selected.length<1 && notes_selected_withencrypted.length>0)){
+        menu_note_multiSelected.insert(0, new MenuItem({
+            label: '删除选中',
+            click: function () {
+                $('.note-wrapper').removeClass('note-selected');
+                selectModeEnabled = false;
+                $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
+                    $('.toast-multiselected').removeClass('toast-active');
+                });
+                putNotesToRecyclebin(notes_selected, function (res) {
+                    if (res) {
+                        displayInfobar('success', '便签已放入回收站');
+                    } else {
+                        displayInfobar('error', '将便签放入回收站时出现错误');
+                    }
+                });
+            }
+        }));
+        menu_note_multiSelected.insert(1, new MenuItem({
+            label: '编辑选中',
+            click: function () {
+                $('.note-wrapper').removeClass('note-selected');
+                selectModeEnabled = false;
+                $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
+                    $('.toast-multiselected').removeClass('toast-active');
+                });
+                try {
+                    for (var i = 0; i < notes_selected.length; i++) {
+                        for (var j = 0; j < notes.length; j++) {
+                            if (notes[j].id == notes_selected[i]) {
+                                var note = notes[j];
+                                note.text = note.text.replace(/<br\/>/g, "\n")
+                                ipcRenderer.send("openEditWindow", notes[j]);
+                                continue;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        }));
+    }
     //存在置顶便签，插入取消置顶项，反之插入置顶选中
     if (hasForceTop) {
-        menu_note_multiSelected.insert(2, new MenuItem({
+        menu_note_multiSelected.insert(0, new MenuItem({
             label: '取消置顶',
             click: function () {
-                notes_selected.forEach(noteid => {
+                notes_selected_withencrypted.forEach(noteid => {
                     removeForceTopNote(noteid);
                 });
             }
         }));
     }
     if (hasNotForceTop) {
-        menu_note_multiSelected.insert(2, new MenuItem({
+        menu_note_multiSelected.insert(1, new MenuItem({
             label: '置顶选中',
             click: function () {
-                notes_selected.forEach(noteid => {
+                notes_selected_withencrypted.forEach(noteid => {
                     forceTopNote(noteid);
                 });
             }

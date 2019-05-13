@@ -102,7 +102,7 @@
 
         //init category
         ipcRenderer.on('init-category', (sender, data) => {
-            if (data != 'notalloc') {
+            if (data != 'notalloc' && data != 'all') {
                 $(document).ready(function () {
                     $('#select-category').val(data);
                 });
@@ -212,17 +212,22 @@
                 //获取title和分类
                 var title = $('#input-title').val().trim();
                 var category = $('#select-category').val();
+                var password = $('#input-password').val().trim();
                 if (title.length < 1) {
                     title = undefined;
                 }
                 if (category == 'notalloc') {
                     category = undefined;
                 }
+                if (password.length < 1){
+                    password = undefined;
+                }
                 var text = $('#text-newnote').val();
                 var note = {
                     title: title,
                     category: category,
-                    text: text
+                    text: text,
+                    password: password
                 };
                 ipcRenderer.send('newnotewin-save', note);
                 //关闭窗口

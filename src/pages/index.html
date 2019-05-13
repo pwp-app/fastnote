@@ -568,14 +568,15 @@
                                 if ($('#note_'+noteid_clicked+' .note-content .note-text').length>0){
                                     notes_selected.removeAt(index);
                                 }
+                                notes_selected_withencrypted.removeAt(index);
                                 //如果没有选中则退出
-                                if ($('.note-selected').length <= 0) {
+                                if (notes_selected_withencrypted.length <= 0) {
                                     selectModeEnabled = false;
                                     $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
                                         $('.toast-multiselected').removeClass('toast-active');
                                     });
                                 } else {
-                                    $('#toast-multiselected-text').html('当前选择了<handefault/>' + $('.note-selected').length + "<handefault/>个便签");
+                                    $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected_withencrypted.length + "<handefault/>个便签");
                                 }
                             } else {
                                 $('#note_' + noteid_clicked).parent().addClass('note-selected');
@@ -583,21 +584,24 @@
                                 if ($('#note_'+noteid_clicked+' .note-content .note-text').length>0){
                                     notes_selected.push(noteid_clicked);
                                 }
+                                notes_selected_withencrypted.push(noteid_clicked);
                                 //set up toast
-                                $('#toast-multiselected-text').html('当前选择了<handefault/>' + $('.note-selected').length + "<handefault/>个便签");
+                                $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected_withencrypted.length + "<handefault/>个便签");
                             }
                         } else {
                             noteLongClickTimeout = setTimeout(function () {
                                 //初始化值
                                 selectModeEnabled = true;
                                 notes_selected = [];
+                                notes_selected_withencrypted = [];
                                 hasNotesForceTop = false;
                                 hasNotesNotForceTop = false;
                                 //对当前所选进行对应处理
                                 $('#note_' + noteid_clicked).parent().addClass('note-selected');
-                                if($('#note_'+noteid_clicked+' .note-contenet .note-text').length>0){
+                                if($('#note_'+noteid_clicked+' .note-content .note-text').length>0){
                                     notes_selected.push(noteid_clicked);
                                 }
+                                notes_selected_withencrypted.push(noteid_clicked);
                                 //判断是否为置顶
                                 if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
                                     hasNotesForceTop = true;
@@ -677,10 +681,12 @@
             Mousetrap.bind('ctrl+a', function () {
                 selectModeEnabled = true;
                 notes_selected = [];
+                notes_selected_withencrypted = [];
                 notes.forEach(note => {
                     if (typeof note.password == "undefined"){
                         notes_selected.push(note.id);
                     }
+                    notes_selected_withencrypted.push(note.id);
                 });
                 $('.note-wrapper').addClass('note-selected');
                 if (!$('.toast-multiselected').hasClass('toast-active')) {
@@ -733,7 +739,7 @@
                     });
                     //接收回传的保存
                     ipcRenderer.on('newnotewin-save', (sender, data) => {
-                        saveNote(data.text, data.title, data.category);
+                        saveNote(data.text, data.title, data.category, data.password);
                     });
                 </script>
                 <!-- fold -->

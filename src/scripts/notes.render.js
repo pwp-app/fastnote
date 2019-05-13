@@ -8,6 +8,7 @@ var selectModeEnabled = false;
 var noteLongClickTimeout;
 
 var notes_selected = [];
+var notes_selected_withencrypted = [];
 
 var sort_mode = null;
 //初始化排序模式
