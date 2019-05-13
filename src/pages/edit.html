@@ -59,7 +59,7 @@
                 settings = data;
                 settingsInit(settings);
             }
-            $(document).ready(function(){
+            $(document).ready(function () {
                 ipcRenderer.send("edit-window-ready");
             });
         });
@@ -70,17 +70,17 @@
             //build css
             if (settings == null) {
                 //read error
-                $('#main-style').attr('href','static/main.blackwhite.css');
+                $('#main-style').attr('href', 'static/main.blackwhite.css');
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
 
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
-                if (typeof settings.theme != 'undefined'){
-                    $('#main-style').attr('href','static/main.'+settings.theme+'.css');
+                if (typeof settings.theme != 'undefined') {
+                    $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
                 } else {
-                    $('#main-style').attr('href','static/main.blackwhite.css');
+                    $('#main-style').attr('href', 'static/main.blackwhite.css');
                 }
 
                 if (typeof settings.fontfamily != 'undefined') {
@@ -99,12 +99,12 @@
             }
             modStyle.innerHTML = cssText;
 
-            if (font == 'Source Han Sans CN'){
+            if (font == 'Source Han Sans CN') {
                 loadWebfont(font);
             }
         }
 
-        function loadWebfont(font){
+        function loadWebfont(font) {
             WebFont.load({
                 custom: {
                     families: [font]
@@ -148,37 +148,41 @@
         </div>
         <div class="container-edit-info">
             <div class="edit-info-item">
-                <div class="br-col-1">
-                    <label>标题</label>
-                </div>
-                <div class="br-col-11">
+                <label>标题</label>
+                <div class="edit-item-control">
                     <input class="form-control" id="input-title" maxlength="64" placeholder="(无标题)">
                 </div>
             </div>
-            <div class="edit-info-item" style="margin-top: 8px;">
-                <div class="br-col-1">
+            <div style="margin-top: 8px;">
+                <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
                     <label>分类</label>
+                    <div class="edit-item-control-half-left">
+                        <select class="form-control" id="select-category">
+                            <option value="notalloc">未分类</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="br-col-11">
-                    <select class="form-control" id="select-category">
-                        <option value="notalloc">未分类</option>
-                    </select>
+                <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
+                    <label>密码</label>
+                    <div class="edit-item-control-half-right">
+                        <input class="form-control" id="input-password" type="password" placeholder="(未修改)">
+                    </div>
                 </div>
-                <script>
-                    if(fs.existsSync(storagePath + (global.indebug?'/devTemp':'')+ '/storage/categories.json')){
-                        var read_res = fs.readFileSync(storagePath + (global.indebug?'/devTemp':'')+ '/storage/categories.json', 'utf-8');  //这里有同步让后面的update可以选择
-                        if (read_res){
-                            categories = JSON.parse(read_res);
-                            for (var i=0;i<categories.length;i++){
-                                $('#select-category').append('<option value="'+categories[i].name+'">'+categories[i].name+'</option>');
-                            }
-                        } else {
-                            console.error(read_res);
-                        }
-                    }
-                </script>
             </div>
         </div>
+        <script>
+            if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json')) {
+                var read_res = fs.readFileSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json', 'utf-8'); //这里有同步让后面的update可以选择
+                if (read_res) {
+                    categories = JSON.parse(read_res);
+                    for (var i = 0; i < categories.length; i++) {
+                        $('#select-category').append('<option value="' + categories[i].name + '">' + categories[i].name + '</option>');
+                    }
+                } else {
+                    console.error(read_res);
+                }
+            }
+        </script>
         <textarea class="text-edit" id="text-edit"></textarea>
     </div>
     <div class="container-footer">
@@ -192,14 +196,14 @@
         var text_edited = false;
 
         //文本是否编辑过
-        $("#text-edit").one('input',function(){
+        $("#text-edit").one('input', function () {
             text_edited = true;
         });
 
-        $("#input-title").one('input',function(){
+        $("#input-title").one('input', function () {
             text_edited = true;
         });
-        $('#select-category').one('change',function(){
+        $('#select-category').one('change', function () {
             text_edited = true;
         });
         //footer按钮事件绑定
@@ -212,7 +216,7 @@
         });
 
         var isComboKey = false;
-        Mousetrap.bind(['ctrl+s','ctrl+enter'],function(){
+        Mousetrap.bind(['ctrl+s', 'ctrl+enter'], function () {
             submitSave();
             return false;
         });
@@ -233,14 +237,14 @@
             }
         });
 
-        function submitSave(){
+        function submitSave() {
             var text = $("#text-edit").val().trim();
             var title = $('#input-title').val().trim();
             var category = $('#select-category').val();
             if (text != null && text != "") {
-                if (text_edited){
+                if (text_edited) {
                     note.text = text;
-                    if (title.length > 0){
+                    if (title.length > 0) {
                         note.title = title;
                     } else {
                         note.title = undefined;
@@ -270,28 +274,28 @@
                     $("#edit-title").append(" #" + note.id);
                     $("title").append(" - #" + note.id);
                     //初始化header
-                    if (typeof note.updatetime == 'undefined'){
-                        $("#edit-header-time").append('创建时间：'+note.time);
+                    if (typeof note.updatetime == 'undefined') {
+                        $("#edit-header-time").append('创建时间：' + note.time);
                     } else {
-                        $("#edit-header-time").append('最近一次编辑：'+note.updatetime);
+                        $("#edit-header-time").append('最近一次编辑：' + note.updatetime);
                     }
                     //初始化title
-                    if (typeof note.title != 'undefined'){
-                        if (note.title.length>20){
-                            var t = note.title.substring(0,20)+'...';
-                            $("#edit-title").append(' '+t);
-                            $("title").append(' '+t);
+                    if (typeof note.title != 'undefined') {
+                        if (note.title.length > 20) {
+                            var t = note.title.substring(0, 20) + '...';
+                            $("#edit-title").append(' ' + t);
+                            $("title").append(' ' + t);
                         } else {
-                            $("#edit-title").append(' '+note.title);
-                            $("title").append(' '+note.title);
+                            $("#edit-title").append(' ' + note.title);
+                            $("title").append(' ' + note.title);
                         }
-                        if (note.title.length > 0){
+                        if (note.title.length > 0) {
                             $('#input-title').val(note.title);
                         }
                     }
                     //初始化分类
-                    $(document).ready(function(){
-                        if (typeof note.category != 'undefined'){
+                    $(document).ready(function () {
+                        if (typeof note.category != 'undefined') {
                             $('#select-category').val(note.category);
                         } else {
                             $('#select-category').val('notalloc');
@@ -299,23 +303,23 @@
                     });
                     break;
                 case 'note-recycled':
-                    if (data.id == nowNoteId){
+                    if (data.id == nowNoteId) {
                         window.close();
                     }
                     break;
                 case 'category-added':
-                    $('#select-category').append('<option value="'+data+'">'+data+'</option>');
+                    $('#select-category').append('<option value="' + data + '">' + data + '</option>');
                     break;
                 case 'category-removed':
-                    $('#select-category option[value="'+data+'"]').remove();
+                    $('#select-category option[value="' + data + '"]').remove();
                     break;
                 default:
-                    console.log('unknown message:'+type);
+                    console.log('unknown message:' + type);
                     break;
             }
         });
 
-        ipcRenderer.on('readyToReload', function(sender, data){
+        ipcRenderer.on('readyToReload', function (sender, data) {
             ipcRenderer.send('readyToReloadEditWindow', note);
         });
 
@@ -323,7 +327,13 @@
         $(window).resize(function () {
             resizeContent();
         });
-        function resizeContent(){
+
+        function resizeContent() {
+            //设置控件的宽度
+            $('.edit-item-control').css('width', $(window).width() - 70);
+            $('.edit-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 59);
+            $('.edit-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 41);
+            //调整文本域大小
             var h_container = $(window).height() - $('.container-titlebar').height() - 48;
             $('.container-edit').css('height', h_container);
             var h_textedit = h_container - $('.container-edit-header').height() - $('.container-edit-info').height() - 39;
