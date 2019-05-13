@@ -238,7 +238,6 @@ function saveNote(notetext, notetitle, notecategory, notepassword) {
         }
     }
     //转换回车
-    notetext = notetext.replace(/(\r\n)|(\n)|(\r)/g, '<br/>');
     if (typeof notepassword != 'undefined' && notepassword.length>0){
         //密码不为空，对便签加密
         notetext = aes_encrypt(notetext, notepassword);

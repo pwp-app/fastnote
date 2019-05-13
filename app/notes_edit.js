@@ -20,8 +20,6 @@ var notesEdit = {
             path = storagePath + (global.indebug?'/devTemp':'')+'/notes/'+note.rawtime+'.json';
         }
         //replace char
-        note.text = note.text.replace(/\n/g, '<br/>');
-        note.text = note.text.replace(/\r\n/g, '<br/>');
         //set time
         note.updatetime = alltime.currentTime;
         note.updaterawtime = alltime.rawTime;

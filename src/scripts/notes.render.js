@@ -91,12 +91,13 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
     if (typeof password == 'undefined') {
         html += '</div><div class="note-content"><p class="note-text">';
         //process html tag
-        temp = text.split('<br/>');
+        text = text.replace(/(\r\n)|(\n)|(\r)/g, '<br>');
+        temp = text.split('<br>');
         final_text = "";
         for (var i = 0; i < temp.length; i++) {
             s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
             final_text += s;
-            final_text += "<br/>";
+            final_text += "<br>";
         }
         text = final_text;
         text = insert_spacing(text, 0.15);
@@ -173,12 +174,13 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
     }
     if (typeof password == 'undefined') {
         html += '</div><div class="note-content"><p class="note-text">';
-        temp = text.split('<br/>');
+        text = text.replace(/(\r\n)|(\n)|(\r)/g, '<br>');
+        temp = text.split('<br>');
         final_text = "";
         for (var i = 0; i < temp.length; i++) {
             s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
             final_text += s;
-            final_text += "<br/>";
+            final_text += "<br>";
         }
         text = final_text;
 

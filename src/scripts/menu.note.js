@@ -37,8 +37,7 @@ var menu_note_template = [{
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].id == noteid_clicked) {
                     var note = notes[i];
-                    note.text = note.text.replace(/(<br\/>)/gi, "\r");
-                    copyToClipboard(note.text, {
+                    copyToClipboard(note.text.replace(/(\r\n)|(\n)/g,"\r"), {
                         success: function () {
                             displayInfobar('success', '内容已复制到剪贴板');
                         },
@@ -58,7 +57,6 @@ var menu_note_template = [{
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].id == noteid_clicked) {
                     var note = notes[i];
-                    note.text = note.text.replace(/<br\/>/g, "\n")
                     ipcRenderer.send("openEditWindow", notes[i]);
                     return;
                 }
@@ -227,7 +225,6 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
                         for (var j = 0; j < notes.length; j++) {
                             if (notes[j].id == notes_selected[i]) {
                                 var note = notes[j];
-                                note.text = note.text.replace(/<br\/>/g, "\n")
                                 ipcRenderer.send("openEditWindow", notes[j]);
                                 continue;
                             }
