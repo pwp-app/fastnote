@@ -362,16 +362,18 @@
                 updateEditNote(data);
             });
 
-            function updateEditNote(note) {
-                notesEdit.saveEditNote(note, function (data) {
+            function updateEditNote(res) {
+                notesEdit.saveEditNote(res, function (data) {
+                    console.log(data);
                     //reset contents in note
                     switch (sort_mode) {
+                        //此处接收到的是{note:note, rawtext:text}
                         case 'id':
-                            updateEditNoteinArray(data); //更新数组内容
-                            rerenderEditedNote(data);
+                            updateEditNoteinArray(data.note); //更新数组内容
+                            rerenderEditedNote(data.note, data.rawtext);
                             break;
                         case 'updateDate':
-                            updateEditNoteinArray(data, true);
+                            updateEditNoteinArray(data.note, true);
                             break;
                     }
                     //show infobar

@@ -255,12 +255,15 @@
                     //修改分类
                     note.category = category;
                     //密码被修改或被设置
-                    if (password.length>1){
+                    if (password.length>0){
                         //更改相关内容
-                        note.password = sha256(password);
+                        note.password = sha256(password, 'fastnote');
                         note.text = aes_encrypt(text, password);
                     }
-                    ipcRenderer.send('update-edit-note', note);
+                    ipcRenderer.send('update-edit-note', {
+                        note: note,
+                        rawtext: text
+                    });
                 }
                 window.close();
             } else {
