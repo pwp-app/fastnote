@@ -1,6 +1,7 @@
 let win_edits = [];
 let edit_noteid = [];
 
+
 const {
     BrowserWindow
 } = require('electron');
@@ -10,7 +11,6 @@ const ipc = require('electron').ipcMain;
 
 const app = require('electron').app;
 const path = require('path');
-
 function createEditWindow(data) {
     let win_edit = null;
     var conf = {
@@ -41,13 +41,13 @@ function createEditWindow(data) {
         win_edit.webContents.openDevTools();
 
     win_edit.on('closed', () => {
-        var index = win_edits.indexOf(win_edit);
+        let index = win_edits.indexOf(win_edit);
         win_edits[index] = null;
         edit_noteid[index] = null;
     })
 
     win_edit.on('ready-to-show', () => {
-        type = 'init';
+        let type = 'init';
         ipc.once('edit-window-ready', () => {
             win_edit.show();
         });
@@ -83,7 +83,7 @@ var editWindow = {
         return win_edits;
     },
     showWindow: function (data) {
-        var index = edit_noteid.indexOf(data.id);
+        let index = edit_noteid.indexOf(data.id);
         if (index != -1) {
             if (win_edits[index] == null) {
                 edit_noteid[index] = null;
