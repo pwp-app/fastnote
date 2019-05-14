@@ -127,14 +127,18 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
     } else {
         $('.note-list-normal').append($(html));
     }
-    bindNoteFoldDBL(id);
+
     //open external on os default webbrowser
     $('#note_' + id + ' a').click(function (e) {
         ipcRenderer.send('openExternalURL', $(this).attr('href'));
         e.preventDefault();
     });
 
-    bindNoteTimeClick(id);
+    setTimeout(function(){
+        //防止读取不了便签内容的高度
+        bindNoteFoldDBL(id);
+        bindNoteTimeClick(id);
+    },0);
 }
 //在顶部渲染Note
 function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, text, forceTop) {
@@ -210,8 +214,7 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
     } else {
         $('.note-list-normal').prepend($(html));
     }
-    //auto fold
-    bindNoteFoldDBL(id);
+
     //animate
     $('#note_' + id).animateCss('fadeInLeft faster');
     //open external on os default webbrowser
@@ -220,8 +223,10 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
         e.preventDefault();
     });
 
-    //绑定时间
-    bindNoteTimeClick(id);
+    setTimeout(function(){
+        bindNoteFoldDBL(id);
+        bindNoteTimeClick(id);
+    },0);
 }
 
 async function rerenderEditedNote(data, rawtext) {
@@ -566,32 +571,44 @@ function deleteNoteFromArr_recycle(id) {
     });
 }
 
-async function forceTopNote(noteid) {
+async function operateForceTopNote(noteid, status) {
     for (var i = 0; i < notes.length; i++) {
         if (notes[i].id == noteid) {
             //处理note文件
-            notes[i].forceTop = true;
+            notes[i].forceTop = status;
             saveNoteByObj(notes[i]);
             break;
         }
     }
-    refreshNoteList();
+    var note_style = $('#note_'+noteid+' .note-content').attr('style');
+    refreshNoteList(function(){
+        $('#note_'+noteid+' .note-content').attr('style', note_style);
+    });
     renderNotesOfCategory(current_category);
 }
 
-function removeForceTopNote(noteid) {
-    notes.every(function (note, i) {
-        if (note.id == noteid) {
-            //处理note文件
-            note.forceTop = false;
-            saveNoteByObj(note);
-            return false;
-        } else {
-            return true;
+async function operateForceTopNotes(notes_selected, status){
+    let notes_status = [];
+    for (let i=0;i<notes_selected.length;i++){
+        for (let j = 0; j < notes.length; j++) {
+            if (notes[j].id == notes_selected[i]) {
+                //处理note文件
+                notes[j].forceTop = status;
+                saveNoteByObj(notes[j]);
+                let note_style = $('#note_'+notes[j].id+' .note-content').attr('style');
+                notes_status.push({
+                    id: notes[j].id,
+                    style: note_style
+                });
+                break;
+            }
+        }
+    }
+    refreshNoteList(function(){
+        for (let i=0;i<notes_status.length;i++){
+            $('#note_'+notes_status[i].id+' .note-content').attr('style', notes_status[i].style);
         }
     });
-    refreshNoteList();
-    renderNotesOfCategory(current_category);
 }
 
 async function renderNotesOfCategory(name) {

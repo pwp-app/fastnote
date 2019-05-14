@@ -123,14 +123,14 @@ function popup_menu_note(isForceTop, hasPassword) {
             menu_note.insert(3, new MenuItem({
                 label: '取消置顶',
                 click: function () {
-                    removeForceTopNote(noteid_clicked);
+                    operateForceTopNote(noteid_clicked, false);
                 }
             }));
         } else {
             menu_note.insert(3, new MenuItem({
                 label: '置顶',
                 click: function () {
-                    forceTopNote(noteid_clicked);
+                    operateForceTopNote(noteid_clicked, true);
                 }
             }));
         }
@@ -141,14 +141,14 @@ function popup_menu_note(isForceTop, hasPassword) {
             menu_note.append(new MenuItem({
                 label: '取消置顶',
                 click: function () {
-                    removeForceTopNote(noteid_clicked);
+                    operateForceTopNote(noteid_clicked, false);
                 }
             }));
         } else {
             menu_note.append(new MenuItem({
                 label: '置顶',
                 click: function () {
-                    forceTopNote(noteid_clicked);
+                    operateForceTopNote(noteid_clicked, true);
                 }
             }));
         }
@@ -252,9 +252,7 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
         menu_note_multiSelected.insert(0, new MenuItem({
             label: '取消置顶',
             click: function () {
-                notes_selected_withencrypted.forEach(noteid => {
-                    removeForceTopNote(noteid);
-                });
+                operateForceTopNotes(notes_selected_withencrypted, false);
             }
         }));
     }
@@ -262,9 +260,7 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
         menu_note_multiSelected.insert(1, new MenuItem({
             label: '置顶选中',
             click: function () {
-                notes_selected_withencrypted.forEach(noteid => {
-                    forceTopNote(noteid);
-                });
+                operateForceTopNotes(notes_selected_withencrypted, true);
             }
         }));
     }
