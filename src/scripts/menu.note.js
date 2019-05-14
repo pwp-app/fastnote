@@ -36,9 +36,7 @@ var menu_note_template = [{
         click: function () {
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].id == noteid_clicked) {
-                    var note = notes[i];
-                    note.text = note.text.replace(/(<br\/>)/gi, "\r");
-                    copyToClipboard(note.text, {
+                    copyToClipboard(notes[i].text.replace(/(\r\n)|(\n)/g,"\r"), {
                         success: function () {
                             displayInfobar('success', '内容已复制到剪贴板');
                         },
@@ -57,9 +55,14 @@ var menu_note_template = [{
         click: function () {
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].id == noteid_clicked) {
-                    var note = notes[i];
-                    note.text = note.text.replace(/<br\/>/g, "\n")
-                    ipcRenderer.send("openEditWindow", notes[i]);
+                    var rawtext;
+                    if ($('#note_'+noteid_clicked+' .note-content .note-password').length>0){
+                        rawtext = $('#note_'+noteid_clicked).attr('data-decrypted');
+                    }
+                    ipcRenderer.send("openEditWindow", {
+                        note: notes[i],
+                        rawtext: rawtext
+                    });
                     return;
                 }
             }
@@ -120,14 +123,14 @@ function popup_menu_note(isForceTop, hasPassword) {
             menu_note.insert(3, new MenuItem({
                 label: '取消置顶',
                 click: function () {
-                    removeForceTopNote(noteid_clicked);
+                    operateForceTopNote(noteid_clicked, false);
                 }
             }));
         } else {
             menu_note.insert(3, new MenuItem({
                 label: '置顶',
                 click: function () {
-                    forceTopNote(noteid_clicked);
+                    operateForceTopNote(noteid_clicked, true);
                 }
             }));
         }
@@ -138,14 +141,14 @@ function popup_menu_note(isForceTop, hasPassword) {
             menu_note.append(new MenuItem({
                 label: '取消置顶',
                 click: function () {
-                    removeForceTopNote(noteid_clicked);
+                    operateForceTopNote(noteid_clicked, false);
                 }
             }));
         } else {
             menu_note.append(new MenuItem({
                 label: '置顶',
                 click: function () {
-                    forceTopNote(noteid_clicked);
+                    operateForceTopNote(noteid_clicked, true);
                 }
             }));
         }
@@ -169,46 +172,7 @@ function popup_menu_note(isForceTop, hasPassword) {
 }
 
 //多选状态
-var menu_note_multiSelected_template = [{
-        label: '删除选中',
-        click: function () {
-            $('.note-wrapper').removeClass('note-selected');
-            selectModeEnabled = false;
-            $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
-                $('.toast-multiselected').removeClass('toast-active');
-            });
-            putNotesToRecyclebin(notes_selected, function (res) {
-                if (res) {
-                    displayInfobar('success', '选中的便签均已放入回收站');
-                } else {
-                    displayInfobar('error', '将便签放入回收站时出现错误');
-                }
-            });
-        }
-    }, {
-        label: '编辑选中',
-        click: function () {
-            $('.note-wrapper').removeClass('note-selected');
-            selectModeEnabled = false;
-            $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
-                $('.toast-multiselected').removeClass('toast-active');
-            });
-            try {
-                for (var i = 0; i < notes_selected.length; i++) {
-                    for (var j = 0; j < notes.length; j++) {
-                        if (notes[j].id == notes_selected[i]) {
-                            var note = notes[j];
-                            note.text = note.text.replace(/<br\/>/g, "\n")
-                            ipcRenderer.send("openEditWindow", notes[j]);
-                            continue;
-                        }
-                    }
-                }
-            } catch (err) {
-                console.log(err);
-            }
-        }
-    },
+var menu_note_multiSelected_template = [
     {
         type: 'separator'
     },
@@ -235,24 +199,68 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
             });
         }
     });
+    if (!(notes_selected.length<1 && notes_selected_withencrypted.length>0)){
+        menu_note_multiSelected.insert(0, new MenuItem({
+            label: '删除选中',
+            click: function () {
+                $('.note-wrapper').removeClass('note-selected');
+                selectModeEnabled = false;
+                $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
+                    $('.toast-multiselected').removeClass('toast-active');
+                });
+                putNotesToRecyclebin(notes_selected, function (res) {
+                    if (res) {
+                        displayInfobar('success', '便签已放入回收站');
+                    } else {
+                        displayInfobar('error', '将便签放入回收站时出现错误');
+                    }
+                });
+            }
+        }));
+        menu_note_multiSelected.insert(1, new MenuItem({
+            label: '编辑选中',
+            click: function () {
+                $('.note-wrapper').removeClass('note-selected');
+                selectModeEnabled = false;
+                $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
+                    $('.toast-multiselected').removeClass('toast-active');
+                });
+                try {
+                    for (var i = 0; i < notes_selected.length; i++) {
+                        for (var j = 0; j < notes.length; j++) {
+                            if (notes[j].id == notes_selected[i]) {
+                                var rawtext;
+                                if ($('#note_'+notes_selected[i]+' .note-content .note-password').length>0){
+                                    rawtext = $('#note_'+notes_selected[i]).attr('data-decrypted');
+                                }
+                                ipcRenderer.send("openEditWindow", {
+                                    note: notes[j],
+                                    rawtext: rawtext
+                                });
+                                break;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        }));
+    }
     //存在置顶便签，插入取消置顶项，反之插入置顶选中
     if (hasForceTop) {
-        menu_note_multiSelected.insert(2, new MenuItem({
+        menu_note_multiSelected.insert(0, new MenuItem({
             label: '取消置顶',
             click: function () {
-                notes_selected.forEach(noteid => {
-                    removeForceTopNote(noteid);
-                });
+                operateForceTopNotes(notes_selected_withencrypted, false);
             }
         }));
     }
     if (hasNotForceTop) {
-        menu_note_multiSelected.insert(2, new MenuItem({
+        menu_note_multiSelected.insert(1, new MenuItem({
             label: '置顶选中',
             click: function () {
-                notes_selected.forEach(noteid => {
-                    forceTopNote(noteid);
-                });
+                operateForceTopNotes(notes_selected_withencrypted, true);
             }
         }));
     }

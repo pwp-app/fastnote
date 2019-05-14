@@ -8,6 +8,7 @@ var selectModeEnabled = false;
 var noteLongClickTimeout;
 
 var notes_selected = [];
+var notes_selected_withencrypted = [];
 
 var sort_mode = null;
 //初始化排序模式
@@ -90,12 +91,12 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
     if (typeof password == 'undefined') {
         html += '</div><div class="note-content"><p class="note-text">';
         //process html tag
-        temp = text.split('<br/>');
-        final_text = "";
+        temp = text.split('\n');
+        let final_text = "";
         for (var i = 0; i < temp.length; i++) {
             s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
             final_text += s;
-            final_text += "<br/>";
+            final_text += "<br>";
         }
         text = final_text;
         text = insert_spacing(text, 0.15);
@@ -106,7 +107,7 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         html += '</p></div></div></div>';
     } else {
         //再锁定按钮
-        html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote('+ id +')"></i>';
+        html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + id + ')"></i>';
         //密码框
         html += '</div><div class="note-content"><div class="note-password" data-password="' + password + '" data-encrypted="' + text + '">';
         if (typeof inRecyclebin == 'undefined') {
@@ -126,14 +127,18 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
     } else {
         $('.note-list-normal').append($(html));
     }
-    bindNoteFoldDBL(id);
+
     //open external on os default webbrowser
     $('#note_' + id + ' a').click(function (e) {
         ipcRenderer.send('openExternalURL', $(this).attr('href'));
         e.preventDefault();
     });
 
-    bindNoteTimeClick(id);
+    setTimeout(function(){
+        //防止读取不了便签内容的高度
+        bindNoteFoldDBL(id);
+        bindNoteTimeClick(id);
+    },0);
 }
 //在顶部渲染Note
 function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, text, forceTop) {
@@ -172,12 +177,12 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
     }
     if (typeof password == 'undefined') {
         html += '</div><div class="note-content"><p class="note-text">';
-        temp = text.split('<br/>');
-        final_text = "";
+        temp = text.split('\n');
+        let final_text = "";
         for (var i = 0; i < temp.length; i++) {
             s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
             final_text += s;
-            final_text += "<br/>";
+            final_text += "<br>";
         }
         text = final_text;
 
@@ -189,7 +194,7 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
         html += '</p></div></div></div>';
     } else {
         //再锁定按钮
-        html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote('+ id +')"></i>';
+        html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + id + ')"></i>';
         //密码框
         html += '</div><div class="note-content"><div class="note-password" data-password="' + password + '" data-encrypted="' + text + '">';
         if (typeof inRecyclebin == 'undefined') {
@@ -209,8 +214,7 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
     } else {
         $('.note-list-normal').prepend($(html));
     }
-    //auto fold
-    bindNoteFoldDBL(id);
+
     //animate
     $('#note_' + id).animateCss('fadeInLeft faster');
     //open external on os default webbrowser
@@ -219,8 +223,155 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
         e.preventDefault();
     });
 
-    //绑定时间
-    bindNoteTimeClick(id);
+    setTimeout(function(){
+        bindNoteFoldDBL(id);
+        bindNoteTimeClick(id);
+    },0);
+}
+
+async function rerenderEditedNote(data, rawtext) {
+    //分类
+    if (current_category != 'all') {
+        //便签编辑后已经不属于当前分类，从画面中移出并隐藏
+        if (data.category != current_category) {
+            $('#note_' + data.id).parent().animateCss('fadeOutLeft faster', function () {
+                $('#note_' + data.id).hide();
+                //当前分类是否为空
+                if (getCountOfCategory(current_category) < 1) {
+                    $('#note-empty-category').show();
+                    $('#note-empty-category').animateCss('fadeIn');
+                }
+            });
+            //此处不return，后续更新仍然要处理，只是便签不显示
+        } else {
+            //便签可能是从其他类别改到当前类别的
+            if ($('#note_' + data.id).parent().css('display') == 'none') {
+                $('#note_' + data.id).parent().show();
+                $('#note_' + data.id).parent().animateCss('fadeInLeft faster');
+                //有便签新加入必定不为空
+                $('#note-empty-category').hide();
+            }
+        }
+    }
+
+    if (typeof data.password != "undefined") {
+        resetEditedNoteText(data, rawtext);
+        //便签设置了密码，判断便签之前是否有密码
+        if ($('#note_'+data.id+' .note-content .note-password').length>0){
+            $('#note_'+data.id+' .note-content .note-password').attr('data-password',data.password);
+            $('#note_'+data.id+' .note-content .note-password').attr('data-encrypted',data.text);
+        } else {
+            //便签之前没有设置过密码
+            $('#note_'+data.id+' .note-content').prepend('<div class="note-password" data-password="' + data.password + '" data-encrypted="' + data.text + '" style="display: none;"><span>密码：</span><input type="password" class="form-control" id="note_password_' + data.id + '" onkeydown="checkNotePassword(event, ' + data.id + ');"></div>');
+            $('#note_'+data.id+' .note-header').append('<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + data.id + ')" style="display: inline-block !important;"></i>');
+            $('#note_'+data.id+' .note-header .note-password-relock').animateCss('fadeIn morefaster');
+        }
+    } else {
+        //没有设置密码
+        resetEditedNoteText(data, data.text);
+    }
+
+    //移除overheight标签获取便签编辑后的内容实际高度
+    let flag_overheight;
+    if ($('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
+        flag_overheight = true;
+        $('#note_' + data.id + ' .note-content').removeClass('note-overheight');
+        $('#note_' + data.id + ' .note-content').removeAttr('style');
+    }
+    var after_height = $('#note_' + data.id + ' .note-content').height();
+    //还原被移除的overheight标签
+    if (flag_overheight) {
+        $('#note_' + data.id + ' .note-content').addClass('note-overheight');
+    }
+    //reset content of updatetime
+    var timeContent = '<p class="note-time note-updatetime han-element">更新：' +
+        data.updatetime +
+        '</p>' +
+        '<p class="note-time han-element">创建：' + data.time + '</p>';
+    let m_updatetime = moment(data.updaterawtime, 'YYYYMMDDHHmmss');
+    let m_time = moment(data.rawtime, 'YYYYMMDDHHmmss');
+    var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+        '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
+    $('#note_' + data.id + ' .note-header time').html(timeContent);
+    //open external event rebind
+    $('#note_' + data.id + ' a').click(function (e) {
+        ipcRenderer.send('openExternalURL', $(this).attr('href'));
+        e.preventDefault();
+    });
+    //timeevent rebind
+    bindNoteTimeClick(data.id);
+    //处理标题
+    if (typeof data.title != 'undefined') {
+        var titletext = "";
+        if (data.title.length > 50) {
+            titletext = '<titlep1>' + insert_spacing(data.title.substring(0, 16), 0.12) +
+                '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(data.title.substring(
+                    18, 32), 0.12) + '</titlep2><titlesusp2>...</titlesusp2><titlep3>' + insert_spacing(
+                    data.title.substring(32, 50), 0.12) +
+                '</titlep3><titlesusp3>...</titlesusp3><titlep4>' + insert_spacing(data.title.substring(
+                    50), 0.12) + '</titlep4>';
+        } else if (data.title.length > 32) {
+            titletext = '<titlep1>' + insert_spacing(data.title.substring(0, 16), 0.12) +
+                '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(data.title.substring(
+                    18, 32), 0.12) + '<titlesusp2>...</titlesusp2><titlep3>' + insert_spacing(data.title
+                    .substring(32), 0.12) + '</titlep3>';
+        } else if (data.title.length > 16) {
+            titletext = '<titlep1>' + insert_spacing(data.title.substring(0, 16), 0.12) +
+                '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(data.title.substring(
+                    18), 0.12) + '</titlep2>';
+        } else {
+            titletext = insert_spacing(data.title, 0.12);
+        }
+        $('#note_' + data.id + ' .note-header .note-title').html(titletext);
+    }
+    var origin_height = $('#note_' + data.id + ' .note-content').height(); //get origin height
+    var tag_class = $('#note_' + data.id + ' .note-content').attr('class');
+    //fix note status
+    if (after_height > 250) {
+        if (origin_height <= 250) {
+            if (!$('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
+                bindNoteFoldDBL(data.id);
+                $('#note_' + data.id + ' .note-content').css('height', origin_height);
+                $('#note_' + data.id + ' .note-content').animate({
+                    height: "250px"
+                });
+            }
+        } else {
+            //already expanded
+            $('#note_' + data.id + ' .note-content').css('height', origin_height);
+            $('#note_' + data.id + ' .note-content').animate({
+                height: after_height
+            });
+        }
+    } else {
+        $('#note_' + data.id + ' .note-content').css('height', origin_height);
+        $('#note_' + data.id + ' .note-content').animate({
+            height: after_height
+        });
+        $('#note_' + data.id + ' .note-content').dblclick = function () {}; //unbind event
+        $('#note_' + data.id + ' .note-content').unbind('dblclick');
+    }
+    //处理分类
+    var category_name = $('#note_' + data.id).attr('data-category');
+    minorCategoryCount(category_name, true, true);
+    addCategoryCount(data.category, true, true);
+    $('#note_' + data.id).attr('data-category', data.category);
+}
+
+function resetEditedNoteText(data, t) {
+    temp = t.split('\n');
+    text = "";
+    for (var i = 0; i < temp.length; i++) {
+        s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+        text += s;
+        text += "<br>";
+    }
+    let final_text = insert_spacing(text, 0.12);
+    var html = final_text.replace(reg_url, function (result) {
+        return '<a href="' + result + '">' + result + '</a>';
+    });
+    //reset note content on page
+    $("#note_" + data.id + " .note-content p").html(html);
 }
 
 function bindNoteTimeClick(id) {
@@ -420,32 +571,44 @@ function deleteNoteFromArr_recycle(id) {
     });
 }
 
-async function forceTopNote(noteid) {
+async function operateForceTopNote(noteid, status) {
     for (var i = 0; i < notes.length; i++) {
         if (notes[i].id == noteid) {
             //处理note文件
-            notes[i].forceTop = true;
+            notes[i].forceTop = status;
             saveNoteByObj(notes[i]);
             break;
         }
     }
-    refreshNoteList();
+    var note_style = $('#note_'+noteid+' .note-content').attr('style');
+    refreshNoteList(function(){
+        $('#note_'+noteid+' .note-content').attr('style', note_style);
+    });
     renderNotesOfCategory(current_category);
 }
 
-function removeForceTopNote(noteid) {
-    notes.every(function (note, i) {
-        if (note.id == noteid) {
-            //处理note文件
-            note.forceTop = false;
-            saveNoteByObj(note);
-            return false;
-        } else {
-            return true;
+async function operateForceTopNotes(notes_selected, status){
+    let notes_status = [];
+    for (let i=0;i<notes_selected.length;i++){
+        for (let j = 0; j < notes.length; j++) {
+            if (notes[j].id == notes_selected[i]) {
+                //处理note文件
+                notes[j].forceTop = status;
+                saveNoteByObj(notes[j]);
+                let note_style = $('#note_'+notes[j].id+' .note-content').attr('style');
+                notes_status.push({
+                    id: notes[j].id,
+                    style: note_style
+                });
+                break;
+            }
+        }
+    }
+    refreshNoteList(function(){
+        for (let i=0;i<notes_status.length;i++){
+            $('#note_'+notes_status[i].id+' .note-content').attr('style', notes_status[i].style);
         }
     });
-    refreshNoteList();
-    renderNotesOfCategory(current_category);
 }
 
 async function renderNotesOfCategory(name) {
@@ -489,23 +652,25 @@ function checkNotePassword(e, noteid) {
 
             //生成html
             var html = '<p class="note-text" style="display:none;">';
-            temp = decrypted_text.split('<br/>');
-            final_text = "";
+            temp = decrypted_text.split('\n');
+            let final_text = "";
             for (var i = 0; i < temp.length; i++) {
                 s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
                 final_text += s;
-                final_text += "<br/>";
+                final_text += "<br>";
             }
-            decrypted_text = final_text;
-            decrypted_text = insert_spacing(decrypted_text, 0.15);
+            final_text = insert_spacing(final_text, 0.15);
             //自动识别网页
-            html += decrypted_text.replace(reg_url, function (result) {
+            html += final_text.replace(reg_url, function (result) {
                 return '<a href="' + result + '">' + result + '</a>';
             });
             html += '</p>';
 
             //渲染
             $('#note_' + noteid + ' .note-content').append(html);
+
+            //暂存解密后的内容
+            $('#note_' + noteid).attr('data-decrypted', decrypted_text);
 
             $('#note_password_' + noteid).parent().animateCss('fadeOut morefaster', function () {
                 $('#note_password_' + noteid).parent().hide();
@@ -514,7 +679,7 @@ function checkNotePassword(e, noteid) {
                 $('#note_' + noteid + ' .note-content .note-text').animateCss('fadeIn morefaster');
 
                 //显示relock按钮
-                $('#note_' + noteid + ' .note-header .note-password-relock').attr('style','display: inline-block !important;');
+                $('#note_' + noteid + ' .note-header .note-password-relock').attr('style', 'display: inline-block !important;');
                 $('#note_' + noteid + ' .note-header .note-password-relock').animateCss('fadeIn morefaster');
 
                 //auto fold
@@ -537,13 +702,15 @@ function checkNotePassword(e, noteid) {
 }
 
 function relockNote(noteid) {
-    $('#note_' + noteid + ' .note-content .note-text').animateCss('fadeOut morefaster', function(){
+    $('#note_' + noteid).removeAttr('data-decrypted');
+    $('#note_' + noteid + ' .note-content .note-text').animateCss('fadeOut morefaster', function () {
         $('#note_password_' + noteid).val('');
         $('#note_password_' + noteid).parent().show();
         $('#note_password_' + noteid).parent().animateCss('fadeIn morefaster');
         $('#note_' + noteid + ' .note-content .note-text').remove();
+        $('#note_' + noteid + ' .note-content').removeAttr('style');
         //隐藏relock按钮
-        $('#note_' + noteid + ' .note-header .note-password-relock').animateCss('fadeOut morefaster', function(){
+        $('#note_' + noteid + ' .note-header .note-password-relock').animateCss('fadeOut morefaster', function () {
             $('#note_' + noteid + ' .note-header .note-password-relock').removeAttr('style');
         });
     });

@@ -9,7 +9,8 @@ var storagePath = app.getPath('userData');
 
 var notesEdit = {
     //保存编辑的Note
-    saveEditNote:function (note,callback){
+    saveEditNote:function (data,callback){
+        var note = data.note;
         var alltime = time.getAllTime();
         //保存路径
         var path;
@@ -20,8 +21,6 @@ var notesEdit = {
             path = storagePath + (global.indebug?'/devTemp':'')+'/notes/'+note.rawtime+'.json';
         }
         //replace char
-        note.text = note.text.replace(/\n/g, '<br/>');
-        note.text = note.text.replace(/\r\n/g, '<br/>');
         //set time
         note.updatetime = alltime.currentTime;
         note.updaterawtime = alltime.rawTime;
@@ -38,7 +37,7 @@ var notesEdit = {
         });
         //callback
         if (typeof(callback)!='undefined'){
-            callback(note);
+            callback(data);
         }
     }
 }
