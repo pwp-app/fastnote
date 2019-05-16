@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>取消加密</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--import requirements-->
+    <script>
+        window.$ = window.jQuery = require('./static/jquery.min.js');
+        require('./static/bootstrap.min.js');
+    </script>
+    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
+    <link rel="stylesheet" href="static/font-awesome.min.css">
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+    <link rel="stylesheet" href="static/animate.min.css">
+    <script src="static/encryption.js"></script>
+    <script>
+        //define const
+        const remote = require('electron').remote;
+        const app = remote.app;
+        var fs = require('fs');
+        //import json storage
+        const storage = require('electron-json-storage');
+        //get storagePath
+        var storagePath = app.getPath('userData');
+
+        //ipc
+        const {
+            ipcRenderer
+        } = require('electron');
+
+        const WebFont = require('webfontloader');
+
+        //获取indebug
+        global.indebug = remote.getGlobal('indebug');
+
+        storage.get('settings', function (error, data) {
+            if (error) {
+                console.error(error);
+                settingsInit(null);
+                return;
+            } else {
+                //获取callback回传的json
+                settings = data;
+                settingsInit(settings);
+            }
+            $(document).ready(function () {
+                ipcRenderer.send("decryption-window-ready");
+            });
+        });
+
+        function settingsInit(settings) {
+            var cssText = "";
+            var font = "";
+            //build css
+            if (settings == null) {
+                //read error
+                $('#main-style').attr('href', 'static/main.blackwhite.css');
+                cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
+                font = 'Source Han Sans CN';
+
+                console.error('A error occured when reading settings.');
+            } else {
+                //read success
+                if (typeof settings.theme != 'undefined') {
+                    $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
+                } else {
+                    $('#main-style').attr('href', 'static/main.blackwhite.css');
+                }
+
+                if (typeof settings.fontfamily != 'undefined') {
+                    cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
+                    font = settings.fontfamily;
+                } else {
+                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;';
+                    font = 'Source Han Sans CN';
+                }
+            }
+            var modStyle = document.querySelector('#modCSS');
+            if (modStyle === null) {
+                modStyle = document.createElement('style');
+                modStyle.id = 'modCSS';
+                document.body.appendChild(modStyle);
+            }
+            modStyle.innerHTML = cssText;
+
+            if (font == 'Source Han Sans CN') {
+                loadWebfont(font);
+            }
+        }
+
+        function loadWebfont(font) {
+            WebFont.load({
+                custom: {
+                    families: [font]
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container-titlebar col-lg-12 drag">
+        <div class="title decryption-title" id="decryption-title">取消加密</div>
+        <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 999;"></div>
+    </div>
+    <script>
+        require('electron-titlebar');
+    </script>
+    <div class="container-decryption">
+        <div class="container-decryption-control">
+            <label>密码</label>
+            <input type="password" class="form-control" id="input-password">
+        </div>
+        <div class="container-decryption-button">
+            <button class="br-btn btn-noback decryption-button" id="btn-decrypt">确认</button>
+        </div>
+    </div>
+</body>

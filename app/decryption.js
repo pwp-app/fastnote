@@ -14,7 +14,10 @@ const path = require('path');
 function createDecryptionWindow(data){
     let win_decryption = null;
     var conf = {
+        width: 600,
+        height: 160,
         show: false,
+        resizable: false,
         webPreferences: {
             nodeIntegration: true
         }
@@ -29,13 +32,13 @@ function createDecryptionWindow(data){
 
     decryption_noteid.push(data.id);
 
-    win_decryption.loadFile(path.resolve(__dirname, '../public/edit.html'));
+    win_decryption.loadFile(path.resolve(__dirname, '../public/decryption.html'));
 
     if (indebug)
         win_decryption.webContents.openDevTools();
 
     win_decryption.on('closed', ()=>{
-        let index = wins_decryption.index(win_decryption);
+        let index = wins_decryption.indexOf(win_decryption);
         win_decryption[index] = null;
         decryption_noteid[index] = null;
     });
@@ -67,9 +70,13 @@ var decryptionWindow = {
     }
 }
 
-ipc.on('reloadAllEditWindow', function(){
-    for (let i=0;i<wins_decryption;i++){
-        
+ipc.on('closeAllDecryptionWindow', function () {
+    for (var i = 0; i < wins_decryption.length; i++) {
+        if (wins_decryption[i] != null) {
+            wins_decryption[i].close();
+            wins_decryption[i] = null;
+            decryption_noteid[i] = null;
+        }
     }
 });
 

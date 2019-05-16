@@ -105,12 +105,22 @@ var menu_note_hasPassword_template = [{
                     storage.set('sortMode', sortModeJson);
                     refreshNoteList();
                 }
-            }
+            },
         ]
     },
     {
         type: 'separator'
-    }
+    },
+    {
+        label: '取消加密',
+        click: function () {
+            let password = $('#note_password_'+noteid_clicked).attr('data-password');
+            ipcRenderer.send('openDecryptionWindow', {
+                id: noteid_clicked,
+                password: password
+            });
+        }
+    },
 ];
 
 function popup_menu_note(isForceTop, hasPassword) {
