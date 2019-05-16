@@ -682,8 +682,6 @@ function checkNotePassword(e, noteid) {
                 $('#note_' + noteid + ' .note-header .note-password-relock').attr('style', 'display: inline-block !important;');
                 $('#note_' + noteid + ' .note-header .note-password-relock').animateCss('fadeIn morefaster');
 
-                //auto fold
-                bindNoteFoldDBL(noteid);
                 //animate
                 //open external on os default webbrowser
                 $('#note_' + noteid + ' a').click(function (e) {
@@ -691,8 +689,11 @@ function checkNotePassword(e, noteid) {
                     e.preventDefault();
                 });
 
-                //绑定时间
-                bindNoteTimeClick(noteid);
+                setTimeout(function(){//auto fold
+                    bindNoteFoldDBL(noteid);
+                    //绑定时间
+                    bindNoteTimeClick(noteid);
+                },0);
             });
         } else {
             //密码不对
@@ -714,4 +715,42 @@ function relockNote(noteid) {
             $('#note_' + noteid + ' .note-header .note-password-relock').removeAttr('style');
         });
     });
+}
+
+//对便签文本进行再渲染
+async function rerenderTextOfNote(noteid, text, animate=false){
+    $('#note_'+noteid+' .note-content').html('');   //先清空note-content的内容
+    let html = '<p class="note-text">';
+    temp = text.split('\n');
+    let final_text = "";
+    for (var i = 0; i < temp.length; i++) {
+        s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+        final_text += s;
+        final_text += "<br>";
+    }
+    final_text = insert_spacing(final_text, 0.15);
+    //自动识别网页
+    html += final_text.replace(reg_url, function (result) {
+        return '<a href="' + result + '">' + result + '</a>';
+    });
+    html += '</p>';
+
+    //渲染
+    $('#note_' + noteid + ' .note-content').append(html);
+
+    if (animate){
+        $('#note_' + noteid + ' .note-content').animateCss('fadeIn morefaster');
+    }
+
+    //open external on os default webbrowser
+    $('#note_' + noteid + ' a').click(function (e) {
+        ipcRenderer.send('openExternalURL', $(this).attr('href'));
+        e.preventDefault();
+    });
+
+    setTimeout(function(){//auto fold
+        bindNoteFoldDBL(noteid);
+        //绑定时间
+        bindNoteTimeClick(noteid);
+    },0);
 }

@@ -192,6 +192,10 @@ function createWindow() {
     }
   });
 
+  ipc.on('cancel-encryption', function(sender, data){
+    win.webContents.send('cancel-encryption',data);
+  });
+
   //quit now
   ipc.on('app-quitNow', () => {
     app.quit();

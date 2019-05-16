@@ -278,10 +278,8 @@
         }) => {
             switch (type) {
                 case 'init':
-                    console.log(data);
                     note = data.note;
                     rawtext = data.rawtext;
-                    console.log(rawtext);
                     nowNoteId = note.id;
                     //初始化textarea
                     if (typeof rawtext == "undefined"){

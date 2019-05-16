@@ -17,7 +17,7 @@ function createDecryptionWindow(data){
         width: 600,
         height: 160,
         show: false,
-        resizable: false,
+        //resizable: false,
         webPreferences: {
             nodeIntegration: true
         }

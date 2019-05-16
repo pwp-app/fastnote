@@ -364,7 +364,6 @@
 
             function updateEditNote(res) {
                 notesEdit.saveEditNote(res, function (data) {
-                    console.log(data);
                     //reset contents in note
                     switch (sort_mode) {
                         //此处接收到的是{note:note, rawtext:text}
@@ -1468,6 +1467,32 @@
             }
             saveNotesId();
         });
+    </script>
+
+    <script>
+        //取消加密
+        ipcRenderer.on('cancel-encryption', function(sender, data){
+            removePassword(data.id, data.rawpassword);
+            $('#note_'+data.id+' .note-content .note-password').animateCss('fadeOut morefaster',function(){
+                $('#note_'+data.id+' .note-content .note-password').remove();
+            });
+            $('#note_'+data.id+' .note-header .note-password-relock').animateCss('fadeOut morefaster',function(){
+                $('#note_'+data.id+' .note-header .note-password-relock').remove();
+            });
+        });
+
+        async function removePassword(noteid, rawpassword){
+            for(var i=0;i<notes.length;i++){
+                if (notes[i].id == noteid){
+                    notes[i].password = undefined;  //取消密码
+                    notes[i].text = aes_decrypt(notes[i].text, rawpassword);
+                    saveNoteByObj(notes[i]);    //保存
+                    displayInfobar('success','便签 #'+noteid+' 的加密已解除');
+                    rerenderTextOfNote(noteid, notes[i].text, true);
+                    break;
+                }
+            }
+        }
     </script>
 
     <script>

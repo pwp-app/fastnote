@@ -112,9 +112,9 @@ var menu_note_hasPassword_template = [{
         type: 'separator'
     },
     {
-        label: '取消加密',
+        label: '解除加密',
         click: function () {
-            let password = $('#note_password_'+noteid_clicked).attr('data-password');
+            let password = $('#note_password_'+noteid_clicked).parent().attr('data-password');
             ipcRenderer.send('openDecryptionWindow', {
                 id: noteid_clicked,
                 password: password

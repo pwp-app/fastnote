@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>取消加密</title>
+    <title>解除加密</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--import requirements-->
     <script>
@@ -100,9 +100,10 @@
         }
     </script>
 </head>
+
 <body>
     <div class="container-titlebar col-lg-12 drag">
-        <div class="title decryption-title" id="decryption-title">取消加密</div>
+        <div class="title decryption-title" id="decryption-title">解除加密</div>
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 999;"></div>
     </div>
     <script>
@@ -117,4 +118,39 @@
             <button class="br-btn btn-noback decryption-button" id="btn-decrypt">确认</button>
         </div>
     </div>
+    <script>
+        $(document).ready(function(){
+            $('#input-password').focus();
+        });
+    </script>
+    <script>
+        var noteid;
+        var sha256_password;
+        ipcRenderer.on('init', function (sender, data) {
+            noteid = data.id;
+            $("#decryption-title").append(" #" + data.id);
+            $("title").append(" - #" + data.id);
+            sha256_password = data.password;
+        });
+        $('#input-password').keydown(function (e) {
+            if (e.keyCode == 13) {
+                checkPassword();
+            }
+        });
+        $('#btn-decrypt').click(function(e){
+            checkPassword();
+        });
+        function checkPassword() {
+            var p = $('#input-password').val().trim();
+            if (sha256(p, 'fastnote') == sha256_password) {
+                ipcRenderer.send('cancel-encryption', {
+                    id: noteid,
+                    rawpassword: p
+                });
+                window.close();
+            } else {
+                $('#input-password').addClass('br-invalid');
+            }
+        }
+    </script>
 </body>
