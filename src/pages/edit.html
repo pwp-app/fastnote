@@ -121,7 +121,7 @@
     </script>
     <!-- titlebar -->
     <div class="container-titlebar col-lg-12 drag">
-        <div class="title edit-title" id="edit-title">编辑笔记</div>
+        <div class="title edit-title" id="edit-title" data-lang='editnote'>编辑便签</div>
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 999;"></div>
     </div>
     <script>
@@ -148,22 +148,22 @@
         </div>
         <div class="container-edit-info">
             <div class="edit-info-item">
-                <label>标题</label>
+                <label data-lang="title">标题</label>
                 <div class="edit-item-control">
                     <input class="form-control" id="input-title" maxlength="64" placeholder="(无标题)">
                 </div>
             </div>
             <div style="margin-top: 8px;">
                 <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
-                    <label>分类</label>
+                    <label data-lang="category">分类</label>
                     <div class="edit-item-control-half-left">
                         <select class="form-control" id="select-category">
-                            <option value="notalloc">未分类</option>
+                            <option value="notalloc" data-lang="notalloc">未分类</option>
                         </select>
                     </div>
                 </div>
                 <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
-                    <label>密码</label>
+                    <label data-lang="password">密码</label>
                     <div class="edit-item-control-half-right">
                         <input class="form-control" id="input-password" type="password">
                     </div>
@@ -187,8 +187,8 @@
     </div>
     <div class="container-footer">
         <div class="control-group">
-            <button class="br-btn btn-noback" id="edit-btn-save">保存</button>
-            <button class="br-btn btn-noback" id="edit-btn-cancel">取消</button>
+            <button class="br-btn btn-noback" id="edit-btn-save" data-lang="save">保存</button>
+            <button class="br-btn btn-noback" id="edit-btn-cancel" data-lang="cancel">取消</button>
         </div>
     </div>
     <script>

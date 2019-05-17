@@ -339,12 +339,12 @@
         <!-- empty -->
         <div class="note-empty col-lg-12" id="note-empty">
             <div class="note-empty-inner">
-                <span>您还没有建立任何的便签<br>在下方你可以快速创建便签</span>
+                <span data-lang="note_empty">您还没有建立任何的便签<br>在下方你可以快速创建便签</span>
             </div>
         </div>
         <div class="note-empty col-lg-12" id="note-empty-category">
             <div class="note-empty-inner">
-                <span>当前分类下没有任何便签<br>在下方你可以快速创建该分类的便签</span>
+                <span data-lang="note_empty_category">当前分类下没有任何便签<br>在下方你可以快速创建该分类的便签</span>
             </div>
         </div>
         <div class="note-empty col-lg-12" id="note-empty-search">
@@ -580,7 +580,7 @@
         <div class="newnote-info-float">
             <div class="newnote-info-item">
                 <div class="br-col-2">
-                    <label>标题</label>
+                    <label data-lang="title">标题</label>
                 </div>
                 <div class="br-col-10">
                     <input type="text" class="form-control" id="input-note-title" maxlength="64" placeholder="(无标题)">
@@ -588,17 +588,17 @@
             </div>
             <div class="newnote-info-item" id="newnote-info-item-category" style="margin-top: 8px;">
                 <div class="br-col-2">
-                    <label>分类</label>
+                    <label data-lang="category">分类</label>
                 </div>
                 <div class="br-col-10">
                     <select class="form-control" id="select-note-category">
-                        <option value="notalloc">未分类</option>
+                        <option value="notalloc" data-lang="notalloc">未分类</option>
                     </select>
                 </div>
             </div>
             <div class="newnote-info-item" id="newnote-info-item-password" style="margin-top: 8px;">
                 <div class="br-col-2">
-                    <label>密码</label>
+                    <label data-lang="password">密码</label>
                 </div>
                 <div class="br-col-10">
                     <input type="password" class="form-control" id="input-note-password" maxlength="64" placeholder="(未设置密码)">
@@ -607,7 +607,7 @@
         </div>
         <div class="newnote-main">
             <div class="lbl">
-                <label id="lbl-newnote" title="使用 Ctrl+Enter 提交便签">新建便签</label>
+                <label id="lbl-newnote" title="使用 Ctrl+Enter 提交便签" data-lang='newnote'>新建便签</label>
                 <script>
                     $('#lbl-newnote').dblclick(function(){
                         //双击启动新建便签窗口
@@ -809,22 +809,22 @@
     <div class="container-updater">
         <div class="update-block">
             <div class="update-title">
-                <span id="update-title-span">检测到新版本：</span>
+                <span id="update-title-span" data-lang="newversion_detected">检测到新版本：</span>
             </div>
             <div class="update-contents">
-                <h1 class="update-contents-title">更新日志</h1>
+                <h1 class="update-contents-title" data-lang="update_log">更新日志</h1>
                 <div class="update-contents-details">
                 </div>
             </div>
 
             <div class="update-contents update-contents-loading">
-                <span id="update-loading-span">载入中……</span>
+                <span id="update-loading-span" data-lang="loading">载入中……</span>
             </div>
 
             <div class="update-footer">
                 <div class="control-group" style="-webkit-user-select: none">
-                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-cancel">取消</button>
-                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-confirm">下载</button>
+                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-cancel" data-lang="cancel">取消</button>
+                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-confirm" data-lang="download">下载</button>
                 </div>
             </div>
         </div>
@@ -969,21 +969,21 @@
             <div class="mainmenu-menu">
                 <ul>
                     <li id="mainmenu-btn-recycle">
-                        <span>回收站</span>
+                        <span data-lang="recyclebin">回收站</span>
                     </li>
                     <div class="mainmenu-split"></div>
                     <li id="mainmenu-btn-settings">
-                        <span>设置</span>
+                        <span data-lang="settings">设置</span>
                     </li>
                     <li id="mainmenu-btn-about">
-                        <span>关于</span>
+                        <span data-lang="about">关于</span>
                     </li>
                     <div class="mainmenu-split"></div>
                     <li id="mainmenu-btn-reload">
-                        <span>重新载入</span>
+                        <span data-lang="reload">重新载入</span>
                     </li>
                     <li id="mainmenu-btn-exit">
-                        <span>退出</span>
+                        <span data-lang="exit">退出</span>
                     </li>
                 </ul>
             </div>
@@ -1094,7 +1094,7 @@
         <div class="category-panel">
             <div class="category-header">
                 <div class="category-header-title">
-                    <p>便签分类</p>
+                    <p data-lang="note_category">便签分类</p>
                 </div>
                 <div class="category-header-button">
                     <i class="fa fa-edit" id="category-header-editbtn" aria-hidden="true"></i>
@@ -1108,7 +1108,7 @@
                         <li data-name="all">
                             <div id="category-system-all">
                                 <div class="category-item-name">
-                                    <span>所有便签</span>
+                                    <span data-lang="all_notes">所有便签</span>
                                 </div>
                                 <div class="category-item-count">
                                     <span id="category-count-all"></span>
@@ -1118,7 +1118,7 @@
                         <li data-name="notalloc">
                             <div id="category-system-notalloc">
                                 <div class="category-item-name">
-                                    <span>未分类</span>
+                                    <span data-lang="notalloc">未分类</span>
                                 </div>
                                 <div class="category-item-count">
                                     <span id="category-count-notalloc"></span>

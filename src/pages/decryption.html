@@ -103,7 +103,7 @@
 
 <body>
     <div class="container-titlebar col-lg-12 drag">
-        <div class="title decryption-title" id="decryption-title">解除加密</div>
+        <div class="title decryption-title" id="decryption-title" data-lang="remove_encryption">解除加密</div>
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 999;"></div>
     </div>
     <script>
@@ -111,11 +111,11 @@
     </script>
     <div class="container-decryption">
         <div class="container-decryption-control">
-            <label>密码</label>
+            <label data-lang="password">密码</label>
             <input type="password" class="form-control" id="input-password">
         </div>
         <div class="container-decryption-button">
-            <button class="br-btn btn-noback decryption-button" id="btn-decrypt">确认</button>
+            <button class="br-btn btn-noback decryption-button" id="btn-decrypt" data-lang="confirm">确认</button>
         </div>
     </div>
     <script>
