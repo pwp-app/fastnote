@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
     <script src="static/encryption.js"></script>
+    <script src="static/i18n.js"></script>
     <script src="static/han.simple.js"></script>
     <script>
         //define const
@@ -65,6 +66,11 @@
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
+                if (typeof settings.language != 'undefined' && settings.language != 'zh-cn'){
+                    $(document).ready(function(){
+                        applyLanguage(settings.language);
+                    });
+                }
                 if (typeof settings.theme != 'undefined') {
                     $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
                 } else {
@@ -179,7 +185,7 @@
             <textarea class="text-newnote" id="text-newnote"></textarea>
         </div>
         <div class="container-newnotewin-button">
-            <button class="br-btn btn-noback" id="newnote-btn-save" onclick="submitSave();">保存</button>
+            <button class="br-btn btn-noback" id="newnote-btn-save" onclick="submitSave();" data-lang="save">保存</button>
         </div>
         <script>
             $(window).resize(function () {

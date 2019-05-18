@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
     <script src="static/array.js"></script>
+    <script src="static/i18n.js"></script>
     <script src="static/encryption.js"></script>
     <script src="static/han.simple.js"></script>
     <script src="static/notes.render.js"></script>
@@ -90,6 +91,12 @@
 
                 console.error('A error occured when reading settings.');
             } else {
+                //初始化语言
+                if (typeof settings.language != 'undefined' && settings.language != 'zh-cn'){
+                    $(document).ready(function(){
+                        applyLanguage(settings.language);
+                    });
+                }
                 //优先初始化锁屏
                 if (typeof settings.lockpassword != 'undefined') {
                     $('.container-lockscreen').css('display', 'block');

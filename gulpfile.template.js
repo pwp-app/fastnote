@@ -72,8 +72,12 @@ gulp.task('less',function(){
         .pipe(gulp.dest('public/static'));
 });
 gulp.task('scripts', function(){
-    return gulp.src('src/scripts/**/*.js')
+    return gulp.src('src/scripts/*.js')
         .pipe(gulp.dest('public/static'));
+});
+gulp.task('i18n', function(){
+    return gulp.src('src/scripts/i18n/*.js')
+        .pipe(gulp.dest('public/static/i18n'));
 });
 gulp.task('pages', function(){
     var htmloptions = {
@@ -106,7 +110,7 @@ gulp.task('watch',function(){
 gulp.task('clean', function(){
     return del('public/**');
 });
-gulp.task('build', gulp.series(['requirements','less','scripts','pages','assets']));
+gulp.task('build', gulp.series(['requirements','less','scripts','i18n','pages','assets']));
 gulp.task('clean build',gulp.series(['clean','build']));
 
 //build
@@ -149,7 +153,15 @@ gulp.task('upload win32', function(){
     version = JSON.parse(version);
     return gulp.src(['dist/Fastnote Setup '+version.ver+'.exe','dist/*.yml','dist/ver.json'])
         .pipe(qn({
-            //qiniu set
+            qiniu: {
+                accessKey: '',
+                secretKey: '',
+                bucket: '',
+                origin: '',
+                uploadURL: '',
+            },
+            prefix: 'fastnote/win32/',
+            forceUpload: true
         }));
 });
 gulp.task('upload win64', function(){
@@ -157,10 +169,18 @@ gulp.task('upload win64', function(){
     version = JSON.parse(version);
     return gulp.src(['dist/Fastnote Setup '+version.ver+'.exe','dist/*.yml','dist/ver.json'])
         .pipe(qn({
-            //qiniu set
+            qiniu: {
+                accessKey: '',
+                secretKey: '',
+                bucket: '',
+                origin: '',
+                uploadURL: '',
+            },
+            prefix: 'fastnote/win32/x64/',
+            forceUpload: true
         }));
 });
 
-gulp.task('publish',gulp.series(['pack win32','upload win32']));
-gulp.task('publish64',gulp.series(['pack win64','upload win64']));
+gulp.task('publish',gulp.series(['move old','pack win32','upload win32']));
+gulp.task('publish64',gulp.series(['move old x86','pack win64','upload win64']));
 gulp.task('publish',gulp.series(['publish','publish64']));

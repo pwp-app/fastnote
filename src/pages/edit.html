@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
     <script src="static/encryption.js"></script>
+    <script src="static/i18n.js"></script>
     <script src="static/han.simple.js"></script>
     <script src="static/mousetrap.min.js"></script>
     <script>
@@ -77,6 +78,11 @@
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
+                if (typeof settings.language != 'undefined' && settings.language != 'zh-cn'){
+                    $(document).ready(function(){
+                        applyLanguage(settings.language);
+                    });
+                }
                 if (typeof settings.theme != 'undefined') {
                     $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
                 } else {

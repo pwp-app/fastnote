@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="static/animate.min.css">
     <link rel="stylesheet" href="static/awesome-bootstrap-checkbox.min.css">
     <script src="static/encryption.js"></script>
+    <script src="static/i18n.js"></script>
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -132,6 +133,15 @@
                 initDateDisplay("all");
             } else {
                 //read success
+                //init language
+                if (typeof settings.language != 'undefined'){
+                    if (settings.language != 'zh-cn'){
+                        $(document).ready(function(){
+                            applyLanguage(settings.language);
+                        });
+                    }
+                    initLanguage(settings.language);
+                }
                 //init themes
                 if (typeof settings.theme != 'undefined'){
                     initTheme(settings.theme);
@@ -265,6 +275,11 @@
         function initTheme(theme){
             $(document).ready(function(){
                 $('#select-themes').val(theme);
+            });
+        }
+        function initLanguage(language){
+            $(document).ready(function(){
+                $('#select-language').val(language); 
             });
         }
         function initLockScreen(status){
@@ -426,7 +441,7 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select">
+                    <select class="form-control settings-select" id="select-language">
                         <option value="zh-cn">简体中文</option>
                         <option value="en-us">English</option>
                     </select>
@@ -439,11 +454,11 @@
                 <div></div>
                 <div class="settings-item-child settings-item-control" id="settings-item-lockscreen-default">
                     <div style="display: flex;">
-                        <div class="br-col-10" id="settings-item-lockscreen-input">
+                        <div class="br-col-9" id="settings-item-lockscreen-input">
                             <input type="password" class="form-control" placeholder="(锁屏密码)" id="input-lockscreen-password">
                         </div>
-                        <div class="br-col-2" id="settings-item-lockscreen-default-enable">
-                            <button class="btn btn-primary brbtn-primary" id="btn-enableLockScreen" onclick="submitLockScreen();" style="width:54px;margin-left:7px;" data-lang="enable">启用</button>
+                        <div class="br-col-3" id="settings-item-lockscreen-default-enable">
+                            <button class="btn btn-primary brbtn-primary" id="btn-enableLockScreen" onclick="submitLockScreen();" style="width:85px;margin-left:7px;" data-lang="enable">启用</button>
                         </div>
                         <div id="settings-item-lockscreen-default-reset">
                             <div class="br-col-3" style="display:flex;">
@@ -475,7 +490,7 @@
                 <div class="settings-item-child settings-item-control" id="settings-item-lockscreen-enabled">
                     <div style="display:flex;">
                         <div style="flex: 0 0 30%">
-                            <button class="btn btn-danger brbtn-danger" id="btn-resetLockScreen" onclick="resetLockScreen();" data-lang="reset-password">重置密码</button>
+                            <button class="btn btn-danger brbtn-danger" id="btn-resetLockScreen" onclick="resetLockScreen();" data-lang="reset_password">重置密码</button>
                         </div>
                         <div style="flex: 0 0 3%"></div>
                         <div style="flex: 0 0 30%">
@@ -559,18 +574,18 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span data-lang="reset-settings">重置设置</span>
+                    <span data-lang="reset_settings">重置设置</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <button class="btn btn-danger brbtn-danger" id="btn-resetSettings" onclick="resetSettings();">重置</button>
+                    <button class="btn btn-danger brbtn-danger" id="btn-resetSettings" onclick="resetSettings();" data-lang="reset">重置</button>
                 </div>
             </div>
         </div>
         <div class="settings-sections settings-notes settings-sections-hidden">
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span data-lang="current-noteid">当前便签序号：</span>
+                    <span data-lang="current_noteid">当前便签序号：</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
@@ -579,7 +594,7 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span data-lang="reset-notes">重置便签</span>
+                    <span data-lang="reset_notes">重置便签</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
@@ -1041,15 +1056,15 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>时间显示</span>
+                    <span data-lang="time_display">时间显示</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
                     <select class="form-control settings-select" id="select-timedisplay">
-                        <option value="all">YYYY年MM月DD日 HH:mm:ss</option>
-                        <option value="noyear">MM月DD日 HH:mm:ss</option>
-                        <option value="notime">YYYY年MM月DD日</option>
-                        <option value="noyearandtime">MM月DD日</option>
+                        <option value="all" data-lang="time_all">YYYY年MM月DD日 HH:mm:ss</option>
+                        <option value="noyear" data-lang="time_noyear">MM月DD日 HH:mm:ss</option>
+                        <option value="notime" data-lang="time_notime">YYYY年MM月DD日</option>
+                        <option value="noyearandtime" data-lang="time_noyearandtime">MM月DD日</option>
                     </select>
                 </div>
             </div>
@@ -1067,6 +1082,7 @@
             var autoUpdateStatus = document.getElementById('cb-autoUpdateEnabled').checked;
             var autoUpdateChannel = $('#select-updateChannel').val();
             var theme = $("#select-themes").val();
+            var language = $('#select-language').val();
 
             //获取显示设置
             var fontfamily = $('#select-fontfamily').val();
@@ -1082,6 +1098,7 @@
             settings.autoUpdateStatus = autoUpdateStatus;
             settings.autoUpdateChannel = autoUpdateChannel;
             settings.theme = theme;
+            settings.language = language;
             settings.fontfamily = fontfamily;
             settings.fontsize = fontsize;
             settings.textalign = textalign;
