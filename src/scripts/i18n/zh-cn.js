@@ -68,4 +68,5 @@ i18n['zh-cn']={
     'time_noyear':'MM月DD日 HH:mm:ss',
     'time_notime':'YYYY年MM月DD日',
     'time_noyearandtime':'MM月DD日',
+    'note_submittip':'使用 [Ctrl+回车] 提交'
 };

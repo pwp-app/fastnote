@@ -104,7 +104,9 @@ gulp.task('watch',function(){
     gulp.watch('src/less/**/*.less',gulp.series('less'));
     gulp.watch('node_modules/**/*',gulp.series('requirements'));
     gulp.watch('src/pages/**/*',gulp.series('pages'));
-    gulp.watch('src/scripts/**/*',gulp.series('scripts'));
+    gulp.watch('src/scripts/*.js',gulp.series('scripts'));
+    gulp.watch('src/scripts/i18n/*.js',gulp.series('i18n'));
+    gulp.watch('src/scripts/3rdparty/*.js',gulp.series('3rdparty'));
 });
 
 gulp.task('clean', function(){
