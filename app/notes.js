@@ -42,6 +42,27 @@ storage.get('notesid' + (global.indebug ? '_dev' : ''), function (error, data) {
 readNoteFiles();
 
 //绑定textarea的事件
+
+//tip是否显示的flag
+var note_submit_tip_show = true;
+textarea.on('input propertychange',function(e){
+    if (e.target.scrollHeight > $(e.target).height()+16){
+        if (note_submit_tip_show){
+            note_submit_tip_show = false;
+            $('.note-text-submittip').animateCss('fadeOut morefaster',function(){
+                $('.note-text-submittip').attr('style','display: none !important');
+            });
+        }
+    } else {
+        if (!note_submit_tip_show){
+            note_submit_tip_show = true;
+            $('.note-text-submittip').removeAttr('style');
+            console.log(1);
+            $('.note-text-submittip').animateCss('fadeIn morefaster');
+        }
+    }
+});
+
 let isComboKeyDown = false; //防止反复触发
 textarea.keydown(function (e) {
     var ctrlKey = e.ctrlKey || e.metaKey;
@@ -59,6 +80,7 @@ textarea.keydown(function (e) {
         }
     }
 });
+
 //按键弹起解除锁
 textarea.keyup(function (e) {
     var ctrlKey = e.ctrlKey || e.metaKey;

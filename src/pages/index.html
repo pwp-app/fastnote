@@ -258,7 +258,6 @@
                 firstStart = true;
                 installstat(uuid);
                 ipcRenderer.send("set-uuid", uuid);
-                addTiptoEmptyInfo();
             }
         });
 
@@ -397,13 +396,6 @@
                         }
                         return;
                     }
-                }
-            }
-            //first start - tooltip
-            function addTiptoEmptyInfo() {
-                //首次启动在note-empty显示提示
-                if (firstStart) {
-                    $('.note-empty span').append('<br/>' + insert_spacing('(请使用Ctrl+Enter保存新建笔记)', 0.15));
                 }
             }
 
@@ -614,7 +606,7 @@
         </div>
         <div class="newnote-main">
             <div class="lbl">
-                <label id="lbl-newnote" title="使用 Ctrl+Enter 提交便签" data-lang='newnote'>新建便签</label>
+                <label id="lbl-newnote" title="双击打开独立新建便签窗口" data-lang='newnote'>新建便签</label>
                 <script>
                     $('#lbl-newnote').dblclick(function(){
                         //双击启动新建便签窗口
@@ -639,6 +631,7 @@
             </div>
             <div class="control">
                 <textarea id="note-text"></textarea>
+                <label class="note-text-submittip">使用 Ctrl+Enter 提交</label>
             </div>
         </div>
     </div>

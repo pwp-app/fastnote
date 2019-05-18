@@ -22,13 +22,17 @@ $('#input-lockscreen').keypress(function (e){
     }
 });
 ipcRenderer.on('enable-lockscreen-minimize',function(){
-    if (typeof settings.lockpassword != 'undefined' && settings.locktype == 'minimize' && $('.container-lockscreen').css('display') == 'none'){
-        enableLockScreen();
+    if (typeof settings != 'undefined'){
+        if (typeof settings.lockpassword != 'undefined' && settings.locktype == 'minimize' && $('.container-lockscreen').css('display') == 'none'){
+            enableLockScreen();
+        }
     }
 });
 ipcRenderer.on('enable-lockscreen-blur', function(){
-    if (typeof settings.lockpassword != 'undefined' && settings.locktype == 'blur' && $('.container-lockscreen').css('display') == 'none'){
-        enableLockScreen();
+    if (typeof settings != 'undefined'){
+        if (typeof settings.lockpassword != 'undefined' && settings.locktype == 'blur' && $('.container-lockscreen').css('display') == 'none'){
+            enableLockScreen();
+        }
     }
 });
 ipcRenderer.on('disable-lockscreen', function(){
