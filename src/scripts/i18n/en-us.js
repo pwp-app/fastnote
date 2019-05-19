@@ -68,5 +68,12 @@ i18n['en-us']={
     'time_noyear':'MM-DD HH:mm:ss',
     'time_notime':'YYYY-MM-DD',
     'time_noyearandtime':'MM-DD',
-    'note_submittip':'Using [Ctrl+Enter] to submit'
+    'note_submittip':'Using [Ctrl+Enter] to submit',
+    'placeholder_notitle': '(No title)',
+    'placeholder_notsetpassword':'(Password is not set)',
+    'placeholder_lockscreen':'(Lockscreen password)',
+    'placeholder_notset':'(Not set)',
+    'placeholder_notchange':'(Not change)',
+    'edit_createtime':'Create time: ',
+    'edit_updatetime':'Last modification time: '
 };

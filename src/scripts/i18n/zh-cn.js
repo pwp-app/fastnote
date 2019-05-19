@@ -68,5 +68,12 @@ i18n['zh-cn']={
     'time_noyear':'MM月DD日 HH:mm:ss',
     'time_notime':'YYYY年MM月DD日',
     'time_noyearandtime':'MM月DD日',
-    'note_submittip':'使用 [Ctrl+回车] 提交'
+    'note_submittip':'使用 [Ctrl+回车] 提交',
+    'placeholder_notitle': '(无标题)',
+    'placeholder_notsetpassword':'(未设置密码)',
+    'placeholder_lockscreen':'(锁屏密码)',
+    'placeholder_notset':'(未设置)',
+    'placeholder_notchange':'(未更改)',
+    'edit_createtime':'创建时间：',
+    'edit_updatetime':'最后一次编辑时间：'
 };

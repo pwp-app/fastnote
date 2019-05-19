@@ -186,7 +186,7 @@ async function renderCategoryList(){
 }
 
 async function renderCategorySelect(){
-    $('#select-note-category').html('<option value="notalloc">未分类</option>');
+    $('#select-note-category').html('<option value="notalloc" data-lang="notalloc">未分类</option>');
     for (var i=0;i<categories.length;i++){
         renderCategoryToSelect(categories[i].name);
     }

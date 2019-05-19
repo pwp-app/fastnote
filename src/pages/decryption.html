@@ -61,16 +61,19 @@
                 $('#main-style').attr('href', 'static/main.blackwhite.css');
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
+                current_i18n = 'zh-cn';
 
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
-                if (typeof settings.language != 'undefined' && settings.language != 'zh-cn'){
-                    $(document).ready(function(){
-                        applyLanguage(settings.language);
-                    });
+                if (typeof settings.language != 'undefined'){
+                    if (settings.language != 'zh-cn'){
+                        $(document).ready(function(){
+                            applyLanguage(settings.language);
+                        });
+                    }
+                    current_i18n = settings.language;
                 }
-                
                 if (typeof settings.theme != 'undefined') {
                     $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
                 } else {

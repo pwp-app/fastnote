@@ -27,6 +27,18 @@
     <script src="static/moment.min.js"></script>
     <script src="static/html5sortable.min.js"></script>
     <script>
+        //i18n
+        var postprocess_i18n = [{
+            selector: '#input-note-title',
+            attr: 'placeholder',
+            key: 'placeholder_notitle'
+        }, {
+            selector: '#input-note-password',
+            attr: 'placeholder',
+            key: 'placeholder_notsetpassword'
+        }];
+    </script>
+    <script>
         //define const
         var remote = require('electron').remote;
         var app = remote.app;
@@ -88,14 +100,18 @@
 
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
+                current_i18n = 'zh-cn';
 
                 console.error('A error occured when reading settings.');
             } else {
                 //初始化语言
-                if (typeof settings.language != 'undefined' && settings.language != 'zh-cn'){
-                    $(document).ready(function(){
-                        applyLanguage(settings.language);
-                    });
+                if (typeof settings.language != 'undefined'){
+                    if (settings.language != 'zh-cn'){
+                        $(document).ready(function(){
+                            applyLanguage(settings.language);
+                        });
+                    }
+                    current_i18n = settings.language;
                 }
                 //优先初始化锁屏
                 if (typeof settings.lockpassword != 'undefined') {
