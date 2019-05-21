@@ -74,6 +74,6 @@ i18n['en-us']={
     'placeholder_lockscreen':'(Lockscreen password)',
     'placeholder_notset':'(Not set)',
     'placeholder_notchange':'(Not change)',
-    'edit_createtime':'Create time: ',
-    'edit_updatetime':'Last modification time: '
+    'edit_createtime':'Create time:&nbsp;',
+    'edit_updatetime':'Last modification time:&nbsp;'
 };

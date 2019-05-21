@@ -27,8 +27,13 @@ function processLanguage(language){
     });
     //post process
     if (typeof postprocess_i18n != "undefined"){
-        for(var i=0;i<postprocess_i18n.length;i++){
+        for(let i=0;i<postprocess_i18n.length;i++){
             $(postprocess_i18n[i].selector).attr(postprocess_i18n[i].attr, i18n[language][postprocess_i18n[i].key]);
+        }
+    }
+    if (typeof postprocess_i18n_css != "undefined"){
+        for(let i=0;i<postprocess_i18n_css.length;i++){
+            $(postprocess_i18n_css[i].selector).addClass(postprocess_i18n_css[i].class);
         }
     }
 }
