@@ -26,6 +26,16 @@
             attr: 'placeholder',
             key: 'placeholder_notitle'
         }];
+        var postprocess_i18n_css = [{
+            selector: '.edit-item-control',
+            class: 'edit-item-control-en-us'
+        },{
+            selector: '.edit-item-control-half-left',
+            class: 'edit-item-control-half-left-en-us'
+        },{
+            selector: '.edit-item-control-half-right',
+            class: 'edit-item-control-half-right-en-us'
+        }];
     </script>
     <script>
         //define const
@@ -400,9 +410,9 @@
 
         function resizeContent() {
             //设置控件的宽度
-            $('.edit-item-control').css('width', $(window).width() - 70);
-            $('.edit-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 59);
-            $('.edit-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 41);
+            $('.edit-item-control').css('width', $(window).width() - 70 + (current_i18n == 'en-us'?2.5:0));
+            $('.edit-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 59 - (current_i18n == 'en-us'?24:0));
+            $('.edit-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 41  - (current_i18n == 'en-us'?27:0));
             //调整文本域大小
             var h_container = $(window).height() - $('.container-titlebar').height() - 48;
             $('.container-edit').css('height', h_container);
