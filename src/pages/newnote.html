@@ -31,6 +31,16 @@
             attr: 'placeholder',
             key: 'placeholder_notsetpassword'
         }];
+        var postprocess_i18n_css = [{
+            selector: '.newnotewin-item-control',
+            class: 'newnotewin-item-control-en-us'
+        },{
+            selector: '.newnotewin-item-control-half-left',
+            class: 'newnotewin-item-control-half-left-en-us'
+        },{
+            selector: '.newnotewin-item-control-half-right',
+            class: 'newnotewin-item-control-half-right-en-us'
+        }];
     </script>
     <script>
         //define const
@@ -210,9 +220,9 @@
 
             function resizeContent() {
                 //设置控件的宽度
-                $('.newnotewin-item-control').css('width', $(window).width() - 76);
-                $('.newnotewin-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 62);
-                $('.newnotewin-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 44);
+                $('.newnotewin-item-control').css('width', $(window).width() - 76 + (current_i18n == 'en-us'?2.5:0));
+                $('.newnotewin-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 62 - (current_i18n == 'en-us'?24:0));
+                $('.newnotewin-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 44  - (current_i18n == 'en-us'?27:0));
                 //设置文本域的高度
                 var h_container = $(window).height() - $('.container-titlebar').height();
                 $('.container-newnotewin').css('height', h_container);

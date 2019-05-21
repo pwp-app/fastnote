@@ -57,6 +57,11 @@ var reg_url = /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&a
 
 //渲染一条笔记
 function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop) {
+    if (typeof settings.language == 'undefined'){
+        current_i18n = 'zh-cn';
+    } else {
+        current_i18n = settings.language;
+    }
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
         '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
