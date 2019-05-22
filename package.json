@@ -17,7 +17,7 @@
     "electron-builder": "^20.40.2",
     "font-awesome": "^4.7.0",
     "gulp-qiniu-up": "^1.0.2",
-    "html5sortable": "^0.9.12",
+    "html5sortable": "^0.9.10",
     "jquery": "^3.4.1",
     "merge": "^1.2.1",
     "moment": "^2.24.0",
