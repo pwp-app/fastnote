@@ -78,6 +78,8 @@ i18n['zh-cn']={
     'edit_updatetime':'最后一次编辑时间：',
     'sortby':'排序方式',
     'copy':'复制',
+    'cut':'剪切',
+    'paste':'粘贴',
     'updatetime':'更新时间',
     'copyto_clipboard_success':'内容已复制到剪贴板',
     'copyto_clipboard_error':'复制内容时出现错误',
@@ -97,5 +99,14 @@ i18n['zh-cn']={
     'empty_recyclebin_message':'确定要清空回收站吗？该操作将不可撤回。',
     'empty_recyclebin_detail':'回收站内的所有便签都将被彻底删除，不可还原。',
     'button_yes':'确认',
-    'button_no':'取消'
+    'button_no':'取消',
+    'restore_all':'全部还原',
+    'restore_notes_success':'便签已全部还原',
+    'restore_notes_error':'还原便签时出现错误',
+    'delete_all':'全部彻底删除',
+    'delete_all_success':'便签已全部删除',
+    'delete_all_error':'删除便签时出现错误',
+    'select_all':'全选',
+    'selected_left':'当前选择了<handefault/>',
+    'selected_right':'<handefault/>个便签'
 };

@@ -474,7 +474,7 @@
                                         $('.toast-multiselected').removeClass('toast-active');
                                     });
                                 } else {
-                                    $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected_withencrypted.length + "<handefault/>个便签");
+                                    $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
                                 }
                             } else {
                                 $('#note_' + noteid_clicked).parent().addClass('note-selected');
@@ -484,7 +484,7 @@
                                 }
                                 notes_selected_withencrypted.push(noteid_clicked);
                                 //set up toast
-                                $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected_withencrypted.length + "<handefault/>个便签");
+                                $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
                             }
                         } else {
                             noteLongClickTimeout = setTimeout(function () {
@@ -507,8 +507,7 @@
                                     hasNotesNotForceTop = true;
                                 }
                                 //set up toast
-                                $('#toast-multiselected-text').html('当前选择了<handefault/>' +
-                                $('.note-selected').length + "<handefault/>个便签");
+                                $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
                                 $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                                 window.getSelection().removeAllRanges();
                             }, 1000);
@@ -590,8 +589,7 @@
                 if (!$('.toast-multiselected').hasClass('toast-active')) {
                     $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                 }
-                $('#toast-multiselected-text').html('当前选择了<handefault/>' + $('.note-selected').length +
-                    "<handefault/>个便签");
+                $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
                 return false;
             });
         </script>

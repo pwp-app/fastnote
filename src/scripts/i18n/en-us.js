@@ -78,6 +78,8 @@ i18n['en-us']={
     'edit_updatetime':'Last modification time:&nbsp;',
     'sortby':'Sort by',
     'copy':'Copy',
+    'cut':'Cut',
+    'paste':'Paste',
     'updatetime':'Update time',
     'copyto_clipboard_success':'Content has been copied to the clipboard',
     'copyto_clipboard_error':'An error occurred while copying content',
@@ -98,4 +100,13 @@ i18n['en-us']={
     'empty_recyclebin_detail':'All notes in the recycle bin will be completely deleted and cannot be restored.',
     'button_yes':'Yes ',
     'button_no':'No ',
+    'restore_all':'Restore selected notes',
+    'restore_notes_success':'The notes has been restored',
+    'restore_notes_error':'An error occurred while restoring the notes',
+    'delete_all':'Completely delete selected notes',
+    'delete_all_success':'The notes have been deleted',
+    'delete_all_error':'An error occurred while deleting the notes',
+    'select_all':'Select all',
+    'selected_left':'',
+    'selected_right':' note(s) are selected'
 };

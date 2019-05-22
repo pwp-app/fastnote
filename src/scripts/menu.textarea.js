@@ -1,45 +1,38 @@
-var menu_textarea_selected_template = [
-    {
-        label: '复制',
-        role: 'copy'
-    },
-    {
-        label: '剪切',
-        role: 'cut'
-    },
-    {
-        label: '粘贴',
-        role: 'paste'
-    }
-];
 function popup_menu_textarea_selected(){
-    var menu_textarea_selected = Menu.buildFromTemplate(menu_textarea_selected_template);
+    var menu_textarea_selected = new Menu();
+    menu_textarea_selected.append(new MenuItem({
+        label: i18n[current_i18n]['copy'],
+        role: 'copy'
+    }));
+    menu_textarea_selected.append(new MenuItem({
+        label: i18n[current_i18n]['cut'],
+        role: 'cut'
+    }));
+    menu_textarea_selected.append(new MenuItem({
+        label: i18n[current_i18n]['paste'],
+        role: 'paste'
+    }));
     menu_textarea_selected.popup(remote.getCurrentWindow());
 }
 
-var menu_textarea_empty_template = [
-    {
-        label: '粘贴',
-        role: 'paste'
-    }
-];
 function popup_menu_textarea_empty(){
-    var menu_textarea_empty = Menu.buildFromTemplate(menu_textarea_empty_template);
+    var menu_textarea_empty = new Menu();
+    menu_textarea_empty.append(new MenuItem({
+        label: i18n[current_i18n]['paste'],
+        role: 'paste'
+    }));
     menu_textarea_empty.popup(remote.getCurrentWindow());
 }
 
-
-var menu_textarea_template = [
-    {
-        label: '粘贴',
-        role: 'paste'
-    },
-    {
-        label: '全选',
-        role: 'selectAll'
-    }
-];
 function popup_menu_textarea(){
-    var menu_textarea = Menu.buildFromTemplate(menu_textarea_template);
+    var menu_textarea = new Menu();
+    menu_textarea.append(new MenuItem({
+        label: i18n[current_i18n]['paste'],
+        role: 'paste'
+    }));
+    menu_textarea.append(new MenuItem({
+        label: i18n[current_i18n]['select_all'],
+        role: 'selectAll'
+    }));
     menu_textarea.popup(remote.getCurrentWindow());
 }

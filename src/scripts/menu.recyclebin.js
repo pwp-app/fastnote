@@ -86,8 +86,10 @@ function popup_menu_recyclebin() {
     menu_recyclebin.popup(remote.getCurrentWindow());
 }
 
-var menu_recyclebin_multiSelected_template = [{
-        label: '全部还原',
+function popup_menu_recyclebin_multiSelected() {
+    var menu_recyclebin_multiselected = new Menu();
+    menu_recyclebin_multiselected.append(new MenuItem({
+        label: i18n[current_i18n]['restore_all'],
         click: function () {
             $('.note-wrapper').removeClass('note-selected');
             selectModeEnabled = false;
@@ -96,9 +98,9 @@ var menu_recyclebin_multiSelected_template = [{
             });
             restoreNotes(notes_selected, function (res) {
                 if (res) {
-                    displayInfobar('success', '便签均已还原');
+                    displayInfobar('success', i18n[current_i18n]['restore_notes_success']);
                 } else {
-                    displayInfobar('error', '还原便签时出现错误');
+                    displayInfobar('error', i18n[current_i18n]['restore_notes_error']);
                 }
             });
             selectModeEnabled = false;
@@ -106,9 +108,9 @@ var menu_recyclebin_multiSelected_template = [{
                 $('.toast-multiselected').removeClass('toast-active');
             });
         }
-    },
-    {
-        label: '全部彻底删除',
+    }));
+    menu_recyclebin_multiselected.append(new MenuItem({
+        label: i18n[current_i18n]['delete_all'],
         click: function () {
             $('.note-wrapper').removeClass('note-selected');
             selectModeEnabled = false;
@@ -117,9 +119,9 @@ var menu_recyclebin_multiSelected_template = [{
             });
             deleteNotes(notes_selected, function (res) {
                 if (res) {
-                    displayInfobar('success', '便签均已删除');
+                    displayInfobar('success', i18n[current_i18n]['delete_all_success']);
                 } else {
-                    displayInfobar('error', '删除便签时出现错误');
+                    displayInfobar('error', i18n[current_i18n]['delete_all_error']);
                 }
             });
             selectModeEnabled = false;
@@ -127,9 +129,9 @@ var menu_recyclebin_multiSelected_template = [{
                 $('.toast-multiselected').removeClass('toast-active');
             });
         }
-    },
-    {
-        label: '全选',
+    }));
+    menu_recyclebin_multiselected.append(new MenuItem({
+        label: i18n[current_i18n]['select_all'],
         click: function () {
             selectModeEnabled = true;
             notes_selected = [];
@@ -137,12 +139,11 @@ var menu_recyclebin_multiSelected_template = [{
                 notes_selected.push(note.id);
             });
             $('.note-wrapper').addClass('note-selected');
-            $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected.length +
-                "<handefault/>个便签");
+            $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
         }
-    },
-    {
-        label: '取消',
+    }));
+    menu_recyclebin_multiselected.append(new MenuItem({
+        label: i18n[current_i18n]['cancel'],
         click: function () {
             $('.note-wrapper').removeClass('note-selected');
             selectModeEnabled = false;
@@ -150,10 +151,7 @@ var menu_recyclebin_multiSelected_template = [{
                 $('.toast-multiselected').removeClass('toast-active');
             });
         }
-    }
-];
+    }));
 
-function popup_menu_recyclebin_multiSelected() {
-    var menu_recyclebin_multiselected = Menu.buildFromTemplate(menu_recyclebin_multiSelected_template);
     menu_recyclebin_multiselected.popup(remote.getCurrentWindow());
 }
