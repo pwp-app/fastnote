@@ -15,13 +15,14 @@
     <link rel="stylesheet" href="static/font-awesome.min.css">
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
-    <script src="static/array.js"></script>
     <script src="static/i18n.js"></script>
+    <script src="static/i18n/render.js"></script>
+    <script src="static/array.js"></script>
     <script src="static/encryption.js"></script>
     <script src="static/han.simple.js"></script>
-    <script src="static/notes.render.js"></script>
     <script src="static/mousetrap.min.js"></script>
     <script src="static/moment.min.js"></script>
+    <script src="static/notes.render.js"></script>
     <script>
         //recyclebin flag
         var inRecyclebin = true;
@@ -119,6 +120,8 @@
                         $(document).ready(function(){
                             applyLanguage(settings.language);
                         });
+                    } else {
+                        $.getScript('static/i18n/zh-cn.js');
                     }
                     current_i18n = settings.language;
                 }
@@ -220,7 +223,7 @@
             </div>
         </div>
         <div class="recycle-list-container">
-            <div class="note-empty recycle-empty col-lg-12">
+            <div class="note-empty recycle-empty col-lg-12" id="note-empty">
                 <span data-lang="note_empty_recyclebin">回收站内没有便签</span>
             </div>
             <div class="note-list recycle-list" id="note-list">

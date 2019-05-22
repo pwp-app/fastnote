@@ -1,4 +1,8 @@
-var infobar_container = $(".container-infobar");
+var infobar_container;
+
+$(document).ready(function(){
+    infobar_container = $(".container-infobar");
+});
 
 var infobar_id = 0;
 

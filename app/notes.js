@@ -106,7 +106,7 @@ function putToRecyclebin(id, infoEnabled = true) {
                 if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/')) {
                     fs.rename(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + path, storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + path, function (err) {
                         if (err) {
-                            displayInfobar('error', '放入回收站失败');
+                            displayInfobar('error', i18n[current_i18n]['note_recycle_error']);
                             readNoteFiles();
                             throw (err);
                         } else {
@@ -122,7 +122,7 @@ function putToRecyclebin(id, infoEnabled = true) {
                             //send to main process
                             ipcRenderer.send('recycle-note', note_temp);
                             if (infoEnabled) {
-                                displayInfobar('success', '已放入回收站');
+                                displayInfobar('success', i18n[current_i18n]['note_recycle_success']);
                             }
                         }
                     });
@@ -131,7 +131,7 @@ function putToRecyclebin(id, infoEnabled = true) {
                     fs.rename(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + path, storagePath + '/notes/recyclebin/' + path, function (err) {
                         if (err) {
                             if (infoEnabled) {
-                                displayInfobar('error', '放入回收站失败');
+                                displayInfobar('error', i18n[current_i18n]['note_recycle_error']);
                             }
                             readNoteFiles();
                             throw (err);
@@ -148,7 +148,7 @@ function putToRecyclebin(id, infoEnabled = true) {
                             //send to main process
                             ipcRenderer.send('recycle-note', note_temp);
                             if (infoEnabled) {
-                                displayInfobar('success', '已放入回收站');
+                                displayInfobar('success', i18n[current_i18n]['note_recycle_success']);
                             }
                         }
                     });

@@ -1,5 +1,7 @@
-var menu_recyclebin_template = [{
-        label: '排序方式',
+function popup_menu_recyclebin() {
+    var menu_recyclebin = new Menu();
+    menu_recyclebin.append(new MenuItem({
+        label: i18n[current_i18n]['sortby'],
         submenu: [{
                 id: 'cb_sort_id',
                 label: 'ID',
@@ -15,7 +17,7 @@ var menu_recyclebin_template = [{
             },
             {
                 id: 'cb_sort_updateDate',
-                label: '更新日期',
+                label: i18n[current_i18n]['updatetime'],
                 type: 'checkbox',
                 click: function () {
                     sort_mode = 'updateDate';
@@ -27,34 +29,34 @@ var menu_recyclebin_template = [{
                 }
             }
         ]
-    },
-    {
+    }));
+    menu_recyclebin.append(new MenuItem({
         type: 'separator'
-    },
-    {
-        label: '还原',
+    }));
+    menu_recyclebin.append(new MenuItem({
+        label: i18n[current_i18n]['restore'],
         click: function () {
             restoreNote(noteid_clicked);
             noteid_clicked = -1;
         }
-    },
-    {
-        label: '彻底删除',
+    }));
+    menu_recyclebin.append(new MenuItem({
+        label: i18n[current_i18n]['delete_completely'],
         click: function () {
             deleteNote(noteid_clicked);
             noteid_clicked = -1;
         }
-    },
-    {
-        label: '清空回收站',
+    }));
+    menu_recyclebin.append(new MenuItem({
+        label: i18n[current_i18n]['empty_recyclebin'],
         click: function () {
             dialog.showMessageBox({
                 type: "warning",
-                buttons: ['取消', '确认'],
+                buttons: [i18n[current_i18n]['button_no'], i18n[current_i18n]['button_yes']],
                 defaultId: 0,
-                title: '确认操作',
-                message: '确定要清空回收站吗？该操作将不可撤回。',
-                detail: '回收站内的所有便签都将被彻底删除，不可还原。'
+                title: i18n[current_i18n]['confirm_operation'],
+                message: i18n[current_i18n]['empty_recyclebin_message'],
+                detail: i18n[current_i18n]['empty_recyclebin_detail']
             }, function (res) {
                 if (res == 1) {
                     for (var i = 0; i < notes.length; i++) {
@@ -62,14 +64,11 @@ var menu_recyclebin_template = [{
                     }
                 }
                 noteid_clicked = -1;
-                displayInfobar('success', '回收站已清空');
+                displayInfobar('success', i18n[current_i18n]['empty_recyclebin_success']);
             });
         }
-    }
-];
+    }));
 
-function popup_menu_recyclebin() {
-    var menu_recyclebin = Menu.buildFromTemplate(menu_recyclebin_template);
     menu_recyclebin.on('menu-will-close', (event, args) => {
         $('#note_' + noteid_clicked).parent().removeClass('note-selected');
     });

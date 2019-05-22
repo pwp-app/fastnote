@@ -150,6 +150,8 @@
                         $(document).ready(function(){
                             applyLanguage(settings.language);
                         });
+                    } else {
+                        $.getScript('static/i18n/zh-cn.js');
                     }
                     initLanguage(settings.language);
                     current_i18n = settings.language;

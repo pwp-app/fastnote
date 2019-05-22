@@ -22,24 +22,19 @@ storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '
 });
 //显示没有笔记的界面
 function showNoteEmpty() {
-    var note_empty = document.getElementsByClassName('note-empty')[0];
-    var note_list = document.getElementsByClassName('note-list')[0];
-    note_empty.setAttribute("style", "display:flex;");
-    note_list.setAttribute("style", "display:none;");
+    $('#note-empty').css('display', 'flex');
+    $('.note-list').css('display', 'none');
 }
 
 function showNoteEmpty_Anim() {
-    $('.note-empty').css('display', 'flex');
-    $('.note-empty').animateCss('fadeIn faster');
-    var note_list = document.getElementsByClassName('note-list')[0];
-    note_list.setAttribute("style", "display:none;");
+    $('#note-empty').css('display', 'flex');
+    $('#note-empty').animateCss('fadeIn faster');
+    $('.note-list').css('display', 'none');
 }
 //显示有笔记的界面
 function showNoteList() {
-    var note_empty = document.getElementsByClassName('note-empty')[0];
-    var note_list = document.getElementsByClassName('note-list')[0];
-    note_empty.setAttribute("style", "display:none;");
-    note_list.setAttribute("style", "display:block;");
+    $('#note-empty').css('display', 'none');
+    $('.note-list').css('display', 'block');
 }
 //清空列表内的笔记DOM
 function clearNoteList() {
@@ -465,7 +460,9 @@ function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, ti
 function addNoteObjToArray(note) {
     notes.push(note);
     //计数器增加
-    addCategoryCount(note.category, true, true);
+    if (typeof inRecyclebin == "undefined"){
+        addCategoryCount(note.category, true, true);
+    }
 }
 
 //刷新note-list
@@ -502,7 +499,9 @@ function refreshNoteList(callback) {
         }
         //绑定Note的点击事件
         bindNoteClickEvent();
-        renderNotesOfCategory(current_category);
+        if (typeof inRecyclebin == 'undefined') { //回收站内不进行分类渲染
+            renderNotesOfCategory(current_category);
+        }
         //callback
         if (typeof (callback) === 'function') {
             callback();

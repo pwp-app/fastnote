@@ -94,6 +94,8 @@
                         $(document).ready(function(){
                             applyLanguage(settings.language);
                         });
+                    } else {
+                        $.getScript('static/i18n/zh-cn.js');
                     }
                     current_i18n = settings.language;
                 }
