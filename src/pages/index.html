@@ -18,13 +18,31 @@
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
     <script src="static/array.js"></script>
+    <script src="static/i18n.js"></script>
+    <script src="static/i18n/render.js"></script>
     <script src="static/encryption.js"></script>
     <script src="static/han.simple.js"></script>
-    <script src="static/notes.render.js"></script>
     <script src="static/category.js"></script>
     <script src="static/mousetrap.min.js"></script>
     <script src="static/moment.min.js"></script>
     <script src="static/html5sortable.min.js"></script>
+    <script src="static/notes.render.js"></script>
+    <script>
+        //i18n
+        var postprocess_i18n = [{
+            selector: '#input-note-title',
+            attr: 'placeholder',
+            key: 'placeholder_notitle'
+        }, {
+            selector: '#input-note-password',
+            attr: 'placeholder',
+            key: 'placeholder_notsetpassword'
+        }];
+        var postprocess_i18n_css = [{
+            selector: '.newnote-info-item',
+            class: 'newnote-info-item-en-us'
+        }];
+    </script>
     <script>
         //define const
         var remote = require('electron').remote;
@@ -87,9 +105,21 @@
 
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
+                current_i18n = 'zh-cn';
 
                 console.error('A error occured when reading settings.');
             } else {
+                //初始化语言
+                if (typeof settings.language != 'undefined'){
+                    if (settings.language != 'zh-cn'){
+                        $(document).ready(function(){
+                            applyLanguage(settings.language);
+                        });
+                    } else {
+                        $.getScript('static/i18n/zh-cn.js');
+                    }
+                    current_i18n = settings.language;
+                }
                 //优先初始化锁屏
                 if (typeof settings.lockpassword != 'undefined') {
                     $('.container-lockscreen').css('display', 'block');
@@ -251,7 +281,6 @@
                 firstStart = true;
                 installstat(uuid);
                 ipcRenderer.send("set-uuid", uuid);
-                addTiptoEmptyInfo();
             }
         });
 
@@ -339,12 +368,12 @@
         <!-- empty -->
         <div class="note-empty col-lg-12" id="note-empty">
             <div class="note-empty-inner">
-                <span>您还没有建立任何的便签<br>在下方你可以快速创建便签</span>
+                <span data-lang="note_empty">您还没有建立任何的便签<br>在下方你可以快速创建便签</span>
             </div>
         </div>
         <div class="note-empty col-lg-12" id="note-empty-category">
             <div class="note-empty-inner">
-                <span>当前分类下没有任何便签<br>在下方你可以快速创建该分类的便签</span>
+                <span data-lang="note_empty_category">当前分类下没有任何便签<br>在下方你可以快速创建该分类的便签</span>
             </div>
         </div>
         <div class="note-empty col-lg-12" id="note-empty-search">
@@ -364,7 +393,6 @@
 
             function updateEditNote(res) {
                 notesEdit.saveEditNote(res, function (data) {
-                    console.log(data);
                     //reset contents in note
                     switch (sort_mode) {
                         //此处接收到的是{note:note, rawtext:text}
@@ -377,7 +405,7 @@
                             break;
                     }
                     //show infobar
-                    displayInfobar("success", "笔记内容已保存");
+                    displayInfobar("success", i18n[current_i18n]['note_saved']);
                 });
             }
 
@@ -391,14 +419,6 @@
                         }
                         return;
                     }
-                }
-            }
-
-            //first start - tooltip
-            function addTiptoEmptyInfo() {
-                //首次启动在note-empty显示提示
-                if (firstStart) {
-                    $('.note-empty span').append('<br/>' + insert_spacing('(请使用Ctrl+Enter保存新建笔记)', 0.15));
                 }
             }
 
@@ -454,7 +474,7 @@
                                         $('.toast-multiselected').removeClass('toast-active');
                                     });
                                 } else {
-                                    $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected_withencrypted.length + "<handefault/>个便签");
+                                    $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
                                 }
                             } else {
                                 $('#note_' + noteid_clicked).parent().addClass('note-selected');
@@ -464,7 +484,7 @@
                                 }
                                 notes_selected_withencrypted.push(noteid_clicked);
                                 //set up toast
-                                $('#toast-multiselected-text').html('当前选择了<handefault/>' + notes_selected_withencrypted.length + "<handefault/>个便签");
+                                $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
                             }
                         } else {
                             noteLongClickTimeout = setTimeout(function () {
@@ -487,8 +507,7 @@
                                     hasNotesNotForceTop = true;
                                 }
                                 //set up toast
-                                $('#toast-multiselected-text').html('当前选择了<handefault/>' +
-                                $('.note-selected').length + "<handefault/>个便签");
+                                $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
                                 $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                                 window.getSelection().removeAllRanges();
                             }, 1000);
@@ -570,8 +589,7 @@
                 if (!$('.toast-multiselected').hasClass('toast-active')) {
                     $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                 }
-                $('#toast-multiselected-text').html('当前选择了<handefault/>' + $('.note-selected').length +
-                    "<handefault/>个便签");
+                $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
                 return false;
             });
         </script>
@@ -582,7 +600,7 @@
         <div class="newnote-info-float">
             <div class="newnote-info-item">
                 <div class="br-col-2">
-                    <label>标题</label>
+                    <label data-lang="title">标题</label>
                 </div>
                 <div class="br-col-10">
                     <input type="text" class="form-control" id="input-note-title" maxlength="64" placeholder="(无标题)">
@@ -590,17 +608,17 @@
             </div>
             <div class="newnote-info-item" id="newnote-info-item-category" style="margin-top: 8px;">
                 <div class="br-col-2">
-                    <label>分类</label>
+                    <label data-lang="category">分类</label>
                 </div>
                 <div class="br-col-10">
                     <select class="form-control" id="select-note-category">
-                        <option value="notalloc">未分类</option>
+                        <option value="notalloc" data-lang="notalloc">未分类</option>
                     </select>
                 </div>
             </div>
             <div class="newnote-info-item" id="newnote-info-item-password" style="margin-top: 8px;">
                 <div class="br-col-2">
-                    <label>密码</label>
+                    <label data-lang="password">密码</label>
                 </div>
                 <div class="br-col-10">
                     <input type="password" class="form-control" id="input-note-password" maxlength="64" placeholder="(未设置密码)">
@@ -609,7 +627,7 @@
         </div>
         <div class="newnote-main">
             <div class="lbl">
-                <label id="lbl-newnote" title="使用 Ctrl+Enter 提交便签">新建便签</label>
+                <label id="lbl-newnote" title="双击打开独立新建便签窗口" data-lang='newnote'>新建便签</label>
                 <script>
                     $('#lbl-newnote').dblclick(function(){
                         //双击启动新建便签窗口
@@ -634,6 +652,7 @@
             </div>
             <div class="control">
                 <textarea id="note-text"></textarea>
+                <label class="note-text-submittip" data-lang="note_submittip">使用 [Ctrl+回车] 提交</label>
             </div>
         </div>
     </div>
@@ -811,22 +830,22 @@
     <div class="container-updater">
         <div class="update-block">
             <div class="update-title">
-                <span id="update-title-span">检测到新版本：</span>
+                <span id="update-title-span" data-lang="newversion_detected">检测到新版本：</span>
             </div>
             <div class="update-contents">
-                <h1 class="update-contents-title">更新日志</h1>
+                <h1 class="update-contents-title" data-lang="update_log">更新日志</h1>
                 <div class="update-contents-details">
                 </div>
             </div>
 
             <div class="update-contents update-contents-loading">
-                <span id="update-loading-span">载入中……</span>
+                <span id="update-loading-span" data-lang="loading">载入中……</span>
             </div>
 
             <div class="update-footer">
                 <div class="control-group" style="-webkit-user-select: none">
-                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-cancel">取消</button>
-                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-confirm">下载</button>
+                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-cancel" data-lang="cancel">取消</button>
+                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-confirm" data-lang="download">下载</button>
                 </div>
             </div>
         </div>
@@ -877,7 +896,7 @@
                             function (result) {
                                 if (result != null && result != "" && typeof (result) != 'undefined') {
                                     try {
-                                        $('#update-title-span').text('检测到新版本：' + result.ver);
+                                        $('#update-title-span').text(i18n[current_i18n]['newversion_detected'] + result.ver);
                                         document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
                                         //选择性显示更新日志，不同版本显示不同内容
                                         var version_number = version.split('.').map(Number);    //获取现有的版本号
@@ -896,7 +915,8 @@
                                         }
                                         //check show full
                                         if (result.showfull) {
-                                            document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">详细更新日志</button>'
+                                            document.getElementsByClassName('update-contents-details')[0].innerHTML
+                                                += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">'+i18n[current_i18n]['detail_updatelog']+'</button>'
                                         }
                                         //强制更新
                                         if (typeof result.forceupdate != 'undefined' && result.forceupdate){
@@ -907,10 +927,10 @@
                                         $('.update-contents-loading').css('display', 'none');
                                     } catch (err) {
                                         console.error(err);
-                                        $('#update-loading-span').innerHTML = "更新日志加载失败";
+                                        $('#update-loading-span').innerHTML = i18n[current_i18n]['loading_updatelog_failed'];
                                     }
                                 } else {
-                                    $('#update-loading-span').innerHTML = "更新日志加载失败";
+                                    $('#update-loading-span').innerHTML = i18n[current_i18n]['loading_updatelog_failed'];
                                 }
                             }
                         );
@@ -918,8 +938,8 @@
                     break;
                 case 'downloadProgress':
                     document.getElementById('update-progress').value = data.percent;
-                    document.getElementById('infobar-update-text').innerText = "正在下载更新（" + data.percent.toFixed(
-                        1) + " %）......";
+                    document.getElementById('infobar-update-text').innerText = i18n[current_i18n]['update_downloading']+" (" + data.percent.toFixed(
+                        1) + " %)......";
                     break;
                 case 'update-downloaded':
                     console.log('update-downloaded');
@@ -927,9 +947,9 @@
                     $('#infobar_update').animateCss('fadeOutUp', function () {
                         $('#infobar_update').remove();
                     });
-                    displayInfobar('success', '更新下载完成，关闭程序后将自动安装', 5000);
+                    displayInfobar('success', i18n[current_i18n]['update_download_success'], 5000);
                     $('#statusbar').append(
-                        '<div class="statusbar-item" title="更新下载完毕，重启后安装"><i class="fa fa-arrow-circle-up"></i></div>'
+                        '<div class="statusbar-item" title="'+i18n[current_i18n]['statusbar_update_title']+'"><i class="fa fa-arrow-circle-up"></i></div>'
                     );
                 case 'error':
                     console.error(data);
@@ -945,7 +965,7 @@
         });
         $('#btn-update-confirm').on('click', function () {
             ipcRenderer.send('downloadNow');
-            displayInfobar('update', '正在下载更新……');
+            displayInfobar('update', i18n[current_i18n]['update_downloading']+'......');
             $('.container-updater').animateCss('fadeOut', function () {
                 $('.container-updater').removeAttr('style');
             });
@@ -971,21 +991,21 @@
             <div class="mainmenu-menu">
                 <ul>
                     <li id="mainmenu-btn-recycle">
-                        <span>回收站</span>
+                        <span data-lang="recyclebin">回收站</span>
                     </li>
                     <div class="mainmenu-split"></div>
                     <li id="mainmenu-btn-settings">
-                        <span>设置</span>
+                        <span data-lang="settings">设置</span>
                     </li>
                     <li id="mainmenu-btn-about">
-                        <span>关于</span>
+                        <span data-lang="about">关于</span>
                     </li>
                     <div class="mainmenu-split"></div>
                     <li id="mainmenu-btn-reload">
-                        <span>重新载入</span>
+                        <span data-lang="reload">重新载入</span>
                     </li>
                     <li id="mainmenu-btn-exit">
-                        <span>退出</span>
+                        <span data-lang="exit">退出</span>
                     </li>
                 </ul>
             </div>
@@ -1096,7 +1116,7 @@
         <div class="category-panel">
             <div class="category-header">
                 <div class="category-header-title">
-                    <p>便签分类</p>
+                    <p data-lang="note_category">便签分类</p>
                 </div>
                 <div class="category-header-button">
                     <i class="fa fa-edit" id="category-header-editbtn" aria-hidden="true"></i>
@@ -1110,7 +1130,7 @@
                         <li data-name="all">
                             <div id="category-system-all">
                                 <div class="category-item-name">
-                                    <span>所有便签</span>
+                                    <span data-lang="all_notes">所有便签</span>
                                 </div>
                                 <div class="category-item-count">
                                     <span id="category-count-all"></span>
@@ -1120,7 +1140,7 @@
                         <li data-name="notalloc">
                             <div id="category-system-notalloc">
                                 <div class="category-item-name">
-                                    <span>未分类</span>
+                                    <span data-lang="notalloc">未分类</span>
                                 </div>
                                 <div class="category-item-count">
                                     <span id="category-count-notalloc"></span>
@@ -1469,6 +1489,32 @@
             }
             saveNotesId();
         });
+    </script>
+
+    <script>
+        //取消加密
+        ipcRenderer.on('cancel-encryption', function(sender, data){
+            removePassword(data.id, data.rawpassword);
+            $('#note_'+data.id+' .note-content .note-password').animateCss('fadeOut morefaster',function(){
+                $('#note_'+data.id+' .note-content .note-password').remove();
+            });
+            $('#note_'+data.id+' .note-header .note-password-relock').animateCss('fadeOut morefaster',function(){
+                $('#note_'+data.id+' .note-header .note-password-relock').remove();
+            });
+        });
+
+        async function removePassword(noteid, rawpassword){
+            for(var i=0;i<notes.length;i++){
+                if (notes[i].id == noteid){
+                    notes[i].password = undefined;  //取消密码
+                    notes[i].text = aes_decrypt(notes[i].text, rawpassword);
+                    saveNoteByObj(notes[i]);    //保存
+                    displayInfobar('success',i18n[current_i18n]['note_unencrypted_#']+noteid+i18n[current_i18n]['note_unencrypted_right']);
+                    rerenderTextOfNote(noteid, notes[i].text, true);
+                    break;
+                }
+            }
+        }
     </script>
 
     <script>

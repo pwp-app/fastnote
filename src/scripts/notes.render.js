@@ -22,24 +22,19 @@ storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '
 });
 //显示没有笔记的界面
 function showNoteEmpty() {
-    var note_empty = document.getElementsByClassName('note-empty')[0];
-    var note_list = document.getElementsByClassName('note-list')[0];
-    note_empty.setAttribute("style", "display:flex;");
-    note_list.setAttribute("style", "display:none;");
+    $('#note-empty').css('display', 'flex');
+    $('.note-list').css('display', 'none');
 }
 
 function showNoteEmpty_Anim() {
-    $('.note-empty').css('display', 'flex');
-    $('.note-empty').animateCss('fadeIn faster');
-    var note_list = document.getElementsByClassName('note-list')[0];
-    note_list.setAttribute("style", "display:none;");
+    $('#note-empty').css('display', 'flex');
+    $('#note-empty').animateCss('fadeIn faster');
+    $('.note-list').css('display', 'none');
 }
 //显示有笔记的界面
 function showNoteList() {
-    var note_empty = document.getElementsByClassName('note-empty')[0];
-    var note_list = document.getElementsByClassName('note-list')[0];
-    note_empty.setAttribute("style", "display:none;");
-    note_list.setAttribute("style", "display:block;");
+    $('#note-empty').css('display', 'none');
+    $('.note-list').css('display', 'block');
 }
 //清空列表内的笔记DOM
 function clearNoteList() {
@@ -57,6 +52,11 @@ var reg_url = /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&a
 
 //渲染一条笔记
 function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop) {
+    if (typeof settings.language == 'undefined'){
+        current_i18n = 'zh-cn';
+    } else {
+        current_i18n = settings.language;
+    }
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
         '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
@@ -83,10 +83,10 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
     var m_time = moment(rawtime, 'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
         var m_updatetime = moment(updaterawtime, 'YYYYMMDDHHmmss');
-        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
-            '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n['render'][current_i18n]['updatetime']+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+            '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n['render'][current_i18n]['createtime']+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
-        html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
     if (typeof password == 'undefined') {
         html += '</div><div class="note-content"><p class="note-text">';
@@ -111,9 +111,9 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         //密码框
         html += '</div><div class="note-content"><div class="note-password" data-password="' + password + '" data-encrypted="' + text + '">';
         if (typeof inRecyclebin == 'undefined') {
-            html += '<span>密码：</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
+            html += '<span>'+i18n['render'][current_i18n]['password']+'</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
         } else {
-            html += '<p>[该便签已加密，无法查看。]</p>';
+            html += '<p>['+i18n['render'][current_i18n]['encrypted_info']+']</p>';
         }
         html += '</div></div></div></div>';
     }
@@ -170,10 +170,10 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
     var m_time = moment(rawtime, 'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
         var m_updatetime = moment(updaterawtime, 'YYYYMMDDHHmmss');
-        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
-            '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n['render'][current_i18n]['updatetime']+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+            '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n['render'][current_i18n]['createtime']+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
-        html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
     if (typeof password == 'undefined') {
         html += '</div><div class="note-content"><p class="note-text">';
@@ -198,9 +198,9 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
         //密码框
         html += '</div><div class="note-content"><div class="note-password" data-password="' + password + '" data-encrypted="' + text + '">';
         if (typeof inRecyclebin == 'undefined') {
-            html += '<span>密码：</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
+            html += '<span>'+i18n['render'][current_i18n]['password']+'</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
         } else {
-            html += '<p>该便签已加密，无法查看。</p>';
+            html += '<p>['+i18n['render'][current_i18n]['encrypted_info']+']</p>';
         }
         html += '</div></div></div></div>';
     }
@@ -262,7 +262,7 @@ async function rerenderEditedNote(data, rawtext) {
             $('#note_'+data.id+' .note-content .note-password').attr('data-encrypted',data.text);
         } else {
             //便签之前没有设置过密码
-            $('#note_'+data.id+' .note-content').prepend('<div class="note-password" data-password="' + data.password + '" data-encrypted="' + data.text + '" style="display: none;"><span>密码：</span><input type="password" class="form-control" id="note_password_' + data.id + '" onkeydown="checkNotePassword(event, ' + data.id + ');"></div>');
+            $('#note_'+data.id+' .note-content').prepend('<div class="note-password" data-password="' + data.password + '" data-encrypted="' + data.text + '" style="display: none;"><span>'+i18n['render'][current_i18n]['password']+'</span><input type="password" class="form-control" id="note_password_' + data.id + '" onkeydown="checkNotePassword(event, ' + data.id + ');"></div>');
             $('#note_'+data.id+' .note-header').append('<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + data.id + ')" style="display: inline-block !important;"></i>');
             $('#note_'+data.id+' .note-header .note-password-relock').animateCss('fadeIn morefaster');
         }
@@ -284,14 +284,12 @@ async function rerenderEditedNote(data, rawtext) {
         $('#note_' + data.id + ' .note-content').addClass('note-overheight');
     }
     //reset content of updatetime
-    var timeContent = '<p class="note-time note-updatetime han-element">更新：' +
-        data.updatetime +
-        '</p>' +
-        '<p class="note-time han-element">创建：' + data.time + '</p>';
+    var timeContent = '<p class="note-time note-updatetime han-element">' + i18n['render'][current_i18n]['updatetime']
+        data.updatetime + '</p>' + '<p class="note-time han-element">'+ i18n['render'][current_i18n]['createtime'] + data.time + '</p>';
     let m_updatetime = moment(data.updaterawtime, 'YYYYMMDDHHmmss');
     let m_time = moment(data.rawtime, 'YYYYMMDDHHmmss');
-    var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">更新：</span>' + m_updatetime.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
-        '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">创建：</span>' + m_time.format('[<timeyear>]YYYY[年</timeyear><timemonth>]MM[月</timemonth><timeday>]DD[日</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
+    var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n['render'][current_i18n]['updatetime']+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+        '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n['render'][current_i18n]['updatetime']+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
     $('#note_' + data.id + ' .note-header time').html(timeContent);
     //open external event rebind
     $('#note_' + data.id + ' a').click(function (e) {
@@ -462,7 +460,9 @@ function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, ti
 function addNoteObjToArray(note) {
     notes.push(note);
     //计数器增加
-    addCategoryCount(note.category, true, true);
+    if (typeof inRecyclebin == "undefined"){
+        addCategoryCount(note.category, true, true);
+    }
 }
 
 //刷新note-list
@@ -499,7 +499,9 @@ function refreshNoteList(callback) {
         }
         //绑定Note的点击事件
         bindNoteClickEvent();
-        renderNotesOfCategory(current_category);
+        if (typeof inRecyclebin == 'undefined') { //回收站内不进行分类渲染
+            renderNotesOfCategory(current_category);
+        }
         //callback
         if (typeof (callback) === 'function') {
             callback();
@@ -682,8 +684,6 @@ function checkNotePassword(e, noteid) {
                 $('#note_' + noteid + ' .note-header .note-password-relock').attr('style', 'display: inline-block !important;');
                 $('#note_' + noteid + ' .note-header .note-password-relock').animateCss('fadeIn morefaster');
 
-                //auto fold
-                bindNoteFoldDBL(noteid);
                 //animate
                 //open external on os default webbrowser
                 $('#note_' + noteid + ' a').click(function (e) {
@@ -691,8 +691,11 @@ function checkNotePassword(e, noteid) {
                     e.preventDefault();
                 });
 
-                //绑定时间
-                bindNoteTimeClick(noteid);
+                setTimeout(function(){//auto fold
+                    bindNoteFoldDBL(noteid);
+                    //绑定时间
+                    bindNoteTimeClick(noteid);
+                },0);
             });
         } else {
             //密码不对
@@ -714,4 +717,42 @@ function relockNote(noteid) {
             $('#note_' + noteid + ' .note-header .note-password-relock').removeAttr('style');
         });
     });
+}
+
+//对便签文本进行再渲染
+async function rerenderTextOfNote(noteid, text, animate=false){
+    $('#note_'+noteid+' .note-content').html('');   //先清空note-content的内容
+    let html = '<p class="note-text">';
+    temp = text.split('\n');
+    let final_text = "";
+    for (var i = 0; i < temp.length; i++) {
+        s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+        final_text += s;
+        final_text += "<br>";
+    }
+    final_text = insert_spacing(final_text, 0.15);
+    //自动识别网页
+    html += final_text.replace(reg_url, function (result) {
+        return '<a href="' + result + '">' + result + '</a>';
+    });
+    html += '</p>';
+
+    //渲染
+    $('#note_' + noteid + ' .note-content').append(html);
+
+    if (animate){
+        $('#note_' + noteid + ' .note-content').animateCss('fadeIn morefaster');
+    }
+
+    //open external on os default webbrowser
+    $('#note_' + noteid + ' a').click(function (e) {
+        ipcRenderer.send('openExternalURL', $(this).attr('href'));
+        e.preventDefault();
+    });
+
+    setTimeout(function(){//auto fold
+        bindNoteFoldDBL(noteid);
+        //绑定时间
+        bindNoteTimeClick(noteid);
+    },0);
 }

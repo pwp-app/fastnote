@@ -20,6 +20,14 @@
     <link rel="stylesheet" href="static/animate.min.css">
     <link rel="stylesheet" href="static/awesome-bootstrap-checkbox.min.css">
     <script src="static/encryption.js"></script>
+    <script src="static/i18n.js"></script>
+    <script>
+        var postprocess_i18n = [{
+            selector: '#input-lockscreen-password',
+            attr: 'placeholder',
+            key: 'placeholder_lockscreen'
+        }];
+    </script>
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -123,6 +131,7 @@
                 //初始化设置
                 //init auto update
                 initAutoUpdate(true);
+                initLanguage('zh-cn');
 
                 //default settings
                 initFontSize("16");
@@ -130,8 +139,23 @@
                 initLineHeight("24");
                 initLetterSpacing("0.06");
                 initDateDisplay("all");
+                initTimeDisplay("all");
+
+                current_i18n = 'zh-cn';
             } else {
                 //read success
+                //init language
+                if (typeof settings.language != 'undefined'){
+                    if (settings.language != 'zh-cn'){
+                        $(document).ready(function(){
+                            applyLanguage(settings.language);
+                        });
+                    } else {
+                        $.getScript('static/i18n/zh-cn.js');
+                    }
+                    initLanguage(settings.language);
+                    current_i18n = settings.language;
+                }
                 //init themes
                 if (typeof settings.theme != 'undefined'){
                     initTheme(settings.theme);
@@ -267,6 +291,11 @@
                 $('#select-themes').val(theme);
             });
         }
+        function initLanguage(language){
+            $(document).ready(function(){
+                $('#select-language').val(language);
+            });
+        }
         function initLockScreen(status){
             switch(status){
                 case 'enabled':
@@ -331,7 +360,7 @@
 <body class="settings-body">
     <!-- titlebar -->
     <div class="container-titlebar col-lg-12 drag">
-        <div class="title" id="app-title">设置</div>
+        <div class="title" id="app-title" data-lang="settings">设置</div>
         <div id="electron-titlebar" class="titlebar drag" style="position: fixed !important;z-index: 10;"></div>
     </div>
     <script>
@@ -341,15 +370,15 @@
         <div class="settings-titles">
             <div class="settings-titles-block settings-titles-general settings-titles-clicked" data-target="settings-general">
                 <i class="fa fa-cog fa-fw settings-titles-icon" aria-hidden="true"></i>
-                <span class="settings-titles-span">通用</span>
+                <span class="settings-titles-span" data-lang="general">通用</span>
             </div>
             <div class="settings-titles-block settings-titles-notes" data-target="settings-notes">
                 <i class="fa fa-sticky-note-o fa-fw settings-titles-icon" aria-hidden="true"></i>
-                <span class="settings-titles-span">便签</span>
+                <span class="settings-titles-span" data-lang="note">便签</span>
             </div>
             <div class="settings-titles-block settings-titles-display" data-target="settings-display">
                 <i class="fa fa-paint-brush fa-fw settings-titles-icon" aria-hidden="true"></i>
-                <span class="settings-titles-span">显示</span>
+                <span class="settings-titles-span" data-lang="display">显示</span>
             </div>
         </div>
         <script>
@@ -375,13 +404,13 @@
         <div class="settings-sections settings-general">
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>启用自动更新</span>
+                    <span data-lang="enable_autoupdate">启用自动更新</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
                     <div class="abc-checkbox abc-checkbox-primary settings-control-checkbox">
                         <input type="checkbox" id="cb-autoUpdateEnabled" onclick="updateEnabledChanged(this);">
-                        <label for="cb-autoUpdateEnabled">
+                        <label for="cb-autoUpdateEnabled" data-lang="enable">
                             启用
                         </label>
                     </div>
@@ -398,7 +427,7 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>自动更新通道</span>
+                    <span data-lang="update_channel">自动更新通道</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
@@ -410,39 +439,40 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>主题</span>
+                    <span data-lang="theme">主题</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
                     <select class="form-control settings-select" id="select-themes">
-                        <option value="blackwhite">黑白（默认）</option>
-                        <option value="default">蓝白</option>
+                        <option value="blackwhite" data-lang="theme_blackwhite">黑白（默认）</option>
+                        <option value="default" data-lang="theme_bluewhite">蓝白</option>
                     </select>
                 </div>
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>语言</span>
+                    <span data-lang="language">语言</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select">
-                        <option>简体中文</option>
+                    <select class="form-control settings-select" id="select-language">
+                        <option value="zh-cn">简体中文</option>
+                        <option value="en-us">English</option>
                     </select>
                 </div>
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>锁屏</span>
+                    <span data-lang="lockscreen">锁屏</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control" id="settings-item-lockscreen-default">
                     <div style="display: flex;">
-                        <div class="br-col-10" id="settings-item-lockscreen-input">
+                        <div class="br-col-9" id="settings-item-lockscreen-input">
                             <input type="password" class="form-control" placeholder="(锁屏密码)" id="input-lockscreen-password">
                         </div>
-                        <div class="br-col-2" id="settings-item-lockscreen-default-enable">
-                            <button class="btn btn-primary brbtn-primary" id="btn-enableLockScreen" onclick="submitLockScreen();" style="width:54px;margin-left:7px;">启用</button>
+                        <div class="br-col-3" id="settings-item-lockscreen-default-enable">
+                            <button class="btn btn-primary brbtn-primary" id="btn-enableLockScreen" onclick="submitLockScreen();" style="width:85px;margin-left:7px;" data-lang="enable">启用</button>
                         </div>
                         <div id="settings-item-lockscreen-default-reset">
                             <div class="br-col-3" style="display:flex;">
@@ -474,18 +504,18 @@
                 <div class="settings-item-child settings-item-control" id="settings-item-lockscreen-enabled">
                     <div style="display:flex;">
                         <div style="flex: 0 0 30%">
-                            <button class="btn btn-danger brbtn-danger" id="btn-resetLockScreen" onclick="resetLockScreen();">重置密码</button>
+                            <button class="btn btn-danger brbtn-danger" id="btn-resetLockScreen" onclick="resetLockScreen();" data-lang="reset_password">重置密码</button>
                         </div>
                         <div style="flex: 0 0 3%"></div>
                         <div style="flex: 0 0 30%">
-                            <button class="btn btn-danger brbtn-danger" id="btn-disableLockScreen" onclick="disableLockScreen();">禁用</button>
+                            <button class="btn btn-danger brbtn-danger" id="btn-disableLockScreen" onclick="disableLockScreen();" data-lang="disable">禁用</button>
                         </div>
                         <div style="flex: 0 0 3%"></div>
                         <div style="flex: 0 0 34%">
                             <select class="form-control settings-select" id="select-locktype">
-                                <option value="manual">仅手动锁屏</option>
-                                <option value="minimize">最小化时</option>
-                                <option value="blur">失去焦点时</option>
+                                <option value="manual" data-lang="lockscreen_manual">仅手动锁屏</option>
+                                <option value="minimize" data-lang="lockscreen_minimize">最小化时</option>
+                                <option value="blur" data-lang="lockscreen_blur">失去焦点时</option>
                             </select>
                         </div>
                     </div>
@@ -558,18 +588,18 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>重置设置</span>
+                    <span data-lang="reset_settings">重置设置</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <button class="btn btn-danger brbtn-danger" id="btn-resetSettings" onclick="resetSettings();">重置</button>
+                    <button class="btn btn-danger brbtn-danger" id="btn-resetSettings" onclick="resetSettings();" data-lang="reset">重置</button>
                 </div>
             </div>
         </div>
         <div class="settings-sections settings-notes settings-sections-hidden">
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>当前便签序号：</span>
+                    <span data-lang="current_noteid">当前便签序号：</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
@@ -578,21 +608,21 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>重置便签</span>
+                    <span data-lang="reset_notes">重置便签</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <button class="btn btn-danger brbtn-danger" id="btn-resetNotes">重置</button>
+                    <button class="btn btn-danger brbtn-danger" id="btn-resetNotes" data-lang="reset">重置</button>
                 </div>
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>备份/恢复便签</span>
+                    <span data-lang="backup_recover_notes">备份/恢复便签</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <button class="btn btn-primary brbtn-primary" id="btn-backupNotes" onclick="backupNotes();" style="margin-bottom: 12px;">备份</button>
-                    <button class="btn btn-primary brbtn-primary" id="btn-importNotes" onclick="importNotes();">导入</button>
+                    <button class="btn btn-primary brbtn-primary" id="btn-backupNotes" onclick="backupNotes();" style="margin-bottom: 12px;" data-lang="backup">备份</button>
+                    <button class="btn btn-primary brbtn-primary" id="btn-importNotes" onclick="importNotes();" data-lang="import">导入</button>
                 </div>
             </div>
         </div>
@@ -954,21 +984,21 @@
         <div class="settings-sections settings-display settings-sections-hidden">
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>字体</span>
+                    <span data-lang="font">字体</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
                     <select class="form-control settings-select" id="select-fontfamily">
-                        <option style="font-family: Source Han Sans CN Arial !important;" value="Source Han Sans CN">思源黑体</option>
-                        <option style="font-family: Microsoft Yahei !important;" value="Microsoft Yahei">微软雅黑</option>
-                        <option style="font-family: DengXian !important;" value="DengXian">等线</option>
+                        <option style="font-family: Source Han Sans CN Arial !important;" value="Source Han Sans CN" data-lang="source_han_sans">思源黑体</option>
+                        <option style="font-family: Microsoft Yahei !important;" value="Microsoft Yahei" data-lang="microsoft_yahei">微软雅黑</option>
+                        <option style="font-family: DengXian !important;" value="DengXian" data-lang="dengxian">等线</option>
                         <option style="font-family: Arial !important;" value="Arial">Arial</option>
                     </select>
                 </div>
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>便签字号</span>
+                    <span data-lang="font_size">便签字号</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
@@ -985,19 +1015,19 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>内容对齐</span>
+                    <span data-lang="content_align">内容对齐</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
                     <select class="form-control settings-select" id="select-textalign">
-                        <option value="left">左对齐</option>
-                        <option value="justify">两端对齐</option>
+                        <option value="left" data-lang="align_left">左对齐</option>
+                        <option value="justify" data-lang="align_justify">两端对齐</option>
                     </select>
                 </div>
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>便签行高</span>
+                    <span data-lang="lineheight">便签行高</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
@@ -1012,7 +1042,7 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>便签字间距</span>
+                    <span data-lang="letter_spacing">便签字间距</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
@@ -1026,29 +1056,29 @@
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>日期显示</span>
+                    <span data-lang="date_display">日期显示</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
                     <select class="form-control settings-select" id="select-datedisplay">
-                        <option value="all">显示所有</option>
-                        <option value="createonly">仅显示创建日期</option>
-                        <option value="updateonly">仅显示更新日期</option>
-                        <option value="none">不显示</option>
+                        <option value="all" data-lang="display_all">显示所有</option>
+                        <option value="createonly" data-lang="display_createonly">仅显示创建日期</option>
+                        <option value="updateonly" data-lang="display_updateonly">仅显示更新日期</option>
+                        <option value="none" data-lang="display_noshow">不显示</option>
                     </select>
                 </div>
             </div>
             <div class="settings-item">
                 <div class="settings-item-child settings-item-title">
-                    <span>时间显示</span>
+                    <span data-lang="time_display">时间显示</span>
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
                     <select class="form-control settings-select" id="select-timedisplay">
-                        <option value="all">YYYY年MM月DD日 HH:mm:ss</option>
-                        <option value="noyear">MM月DD日 HH:mm:ss</option>
-                        <option value="notime">YYYY年MM月DD日</option>
-                        <option value="noyearandtime">MM月DD日</option>
+                        <option value="all" data-lang="time_all">YYYY年MM月DD日 HH:mm:ss</option>
+                        <option value="noyear" data-lang="time_noyear">MM月DD日 HH:mm:ss</option>
+                        <option value="notime" data-lang="time_notime">YYYY年MM月DD日</option>
+                        <option value="noyearandtime" data-lang="time_noyearandtime">MM月DD日</option>
                     </select>
                 </div>
             </div>
@@ -1056,8 +1086,8 @@
     </div>
 
     <div class="setting-buttons">
-        <button class="btn btn-danger brbtn-danger" onclick='window.close();'>取消</button>
-        <button class="btn btn-primary brbtn-primary" onclick="saveSettings();">保存</button>
+        <button class="btn btn-danger brbtn-danger" onclick='window.close();' data-lang="cancel">取消</button>
+        <button class="btn btn-primary brbtn-primary" onclick="saveSettings();" data-lang="save">保存</button>
     </div>
 
     <script>
@@ -1066,6 +1096,7 @@
             var autoUpdateStatus = document.getElementById('cb-autoUpdateEnabled').checked;
             var autoUpdateChannel = $('#select-updateChannel').val();
             var theme = $("#select-themes").val();
+            var language = $('#select-language').val();
 
             //获取显示设置
             var fontfamily = $('#select-fontfamily').val();
@@ -1081,6 +1112,7 @@
             settings.autoUpdateStatus = autoUpdateStatus;
             settings.autoUpdateChannel = autoUpdateChannel;
             settings.theme = theme;
+            settings.language = language;
             settings.fontfamily = fontfamily;
             settings.fontsize = fontsize;
             settings.textalign = textalign;

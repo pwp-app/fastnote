@@ -13,7 +13,7 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = true; //debug trigger
+global.indebug = false; //debug trigger
 global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
@@ -30,6 +30,7 @@ editWindow = require('./app/edit');
 recycleWindow = require('./app/recyclebin');
 settingsWindow = require('./app/settings');
 newnoteWindow = require('./app/newnote');
+decryptionWindow = require('./app/decryption');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -127,6 +128,10 @@ function createWindow() {
   ipc.on('openNewnoteWindow', (sender, data)=>{
     newnoteWindow.create(data);
   });
+  //open decryption window
+  ipc.on('openDecryptionWindow', (sender, data)=>{
+    decryptionWindow.show(data);
+  });
 
   ipc.on('reloadMainWindow', function (sender, data) {
     win.reload();
@@ -185,6 +190,10 @@ function createWindow() {
         newnoteWins[i].webContents.send('category-removed', data);
       }
     }
+  });
+
+  ipc.on('cancel-encryption', function(sender, data){
+    win.webContents.send('cancel-encryption',data);
   });
 
   //quit now

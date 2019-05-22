@@ -16,8 +16,27 @@
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
     <script src="static/encryption.js"></script>
+    <script src="static/i18n.js"></script>
     <script src="static/han.simple.js"></script>
     <script src="static/mousetrap.min.js"></script>
+    <script>
+        //i18n
+        var postprocess_i18n = [{
+            selector: '#input-title',
+            attr: 'placeholder',
+            key: 'placeholder_notitle'
+        }];
+        var postprocess_i18n_css = [{
+            selector: '.edit-item-control',
+            class: 'edit-item-control-en-us'
+        },{
+            selector: '.edit-item-control-half-left',
+            class: 'edit-item-control-half-left-en-us'
+        },{
+            selector: '.edit-item-control-half-right',
+            class: 'edit-item-control-half-right-en-us'
+        }];
+    </script>
     <script>
         //define const
         const remote = require('electron').remote;
@@ -73,10 +92,21 @@
                 $('#main-style').attr('href', 'static/main.blackwhite.css');
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
+                current_i18n = 'zh-cn';
 
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
+                if (typeof settings.language != 'undefined') {
+                    if (settings.language != 'zh-cn') {
+                        $(document).ready(function () {
+                            initLanguage();
+                        });
+                    } else {
+                        $.getScript('static/i18n/zh-cn.js');
+                    }
+                    current_i18n = settings.language;
+                }
                 if (typeof settings.theme != 'undefined') {
                     $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
                 } else {
@@ -111,6 +141,39 @@
                 }
             });
         }
+
+        function initLanguage() {
+            applyLanguage(settings.language, function () {
+                //初始化密码框
+                if (typeof passwordStatus != 'undefined') {
+                    if (passwordStatus == 'notset') {
+                        $('#input-password').attr('placeholder', i18n[current_i18n]['placeholder_notset']);
+                    } else if (passwordStatus == 'notchange') {
+                        $('#input-password').attr('placeholder', i18n[current_i18n]['placeholder_notchange']);
+                    }
+                }
+                //初始化header
+                if (typeof note.updatetime == 'undefined') {
+                    switch (current_i18n) {
+                        case 'zh-cn':
+                            $("#edit-header-time").append(i18n[current_i18n]['edit_createtime'] + note.time);
+                            break;
+                        default:
+                            $("#edit-header-time").append(i18n[current_i18n]['edit_createtime'] + note.time.replace(/年|月/g, '-').replace('日', ''));
+                            break;
+                    }
+                } else {
+                    switch (current_i18n) {
+                        case 'zh-cn':
+                            $("#edit-header-time").append(i18n[current_i18n]['edit_updatetime'] + note.updatetime);
+                            break;
+                        default:
+                            $("#edit-header-time").append(i18n[current_i18n]['edit_updatetime'] + note.updatetime.replace(/年|月/g, '-').replace('日', ''));
+                            break;
+                    }
+                }
+            });
+        }
     </script>
 </head>
 
@@ -121,7 +184,7 @@
     </script>
     <!-- titlebar -->
     <div class="container-titlebar col-lg-12 drag">
-        <div class="title edit-title" id="edit-title">编辑笔记</div>
+        <div class="title edit-title" id="edit-title" data-lang='editnote'>编辑便签</div>
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 999;"></div>
     </div>
     <script>
@@ -148,22 +211,22 @@
         </div>
         <div class="container-edit-info">
             <div class="edit-info-item">
-                <label>标题</label>
+                <label data-lang="title">标题</label>
                 <div class="edit-item-control">
                     <input class="form-control" id="input-title" maxlength="64" placeholder="(无标题)">
                 </div>
             </div>
             <div style="margin-top: 8px;">
                 <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
-                    <label>分类</label>
+                    <label data-lang="category">分类</label>
                     <div class="edit-item-control-half-left">
                         <select class="form-control" id="select-category">
-                            <option value="notalloc">未分类</option>
+                            <option value="notalloc" data-lang="notalloc">未分类</option>
                         </select>
                     </div>
                 </div>
                 <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
-                    <label>密码</label>
+                    <label data-lang="password">密码</label>
                     <div class="edit-item-control-half-right">
                         <input class="form-control" id="input-password" type="password">
                     </div>
@@ -187,8 +250,8 @@
     </div>
     <div class="container-footer">
         <div class="control-group">
-            <button class="br-btn btn-noback" id="edit-btn-save">保存</button>
-            <button class="br-btn btn-noback" id="edit-btn-cancel">取消</button>
+            <button class="br-btn btn-noback" id="edit-btn-save" data-lang="save">保存</button>
+            <button class="br-btn btn-noback" id="edit-btn-cancel" data-lang="cancel">取消</button>
         </div>
     </div>
     <script>
@@ -238,6 +301,15 @@
             }
         });
 
+        $("#input-password").keydown(function (e) {
+            var ctrlKey = e.ctrlKey || e.metaKey;
+            //ctrl+enter 或 ctrl+s
+            if ((ctrlKey && e.keyCode == 13) || (ctrlKey && e.keyCode == 83)) {
+                submitSave();
+            }
+        });
+
+
         function submitSave() {
             var text = $("#text-edit").val().trim();
             var title = $('#input-title').val().trim();
@@ -255,7 +327,7 @@
                     //修改分类
                     note.category = category;
                     //密码被修改或被设置
-                    if (password.length>0){
+                    if (password.length > 0) {
                         //更改相关内容
                         note.password = sha256(password, 'fastnote');
                         note.text = aes_encrypt(text, password);
@@ -268,9 +340,11 @@
                 window.close();
             } else {
                 //error
-                displayInfobar("error", "笔记内容不能为空");
+                displayInfobar("error", i18n[current_i18n]['note_content_cantbeempty']);
             }
         }
+
+        var passwordStatus;
 
         ipcRenderer.on('message', (event, {
             type,
@@ -278,13 +352,11 @@
         }) => {
             switch (type) {
                 case 'init':
-                    console.log(data);
                     note = data.note;
                     rawtext = data.rawtext;
-                    console.log(rawtext);
                     nowNoteId = note.id;
                     //初始化textarea
-                    if (typeof rawtext == "undefined"){
+                    if (typeof rawtext == "undefined") {
                         $("#text-edit").text(note.text);
                     } else {
                         $("#text-edit").text(rawtext);
@@ -292,12 +364,6 @@
                     //初始化title
                     $("#edit-title").append(" #" + note.id);
                     $("title").append(" - #" + note.id);
-                    //初始化header
-                    if (typeof note.updatetime == 'undefined') {
-                        $("#edit-header-time").append('创建时间：' + note.time);
-                    } else {
-                        $("#edit-header-time").append('最近一次编辑：' + note.updatetime);
-                    }
                     //初始化title
                     if (typeof note.title != 'undefined') {
                         if (note.title.length > 20) {
@@ -321,10 +387,10 @@
                         }
                     });
                     //初始化密码框
-                    if (typeof note.password == "undefined"){
-                        $('#input-password').attr('placeholder','(未设置)');
+                    if (typeof note.password == "undefined") {
+                        passwordStatus = 'notset';
                     } else {
-                        $('#input-password').attr('placeholder','(未更改)');
+                        passwordStatus = 'notchange';
                     }
                     break;
                 case 'note-recycled':
@@ -355,9 +421,9 @@
 
         function resizeContent() {
             //设置控件的宽度
-            $('.edit-item-control').css('width', $(window).width() - 70);
-            $('.edit-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 59);
-            $('.edit-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 41);
+            $('.edit-item-control').css('width', $(window).width() - 70 + (current_i18n == 'en-us'?2.5:0));
+            $('.edit-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 59 - (current_i18n == 'en-us'?24:0));
+            $('.edit-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 41  - (current_i18n == 'en-us'?27:0));
             //调整文本域大小
             var h_container = $(window).height() - $('.container-titlebar').height() - 48;
             $('.container-edit').css('height', h_container);

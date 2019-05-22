@@ -18,7 +18,30 @@
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
     <script src="static/encryption.js"></script>
+    <script src="static/i18n.js"></script>
     <script src="static/han.simple.js"></script>
+    <script>
+        //i18n
+        var postprocess_i18n = [{
+            selector: '#input-title',
+            attr: 'placeholder',
+            key: 'placeholder_notitle'
+        }, {
+            selector: '#input-password',
+            attr: 'placeholder',
+            key: 'placeholder_notsetpassword'
+        }];
+        var postprocess_i18n_css = [{
+            selector: '.newnotewin-item-control',
+            class: 'newnotewin-item-control-en-us'
+        },{
+            selector: '.newnotewin-item-control-half-left',
+            class: 'newnotewin-item-control-half-left-en-us'
+        },{
+            selector: '.newnotewin-item-control-half-right',
+            class: 'newnotewin-item-control-half-right-en-us'
+        }];
+    </script>
     <script>
         //define const
         const remote = require('electron').remote;
@@ -61,10 +84,21 @@
                 $('#main-style').attr('href', 'static/main.blackwhite.css');
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
+                current_i18n = 'zh-cn';
 
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
+                if (typeof settings.language != 'undefined'){
+                    if (settings.language != 'zh-cn'){
+                        $(document).ready(function(){
+                            applyLanguage(settings.language);
+                        });
+                    } else {
+                        $.getScript('static/i18n/zh-cn.js');
+                    }
+                    current_i18n = settings.language;
+                }
                 if (typeof settings.theme != 'undefined') {
                     $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
                 } else {
@@ -113,7 +147,7 @@
 
 <body class="newnote-body">
     <div class="container-titlebar col-lg-12 drag">
-        <div class="title" id="newnote-title">新建便签</div>
+        <div class="title" id="newnote-title" data-lang="newnote">新建便签</div>
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
     </div>
     <script>
@@ -130,26 +164,29 @@
         </div>
     </div>
     <script src="static/lockscreen.js"></script>
+    <!-- infobar -->
+    <div class="container-infobar">
+    </div>
     <!-- main -->
     <div class="container-newnotewin">
         <div class="container-newnotewin-info">
             <div class="edit-info-item">
-                <label>标题</label>
+                <label data-lang="title">标题</label>
                 <div class="newnotewin-item-control">
                     <input class="form-control" id="input-title" maxlength="64" placeholder="(无标题)">
                 </div>
             </div>
             <div style="margin-top: 8px;">
                 <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
-                    <label>分类</label>
+                    <label data-lang="category">分类</label>
                     <div class="newnotewin-item-control-half-left">
                         <select class="form-control" id="select-category">
-                            <option value="notalloc">未分类</option>
+                            <option value="notalloc" data-lang="notalloc">未分类</option>
                         </select>
                     </div>
                 </div>
                 <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
-                    <label>密码</label>
+                    <label data-lang="password">密码</label>
                     <div class="newnotewin-item-control-half-right">
                         <input class="form-control" id="input-password" type="password" placeholder="(未设置)">
                     </div>
@@ -179,7 +216,7 @@
             <textarea class="text-newnote" id="text-newnote"></textarea>
         </div>
         <div class="container-newnotewin-button">
-            <button class="br-btn btn-noback" id="newnote-btn-save" onclick="submitSave();">保存</button>
+            <button class="br-btn btn-noback" id="newnote-btn-save" onclick="submitSave();" data-lang="save">保存</button>
         </div>
         <script>
             $(window).resize(function () {
@@ -188,9 +225,9 @@
 
             function resizeContent() {
                 //设置控件的宽度
-                $('.newnotewin-item-control').css('width', $(window).width() - 76);
-                $('.newnotewin-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 62);
-                $('.newnotewin-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 44);
+                $('.newnotewin-item-control').css('width', $(window).width() - 76 + (current_i18n == 'en-us'?2.5:0));
+                $('.newnotewin-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 62 - (current_i18n == 'en-us'?24:0));
+                $('.newnotewin-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 44  - (current_i18n == 'en-us'?27:0));
                 //设置文本域的高度
                 var h_container = $(window).height() - $('.container-titlebar').height();
                 $('.container-newnotewin').css('height', h_container);
@@ -200,6 +237,22 @@
 
             //事件绑定
             $("#text-newnote").keydown(function (e) {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                //ctrl+enter 或 ctrl+s
+                if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
+                    submitSave();
+                }
+            });
+
+            $("#input-title").keydown(function (e) {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                //ctrl+enter 或 ctrl+s
+                if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
+                    submitSave();
+                }
+            });
+
+            $("#input-password").keydown(function (e) {
                 var ctrlKey = e.ctrlKey || e.metaKey;
                 //ctrl+enter 或 ctrl+s
                 if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
@@ -219,10 +272,14 @@
                 if (category == 'notalloc') {
                     category = undefined;
                 }
-                if (password.length < 1){
+                if (password.length < 1) {
                     password = undefined;
                 }
                 var text = $('#text-newnote').val();
+                if (text.length<1){
+                    displayInfobar('error',i18n[current_i18n]['note_content_cantbeempty']);
+                    return;
+                }
                 var note = {
                     title: title,
                     category: category,
