@@ -405,7 +405,7 @@
                             break;
                     }
                     //show infobar
-                    displayInfobar("success", "笔记内容已保存");
+                    displayInfobar("success", i18n[current_i18n]['note_saved']);
                 });
             }
 
@@ -896,7 +896,7 @@
                             function (result) {
                                 if (result != null && result != "" && typeof (result) != 'undefined') {
                                     try {
-                                        $('#update-title-span').text('检测到新版本：' + result.ver);
+                                        $('#update-title-span').text(i18n[current_i18n]['newversion_detected'] + result.ver);
                                         document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
                                         //选择性显示更新日志，不同版本显示不同内容
                                         var version_number = version.split('.').map(Number);    //获取现有的版本号
@@ -915,7 +915,8 @@
                                         }
                                         //check show full
                                         if (result.showfull) {
-                                            document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">详细更新日志</button>'
+                                            document.getElementsByClassName('update-contents-details')[0].innerHTML
+                                                += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">'+i18n[current_i18n]['detail_updatelog']+'</button>'
                                         }
                                         //强制更新
                                         if (typeof result.forceupdate != 'undefined' && result.forceupdate){
@@ -926,10 +927,10 @@
                                         $('.update-contents-loading').css('display', 'none');
                                     } catch (err) {
                                         console.error(err);
-                                        $('#update-loading-span').innerHTML = "更新日志加载失败";
+                                        $('#update-loading-span').innerHTML = i18n[current_i18n]['loading_updatelog_failed'];
                                     }
                                 } else {
-                                    $('#update-loading-span').innerHTML = "更新日志加载失败";
+                                    $('#update-loading-span').innerHTML = i18n[current_i18n]['loading_updatelog_failed'];
                                 }
                             }
                         );
@@ -937,8 +938,8 @@
                     break;
                 case 'downloadProgress':
                     document.getElementById('update-progress').value = data.percent;
-                    document.getElementById('infobar-update-text').innerText = "正在下载更新（" + data.percent.toFixed(
-                        1) + " %）......";
+                    document.getElementById('infobar-update-text').innerText = i18n[current_i18n]['update_downloading']+" (" + data.percent.toFixed(
+                        1) + " %)......";
                     break;
                 case 'update-downloaded':
                     console.log('update-downloaded');
@@ -946,9 +947,9 @@
                     $('#infobar_update').animateCss('fadeOutUp', function () {
                         $('#infobar_update').remove();
                     });
-                    displayInfobar('success', '更新下载完成，关闭程序后将自动安装', 5000);
+                    displayInfobar('success', i18n[current_i18n]['update_download_success'], 5000);
                     $('#statusbar').append(
-                        '<div class="statusbar-item" title="更新下载完毕，重启后安装"><i class="fa fa-arrow-circle-up"></i></div>'
+                        '<div class="statusbar-item" title="'+i18n[current_i18n]['statusbar_update_title']+'"><i class="fa fa-arrow-circle-up"></i></div>'
                     );
                 case 'error':
                     console.error(data);
@@ -964,7 +965,7 @@
         });
         $('#btn-update-confirm').on('click', function () {
             ipcRenderer.send('downloadNow');
-            displayInfobar('update', '正在下载更新……');
+            displayInfobar('update', i18n[current_i18n]['update_downloading']+'......');
             $('.container-updater').animateCss('fadeOut', function () {
                 $('.container-updater').removeAttr('style');
             });
@@ -1508,7 +1509,7 @@
                     notes[i].password = undefined;  //取消密码
                     notes[i].text = aes_decrypt(notes[i].text, rawpassword);
                     saveNoteByObj(notes[i]);    //保存
-                    displayInfobar('success','便签 #'+noteid+' 的加密已解除');
+                    displayInfobar('success',i18n[current_i18n]['note_unencrypted_#']+noteid+i18n[current_i18n]['note_unencrypted_right']);
                     rerenderTextOfNote(noteid, notes[i].text, true);
                     break;
                 }

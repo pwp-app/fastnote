@@ -301,6 +301,15 @@
             }
         });
 
+        $("#input-password").keydown(function (e) {
+            var ctrlKey = e.ctrlKey || e.metaKey;
+            //ctrl+enter 或 ctrl+s
+            if ((ctrlKey && e.keyCode == 13) || (ctrlKey && e.keyCode == 83)) {
+                submitSave();
+            }
+        });
+
+
         function submitSave() {
             var text = $("#text-edit").val().trim();
             var title = $('#input-title').val().trim();
@@ -331,7 +340,7 @@
                 window.close();
             } else {
                 //error
-                displayInfobar("error", "笔记内容不能为空");
+                displayInfobar("error", i18n[current_i18n]['note_content_cantbeempty']);
             }
         }
 

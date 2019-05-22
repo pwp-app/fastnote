@@ -22,7 +22,7 @@ function deleteNote(id, infoEnabled = true) {
                     if (err) {
                         //文件删除失败
                         if (infoEnabled) {
-                            displayInfobar('error', '文件删除失败');
+                            displayInfobar('error', i18n[current_i18n]['file_delete_error']);
                         }
                         readNoteFiles();
                         throw (err);
@@ -37,13 +37,13 @@ function deleteNote(id, infoEnabled = true) {
                             }
                         });
                         if (infoEnabled) {
-                            displayInfobar('success', '删除成功');
+                            displayInfobar('success', i18n[current_i18n]['delete_success']);
                         }
                     }
                 });
             } else {
                 if (infoEnabled) {
-                    displayInfobar('error', '找不到文件，无法删除');
+                    displayInfobar('error', i18n[current_i18n]['delete_error_cantfindfile']);
                 }
                 readNoteFiles();
             }
@@ -68,7 +68,7 @@ function deleteNoteByObj(note, infoEnabled = true) {
             if (err) {
                 //文件删除失败
                 if (infoEnabled) {
-                    displayInfobar('error', '文件删除失败');
+                    displayInfobar('error', i18n[current_i18n]['file_delete_error']);
                 }
                 readNoteFiles();
                 throw (err);
@@ -83,13 +83,13 @@ function deleteNoteByObj(note, infoEnabled = true) {
                     }
                 });
                 if (infoEnabled) {
-                    displayInfobar('success', '删除成功');
+                    displayInfobar('success', i18n[current_i18n]['delete_success']);
                 }
             }
         });
     } else {
         if (infoEnabled) {
-            displayInfobar('error', '找不到文件，无法删除');
+            displayInfobar('error', i18n[current_i18n]['delete_error_cantfindfile']);
         }
     }
 }
@@ -131,7 +131,7 @@ function restoreNote(id, infoEnabled = true) {
                 fs.rename(path, newpath, function (err) {
                     if (err) {
                         if (infoEnabled) {
-                            displayInfobar('error', '便签还原失败');
+                            displayInfobar('error', i18n[current_i18n]['restore_error']);
                         }
                         readNoteFiles();
                         throw (err);
@@ -145,14 +145,14 @@ function restoreNote(id, infoEnabled = true) {
                             }
                         });
                         if (infoEnabled) {
-                            displayInfobar('success', '还原成功');
+                            displayInfobar('success', i18n[current_i18n]['restore_success']);
                         }
                         ipcRenderer.send('restore-note', note);
                     }
                 })
             } else {
                 if (infoEnabled) {
-                    displayInfobar('error', '找不到文件，无法还原');
+                    displayInfobar('error', i18n[current_i18n]['restore_cantfindfile']);
                 }
                 readNoteFiles();
             }

@@ -155,7 +155,7 @@ function putToRecyclebin(id, infoEnabled = true) {
                 }
             } else {
                 if (infoEnabled) {
-                    displayInfobar('error', '找不到文件，无法移入回收站');
+                    displayInfobar('error', i18n[current_i18n]['recycle_cantfindfile']);
                 }
             }
             return false;
@@ -285,11 +285,11 @@ function saveNote(notetext, notetitle, notecategory, notepassword) {
     fs.writeFile(path, json, 'utf-8', function (err, data) {
         if (err) {
             console.error(err);
-            displayInfobar('error', '保存便签时出现错误');
+            displayInfobar('error', i18n[current_i18n]['save_error']);
             return;
         } else {
             textarea.val('');
-            displayInfobar('success', '成功保存便签');
+            displayInfobar('success', i18n[current_i18n]['save_success']);
         }
     });
     notesid++;
