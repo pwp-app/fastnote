@@ -97,6 +97,8 @@ gulp.task('pages', function(){
         .pipe(gulp.dest('public'));
 });
 gulp.task('assets', function(){
+    gulp.src('assets/icons/**/*')
+        .pipe(gulp.dest('public/static/icons'));
     return gulp.src('assets/images/**/*')
         .pipe(gulp.dest('public/static/images'));
 });
