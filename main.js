@@ -192,6 +192,18 @@ function createWindow() {
     }
   });
 
+  //always on top
+  ipc.on('main-window-alwaysontop', ()=>{
+    console.log(1);
+    if (win.isAlwaysOnTop()){
+      win.setAlwaysOnTop(false);
+      win.webContents.send('win-alwaysontop', false);
+    } else {
+      win.setAlwaysOnTop(true);
+      win.webContents.send('win-alwaysontop', true);
+    }
+  });
+
   ipc.on('cancel-encryption', function(sender, data){
     win.webContents.send('cancel-encryption',data);
   });

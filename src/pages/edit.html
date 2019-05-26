@@ -213,7 +213,26 @@
     <div class="container-edit">
         <div class="container-edit-header">
             <span id="edit-header-time"></span>
+            <div class="newnote-markdown edit-markdown">
+                <button class="br-btn btn-noback newnote-trigger" id="trigger-markdown">
+                    <svg t="1558625704373" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1534" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                        <path d="M85.333333 682.666667 85.333333 341.333333 170.666667 341.333333 298.666667 469.333333 426.666667 341.333333 512 341.333333 512 682.666667 426.666667 682.666667 426.666667 462.08 298.666667 590.08 170.666667 462.08 170.666667 682.666667 85.333333 682.666667M682.666667 341.333333 810.666667 341.333333 810.666667 512 917.333333 512 746.666667 704 576 512 682.666667 512 682.666667 341.333333Z" p-id="1535" fill="#ffffff"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
+        <script>
+            var markdown_enabled = false;
+            $('#trigger-markdown').click(function(){
+                if (markdown_enabled){
+                    markdown_enabled=false;
+                    $('#trigger-markdown').removeClass('edit-markdown-checked');
+                } else {
+                    markdown_enabled=true;
+                    $('#trigger-markdown').addClass('edit-markdown-checked');
+                }
+            });
+        </script>
         <div class="container-edit-info">
             <div class="edit-info-item">
                 <label data-lang="title">标题</label>

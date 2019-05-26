@@ -592,6 +592,19 @@
                 $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
                 return false;
             });
+
+            Mousetrap.bind('ctrl+t', function () {
+                ipcRenderer.send('main-window-alwaysontop');
+                return false;
+            });
+
+            ipcRenderer.on('win-alwaysontop', function(sender, data){
+                if (data){
+                    $('#statusbar-item-alwaysontop').css('display','inline-block');
+                } else {
+                    $('#statusbar-item-alwaysontop').css('display','none');
+                }
+            });
         </script>
     </div>
 
@@ -651,7 +664,7 @@
                 </div>
                 <div class="newnote-markdown">
                     <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-markdown">
-                        <svg t="1558625704373" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1534" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                        <svg t="1558625704373" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1534" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
                             <path d="M85.333333 682.666667 85.333333 341.333333 170.666667 341.333333 298.666667 469.333333 426.666667 341.333333 512 341.333333 512 682.666667 426.666667 682.666667 426.666667 462.08 298.666667 590.08 170.666667 462.08 170.666667 682.666667 85.333333 682.666667M682.666667 341.333333 810.666667 341.333333 810.666667 512 917.333333 512 746.666667 704 576 512 682.666667 512 682.666667 341.333333Z" p-id="1535" fill="#ffffff"></path>
                         </svg>
                     </button>
@@ -721,6 +734,7 @@
             </button>
         </div>
         <div class="bottom-bar-statusbar" id="statusbar">
+            <div class="statusbar-item" id="statusbar-item-alwaysontop"><i class="fa fa-caret-up"></i></div>
         </div>
     </div>
 

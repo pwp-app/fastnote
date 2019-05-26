@@ -34,10 +34,10 @@
         var postprocess_i18n_css = [{
             selector: '.newnotewin-item-control',
             class: 'newnotewin-item-control-en-us'
-        },{
+        }, {
             selector: '.newnotewin-item-control-half-left',
             class: 'newnotewin-item-control-half-left-en-us'
-        },{
+        }, {
             selector: '.newnotewin-item-control-half-right',
             class: 'newnotewin-item-control-half-right-en-us'
         }];
@@ -89,9 +89,9 @@
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
-                if (typeof settings.language != 'undefined'){
-                    if (settings.language != 'zh-cn'){
-                        $(document).ready(function(){
+                if (typeof settings.language != 'undefined') {
+                    if (settings.language != 'zh-cn') {
+                        $(document).ready(function () {
                             applyLanguage(settings.language);
                         });
                     } else {
@@ -215,6 +215,27 @@
         <div class="container-newnotewin-text">
             <textarea class="text-newnote" id="text-newnote"></textarea>
         </div>
+        <div class="newnote-markdown newnotewin-markdown">
+            <button class="br-btn btn-noback newnote-trigger" id="trigger-markdown">
+                <svg t="1558625704373" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1534" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                    <path d="M85.333333 682.666667 85.333333 341.333333 170.666667 341.333333 298.666667 469.333333 426.666667 341.333333 512 341.333333 512 682.666667 426.666667 682.666667 426.666667 462.08 298.666667 590.08 170.666667 462.08 170.666667 682.666667 85.333333 682.666667M682.666667 341.333333 810.666667 341.333333 810.666667 512 917.333333 512 746.666667 704 576 512 682.666667 512 682.666667 341.333333Z" p-id="1535" fill="#ffffff"></path>
+                </svg>
+            </button>
+        </div>
+        <script>
+            var markdown_enabled = false;
+            $('#trigger-markdown').click(function () {
+                if (markdown_enabled) {
+                    markdown_enabled = false;
+                    $('#trigger-markdown').removeClass('newnotewin-markdown-checked');
+                    $('#trigger-markdown').parent().removeClass('newnotewin-markdown-nobias');
+                } else {
+                    markdown_enabled = true;
+                    $('#trigger-markdown').addClass('newnotewin-markdown-checked');
+                    $('#trigger-markdown').parent().addClass('newnotewin-markdown-nobias');
+                }
+            });
+        </script>
         <div class="container-newnotewin-button">
             <button class="br-btn btn-noback" id="newnote-btn-save" onclick="submitSave();" data-lang="save">保存</button>
         </div>
@@ -225,9 +246,9 @@
 
             function resizeContent() {
                 //设置控件的宽度
-                $('.newnotewin-item-control').css('width', $(window).width() - 76 + (current_i18n == 'en-us'?2.5:0));
-                $('.newnotewin-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 62 - (current_i18n == 'en-us'?24:0));
-                $('.newnotewin-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 44  - (current_i18n == 'en-us'?27:0));
+                $('.newnotewin-item-control').css('width', $(window).width() - 76 + (current_i18n == 'en-us' ? 2.5 : 0));
+                $('.newnotewin-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 62 - (current_i18n == 'en-us' ? 24 : 0));
+                $('.newnotewin-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 44 - (current_i18n == 'en-us' ? 27 : 0));
                 //设置文本域的高度
                 var h_container = $(window).height() - $('.container-titlebar').height();
                 $('.container-newnotewin').css('height', h_container);
@@ -276,8 +297,8 @@
                     password = undefined;
                 }
                 var text = $('#text-newnote').val();
-                if (text.length<1){
-                    displayInfobar('error',i18n[current_i18n]['note_content_cantbeempty']);
+                if (text.length < 1) {
+                    displayInfobar('error', i18n[current_i18n]['note_content_cantbeempty']);
                     return;
                 }
                 var note = {
