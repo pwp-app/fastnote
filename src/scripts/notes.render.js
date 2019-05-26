@@ -11,6 +11,14 @@ var notes_selected = [];
 var notes_selected_withencrypted = [];
 
 var sort_mode = null;
+
+//markdown parser
+var mk_strong = /(\*\*)(.*)(\*\*)/gi;
+var mk_em = /(\*)(.*)(\*)/gi;
+var mk_link = /(\[)(.*)(\])(\()(.*)(\))/gi;
+var mk_hr = /(\\n\s*(-\s*){3,}\s*\\n)|(\\n\s*(\*\s*){3,}\s*\\n)|(\\n\s*(_\s*){3,}\s*\\n)/gi;
+
+
 //初始化排序模式
 storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
     if (err) {
@@ -377,7 +385,7 @@ function bindNoteTimeClick(id) {
         $('#note_' + id + ' .note-header .note-updatetime').css('display', 'none');
         $('#note_' + id + ' .note-header .note-createtime').css('display', 'initial');
     });
-    $('#note_' + id + ' .note-updatetime').off('click').on('click', function () {
+    $('#note_' + id + ' .note-createtime').off('click').on('click', function () {
         $('#note_' + id + ' .note-header .note-updatetime').css('display', 'initial');
         $('#note_' + id + ' .note-header .note-createtime').css('display', 'none');
     });
@@ -416,7 +424,7 @@ function bindNoteFoldDBL(id) {
 }
 
 //添加笔记至Array
-function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop) {
+function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop, markdown) {
     var note = {
         id: id,
         time: time,
@@ -429,7 +437,8 @@ function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, cat
         text: text,
         offset: offset,
         timezone: timezone,
-        forceTop: forceTop
+        forceTop: forceTop,
+        markdown: markdown
     };
     notes.push(note);
     //分类计数
