@@ -571,6 +571,12 @@
                             $('.toast-multiselected').removeClass('toast-active');
                         });
                     }
+                    //搜索框内没有输入内容时点击列表自动关闭
+                    if (searchOpened){
+                        if ($('#input-search').val().length < 1){
+                            closeSearchToast();
+                        }
+                    }
                 });
             });
 
@@ -1548,6 +1554,12 @@
                 }
             }
         }
+    </script>
+
+    <script>
+        $(document).ready(function(){
+            $('#note-text').focus();
+        });
     </script>
 
     <script>
