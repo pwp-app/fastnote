@@ -756,6 +756,7 @@ function relockNote(noteid) {
         $('#note_password_' + noteid).parent().animateCss('fadeIn morefaster');
         $('#note_' + noteid + ' .note-content .note-text').remove();
         $('#note_' + noteid + ' .note-content').removeAttr('style');
+        $('#note_' + noteid + ' .note-content').removeClass('note-overheight');
         //隐藏relock按钮
         $('#note_' + noteid + ' .note-header .note-password-relock').animateCss('fadeOut morefaster', function () {
             $('#note_' + noteid + ' .note-header .note-password-relock').removeAttr('style');
