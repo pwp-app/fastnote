@@ -3,7 +3,18 @@ let fs = require('fs');
 var storagePath = app.getPath('userData');
 
 //execute
-readNoteFiles();
+if (typeof settings == "undefined"){
+    storage.get('settings', function (err, data) {
+        if (err) {
+          //获取callback回传的json
+          console.error(err);
+        }
+        settings = data;
+        readNoteFiles();
+    });
+} else {
+    readNoteFiles();
+}
 
 //删除note
 function deleteNote(id, infoEnabled = true) {

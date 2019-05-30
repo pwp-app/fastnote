@@ -16,7 +16,7 @@ var sort_mode = null;
 var mk_strong = /(\*\*)(.*)(\*\*)/gi;
 var mk_em = /(\*)(.*)(\*)/gi;
 var mk_link = /(\[)(.*)(\])(\()(.*)(\))/gi;
-var mk_hr = /(\\n\s*(-\s*){3,}\s*\\n)|(\\n\s*(\*\s*){3,}\s*\\n)|(\\n\s*(_\s*){3,}\s*\\n)/gi;
+var mk_hr = /(\s*(-\s*){3,}\s*)|(\s*(\*\s*){3,}\s*)|(\s*(_\s*){3,}\s*)/gi;
 
 
 //初始化排序模式
@@ -56,10 +56,10 @@ function clearNoteList() {
 }
 
 //定义url过滤正则
-var reg_url = /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
+var reg_url = /(?!(href="))(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
 
 //渲染一条笔记
-function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop) {
+function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown) {
     if (typeof settings.language == 'undefined'){
         current_i18n = 'zh-cn';
     } else {
@@ -97,22 +97,39 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
     if (typeof password == 'undefined') {
-        html += '</div><div class="note-content"><p class="note-text">';
+        html += '</div><div class="note-content"><div class="note-text"><p>';
         //process html tag
         temp = text.split('\n');
         let final_text = "";
         for (var i = 0; i < temp.length; i++) {
             s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+            let output_br = true;
+            if (typeof markdown != "undefined" && markdown){
+                //开启了markdown
+                s = s.replace(mk_strong, '<strong>$2</strong>');
+                s = s.replace(mk_em, '<em>$2</em>');
+                s = s.replace(mk_link, '<a href="$5">$2</a>');
+                if (mk_hr.test(s)){
+                    s = '</p><hr><p>';
+                    output_br = false;
+                }
+            }
             final_text += s;
-            final_text += "<br>";
+            if (output_br){
+                final_text += "<br>";
+            }
         }
         text = final_text;
         text = insert_spacing(text, 0.15);
         //自动识别网页
-        html += text.replace(reg_url, function (result) {
-            return '<a href="' + result + '">' + result + '</a>';
-        });
-        html += '</p></div></div></div>';
+        if (!markdown){
+            html += text.replace(reg_url, function (result) {
+                return '<a href="' + result + '">' + result + '</a>';
+            });
+        } else {
+            html += text;
+        }
+        html += '</p></div></div></div></div>';
     } else {
         //再锁定按钮
         html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + id + ')"></i>';
@@ -184,22 +201,39 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
         html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
     if (typeof password == 'undefined') {
-        html += '</div><div class="note-content"><p class="note-text">';
+        html += '</div><div class="note-content"><div class="note-text"><p>';
+        //process html tag
         temp = text.split('\n');
         let final_text = "";
         for (var i = 0; i < temp.length; i++) {
             s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+            let output_br = true;
+            if (typeof markdown != "undefined" && markdown){
+                //开启了markdown
+                s = s.replace(mk_strong, '<strong>$2</strong>');
+                s = s.replace(mk_em, '<em>$2</em>');
+                s = s.replace(mk_link, '<a href="$5">$2</a>');
+                if (mk_hr.test(s)){
+                    s = '</p><hr><p>';
+                    output_br = false;
+                }
+            }
             final_text += s;
-            final_text += "<br>";
+            if (output_br){
+                final_text += "<br>";
+            }
         }
         text = final_text;
-
         text = insert_spacing(text, 0.15);
         //自动识别网页
-        html += text.replace(reg_url, function (result) {
-            return '<a href="' + result + '">' + result + '</a>';
-        });
-        html += '</p></div></div></div>';
+        if (!markdown){
+            html += text.replace(reg_url, function (result) {
+                return '<a href="' + result + '">' + result + '</a>';
+            });
+        } else {
+            html += text;
+        }
+        html += '</p></div></div></div></div>';
     } else {
         //再锁定按钮
         html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + id + ')"></i>';
@@ -447,7 +481,7 @@ function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, cat
     }
 }
 
-function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop) {
+function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop, markdown) {
     var note = {
         id: id,
         time: time,
@@ -460,7 +494,8 @@ function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, ti
         password: password,
         offset: offset,
         timezone: timezone,
-        forceTop: forceTop
+        forceTop: forceTop,
+        markdown: markdown
     };
     notes.push(note);
 }
@@ -489,7 +524,7 @@ function refreshNoteList(callback) {
             }
             sortNotes(sort_mode); //排序
             for (var i = 0; i < notes.length; i++) {
-                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop);
+                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop,notes[i].markdown);
             }
             //绑定Note的点击事件
             bindNoteClickEvent();
@@ -504,7 +539,7 @@ function refreshNoteList(callback) {
     } else {
         sortNotes(sort_mode); //排序
         for (var i = 0; i < notes.length; i++) {
-            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop);
+            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop, notes[i].markdown);
         }
         //绑定Note的点击事件
         bindNoteClickEvent();

@@ -14,7 +14,6 @@ Mousetrap.bind('ctrl+f', function () {
 $(document).ready(function(){
     $('#note-text').keydown(function (e) {
         var ctrlKey = e.ctrlKey || e.metaKey;
-        console.log(1);
         if (ctrlKey && e.keyCode == 70) {
             if (searchOpened){
                 $('#input-search').focus();

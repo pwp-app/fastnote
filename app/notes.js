@@ -39,7 +39,19 @@ storage.get('notesid' + (global.indebug ? '_dev' : ''), function (error, data) {
     }
 });
 
-readNoteFiles();
+//execute
+if (typeof settings == "undefined"){
+    storage.get('settings', function (err, data) {
+        if (err) {
+          //获取callback回传的json
+          console.error(err);
+        }
+        settings = data;
+        readNoteFiles();
+    });
+} else {
+    readNoteFiles();
+}
 
 //绑定textarea的事件
 
@@ -279,7 +291,8 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
         category: (typeof notecategory == 'undefined' ? undefined : notecategory.length > 0 ? notecategory : undefined),
         password: notepassword,
         offset: offset,
-        forceTop: false
+        forceTop: false,
+        markdown: markdown
     };
     var json = JSON.stringify(note);
     fs.writeFile(path, json, 'utf-8', function (err, data) {
@@ -303,7 +316,7 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
     //分类的empty隐藏
     $('#note-empty-category').hide();
     //在顶部渲染Note
-    renderNoteAtTop(note.id, note.rawtime, note.updaterawtime, note.title, note.category, note.password, note.text, note.forceTop);
+    renderNoteAtTop(note.id, note.rawtime, note.updaterawtime, note.title, note.category, note.password, note.text, note.forceTop, note.markdown);
     //绑定Note的点击事件
     bindNoteClickEvent();
 }
