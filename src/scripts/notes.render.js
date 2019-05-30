@@ -66,7 +66,7 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         current_i18n = settings.language;
     }
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '"><div class="note-header"><span class="note-no">';
+        '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '" data-markdown="'+ (typeof markdown == 'undefined'?'false':markdown)+'"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
     //渲染note-title
     var titletext = "";
@@ -169,7 +169,7 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
 function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, text, forceTop) {
     //构造html
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '"><div class="note-header"><span class="note-no">';
+        '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '" data-markdown="'+ (typeof markdown == 'undefined'?'false':markdown)+'"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
     //渲染note-title
     var titletext = "";
@@ -296,6 +296,14 @@ async function rerenderEditedNote(data, rawtext) {
         }
     }
 
+    //处理markdown
+    if (typeof data.markdown != 'undefined'){
+        $('#note_'+data.id).attr('data-markdown',data.markdown);
+    } else {
+        $('#note_'+data.id).attr('data-markdown','false');
+    }
+
+    //处理密码的更改
     if (typeof data.password != "undefined") {
         resetEditedNoteText(data, rawtext);
         //便签设置了密码，判断便签之前是否有密码
@@ -403,13 +411,30 @@ function resetEditedNoteText(data, t) {
     text = "";
     for (var i = 0; i < temp.length; i++) {
         s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+        let output_br = true;
+        if (typeof data.markdown != 'undefined' && data.markdown){
+            s = s.replace(mk_strong, '<strong>$2</strong>');
+            s = s.replace(mk_em, '<em>$2</em>');
+            s = s.replace(mk_link, '<a href="$5">$2</a>');
+            if (mk_hr.test(s)){
+                s = '</p><hr><p>';
+                 output_br = false;
+            }
+        }
         text += s;
-        text += "<br>";
+        if (output_br){
+            text += "<br>";
+        }
     }
     let final_text = insert_spacing(text, 0.12);
-    var html = final_text.replace(reg_url, function (result) {
-        return '<a href="' + result + '">' + result + '</a>';
-    });
+    var html;
+    if (typeof data.markdown == 'undefined' || !data.markdown){
+        html = final_text.replace(reg_url, function (result) {
+            return '<a href="' + result + '">' + result + '</a>';
+        });
+    } else {
+        html = final_text;
+    }
     //reset note content on page
     $("#note_" + data.id + " .note-content p").html(html);
 }
@@ -695,22 +720,37 @@ function checkNotePassword(e, noteid) {
             //生成解密文本
             var text = $('#note_password_' + noteid).parent().attr('data-encrypted');
             var decrypted_text = aes_decrypt(text, input_pwd);
-
+            let markdown = $('#note_'+noteid).attr('data-markdown');
             //生成html
-            var html = '<p class="note-text" style="display:none;">';
+            var html = '<div class="note-text" style="display:none;"><p>';
             temp = decrypted_text.split('\n');
             let final_text = "";
             for (var i = 0; i < temp.length; i++) {
                 s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+                let output_br = true;
+                if (markdown == 'true'){
+                    //开启了markdown
+                    s = s.replace(mk_strong, '<strong>$2</strong>');
+                    s = s.replace(mk_em, '<em>$2</em>');
+                    s = s.replace(mk_link, '<a href="$5">$2</a>');
+                    if (mk_hr.test(s)){
+                        s = '</p><hr><p>';
+                        output_br = false;
+                    }
+                }
                 final_text += s;
-                final_text += "<br>";
+                if (output_br){
+                    final_text += "<br>";
+                }
             }
             final_text = insert_spacing(final_text, 0.15);
             //自动识别网页
-            html += final_text.replace(reg_url, function (result) {
-                return '<a href="' + result + '">' + result + '</a>';
-            });
-            html += '</p>';
+            if (markdown == 'false'){
+                html += final_text.replace(reg_url, function (result) {
+                    return '<a href="' + result + '">' + result + '</a>';
+                });
+            }
+            html += '</p></div>';
 
             //渲染
             $('#note_' + noteid + ' .note-content').append(html);
@@ -767,20 +807,38 @@ function relockNote(noteid) {
 //对便签文本进行再渲染
 async function rerenderTextOfNote(noteid, text, animate=false){
     $('#note_'+noteid+' .note-content').html('');   //先清空note-content的内容
-    let html = '<p class="note-text">';
+    //获取markdown设置
+    let markdown = $('#note_'+noteid).attr('markdown');
+
+    let html = '<div class="note-text"><p>';
     temp = text.split('\n');
     let final_text = "";
     for (var i = 0; i < temp.length; i++) {
+        let output_br = true;
         s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+        if (markdown == 'true'){
+            //开启了markdown
+            s = s.replace(mk_strong, '<strong>$2</strong>');
+            s = s.replace(mk_em, '<em>$2</em>');
+            s = s.replace(mk_link, '<a href="$5">$2</a>');
+            if (mk_hr.test(s)){
+                s = '</p><hr><p>';
+                output_br = false;
+            }
+        }
         final_text += s;
-        final_text += "<br>";
+        if (output_br){
+            final_text += "<br>";
+        }
     }
     final_text = insert_spacing(final_text, 0.15);
     //自动识别网页
-    html += final_text.replace(reg_url, function (result) {
-        return '<a href="' + result + '">' + result + '</a>';
-    });
-    html += '</p>';
+    if (markdown == 'false'){
+        html += final_text.replace(reg_url, function (result) {
+            return '<a href="' + result + '">' + result + '</a>';
+        });
+    }
+    html += '</p></div>';
 
     //渲染
     $('#note_' + noteid + ' .note-content').append(html);
