@@ -1330,11 +1330,11 @@
             var name = $(this).parent().parent().attr('data-name');
             dialog.showMessageBox({
                 type: "warning",
-                buttons: ['取消', '删除', '删除分类并删除该分类下的便签'],
+                buttons: [i18n[current_i18n]['button_cancel'], i18n[current_i18n]['button_delete'], i18n['cuurent_i18n']['delete_category_and_note']],
                 defaultId: 0,
-                title: '确认操作',
-                message: '确定要删除分类"' + name + '"吗？该操作将不可撤回。',
-                detail: '仅删除分类不影响便签，便签会被放入未分类中。'
+                title: i18n[current_i18n]['confirm_operation'],
+                message: i18n[current_i18n]['confirm_delete_category_left'] + name + i18n[current_i18n]['confirm_delete_category_right'],
+                detail: i18n[current_i18n]['delete_category_and_note_detail']
             }, function (res) {
                 if (res != 0) {
                     //确定删除
@@ -1486,16 +1486,16 @@
             //检测是否存在冲突的便签
             if (conflictNotes.length > 0) {
                 //构造细节
-                var detail = "存在冲突的便签：\n";
+                var detail = i18n[current_i18n]['note_conflict_detail'];
                 conflictNotes.forEach(note => {
-                    detail += "ID: " + note.id + "，内容: " + (note.text.length > 20 ? note.text.substring(
+                    detail += "ID: " + note.id + i18n[current_i18n]['note_conflict_detail_content'] + (note.text.length > 20 ? note.text.substring(
                         0, 20) + "..." : note.text) + "\n";
                 });
                 dialog.showMessageBox({
-                    title: '便签冲突',
-                    message: '恢复备份中的一些便签在ID上和现有便签产生冲突\n便签的ID应是唯一的，否则程序将出现错误。\n请处理冲突',
+                    title: i18n[current_i18n]['notes_conflict'],
+                    message: i18n[current_i18n]['notes_conflict_message'],
                     detail: detail,
-                    buttons: ['处理冲突', '删除']
+                    buttons: [i18n[current_i18n]['button_dealwithconflict'], i18n[current_i18n]['button_delete']]
                 }, function (res) {
                     if (res == 0) {
                         //处理冲突
@@ -1510,9 +1510,9 @@
                     } else if (res == 1) {
                         dialog.showMessageBox({
                             type: 'warning',
-                            message: '你确定要自动删除存在冲突的便签吗？',
+                            message: i18n[current_i18n]['delete_conflict_notes'],
                             detail: detail,
-                            buttons: ['确定', '取消']
+                            buttons: [i18n[current_i18n]['button_yes'], i18n[current_i18n]['button_no']]
                         }, function (res) {
                             if (res == 0) {
                                 conflictNotes.forEach(note => {
