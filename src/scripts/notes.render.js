@@ -321,18 +321,6 @@ async function rerenderEditedNote(data, rawtext) {
         resetEditedNoteText(data, data.text);
     }
 
-    //移除overheight标签获取便签编辑后的内容实际高度
-    let flag_overheight;
-    if ($('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
-        flag_overheight = true;
-        $('#note_' + data.id + ' .note-content').removeClass('note-overheight');
-        $('#note_' + data.id + ' .note-content').removeAttr('style');
-    }
-    var after_height = $('#note_' + data.id + ' .note-content').height();
-    //还原被移除的overheight标签
-    if (flag_overheight) {
-        $('#note_' + data.id + ' .note-content').addClass('note-overheight');
-    }
     //reset content of updatetime
     var timeContent = '<p class="note-time note-updatetime han-element">' + i18n['render'][current_i18n]['updatetime']
         data.updatetime + '</p>' + '<p class="note-time han-element">'+ i18n['render'][current_i18n]['createtime'] + data.time + '</p>';
@@ -346,8 +334,7 @@ async function rerenderEditedNote(data, rawtext) {
         ipcRenderer.send('openExternalURL', $(this).attr('href'));
         e.preventDefault();
     });
-    //timeevent rebind
-    bindNoteTimeClick(data.id);
+
     //处理标题
     if (typeof data.title != 'undefined') {
         var titletext = "";
@@ -372,38 +359,45 @@ async function rerenderEditedNote(data, rawtext) {
         }
         $('#note_' + data.id + ' .note-header .note-title').html(titletext);
     }
-    var origin_height = $('#note_' + data.id + ' .note-content').height(); //get origin height
-    var tag_class = $('#note_' + data.id + ' .note-content').attr('class');
-    //fix note status
-    if (after_height > 250) {
-        if (origin_height <= 250) {
-            if (!$('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
-                bindNoteFoldDBL(data.id);
-                $('#note_' + data.id + ' .note-content').css('height', origin_height);
-                $('#note_' + data.id + ' .note-content').animate({
-                    height: "250px"
-                });
-            }
-        } else {
-            //already expanded
-            $('#note_' + data.id + ' .note-content').css('height', origin_height);
-            $('#note_' + data.id + ' .note-content').animate({
-                height: after_height
-            });
-        }
+
+    //获取便签编辑后的内容高度
+    var edited_content_height = $('#note_'+data.id+' .note-content .note-text').height();
+    if (edited_content_height <= 250){  //与.note-content高度相等
+        //编辑后的内容不超高
+        $('#note_'+data.id + ' .note-content').removeClass('note-overheight');
+        $('#note_'+data.id + ' .note-content').removeAttr('style');
+        $('#note_'+data.id).removeAttr('data-expanded');
+        //取消dblclick
+        $('#note_'+data.id + ' .note-content').off('dblclick');
     } else {
-        $('#note_' + data.id + ' .note-content').css('height', origin_height);
-        $('#note_' + data.id + ' .note-content').animate({
-            height: after_height
-        });
-        $('#note_' + data.id + ' .note-content').dblclick = function () {}; //unbind event
-        $('#note_' + data.id + ' .note-content').unbind('dblclick');
+        //编辑后的内容超高
+        //判断原先内容是否超高
+        let expanded = $('#note_'+data.id).attr('data-expanded');
+        if (typeof expanded != "undefined"){
+            //原先内容超高
+            if (expanded == "true"){  //原先内容超高、已展开
+                $('#note_'+data.id + ' .note-content').height();
+            }
+            //超高未展开 -> do nothing
+        } else {
+            //没有expanded属性有两种可能 第一是便签本身不超高 第二是超高未展开
+            if (!$('#note_'+data.id+' .note-content').hasClass('note-overheight')){
+                //不存在note-overheight属性是不超高，重新绑定dblclick
+                bindNoteFoldDBL(data.id);
+            }
+        }
     }
+
     //处理分类
     var category_name = $('#note_' + data.id).attr('data-category');
     minorCategoryCount(category_name, true, true);
     addCategoryCount(data.category, true, true);
     $('#note_' + data.id).attr('data-category', data.category);
+
+    //timeevent rebind
+    setTimeout(function(){
+        bindNoteTimeClick(data.id);
+    },0);
 }
 
 function resetEditedNoteText(data, t) {
@@ -427,16 +421,17 @@ function resetEditedNoteText(data, t) {
         }
     }
     let final_text = insert_spacing(text, 0.12);
-    var html;
+    var html = '<div class="note-text"><p>';
     if (typeof data.markdown == 'undefined' || !data.markdown){
-        html = final_text.replace(reg_url, function (result) {
+        html += final_text.replace(reg_url, function (result) {
             return '<a href="' + result + '">' + result + '</a>';
         });
     } else {
-        html = final_text;
+        html += final_text;
     }
+    html += '</p></div>';
     //reset note content on page
-    $("#note_" + data.id + " .note-content p").html(html);
+    $("#note_" + data.id + " .note-content").html(html);
 }
 
 function bindNoteTimeClick(id) {
@@ -454,13 +449,15 @@ function bindNoteTimeClick(id) {
 function bindNoteFoldDBL(id) {
     if ($('#note_' + id + ' .note-content').height() > 250) {
         $('#note_' + id + ' .note-content').addClass("note-overheight"); //process css
-        $('#note_' + id + ' .note-content').dblclick(function (e) {
+        $('#note_' + id + ' .note-content').off('dblclick').on('dblclick',function (e) {
             //process double click
             if ($('#note_' + id + ' .note-content').height() > 250) {
                 $('#note_' + id + ' .note-content').animate({
                     height: "250px"
                 });
                 $('#note_' + id + ' .note-content').addClass("note-overheight");
+                //标识便签是否展开
+                $('#note_' + id).attr('data-expanded','false');
             } else {
                 $('#note_' + id + ' .note-content').css('height', 'auto');
                 var animate_height = $('#note_' + id + ' .note-content').height();
@@ -469,11 +466,13 @@ function bindNoteFoldDBL(id) {
                     height: animate_height
                 });
                 $('#note_' + id + ' .note-content').removeClass("note-overheight");
+                //标识便签是否展开
+                $('#note_' + id).attr('data-expanded','true');
             }
         });
         //在双击折叠/展开时不选中文本
-        $('#note_' + id + ' .note-content p').mousedown(function (e) {
-            if (e.detail > 1) {
+        $('#note_' + id + ' .note-content .note-text').mousedown(function (e) {
+            if (e.detail > 0) {
                 e.preventDefault();
             }
         });
@@ -749,6 +748,8 @@ function checkNotePassword(e, noteid) {
                 html += final_text.replace(reg_url, function (result) {
                     return '<a href="' + result + '">' + result + '</a>';
                 });
+            } else {
+                html += final_text;
             }
             html += '</p></div>';
 
@@ -837,6 +838,8 @@ async function rerenderTextOfNote(noteid, text, animate=false){
         html += final_text.replace(reg_url, function (result) {
             return '<a href="' + result + '">' + result + '</a>';
         });
+    } else {
+        html += final_text;
     }
     html += '</p></div>';
 

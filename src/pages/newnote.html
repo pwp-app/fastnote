@@ -304,7 +304,8 @@
                     title: title,
                     category: category,
                     text: text,
-                    password: password
+                    password: password,
+                    markdown: markdown_enabled
                 };
                 ipcRenderer.send('newnotewin-save', note);
                 //关闭窗口

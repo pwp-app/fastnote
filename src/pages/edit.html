@@ -223,6 +223,7 @@
         <script>
             var markdown_enabled = false;
             $('#trigger-markdown').click(function(){
+                text_edited = true;
                 if (markdown_enabled){
                     markdown_enabled=false;
                     $('#trigger-markdown').removeClass('edit-markdown-checked');
@@ -332,7 +333,6 @@
             }
         });
 
-
         function submitSave() {
             var text = $("#text-edit").val().trim();
             var title = $('#input-title').val().trim();
@@ -355,6 +355,8 @@
                         note.password = sha256(password, 'fastnote');
                         note.text = aes_encrypt(text, password);
                     }
+                    //markdown相关
+                    note.markdown = markdown_enabled;
                     ipcRenderer.send('update-edit-note', {
                         note: note,
                         rawtext: text
@@ -414,6 +416,16 @@
                         passwordStatus = 'notset';
                     } else {
                         passwordStatus = 'notchange';
+                    }
+                    //初始化markdown
+                    if (typeof note.markdown == "undefined"){
+                        markdown_enabled = false;
+                    } else {
+                        markdown_enabled = note.markdown;
+                        if (markdown_enabled){
+                            //如果便签启用了markdown，则按钮初始处于按下状态
+                            $('#trigger-markdown').addClass('edit-markdown-checked');
+                        }
                     }
                     break;
                 case 'note-recycled':
