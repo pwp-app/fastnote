@@ -9,7 +9,6 @@
     <!--import requirements-->
     <script>
         window.$ = window.jQuery = require('./static/jquery.min.js');
-        require('./static/bootstrap.min.js');
     </script>
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
     <link rel="stylesheet" href="static/font-awesome.min.css">
@@ -29,10 +28,10 @@
         var postprocess_i18n_css = [{
             selector: '.edit-item-control',
             class: 'edit-item-control-en-us'
-        },{
+        }, {
             selector: '.edit-item-control-half-left',
             class: 'edit-item-control-half-left-en-us'
-        },{
+        }, {
             selector: '.edit-item-control-half-right',
             class: 'edit-item-control-half-right-en-us'
         }];
@@ -103,7 +102,10 @@
                             initLanguage();
                         });
                     } else {
-                        $.getScript('static/i18n/zh-cn.js');
+                        current_i18n = 'zh-cn';
+                        $.getScript('static/i18n/zh-cn.js', function(){
+                            postElementsInit();
+                        });
                     }
                     current_i18n = settings.language;
                 }
@@ -143,7 +145,10 @@
         }
 
         function initLanguage() {
-            applyLanguage(settings.language, function () {
+            applyLanguage(settings.language, postElementsInit);
+        }
+
+         function postElementsInit() {
                 //初始化密码框
                 if (typeof passwordStatus != 'undefined') {
                     if (passwordStatus == 'notset') {
@@ -156,24 +161,23 @@
                 if (typeof note.updatetime == 'undefined') {
                     switch (current_i18n) {
                         case 'zh-cn':
-                            $("#edit-header-time").append(i18n[current_i18n]['edit_createtime'] + note.time);
+                            $("#edit-header-time").html(i18n[current_i18n]['edit_createtime'] + note.time);
                             break;
                         default:
-                            $("#edit-header-time").append(i18n[current_i18n]['edit_createtime'] + note.time.replace(/年|月/g, '-').replace('日', ''));
+                            $("#edit-header-time").html(i18n[current_i18n]['edit_createtime'] + note.time.replace(/年|月/g, '-').replace('日', ''));
                             break;
                     }
                 } else {
                     switch (current_i18n) {
                         case 'zh-cn':
-                            $("#edit-header-time").append(i18n[current_i18n]['edit_updatetime'] + note.updatetime);
+                            $("#edit-header-time").html(i18n[current_i18n]['edit_updatetime'] + note.updatetime);
                             break;
                         default:
-                            $("#edit-header-time").append(i18n[current_i18n]['edit_updatetime'] + note.updatetime.replace(/年|月/g, '-').replace('日', ''));
+                            $("#edit-header-time").html(i18n[current_i18n]['edit_updatetime'] + note.updatetime.replace(/年|月/g, '-').replace('日', ''));
                             break;
                     }
                 }
-            });
-        }
+            }
     </script>
 </head>
 
@@ -208,7 +212,27 @@
     <div class="container-edit">
         <div class="container-edit-header">
             <span id="edit-header-time"></span>
+            <div class="newnote-markdown edit-markdown">
+                <button class="br-btn btn-noback newnote-trigger" id="trigger-markdown">
+                    <svg t="1558625704373" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1534" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                        <path d="M85.333333 682.666667 85.333333 341.333333 170.666667 341.333333 298.666667 469.333333 426.666667 341.333333 512 341.333333 512 682.666667 426.666667 682.666667 426.666667 462.08 298.666667 590.08 170.666667 462.08 170.666667 682.666667 85.333333 682.666667M682.666667 341.333333 810.666667 341.333333 810.666667 512 917.333333 512 746.666667 704 576 512 682.666667 512 682.666667 341.333333Z" p-id="1535" fill="#ffffff"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
+        <script>
+            var markdown_enabled = false;
+            $('#trigger-markdown').click(function(){
+                text_edited = true;
+                if (markdown_enabled){
+                    markdown_enabled=false;
+                    $('#trigger-markdown').removeClass('edit-markdown-checked');
+                } else {
+                    markdown_enabled=true;
+                    $('#trigger-markdown').addClass('edit-markdown-checked');
+                }
+            });
+        </script>
         <div class="container-edit-info">
             <div class="edit-info-item">
                 <label data-lang="title">标题</label>
@@ -309,7 +333,6 @@
             }
         });
 
-
         function submitSave() {
             var text = $("#text-edit").val().trim();
             var title = $('#input-title').val().trim();
@@ -332,6 +355,8 @@
                         note.password = sha256(password, 'fastnote');
                         note.text = aes_encrypt(text, password);
                     }
+                    //markdown相关
+                    note.markdown = markdown_enabled;
                     ipcRenderer.send('update-edit-note', {
                         note: note,
                         rawtext: text
@@ -392,6 +417,16 @@
                     } else {
                         passwordStatus = 'notchange';
                     }
+                    //初始化markdown
+                    if (typeof note.markdown == "undefined"){
+                        markdown_enabled = false;
+                    } else {
+                        markdown_enabled = note.markdown;
+                        if (markdown_enabled){
+                            //如果便签启用了markdown，则按钮初始处于按下状态
+                            $('#trigger-markdown').addClass('edit-markdown-checked');
+                        }
+                    }
                     break;
                 case 'note-recycled':
                     if (data.id == nowNoteId) {
@@ -421,13 +456,13 @@
 
         function resizeContent() {
             //设置控件的宽度
-            $('.edit-item-control').css('width', $(window).width() - 70 + (current_i18n == 'en-us'?2.5:0));
-            $('.edit-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 59 - (current_i18n == 'en-us'?24:0));
-            $('.edit-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 41  - (current_i18n == 'en-us'?27:0));
+            $('.edit-item-control').css('width', $(window).width() - 70 + (current_i18n == 'en-us' ? 2.5 : 0));
+            $('.edit-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 59 - (current_i18n == 'en-us' ? 24 : 0));
+            $('.edit-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 41 - (current_i18n == 'en-us' ? 27 : 0));
             //调整文本域大小
             var h_container = $(window).height() - $('.container-titlebar').height() - 48;
             $('.container-edit').css('height', h_container);
-            var h_textedit = h_container - $('.container-edit-header').height() - $('.container-edit-info').height() - 39;
+            var h_textedit = h_container - $('.container-edit-header').height() - $('.container-edit-info').height() - 34;
             $('#text-edit').css('height', h_textedit);
         }
 

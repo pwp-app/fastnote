@@ -13,7 +13,7 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = false; //debug trigger
+global.indebug = true; //debug trigger
 global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
@@ -189,6 +189,18 @@ function createWindow() {
       if (typeof newnoteWins[i] != 'undefined' && newnoteWins[i] != null){
         newnoteWins[i].webContents.send('category-removed', data);
       }
+    }
+  });
+
+  //always on top
+  ipc.on('main-window-alwaysontop', ()=>{
+    console.log(1);
+    if (win.isAlwaysOnTop()){
+      win.setAlwaysOnTop(false);
+      win.webContents.send('win-alwaysontop', false);
+    } else {
+      win.setAlwaysOnTop(true);
+      win.webContents.send('win-alwaysontop', true);
     }
   });
 

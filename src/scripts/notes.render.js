@@ -11,6 +11,14 @@ var notes_selected = [];
 var notes_selected_withencrypted = [];
 
 var sort_mode = null;
+
+//markdown parser
+var mk_strong = /(\*\*)(.*)(\*\*)/gi;
+var mk_em = /(\*)(.*)(\*)/gi;
+var mk_link = /(\[)(.*)(\])(\()(.*)(\))/gi;
+var mk_hr = /(\s*(-\s*){3,}\s*)|(\s*(\*\s*){3,}\s*)|(\s*(_\s*){3,}\s*)/gi;
+
+
 //初始化排序模式
 storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
     if (err) {
@@ -48,17 +56,17 @@ function clearNoteList() {
 }
 
 //定义url过滤正则
-var reg_url = /(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
+var reg_url = /(?!(href="))(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
 
 //渲染一条笔记
-function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop) {
+function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown) {
     if (typeof settings.language == 'undefined'){
         current_i18n = 'zh-cn';
     } else {
         current_i18n = settings.language;
     }
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '"><div class="note-header"><span class="note-no">';
+        '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '" data-markdown="'+ (typeof markdown == 'undefined'?'false':markdown)+'"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
     //渲染note-title
     var titletext = "";
@@ -89,22 +97,39 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
     if (typeof password == 'undefined') {
-        html += '</div><div class="note-content"><p class="note-text">';
+        html += '</div><div class="note-content"><div class="note-text"><p>';
         //process html tag
         temp = text.split('\n');
         let final_text = "";
         for (var i = 0; i < temp.length; i++) {
             s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+            let output_br = true;
+            if (typeof markdown != "undefined" && markdown){
+                //开启了markdown
+                s = s.replace(mk_strong, '<strong>$2</strong>');
+                s = s.replace(mk_em, '<em>$2</em>');
+                s = s.replace(mk_link, '<a href="$5">$2</a>');
+                if (mk_hr.test(s)){
+                    s = '</p><hr><p>';
+                    output_br = false;
+                }
+            }
             final_text += s;
-            final_text += "<br>";
+            if (output_br){
+                final_text += "<br>";
+            }
         }
         text = final_text;
         text = insert_spacing(text, 0.15);
         //自动识别网页
-        html += text.replace(reg_url, function (result) {
-            return '<a href="' + result + '">' + result + '</a>';
-        });
-        html += '</p></div></div></div>';
+        if (!markdown){
+            html += text.replace(reg_url, function (result) {
+                return '<a href="' + result + '">' + result + '</a>';
+            });
+        } else {
+            html += text;
+        }
+        html += '</p></div></div></div></div>';
     } else {
         //再锁定按钮
         html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + id + ')"></i>';
@@ -144,7 +169,7 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
 function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, text, forceTop) {
     //构造html
     var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '"><div class="note-header"><span class="note-no">';
+        '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '" data-markdown="'+ (typeof markdown == 'undefined'?'false':markdown)+'"><div class="note-header"><span class="note-no">';
     html += '#' + id + '</span>';
     //渲染note-title
     var titletext = "";
@@ -176,22 +201,39 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
         html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
     if (typeof password == 'undefined') {
-        html += '</div><div class="note-content"><p class="note-text">';
+        html += '</div><div class="note-content"><div class="note-text"><p>';
+        //process html tag
         temp = text.split('\n');
         let final_text = "";
         for (var i = 0; i < temp.length; i++) {
             s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+            let output_br = true;
+            if (typeof markdown != "undefined" && markdown){
+                //开启了markdown
+                s = s.replace(mk_strong, '<strong>$2</strong>');
+                s = s.replace(mk_em, '<em>$2</em>');
+                s = s.replace(mk_link, '<a href="$5">$2</a>');
+                if (mk_hr.test(s)){
+                    s = '</p><hr><p>';
+                    output_br = false;
+                }
+            }
             final_text += s;
-            final_text += "<br>";
+            if (output_br){
+                final_text += "<br>";
+            }
         }
         text = final_text;
-
         text = insert_spacing(text, 0.15);
         //自动识别网页
-        html += text.replace(reg_url, function (result) {
-            return '<a href="' + result + '">' + result + '</a>';
-        });
-        html += '</p></div></div></div>';
+        if (!markdown){
+            html += text.replace(reg_url, function (result) {
+                return '<a href="' + result + '">' + result + '</a>';
+            });
+        } else {
+            html += text;
+        }
+        html += '</p></div></div></div></div>';
     } else {
         //再锁定按钮
         html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + id + ')"></i>';
@@ -254,6 +296,14 @@ async function rerenderEditedNote(data, rawtext) {
         }
     }
 
+    //处理markdown
+    if (typeof data.markdown != 'undefined'){
+        $('#note_'+data.id).attr('data-markdown',data.markdown);
+    } else {
+        $('#note_'+data.id).attr('data-markdown','false');
+    }
+
+    //处理密码的更改
     if (typeof data.password != "undefined") {
         resetEditedNoteText(data, rawtext);
         //便签设置了密码，判断便签之前是否有密码
@@ -271,18 +321,6 @@ async function rerenderEditedNote(data, rawtext) {
         resetEditedNoteText(data, data.text);
     }
 
-    //移除overheight标签获取便签编辑后的内容实际高度
-    let flag_overheight;
-    if ($('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
-        flag_overheight = true;
-        $('#note_' + data.id + ' .note-content').removeClass('note-overheight');
-        $('#note_' + data.id + ' .note-content').removeAttr('style');
-    }
-    var after_height = $('#note_' + data.id + ' .note-content').height();
-    //还原被移除的overheight标签
-    if (flag_overheight) {
-        $('#note_' + data.id + ' .note-content').addClass('note-overheight');
-    }
     //reset content of updatetime
     var timeContent = '<p class="note-time note-updatetime han-element">' + i18n['render'][current_i18n]['updatetime']
         data.updatetime + '</p>' + '<p class="note-time han-element">'+ i18n['render'][current_i18n]['createtime'] + data.time + '</p>';
@@ -296,8 +334,7 @@ async function rerenderEditedNote(data, rawtext) {
         ipcRenderer.send('openExternalURL', $(this).attr('href'));
         e.preventDefault();
     });
-    //timeevent rebind
-    bindNoteTimeClick(data.id);
+
     //处理标题
     if (typeof data.title != 'undefined') {
         var titletext = "";
@@ -322,38 +359,45 @@ async function rerenderEditedNote(data, rawtext) {
         }
         $('#note_' + data.id + ' .note-header .note-title').html(titletext);
     }
-    var origin_height = $('#note_' + data.id + ' .note-content').height(); //get origin height
-    var tag_class = $('#note_' + data.id + ' .note-content').attr('class');
-    //fix note status
-    if (after_height > 250) {
-        if (origin_height <= 250) {
-            if (!$('#note_' + data.id + ' .note-content').hasClass('note-overheight')) {
-                bindNoteFoldDBL(data.id);
-                $('#note_' + data.id + ' .note-content').css('height', origin_height);
-                $('#note_' + data.id + ' .note-content').animate({
-                    height: "250px"
-                });
-            }
-        } else {
-            //already expanded
-            $('#note_' + data.id + ' .note-content').css('height', origin_height);
-            $('#note_' + data.id + ' .note-content').animate({
-                height: after_height
-            });
-        }
+
+    //获取便签编辑后的内容高度
+    var edited_content_height = $('#note_'+data.id+' .note-content .note-text').height();
+    if (edited_content_height <= 250){  //与.note-content高度相等
+        //编辑后的内容不超高
+        $('#note_'+data.id + ' .note-content').removeClass('note-overheight');
+        $('#note_'+data.id + ' .note-content').removeAttr('style');
+        $('#note_'+data.id).removeAttr('data-expanded');
+        //取消dblclick
+        $('#note_'+data.id + ' .note-content').off('dblclick');
     } else {
-        $('#note_' + data.id + ' .note-content').css('height', origin_height);
-        $('#note_' + data.id + ' .note-content').animate({
-            height: after_height
-        });
-        $('#note_' + data.id + ' .note-content').dblclick = function () {}; //unbind event
-        $('#note_' + data.id + ' .note-content').unbind('dblclick');
+        //编辑后的内容超高
+        //判断原先内容是否超高
+        let expanded = $('#note_'+data.id).attr('data-expanded');
+        if (typeof expanded != "undefined"){
+            //原先内容超高
+            if (expanded == "true"){  //原先内容超高、已展开
+                $('#note_'+data.id + ' .note-content').height();
+            }
+            //超高未展开 -> do nothing
+        } else {
+            //没有expanded属性有两种可能 第一是便签本身不超高 第二是超高未展开
+            if (!$('#note_'+data.id+' .note-content').hasClass('note-overheight')){
+                //不存在note-overheight属性是不超高，重新绑定dblclick
+                bindNoteFoldDBL(data.id);
+            }
+        }
     }
+
     //处理分类
     var category_name = $('#note_' + data.id).attr('data-category');
     minorCategoryCount(category_name, true, true);
     addCategoryCount(data.category, true, true);
     $('#note_' + data.id).attr('data-category', data.category);
+
+    //timeevent rebind
+    setTimeout(function(){
+        bindNoteTimeClick(data.id);
+    },0);
 }
 
 function resetEditedNoteText(data, t) {
@@ -361,15 +405,33 @@ function resetEditedNoteText(data, t) {
     text = "";
     for (var i = 0; i < temp.length; i++) {
         s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+        let output_br = true;
+        if (typeof data.markdown != 'undefined' && data.markdown){
+            s = s.replace(mk_strong, '<strong>$2</strong>');
+            s = s.replace(mk_em, '<em>$2</em>');
+            s = s.replace(mk_link, '<a href="$5">$2</a>');
+            if (mk_hr.test(s)){
+                s = '</p><hr><p>';
+                 output_br = false;
+            }
+        }
         text += s;
-        text += "<br>";
+        if (output_br){
+            text += "<br>";
+        }
     }
     let final_text = insert_spacing(text, 0.12);
-    var html = final_text.replace(reg_url, function (result) {
-        return '<a href="' + result + '">' + result + '</a>';
-    });
+    var html = '<div class="note-text"><p>';
+    if (typeof data.markdown == 'undefined' || !data.markdown){
+        html += final_text.replace(reg_url, function (result) {
+            return '<a href="' + result + '">' + result + '</a>';
+        });
+    } else {
+        html += final_text;
+    }
+    html += '</p></div>';
     //reset note content on page
-    $("#note_" + data.id + " .note-content p").html(html);
+    $("#note_" + data.id + " .note-content").html(html);
 }
 
 function bindNoteTimeClick(id) {
@@ -377,7 +439,7 @@ function bindNoteTimeClick(id) {
         $('#note_' + id + ' .note-header .note-updatetime').css('display', 'none');
         $('#note_' + id + ' .note-header .note-createtime').css('display', 'initial');
     });
-    $('#note_' + id + ' .note-updatetime').off('click').on('click', function () {
+    $('#note_' + id + ' .note-createtime').off('click').on('click', function () {
         $('#note_' + id + ' .note-header .note-updatetime').css('display', 'initial');
         $('#note_' + id + ' .note-header .note-createtime').css('display', 'none');
     });
@@ -387,13 +449,15 @@ function bindNoteTimeClick(id) {
 function bindNoteFoldDBL(id) {
     if ($('#note_' + id + ' .note-content').height() > 250) {
         $('#note_' + id + ' .note-content').addClass("note-overheight"); //process css
-        $('#note_' + id + ' .note-content').dblclick(function (e) {
+        $('#note_' + id + ' .note-content').off('dblclick').on('dblclick',function (e) {
             //process double click
             if ($('#note_' + id + ' .note-content').height() > 250) {
                 $('#note_' + id + ' .note-content').animate({
                     height: "250px"
                 });
                 $('#note_' + id + ' .note-content').addClass("note-overheight");
+                //标识便签是否展开
+                $('#note_' + id).attr('data-expanded','false');
             } else {
                 $('#note_' + id + ' .note-content').css('height', 'auto');
                 var animate_height = $('#note_' + id + ' .note-content').height();
@@ -402,11 +466,13 @@ function bindNoteFoldDBL(id) {
                     height: animate_height
                 });
                 $('#note_' + id + ' .note-content').removeClass("note-overheight");
+                //标识便签是否展开
+                $('#note_' + id).attr('data-expanded','true');
             }
         });
         //在双击折叠/展开时不选中文本
-        $('#note_' + id + ' .note-content p').mousedown(function (e) {
-            if (e.detail > 1) {
+        $('#note_' + id + ' .note-content .note-text').mousedown(function (e) {
+            if (e.detail > 0) {
                 e.preventDefault();
             }
         });
@@ -416,7 +482,7 @@ function bindNoteFoldDBL(id) {
 }
 
 //添加笔记至Array
-function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop) {
+function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop, markdown) {
     var note = {
         id: id,
         time: time,
@@ -429,7 +495,8 @@ function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, cat
         text: text,
         offset: offset,
         timezone: timezone,
-        forceTop: forceTop
+        forceTop: forceTop,
+        markdown: markdown
     };
     notes.push(note);
     //分类计数
@@ -438,7 +505,7 @@ function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, cat
     }
 }
 
-function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop) {
+function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop, markdown) {
     var note = {
         id: id,
         time: time,
@@ -451,7 +518,8 @@ function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, ti
         password: password,
         offset: offset,
         timezone: timezone,
-        forceTop: forceTop
+        forceTop: forceTop,
+        markdown: markdown
     };
     notes.push(note);
 }
@@ -480,7 +548,7 @@ function refreshNoteList(callback) {
             }
             sortNotes(sort_mode); //排序
             for (var i = 0; i < notes.length; i++) {
-                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop);
+                renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop,notes[i].markdown);
             }
             //绑定Note的点击事件
             bindNoteClickEvent();
@@ -495,7 +563,7 @@ function refreshNoteList(callback) {
     } else {
         sortNotes(sort_mode); //排序
         for (var i = 0; i < notes.length; i++) {
-            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop);
+            renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop, notes[i].markdown);
         }
         //绑定Note的点击事件
         bindNoteClickEvent();
@@ -651,22 +719,39 @@ function checkNotePassword(e, noteid) {
             //生成解密文本
             var text = $('#note_password_' + noteid).parent().attr('data-encrypted');
             var decrypted_text = aes_decrypt(text, input_pwd);
-
+            let markdown = $('#note_'+noteid).attr('data-markdown');
             //生成html
-            var html = '<p class="note-text" style="display:none;">';
+            var html = '<div class="note-text" style="display:none;"><p>';
             temp = decrypted_text.split('\n');
             let final_text = "";
             for (var i = 0; i < temp.length; i++) {
                 s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+                let output_br = true;
+                if (markdown == 'true'){
+                    //开启了markdown
+                    s = s.replace(mk_strong, '<strong>$2</strong>');
+                    s = s.replace(mk_em, '<em>$2</em>');
+                    s = s.replace(mk_link, '<a href="$5">$2</a>');
+                    if (mk_hr.test(s)){
+                        s = '</p><hr><p>';
+                        output_br = false;
+                    }
+                }
                 final_text += s;
-                final_text += "<br>";
+                if (output_br){
+                    final_text += "<br>";
+                }
             }
             final_text = insert_spacing(final_text, 0.15);
             //自动识别网页
-            html += final_text.replace(reg_url, function (result) {
-                return '<a href="' + result + '">' + result + '</a>';
-            });
-            html += '</p>';
+            if (markdown == 'false'){
+                html += final_text.replace(reg_url, function (result) {
+                    return '<a href="' + result + '">' + result + '</a>';
+                });
+            } else {
+                html += final_text;
+            }
+            html += '</p></div>';
 
             //渲染
             $('#note_' + noteid + ' .note-content').append(html);
@@ -712,6 +797,7 @@ function relockNote(noteid) {
         $('#note_password_' + noteid).parent().animateCss('fadeIn morefaster');
         $('#note_' + noteid + ' .note-content .note-text').remove();
         $('#note_' + noteid + ' .note-content').removeAttr('style');
+        $('#note_' + noteid + ' .note-content').removeClass('note-overheight');
         //隐藏relock按钮
         $('#note_' + noteid + ' .note-header .note-password-relock').animateCss('fadeOut morefaster', function () {
             $('#note_' + noteid + ' .note-header .note-password-relock').removeAttr('style');
@@ -722,20 +808,40 @@ function relockNote(noteid) {
 //对便签文本进行再渲染
 async function rerenderTextOfNote(noteid, text, animate=false){
     $('#note_'+noteid+' .note-content').html('');   //先清空note-content的内容
-    let html = '<p class="note-text">';
+    //获取markdown设置
+    let markdown = $('#note_'+noteid).attr('markdown');
+
+    let html = '<div class="note-text"><p>';
     temp = text.split('\n');
     let final_text = "";
     for (var i = 0; i < temp.length; i++) {
+        let output_br = true;
         s = $("#filter-x").text(temp[i]).html().replace(' ', '&nbsp;');
+        if (markdown == 'true'){
+            //开启了markdown
+            s = s.replace(mk_strong, '<strong>$2</strong>');
+            s = s.replace(mk_em, '<em>$2</em>');
+            s = s.replace(mk_link, '<a href="$5">$2</a>');
+            if (mk_hr.test(s)){
+                s = '</p><hr><p>';
+                output_br = false;
+            }
+        }
         final_text += s;
-        final_text += "<br>";
+        if (output_br){
+            final_text += "<br>";
+        }
     }
     final_text = insert_spacing(final_text, 0.15);
     //自动识别网页
-    html += final_text.replace(reg_url, function (result) {
-        return '<a href="' + result + '">' + result + '</a>';
-    });
-    html += '</p>';
+    if (markdown == 'false'){
+        html += final_text.replace(reg_url, function (result) {
+            return '<a href="' + result + '">' + result + '</a>';
+        });
+    } else {
+        html += final_text;
+    }
+    html += '</p></div>';
 
     //渲染
     $('#note_' + noteid + ' .note-content').append(html);

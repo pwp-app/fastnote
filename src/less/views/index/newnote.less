@@ -15,6 +15,7 @@
 
 .container-newnote .lbl {
     padding-top: 10px;
+    height: 36px;
     color: @color-text-primary;
     font-size: 14px;
     .no-select();
@@ -73,6 +74,7 @@
     text-align: right;
     right: 0px;
     margin-right: -5px;
+    margin-top: -1px;
 }
 
 .newnote-info{
@@ -83,6 +85,42 @@
     text-align: right;
     right: 0px;
     margin-right: -5px;
+}
+
+.newnote-markdown{
+    display: inline-block;
+    width: 32px;
+    height: 24px;
+    text-align: left;
+    margin-left: 0px;
+    margin-right: -8px;
+    float: right;
+}
+
+.newnote-markdown>button{
+    padding: 0;
+    height: 18px;
+    margin-top: -2.4px;
+    border-radius: 4px !important;
+}
+
+.newnote-markdown>button>svg{
+    width: 28px;
+    height: 26px;
+    margin-top: -4px;
+    margin-left: 2px;
+}
+
+.newnote-markdown>button:hover>svg>path{
+    fill: @color-trigger-hover-primary;
+}
+
+.newnote-markdown>button>svg>path{
+    fill: @color-trigger-primary;
+}
+
+.newnote-markdown-checked{
+    background: @color-trigger-bg-checked;
 }
 
 .newnote-trigger{

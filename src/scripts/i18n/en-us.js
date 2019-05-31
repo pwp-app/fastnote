@@ -127,5 +127,17 @@ i18n['en-us']={
     'statusbar_update_title':'The update is downloaded and it will be automatically installed after you close this application.',
     'update_downloading':'Downloading update',
     'note_unencrypted_#':'The encryption of Note #',
-    'note_unencrypted_right':' has been removed'
+    'note_unencrypted_right':' has been removed',
+    'button_cancel':'Cancel ',
+    'button_delete':'Delete ',
+    'delete_category_and_note':'Delete the category and delete the notes under the category',
+    'delete_category_and_note_detail':'Only deleting the category does not affect the notes, and the notes will be placed in the uncategorized.',
+    'confirm_delete_category_left':'Make sure you want to delete the category "',
+    'confirm_delete_category_right':'". This operation will be irrevocable.',
+    'delete_conflict_notes':'Are you sure you want to automatically delete conflicting notes?',
+    'button_dealwithconflict':'Handling conflicts',
+    'notes_conflict':'Notes conflict',
+    'notes_conflict_message':'Some of the notes in the backup conflict with the existing notes on the ID\n The ID of the note should be unique, otherwise the program will have an error. \nPlease handle the conflicts.',
+    'note_conflict_detail':'Conflicting notes: \n',
+    'note_conflict_detail_content':', Content: ',
 };

@@ -10,7 +10,6 @@
     <!--import requirements-->
     <script>
         window.$ = window.jQuery = require('./static/jquery.min.js');
-        require('./static/bootstrap.min.js');
     </script>
 
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css">
@@ -23,6 +22,7 @@
     <script src="static/encryption.js"></script>
     <script src="static/han.simple.js"></script>
     <script src="static/category.js"></script>
+    <script src="static/bootstrap.min.js"></script>
     <script src="static/mousetrap.min.js"></script>
     <script src="static/moment.min.js"></script>
     <script src="static/html5sortable.min.js"></script>
@@ -571,6 +571,12 @@
                             $('.toast-multiselected').removeClass('toast-active');
                         });
                     }
+                    //搜索框内没有输入内容时点击列表自动关闭
+                    if (searchOpened){
+                        if ($('#input-search').val().length < 1){
+                            closeSearchToast();
+                        }
+                    }
                 });
             });
 
@@ -591,6 +597,19 @@
                 }
                 $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
                 return false;
+            });
+
+            Mousetrap.bind('ctrl+t', function () {
+                ipcRenderer.send('main-window-alwaysontop');
+                return false;
+            });
+
+            ipcRenderer.on('win-alwaysontop', function(sender, data){
+                if (data){
+                    $('#statusbar-item-alwaysontop').css('display','inline-block');
+                } else {
+                    $('#statusbar-item-alwaysontop').css('display','none');
+                }
             });
         </script>
     </div>
@@ -635,7 +654,7 @@
                     });
                     //接收回传的保存
                     ipcRenderer.on('newnotewin-save', (sender, data) => {
-                        saveNote(data.text, data.title, data.category, data.password);
+                        saveNote(data.text, data.title, data.category, data.password, data.markdown);
                     });
                 </script>
                 <!-- fold -->
@@ -647,6 +666,13 @@
                 <div class="newnote-info">
                     <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-info">
                         <i class="fa fa-info-circle" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="newnote-markdown">
+                    <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-markdown">
+                        <svg t="1558625704373" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1534" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                            <path d="M85.333333 682.666667 85.333333 341.333333 170.666667 341.333333 298.666667 469.333333 426.666667 341.333333 512 341.333333 512 682.666667 426.666667 682.666667 426.666667 462.08 298.666667 590.08 170.666667 462.08 170.666667 682.666667 85.333333 682.666667M682.666667 341.333333 810.666667 341.333333 810.666667 512 917.333333 512 746.666667 704 576 512 682.666667 512 682.666667 341.333333Z" p-id="1535" fill="#ffffff"></path>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -683,6 +709,18 @@
         $('.newnote-info-float').click(function (e) {
             e.stopPropagation();
         })
+
+        //markdown
+        var markdown_enabled = false;
+        $('#btn-newnote-markdown').click(function (e){
+            if (markdown_enabled){
+                markdown_enabled=false;
+                $('#btn-newnote-markdown').removeClass('newnote-markdown-checked');
+            } else {
+                markdown_enabled=true;
+                $('#btn-newnote-markdown').addClass('newnote-markdown-checked');
+            }
+        });
     </script>
     <div class="container-bottombar">
         <div class="trigger-mainmenu">
@@ -702,6 +740,7 @@
             </button>
         </div>
         <div class="bottom-bar-statusbar" id="statusbar">
+            <div class="statusbar-item" id="statusbar-item-alwaysontop"><i class="fa fa-caret-up"></i></div>
         </div>
     </div>
 
@@ -906,7 +945,7 @@
                                             for(var i=0;i<update_logs.length;i++){
                                                 var log_version = $(update_logs[i]).attr('data-ver').split('.').map(Number);
                                                 //判断现有版本是否已经大于更新日志的版本
-                                                if (version_number[0]>log_version[0] || version_number[1]>log_version[1] || version_number[2]>log_version[2]){
+                                                if (version_number[0]>=log_version[0] && version_number[1]>=log_version[1] && version_number[2]>log_version[2]){
                                                     $(update_logs[i]).hide();  //如果有就把这一部分隐藏掉
                                                 }
                                             }
@@ -1291,11 +1330,11 @@
             var name = $(this).parent().parent().attr('data-name');
             dialog.showMessageBox({
                 type: "warning",
-                buttons: ['取消', '删除', '删除分类并删除该分类下的便签'],
+                buttons: [i18n[current_i18n]['button_cancel'], i18n[current_i18n]['button_delete'], i18n['cuurent_i18n']['delete_category_and_note']],
                 defaultId: 0,
-                title: '确认操作',
-                message: '确定要删除分类"' + name + '"吗？该操作将不可撤回。',
-                detail: '仅删除分类不影响便签，便签会被放入未分类中。'
+                title: i18n[current_i18n]['confirm_operation'],
+                message: i18n[current_i18n]['confirm_delete_category_left'] + name + i18n[current_i18n]['confirm_delete_category_right'],
+                detail: i18n[current_i18n]['delete_category_and_note_detail']
             }, function (res) {
                 if (res != 0) {
                     //确定删除
@@ -1447,16 +1486,16 @@
             //检测是否存在冲突的便签
             if (conflictNotes.length > 0) {
                 //构造细节
-                var detail = "存在冲突的便签：\n";
+                var detail = i18n[current_i18n]['note_conflict_detail'];
                 conflictNotes.forEach(note => {
-                    detail += "ID: " + note.id + "，内容: " + (note.text.length > 20 ? note.text.substring(
+                    detail += "ID: " + note.id + i18n[current_i18n]['note_conflict_detail_content'] + (note.text.length > 20 ? note.text.substring(
                         0, 20) + "..." : note.text) + "\n";
                 });
                 dialog.showMessageBox({
-                    title: '便签冲突',
-                    message: '恢复备份中的一些便签在ID上和现有便签产生冲突\n便签的ID应是唯一的，否则程序将出现错误。\n请处理冲突',
+                    title: i18n[current_i18n]['notes_conflict'],
+                    message: i18n[current_i18n]['notes_conflict_message'],
                     detail: detail,
-                    buttons: ['处理冲突', '删除']
+                    buttons: [i18n[current_i18n]['button_dealwithconflict'], i18n[current_i18n]['button_delete']]
                 }, function (res) {
                     if (res == 0) {
                         //处理冲突
@@ -1471,9 +1510,9 @@
                     } else if (res == 1) {
                         dialog.showMessageBox({
                             type: 'warning',
-                            message: '你确定要自动删除存在冲突的便签吗？',
+                            message: i18n[current_i18n]['delete_conflict_notes'],
                             detail: detail,
-                            buttons: ['确定', '取消']
+                            buttons: [i18n[current_i18n]['button_yes'], i18n[current_i18n]['button_no']]
                         }, function (res) {
                             if (res == 0) {
                                 conflictNotes.forEach(note => {
@@ -1515,6 +1554,12 @@
                 }
             }
         }
+    </script>
+
+    <script>
+        $(document).ready(function(){
+            $('#note-text').focus();
+        });
     </script>
 
     <script>

@@ -6,9 +6,22 @@ var searchTimeout;
 //绑定触发快捷键
 Mousetrap.bind('ctrl+f', function () {
     if (!searchOpened) {
-        searchOpened = true;
         popupSearchToast();
     }
+});
+
+//绑定textarea的keydown
+$(document).ready(function(){
+    $('#note-text').keydown(function (e) {
+        var ctrlKey = e.ctrlKey || e.metaKey;
+        if (ctrlKey && e.keyCode == 70) {
+            if (searchOpened){
+                $('#input-search').focus();
+            } else {
+                popupSearchToast();
+            }
+        }
+    });
 });
 
 //绑定input
@@ -21,6 +34,7 @@ $('#input-search').bind('input propertychange', function () {
 });
 
 function popupSearchToast() {
+    searchOpened = true;
     $('.toast-search').addClass('toast-active');
     $('#input-search').val(''); //清空
     $('.toast-search').animateCss('fadeInRight faster', function () {
