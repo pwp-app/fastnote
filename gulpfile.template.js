@@ -175,17 +175,31 @@ gulp.task('upload win64', function(){
     version = JSON.parse(version);
     return gulp.src(['dist/Fastnote Setup '+version.ver+'.exe','dist/*.yml','dist/ver.json'])
         .pipe(qn({
-            qiniu: {
-                accessKey: '',
-                secretKey: '',
-                bucket: '',
-                origin: '',
-                uploadURL: '',
-            },
+            qiniu: {},
             prefix: 'fastnote/win32/x64/',
             forceUpload: true
         }));
 });
+
+gulp.task('upload ver win32', function(){
+    return gulp.src('dist/ver.json')
+        .pipe(qn({
+            qiniu: {},
+            prefix: 'fastnote/win32/',
+            forceUpload: true
+        }));
+});
+
+gulp.task('upload ver win64', function(){
+    return gulp.src('dist/ver.json')
+        .pipe(qn({
+            qiniu: {},
+            prefix: 'fastnote/win32/x64/',
+            forceUpload: true
+        }));
+});
+
+gulp.task('upload ver',gulp.series(['upload ver win32','upload ver win64']));
 
 gulp.task('publish',gulp.series(['move old','pack win32','upload win32']));
 gulp.task('publish64',gulp.series(['move old x86','pack win64','upload win64']));
