@@ -22,11 +22,11 @@ var mk_strong = /(\*\*)(.*)(\*\*)/gi;
 var mk_em = /(\*)(.*)(\*)/gi;
 var mk_link = /(\[)(.*)(\])(\()(.*)(\))/gi;
 var mk_hr = /(\n\s*(-\s*){3,}\s*\n)|(\n\s*(\*\s*){3,}\s*\n)|(\n\s*(_\s*){3,}\s*\n)/gi;
-var mk_h1 = /\n#&nbsp;(.+)(\n)?/gi;
-var mk_h2 = /\n##&nbsp;(.+)(\n)?/gi;
-var mk_h3 = /\n###&nbsp;(.+)(\n)?/gi;
-var mk_h4 = /\n####&nbsp;(.+)(\n)?/gi;
-var mk_h5 = /\n#####&nbsp;(.+)(\n)?/gi;
+var mk_h1 = /(\n?)#&nbsp;(.+)(\n?)/gi;
+var mk_h2 = /(\n?)##&nbsp;(.+)(\n?)/gi;
+var mk_h3 = /(\n?)###&nbsp;(.+)(\n?)/gi;
+var mk_h4 = /(\n?)####&nbsp;(.+)(\n?)/gi;
+var mk_h5 = /(\n?)#####&nbsp;(.+)(\n?)/gi;
 
 
 //初始化排序模式
@@ -111,7 +111,7 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         //process html tag
         text = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
         if (typeof markdown != "undefined" && markdown){
-            text = text.replace(mk_hr,'\n</p><hr><p>').replace(mk_h1,'\n<noteh1>$1</noteh1>\n').replace(mk_h2,'\n<noteh2>$1</noteh2>\n').replace(mk_h3,'\n<noteh3>$1</noteh3>\n').replace(mk_h4,'\n<noteh4>$1</noteh4>\n').replace(mk_h5,'\n<noteh5>$1</noteh5>\n')
+            text = text.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
                 .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
         }
         text = text.replace(/\n/gi,'<br>');
@@ -200,7 +200,7 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
         //process html tag
         text = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
         if (typeof markdown != "undefined" && markdown){
-            text = text.replace(mk_hr,'\n</p><hr><p>').replace(mk_h1,'\n<noteh1>$1</noteh1>\n').replace(mk_h2,'\n<noteh2>$1</noteh2>\n').replace(mk_h3,'\n<noteh3>$1</noteh3>\n').replace(mk_h4,'\n<noteh4>$1</noteh4>\n').replace(mk_h5,'\n<noteh5>$1</noteh5>\n')
+            text = text.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
                 .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
         }
         text = text.replace(/\n/gi,'<br>');
@@ -383,8 +383,8 @@ async function rerenderEditedNote(data, rawtext) {
 function resetEditedNoteText(data, t) {
     let text = $("#filter-x").text(t).html().replace(/ /g, '&nbsp;');
     if (typeof data.markdown != "undefined" && data.markdown){
-        text = text.replace(mk_hr,'\n</p><hr><p>').replace(mk_h1,'\n<noteh1>$1</noteh1>\n').replace(mk_h2,'\n<noteh2>$1</noteh2>\n').replace(mk_h3,'\n<noteh3>$1</noteh3>\n').replace(mk_h4,'\n<noteh4>$1</noteh4>\n').replace(mk_h5,'\n<noteh5>$1</noteh5>\n')
-            .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
+        text = text.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
+                .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
     }
     text = text.replace(/\n/gi,'<br>');
     text = insert_spacing(text, 0.15);
@@ -691,7 +691,7 @@ function checkNotePassword(e, noteid) {
             var html = '<div class="note-text" style="display:none;"><p>';
             let temp = $("#filter-x").text(decrypted_text).html().replace(/ /g, '&nbsp;');
             if (typeof markdown != "undefined" && markdown){
-                temp = temp.replace(mk_hr,'\n</p><hr><p>').replace(mk_h1,'\n<noteh1>$1</noteh1>\n').replace(mk_h2,'\n<noteh2>$1</noteh2>\n').replace(mk_h3,'\n<noteh3>$1</noteh3>\n').replace(mk_h4,'\n<noteh4>$1</noteh4>\n').replace(mk_h5,'\n<noteh5>$1</noteh5>\n')
+                temp = temp.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
                     .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
             }
             temp = temp.replace(/\n/gi,'<br>');
@@ -767,7 +767,7 @@ async function rerenderTextOfNote(noteid, text, animate=false){
     let html = '<div class="note-text"><p>';
     let temp = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
     if (typeof markdown != "undefined" && markdown == 'true'){
-        temp = temp.replace(mk_hr,'\n</p><hr><p>').replace(mk_h1,'\n<noteh1>$1</noteh1>\n').replace(mk_h2,'\n<noteh2>$1</noteh2>\n').replace(mk_h3,'\n<noteh3>$1</noteh3>\n').replace(mk_h4,'\n<noteh4>$1</noteh4>\n').replace(mk_h5,'\n<noteh5>$1</noteh5>\n')
+        temp = temp.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
             .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
     }
     temp = temp.replace(/\n/gi,'<br>');

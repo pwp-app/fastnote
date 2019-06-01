@@ -32,6 +32,12 @@ $('#input-search').bind('input propertychange', function () {
     }
     searchTimeout = setTimeout(searchNotes(searchTextChangeCount, $('#input-search').val().trim()), 100);
 });
+$('#input-search').on('keydown', function (e) {
+    if (e.keyCode == 27){
+        closeSearchToast();
+        return;
+    }
+});
 
 function popupSearchToast() {
     searchOpened = true;
