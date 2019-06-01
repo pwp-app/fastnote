@@ -89,6 +89,9 @@ textarea.keydown(function (e) {
         }
         if (text != null && text != "") {
             saveNote(text, title, category, password, markdown_enabled);
+            //清空浮层的内容
+            $('#input-note-category').val('');
+            $('#input-note-password').val('');
         }
     }
 });
