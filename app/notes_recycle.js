@@ -232,7 +232,7 @@ function readNoteFiles() {
                             var note_json = data;
                             if (typeof (note_json) != 'undefined' && note_json != null) {
                                 note_json = JSON.parse(note_json);
-                                addNoteToArray_recycle(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.title, note_json.category, note_json.password, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop);
+                                addNoteToArray_recycle(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.title, note_json.category, note_json.password, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop, note_json.markdown);
                                 if (notes.length + countOffset == fileArr.length) {
                                     //结束文件遍历，渲染列表
                                     refreshNoteList();

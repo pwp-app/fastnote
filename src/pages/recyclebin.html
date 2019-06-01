@@ -111,6 +111,7 @@
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
                 current_i18n = 'zh-cn';
+                $.getScript('static/i18n/zh-cn.js');
                 //read error
                 console.error('A error occured when reading settings.');
             } else {
@@ -124,6 +125,9 @@
                         $.getScript('static/i18n/zh-cn.js');
                     }
                     current_i18n = settings.language;
+                } else {
+                    current_i18n = 'zh-cn';
+                    $.getScript('static/i18n/zh-cn.js');
                 }
                 if (typeof settings.theme != 'undefined') {
                     $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
