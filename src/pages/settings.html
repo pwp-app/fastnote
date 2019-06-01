@@ -142,6 +142,7 @@
                 initTimeDisplay("all");
 
                 current_i18n = 'zh-cn';
+                $.getScript('static/i18n/zh-cn.js');
             } else {
                 //read success
                 //init language
@@ -155,6 +156,9 @@
                     }
                     initLanguage(settings.language);
                     current_i18n = settings.language;
+                } else {
+                    current_i18n = 'zh-cn';
+                    $.getScript('static/i18n/zh-cn.js');
                 }
                 //init themes
                 if (typeof settings.theme != 'undefined'){
