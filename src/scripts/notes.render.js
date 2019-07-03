@@ -22,11 +22,11 @@ var mk_strong = /(\*\*)(.*)(\*\*)/gi;
 var mk_em = /(\*)(.*)(\*)/gi;
 var mk_link = /(\[)(.*)(\])(\()(.*)(\))/gi;
 var mk_hr = /(\n\s*(-\s*){3,}\s*\n)|(\n\s*(\*\s*){3,}\s*\n)|(\n\s*(_\s*){3,}\s*\n)/gi;
-var mk_h1 = /(\n?)#&nbsp;(.+)(\n?)/gi;
-var mk_h2 = /(\n?)##&nbsp;(.+)(\n?)/gi;
-var mk_h3 = /(\n?)###&nbsp;(.+)(\n?)/gi;
-var mk_h4 = /(\n?)####&nbsp;(.+)(\n?)/gi;
-var mk_h5 = /(\n?)#####&nbsp;(.+)(\n?)/gi;
+var mk_h1 = /#&nbsp;(.+)/gi;
+var mk_h2 = /##&nbsp;(.+)/gi;
+var mk_h3 = /###&nbsp;(.+)/gi;
+var mk_h4 = /####&nbsp;(.+)/gi;
+var mk_h5 = /#####&nbsp;(.+)/gi;
 
 
 //初始化排序模式
@@ -111,7 +111,7 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         //process html tag
         text = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
         if (typeof markdown != "undefined" && markdown){
-            text = text.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
+            text = text.replace(mk_h5,'<noteh5>$1</noteh5>').replace(mk_h4,'<noteh4>$1</noteh4>').replace(mk_h3,'<noteh3>$1</noteh3>').replace(mk_h2,'<noteh2>$1</noteh2>').replace(mk_h1,'<noteh1>$1</noteh1>').replace(mk_hr,'\n</p><hr><p>')
                 .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
         }
         text = text.replace(/\n/gi,'<br>');
@@ -200,7 +200,7 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
         //process html tag
         text = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
         if (typeof markdown != "undefined" && markdown){
-            text = text.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
+            text = text.replace(mk_h5,'<noteh5>$1</noteh5>').replace(mk_h4,'<noteh4>$1</noteh4>').replace(mk_h3,'<noteh3>$1</noteh3>').replace(mk_h2,'<noteh2>$1</noteh2>').replace(mk_h1,'<noteh1>$1</noteh1>').replace(mk_hr,'\n</p><hr><p>')
                 .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
         }
         text = text.replace(/\n/gi,'<br>');
