@@ -1,7 +1,7 @@
 function popup_menu_recyclebin() {
     var menu_recyclebin = new Menu();
     menu_recyclebin.append(new MenuItem({
-        label: i18n[current_i18n]['sortby'],
+        label: i18n[current_i18n].sortby,
         submenu: [{
                 id: 'cb_sort_id',
                 label: 'ID',
@@ -17,7 +17,7 @@ function popup_menu_recyclebin() {
             },
             {
                 id: 'cb_sort_updateDate',
-                label: i18n[current_i18n]['updatetime'],
+                label: i18n[current_i18n].updatetime,
                 type: 'checkbox',
                 click: function () {
                     sort_mode = 'updateDate';
@@ -34,29 +34,29 @@ function popup_menu_recyclebin() {
         type: 'separator'
     }));
     menu_recyclebin.append(new MenuItem({
-        label: i18n[current_i18n]['restore'],
+        label: i18n[current_i18n].restore,
         click: function () {
             restoreNote(noteid_clicked);
             noteid_clicked = -1;
         }
     }));
     menu_recyclebin.append(new MenuItem({
-        label: i18n[current_i18n]['delete_completely'],
+        label: i18n[current_i18n].delete_completely,
         click: function () {
             deleteNote(noteid_clicked);
             noteid_clicked = -1;
         }
     }));
     menu_recyclebin.append(new MenuItem({
-        label: i18n[current_i18n]['empty_recyclebin'],
+        label: i18n[current_i18n].empty_recyclebin,
         click: function () {
             dialog.showMessageBox({
                 type: "warning",
-                buttons: [i18n[current_i18n]['button_no'], i18n[current_i18n]['button_yes']],
+                buttons: [i18n[current_i18n].button_no, i18n[current_i18n].button_yes],
                 defaultId: 0,
-                title: i18n[current_i18n]['confirm_operation'],
-                message: i18n[current_i18n]['empty_recyclebin_message'],
-                detail: i18n[current_i18n]['empty_recyclebin_detail']
+                title: i18n[current_i18n].confirm_operation,
+                message: i18n[current_i18n].empty_recyclebin_message,
+                detail: i18n[current_i18n].empty_recyclebin_detail
             }, function (res) {
                 if (res == 1) {
                     for (var i = 0; i < notes.length; i++) {
@@ -64,7 +64,7 @@ function popup_menu_recyclebin() {
                     }
                 }
                 noteid_clicked = -1;
-                displayInfobar('success', i18n[current_i18n]['empty_recyclebin_success']);
+                displayInfobar('success', i18n[current_i18n].empty_recyclebin_success);
             });
         }
     }));
@@ -89,7 +89,7 @@ function popup_menu_recyclebin() {
 function popup_menu_recyclebin_multiSelected() {
     var menu_recyclebin_multiselected = new Menu();
     menu_recyclebin_multiselected.append(new MenuItem({
-        label: i18n[current_i18n]['restore_all'],
+        label: i18n[current_i18n].restore_all,
         click: function () {
             $('.note-wrapper').removeClass('note-selected');
             selectModeEnabled = false;
@@ -98,9 +98,9 @@ function popup_menu_recyclebin_multiSelected() {
             });
             restoreNotes(notes_selected, function (res) {
                 if (res) {
-                    displayInfobar('success', i18n[current_i18n]['restore_notes_success']);
+                    displayInfobar('success', i18n[current_i18n].restore_notes_success);
                 } else {
-                    displayInfobar('error', i18n[current_i18n]['restore_notes_error']);
+                    displayInfobar('error', i18n[current_i18n].restore_notes_error);
                 }
             });
             selectModeEnabled = false;
@@ -110,7 +110,7 @@ function popup_menu_recyclebin_multiSelected() {
         }
     }));
     menu_recyclebin_multiselected.append(new MenuItem({
-        label: i18n[current_i18n]['delete_all'],
+        label: i18n[current_i18n].delete_all,
         click: function () {
             $('.note-wrapper').removeClass('note-selected');
             selectModeEnabled = false;
@@ -119,9 +119,9 @@ function popup_menu_recyclebin_multiSelected() {
             });
             deleteNotes(notes_selected, function (res) {
                 if (res) {
-                    displayInfobar('success', i18n[current_i18n]['delete_all_success']);
+                    displayInfobar('success', i18n[current_i18n].delete_all_success);
                 } else {
-                    displayInfobar('error', i18n[current_i18n]['delete_all_error']);
+                    displayInfobar('error', i18n[current_i18n].delete_all_error);
                 }
             });
             selectModeEnabled = false;
@@ -131,7 +131,7 @@ function popup_menu_recyclebin_multiSelected() {
         }
     }));
     menu_recyclebin_multiselected.append(new MenuItem({
-        label: i18n[current_i18n]['select_all'],
+        label: i18n[current_i18n].select_all,
         click: function () {
             selectModeEnabled = true;
             notes_selected = [];
@@ -139,11 +139,11 @@ function popup_menu_recyclebin_multiSelected() {
                 notes_selected.push(note.id);
             });
             $('.note-wrapper').addClass('note-selected');
-            $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
+            $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
         }
     }));
     menu_recyclebin_multiselected.append(new MenuItem({
-        label: i18n[current_i18n]['cancel'],
+        label: i18n[current_i18n].cancel,
         click: function () {
             $('.note-wrapper').removeClass('note-selected');
             selectModeEnabled = false;

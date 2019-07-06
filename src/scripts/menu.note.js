@@ -4,7 +4,7 @@ function popup_menu_note(isForceTop, hasPassword) {
     if (!hasPassword) {
         menu_note = new Menu();
         menu_note.append(new MenuItem({
-            label: i18n[current_i18n]['sortby'],
+            label: i18n[current_i18n].sortby,
             submenu: [{
                     id: 'cb_sort_id',
                     label: 'ID',
@@ -20,7 +20,7 @@ function popup_menu_note(isForceTop, hasPassword) {
                 },
                 {
                     id: 'cb_sort_updateDate',
-                    label: i18n[current_i18n]['updatetime'],
+                    label: i18n[current_i18n].updatetime,
                     type: 'checkbox',
                     click: function () {
                         sort_mode = 'updateDate';
@@ -37,16 +37,16 @@ function popup_menu_note(isForceTop, hasPassword) {
             type: 'separator'
         }));
         menu_note.append(new MenuItem({
-            label: i18n[current_i18n]['copy'],
+            label: i18n[current_i18n].copy,
             click: function () {
                 for (var i = 0; i < notes.length; i++) {
                     if (notes[i].id == noteid_clicked) {
                         copyToClipboard(notes[i].text.replace(/(\r\n)|(\n)/g,"\r"), {
                             success: function () {
-                                displayInfobar('success', i18n[current_i18n]['copyto_clipboard_success']);
+                                displayInfobar('success', i18n[current_i18n].copyto_clipboard_success);
                             },
                             error: function () {
-                                displayInfobar('success', i18n[current_i18n]['copyto_clipboard_error']);
+                                displayInfobar('success', i18n[current_i18n].copyto_clipboard_error);
                             }
                         });
                         return;
@@ -56,7 +56,7 @@ function popup_menu_note(isForceTop, hasPassword) {
             }
         }));
         menu_note.append(new MenuItem({
-            label: i18n[current_i18n]['edit'],
+            label: i18n[current_i18n].edit,
             click: function () {
                 for (var i = 0; i < notes.length; i++) {
                     if (notes[i].id == noteid_clicked) {
@@ -75,7 +75,7 @@ function popup_menu_note(isForceTop, hasPassword) {
             }
         }));
         menu_note.append(new MenuItem({
-            label: i18n[current_i18n]['delete'],
+            label: i18n[current_i18n].delete,
             id: 'item_recycle',
             click: function () {
                 putToRecyclebin(noteid_clicked);
@@ -85,23 +85,35 @@ function popup_menu_note(isForceTop, hasPassword) {
         if (isForceTop) {
             //当前便签是置顶
             menu_note.insert(3, new MenuItem({
-                label: i18n[current_i18n]['unpin'],
+                label: i18n[current_i18n].unpin,
                 click: function () {
                     operateForceTopNote(noteid_clicked, false);
                 }
             }));
         } else {
             menu_note.insert(3, new MenuItem({
-                label: i18n[current_i18n]['topping'],
+                label: i18n[current_i18n].topping,
                 click: function () {
                     operateForceTopNote(noteid_clicked, true);
                 }
             }));
         }
+        menu_note.append(new MenuItem({
+            label: i18n[current_i18n].desktop_widget,
+            click: function(){
+                for (var i = 0; i < notes.length; i++) {
+                    if (notes[i].id == noteid_clicked) {
+                        ipcRenderer.send('createDesktopWidget', {
+                            note: notes[i]
+                        });
+                    }
+                }
+            }
+        }));
     } else {
         menu_note = new Menu();
         menu_note.append(new MenuItem({
-            label: i18n[current_i18n]['sortby'],
+            label: i18n[current_i18n].sortby,
             submenu: [{
                     id: 'cb_sort_id',
                     label: 'ID',
@@ -117,7 +129,7 @@ function popup_menu_note(isForceTop, hasPassword) {
                 },
                 {
                     id: 'cb_sort_updateDate',
-                    label: i18n[current_i18n]['updatetime'],
+                    label: i18n[current_i18n].updatetime,
                     type: 'checkbox',
                     click: function () {
                         sort_mode = 'updateDate';
@@ -134,7 +146,7 @@ function popup_menu_note(isForceTop, hasPassword) {
             type: 'separator'
         }));
         menu_note.append(new MenuItem({
-            label: i18n[current_i18n]['remove_encryption'],
+            label: i18n[current_i18n].remove_encryption,
             click: function () {
                 let password = $('#note_password_'+noteid_clicked).parent().attr('data-password');
                 ipcRenderer.send('openDecryptionWindow', {
@@ -146,14 +158,14 @@ function popup_menu_note(isForceTop, hasPassword) {
         if (isForceTop) {
             //当前便签是置顶
             menu_note.append(new MenuItem({
-                label: i18n[current_i18n]['unpin'],
+                label: i18n[current_i18n].unpin,
                 click: function () {
                     operateForceTopNote(noteid_clicked, false);
                 }
             }));
         } else {
             menu_note.append(new MenuItem({
-                label: i18n[current_i18n]['topping'],
+                label: i18n[current_i18n].topping,
                 click: function () {
                     operateForceTopNote(noteid_clicked, true);
                 }
@@ -185,7 +197,7 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
         type: 'separator'
     }));
     menu_note_multiSelected.append(new MenuItem({
-        label: i18n[current_i18n]['cancel'],
+        label: i18n[current_i18n].cancel,
         click: function () {
             $('.note-wrapper').removeClass('note-selected');
             selectModeEnabled = false;
@@ -205,7 +217,7 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
     });
     if (!(notes_selected.length<1 && notes_selected_withencrypted.length>0)){
         menu_note_multiSelected.insert(0, new MenuItem({
-            label: i18n[current_i18n]['delete_selected'],
+            label: i18n[current_i18n].delete_selected,
             click: function () {
                 $('.note-wrapper').removeClass('note-selected');
                 selectModeEnabled = false;
@@ -214,15 +226,15 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
                 });
                 putNotesToRecyclebin(notes_selected, function (res) {
                     if (res) {
-                        displayInfobar('success', i18n[current_i18n]['note_recycle_success']);
+                        displayInfobar('success', i18n[current_i18n].note_recycle_success);
                     } else {
-                        displayInfobar('error', i18n[current_i18n]['note_recycle_error']);
+                        displayInfobar('error', i18n[current_i18n].note_recycle_error);
                     }
                 });
             }
         }));
         menu_note_multiSelected.insert(1, new MenuItem({
-            label: i18n[current_i18n]['edit_selected'],
+            label: i18n[current_i18n].edit_selected,
             click: function () {
                 $('.note-wrapper').removeClass('note-selected');
                 selectModeEnabled = false;
@@ -254,7 +266,7 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
     //存在置顶便签，插入取消置顶项，反之插入置顶选中
     if (hasForceTop) {
         menu_note_multiSelected.insert(0, new MenuItem({
-            label: i18n[current_i18n]['unpin'],
+            label: i18n[current_i18n].unpin,
             click: function () {
                 operateForceTopNotes(notes_selected_withencrypted, false);
             }
@@ -262,7 +274,7 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
     }
     if (hasNotForceTop) {
         menu_note_multiSelected.insert(1, new MenuItem({
-            label: i18n[current_i18n]['topping'],
+            label: i18n[current_i18n].topping,
             click: function () {
                 operateForceTopNotes(notes_selected_withencrypted, true);
             }

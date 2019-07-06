@@ -409,7 +409,7 @@
                             break;
                     }
                     //show infobar
-                    displayInfobar("success", i18n[current_i18n]['note_saved']);
+                    displayInfobar("success", i18n[current_i18n].note_saved);
                 });
             }
 
@@ -478,7 +478,7 @@
                                         $('.toast-multiselected').removeClass('toast-active');
                                     });
                                 } else {
-                                    $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
+                                    $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                                 }
                             } else {
                                 $('#note_' + noteid_clicked).parent().addClass('note-selected');
@@ -488,7 +488,7 @@
                                 }
                                 notes_selected_withencrypted.push(noteid_clicked);
                                 //set up toast
-                                $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
+                                $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                             }
                         } else {
                             noteLongClickTimeout = setTimeout(function () {
@@ -511,7 +511,7 @@
                                     hasNotesNotForceTop = true;
                                 }
                                 //set up toast
-                                $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
+                                $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                                 $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                                 window.getSelection().removeAllRanges();
                             }, 1000);
@@ -599,7 +599,7 @@
                 if (!$('.toast-multiselected').hasClass('toast-active')) {
                     $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                 }
-                $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
+                $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                 return false;
             });
 
@@ -940,7 +940,7 @@
                             function (result) {
                                 if (result != null && result != "" && typeof (result) != 'undefined') {
                                     try {
-                                        $('#update-title-span').text(i18n[current_i18n]['newversion_detected'] + result.ver);
+                                        $('#update-title-span').text(i18n[current_i18n].newversion_detected + result.ver);
                                         document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
                                         //选择性显示更新日志，不同版本显示不同内容
                                         var version_number = version.split('.').map(Number);    //获取现有的版本号
@@ -960,7 +960,7 @@
                                         //check show full
                                         if (result.showfull) {
                                             document.getElementsByClassName('update-contents-details')[0].innerHTML
-                                                += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">'+i18n[current_i18n]['detail_updatelog']+'</button>'
+                                                += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">'+i18n[current_i18n].detail_updatelog+'</button>'
                                         }
                                         //强制更新
                                         if (typeof result.forceupdate != 'undefined' && result.forceupdate){
@@ -971,10 +971,10 @@
                                         $('.update-contents-loading').css('display', 'none');
                                     } catch (err) {
                                         console.error(err);
-                                        $('#update-loading-span').innerHTML = i18n[current_i18n]['loading_updatelog_failed'];
+                                        $('#update-loading-span').innerHTML = i18n[current_i18n].loading_updatelog_failed;
                                     }
                                 } else {
-                                    $('#update-loading-span').innerHTML = i18n[current_i18n]['loading_updatelog_failed'];
+                                    $('#update-loading-span').innerHTML = i18n[current_i18n].loading_updatelog_failed;
                                 }
                             }
                         );
@@ -982,7 +982,7 @@
                     break;
                 case 'downloadProgress':
                     document.getElementById('update-progress').value = data.percent;
-                    document.getElementById('infobar-update-text').innerText = i18n[current_i18n]['update_downloading']+" (" + data.percent.toFixed(
+                    document.getElementById('infobar-update-text').innerText = i18n[current_i18n].update_downloading+" (" + data.percent.toFixed(
                         1) + " %)......";
                     break;
                 case 'update-downloaded':
@@ -991,9 +991,9 @@
                     $('#infobar_update').animateCss('fadeOutUp', function () {
                         $('#infobar_update').remove();
                     });
-                    displayInfobar('success', i18n[current_i18n]['update_download_success'], 5000);
+                    displayInfobar('success', i18n[current_i18n].update_download_success, 5000);
                     $('#statusbar').append(
-                        '<div class="statusbar-item" title="'+i18n[current_i18n]['statusbar_update_title']+'"><i class="fa fa-arrow-circle-up"></i></div>'
+                        '<div class="statusbar-item" title="'+i18n[current_i18n].statusbar_update_title+'"><i class="fa fa-arrow-circle-up"></i></div>'
                     );
                 case 'error':
                     console.error(data);
@@ -1009,7 +1009,7 @@
         });
         $('#btn-update-confirm').on('click', function () {
             ipcRenderer.send('downloadNow');
-            displayInfobar('update', i18n[current_i18n]['update_downloading']+'......');
+            displayInfobar('update', i18n[current_i18n].update_downloading+'......');
             $('.container-updater').animateCss('fadeOut', function () {
                 $('.container-updater').removeAttr('style');
             });
@@ -1335,11 +1335,11 @@
             var name = $(this).parent().parent().attr('data-name');
             dialog.showMessageBox({
                 type: "warning",
-                buttons: [i18n[current_i18n]['button_cancel'], i18n[current_i18n]['button_delete'], i18n['cuurent_i18n']['delete_category_and_note']],
+                buttons: [i18n[current_i18n].button_cancel, i18n[current_i18n].button_delete, i18n[current_i18n].delete_category_and_note],
                 defaultId: 0,
-                title: i18n[current_i18n]['confirm_operation'],
-                message: i18n[current_i18n]['confirm_delete_category_left'] + name + i18n[current_i18n]['confirm_delete_category_right'],
-                detail: i18n[current_i18n]['delete_category_and_note_detail']
+                title: i18n[current_i18n].confirm_operation,
+                message: i18n[current_i18n].confirm_delete_category_left + name + i18n[current_i18n].confirm_delete_category_right,
+                detail: i18n[current_i18n].delete_category_and_note_detail
             }, function (res) {
                 if (res != 0) {
                     //确定删除
@@ -1491,16 +1491,16 @@
             //检测是否存在冲突的便签
             if (conflictNotes.length > 0) {
                 //构造细节
-                var detail = i18n[current_i18n]['note_conflict_detail'];
+                var detail = i18n[current_i18n].note_conflict_detail;
                 conflictNotes.forEach(note => {
-                    detail += "ID: " + note.id + i18n[current_i18n]['note_conflict_detail_content'] + (note.text.length > 20 ? note.text.substring(
+                    detail += "ID: " + note.id + i18n[current_i18n].note_conflict_detail_content + (note.text.length > 20 ? note.text.substring(
                         0, 20) + "..." : note.text) + "\n";
                 });
                 dialog.showMessageBox({
-                    title: i18n[current_i18n]['notes_conflict'],
-                    message: i18n[current_i18n]['notes_conflict_message'],
+                    title: i18n[current_i18n].notes_conflict,
+                    message: i18n[current_i18n].notes_conflict_message,
                     detail: detail,
-                    buttons: [i18n[current_i18n]['button_dealwithconflict'], i18n[current_i18n]['button_delete']]
+                    buttons: [i18n[current_i18n].button_dealwithconflict, i18n[current_i18n].button_delete]
                 }, function (res) {
                     if (res == 0) {
                         //处理冲突
@@ -1515,9 +1515,9 @@
                     } else if (res == 1) {
                         dialog.showMessageBox({
                             type: 'warning',
-                            message: i18n[current_i18n]['delete_conflict_notes'],
+                            message: i18n[current_i18n].delete_conflict_notes,
                             detail: detail,
-                            buttons: [i18n[current_i18n]['button_yes'], i18n[current_i18n]['button_no']]
+                            buttons: [i18n[current_i18n].button_yes, i18n[current_i18n].button_no]
                         }, function (res) {
                             if (res == 0) {
                                 conflictNotes.forEach(note => {
@@ -1553,7 +1553,7 @@
                     notes[i].password = undefined;  //取消密码
                     notes[i].text = aes_decrypt(notes[i].text, rawpassword);
                     saveNoteByObj(notes[i]);    //保存
-                    displayInfobar('success',i18n[current_i18n]['note_unencrypted_#']+noteid+i18n[current_i18n]['note_unencrypted_right']);
+                    displayInfobar('success',i18n[current_i18n].note_unencrypted_sharp+noteid+i18n[current_i18n].note_unencrypted_right);
                     rerenderTextOfNote(noteid, notes[i].text, true);
                     break;
                 }
