@@ -44,7 +44,7 @@ function createEditWindow(data) {
         let index = win_edits.indexOf(win_edit);
         win_edits[index] = null;
         edit_noteid[index] = null;
-    })
+    });
 
     win_edit.on('ready-to-show', () => {
         let type = 'init';
@@ -59,15 +59,15 @@ function createEditWindow(data) {
 
     win_edit.on('minimize', () => {
         var windows = BrowserWindow.getAllWindows();
-        for (var i = 0; i < windows.length; i++) {
+        for (let i = 0; i < windows.length; i++) {
             if (!windows[i].isMinimized()) {
                 return;
             }
         }
-        for (var i = 0; i < windows.length; i++) {
+        for (let i = 0; i < windows.length; i++) {
             windows[i].webContents.send('enable-lockscreen-minimize');
         }
-    })
+    });
     win_edit.on('blur', () => {
         var windows = BrowserWindow.getAllWindows();
         if (BrowserWindow.getFocusedWindow() == null) {
@@ -75,7 +75,7 @@ function createEditWindow(data) {
                 windows[i].webContents.send('enable-lockscreen-blur');
             }
         }
-    })
+    });
 }
 
 var editWindow = {
@@ -112,6 +112,8 @@ ipc.on('closeAllEditWindow', function (event, data) {
             edit_noteid[i] = null;
         }
     }
+    win_edits = [];
+    edit_noteid = [];
 });
 ipc.on('reloadAllEditWindow', function (event, data) {
     for (var i = 0; i < win_edits.length; i++) {

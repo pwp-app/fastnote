@@ -1,4 +1,4 @@
-i18n['render']['en-us'] = {
+i18n.render['en-us'] = {
     year: '-',
     month: '-',
     day: '',

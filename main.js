@@ -31,6 +31,7 @@ recycleWindow = require('./app/recyclebin');
 settingsWindow = require('./app/settings');
 newnoteWindow = require('./app/newnote');
 decryptionWindow = require('./app/decryption');
+desktopWidget = require('./app/widget');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -117,7 +118,7 @@ function createWindow() {
     recycleWindow.create();
   });
   //open edit window
-  ipc.on('openEditWindow', function (sender, data) {
+  ipc.on('openEditWindow', (sender, data) => {
     editWindow.showWindow(data);
   });
   //open settings window
@@ -132,8 +133,10 @@ function createWindow() {
   ipc.on('openDecryptionWindow', (sender, data)=>{
     decryptionWindow.show(data);
   });
-
-  ipc.on('reloadMainWindow', function (sender, data) {
+  ipc.on('createDesktopWidget', (sender, data)=>{
+    desktopWidget.create(data);
+  });
+  ipc.on('reloadMainWindow', (sender, data)=>{
     win.reload();
     checkForUpdates();
   });

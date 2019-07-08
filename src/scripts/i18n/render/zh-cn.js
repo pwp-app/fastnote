@@ -1,4 +1,4 @@
-i18n['render']['zh-cn'] = {
+i18n.render['zh-cn'] = {
     year: '年',
     month: '月',
     day: '日',
