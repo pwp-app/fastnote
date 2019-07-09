@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="static/animate.min.css">
     <script src="static/notes.render.widget.js"></script>
     <script src="static/han.simple.js"></script>
+    <script src="static/mousetrap.min.js"></script>
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -127,6 +128,9 @@
 <body class="widget-body">
     <div class="container-widget">
         <div class="widget-controls-container">
+            <div class="widget-title">
+                <span class="widget-title-text"></span>
+            </div>
             <div class="widget-controls">
                 <div class="widget-control widget-control-close">
                     <i class="fa fa-times"></i>
@@ -144,24 +148,67 @@
         var note;
         ipcRenderer.on('init', (sender, data) => {
             note = data;
+            //init text
             renderNoteForWidget(data);
-            setTimeout(()=>{
-                if (document.body.scrollHeight < 400){
-                    ipcRenderer.send('widget-heightChange', document.body.scrollHeight+4);
+            //init title
+            if (typeof data.title == 'undefined') {
+                $('.widget-title-text').html('#' + data.id);
+            } else {
+                $('.widget-title-text').html(data.title);
+            }
+            //init window
+            var flag_resize = true;
+            setTimeout(() => {
+                if (document.body.scrollHeight < 400) {
+                    ipcRenderer.send('widget-heightChange', document.body.scrollHeight);
+                    flag_resize = false;
                 } else {
-                    ipcRenderer.send('widget-heightChange', 404);
-                    ipcRenderer.send('widget-setMaxHeight', document.body.scrollHeight+4);
-                    $('.widget-note-content').css('height', 343);
+                    ipcRenderer.send('widget-heightChange', 400);
+                    ipcRenderer.send('widget-setMaxHeight', document.body.scrollHeight + 4);
+                    $('.widget-note-content').css('height', 339);
                 }
-            },0);
+                $(window).resize(function () {
+                    //resize content
+                    if (flag_resize) {
+                        $('.widget-note-content').css('height', $(window).height() - 61);
+                    }
+                    $('.widget-title').css('width', $(window).width() - 160);
+                });
+            }, 0);
         });
+        ipcRenderer.on('setAlwaysOnTop', (sender, data)=>{
+            if (data){
+                $('.widget-controls').append('<div class="widget-icon widget-icon-forcetop"><i class="fa fa-caret-up"></i></div>');
+            } else {
+                $('.widget-icon-forcetop').remove();
+            }
+        });
+        ipcRenderer.on('setLock',(sender,data)=>{
+            if (data){
+                $('.widget-controls').append('<div class="widget-icon widget-icon-lock"><i class="fa fa-lock"></i></div>');
+                $('.container-widget').addClass('app-nodrag');
+            } else {
+                $('.widget-icon-lock').remove();
+                $('.container-widget').removeClass('app-nodrag');
+            }
+        });
+
         //bind events
-        $('.widget-control-close').click(()=>{
+        $('.widget-control-close').click(() => {
             window.close();
         });
-        $(window).resize(function () {
-            //resize content
-            $('.widget-note-content').css('height', $(window).height() - 61);
+
+        Mousetrap.bind('ctrl+t', function () {
+            ipcRenderer.send('widget-alwaysontop', note.id);
+            return false;
+        });
+        Mousetrap.bind('ctrl+l', function () {
+            ipcRenderer.send('widget-lock', note.id);
+            return false;
+        });
+        Mousetrap.bind('ctrl+q', function () {
+            window.close();
+            return false;
         });
     </script>
     <span id="filter-x" style="display:none"></span>

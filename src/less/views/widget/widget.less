@@ -8,21 +8,26 @@
     background: @color-transparent;
     border-radius: 12px;
 }
-
 .container-widget{
     background: @color-widget-bg;
-    margin-left: 0;
-    margin-right: 4px;
-    margin-bottom: 4px;
-    margin-top: 0px;
+    margin: 0;
     padding: 12px 16px;
     border-radius: 12px;
-    box-shadow: 3px 3px 5px rgba(0,0,0,0.25);
     .app-drag();
 }
 .widget-controls-container{
     width: 100%;
     height: @widget-titlebar-height;
+}
+.widget-title{
+    float: left;
+    width: 300px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: keep-all;
+    color: @color-text-primary;
+    font-size: 14px;
 }
 .widget-control{
     float: right;
@@ -30,6 +35,15 @@
     width: 12px;
     text-align: center;
     -webkit-app-region: no-drag;
+}
+.widget-icon{
+    float: right;
+    margin-left: 16px;
+    width: 12px;
+    text-align: center;
+}
+.widget-icon i{
+    color: @color-trigger-primary;
 }
 .widget-control i{
     color: @color-trigger-primary;

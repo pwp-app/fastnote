@@ -1,5 +1,6 @@
 let widgets = [];
 let widgets_noteid = [];
+let widget = null;
 
 const {
     BrowserWindow
@@ -12,8 +13,7 @@ const path = require('path');
 
 var targetY = -1;
 function createWidget(data) {
-
-    var widget = null;
+    let _widget = null;
     var screenWidth = electron.screen.getPrimaryDisplay().size.width;
 
     if (targetY < 0){
@@ -38,18 +38,19 @@ function createWidget(data) {
     else
         conf.frame = false;
 
-    widget = new BrowserWindow(conf);
-    widgets.push(widget);
+    _widget = new BrowserWindow(conf);
+    widget = _widget;
+    widgets.push(_widget);
     widgets_noteid.push(data.note.id);
 
-    widget.loadFile(path.resolve(__dirname, '../public/desktopWidget.html'));
+    _widget.loadFile(path.resolve(__dirname, '../public/desktopWidget.html'));
 
     if (indebug)
-        widget.webContents.openDevTools();
+    _widget.webContents.openDevTools();
 
-    widget.on('close', ()=>{
-        let widget_x = widget.getPosition()[0];
-        let widget_y = widget.getPosition()[1];
+    _widget.on('close', ()=>{
+        let widget_x = _widget.getPosition()[0];
+        let widget_y = _widget.getPosition()[1];
         let screenWidth = electron.screen.getPrimaryDisplay().size.width;
         if (widget_x == screenWidth-478){
             if (widget_y < targetY && widget_y>=18){
@@ -58,13 +59,13 @@ function createWidget(data) {
         }
     });
 
-    widget.on('closed', () => {
-        let index = widgets.indexOf(widget);
+    _widget.on('closed', () => {
+        let index = widgets.indexOf(_widget);
         widgets.splice(index, 1);
         widgets_noteid.splice(index, 1);
     });
 
-    widget.on('ready-to-show', ()=>{
+    _widget.on('ready-to-show', ()=>{
         ipc.once('widget-window-ready',()=>{
             widget.show();
         });
@@ -72,18 +73,18 @@ function createWidget(data) {
             widget.setSize(widget.getSize()[0], height);
             targetY = targetY + height + 8;
             //锁定最大高度
-            if (height<404){
+            if (height<400){
                 widget.setMaximumSize(electron.screen.getPrimaryDisplay().size.width, height);
             }
         });
         ipc.once('widget-setMaxHeight', (sender, height)=>{
             widget.setMaximumSize(electron.screen.getPrimaryDisplay().size.width, height);
         });
-        widget.webContents.send('init', data.note);
+        _widget.webContents.send('init', data.note);
     });
 
-    widget.once('will-move', ()=>{
-        let index = widgets.indexOf(widget);
+    _widget.once('will-move', ()=>{
+        let index = widgets.indexOf(_widget);
         let widget_y = widgets[index].getPosition()[1];
         if (widget_y < targetY){
             targetY = widget_y;
@@ -91,7 +92,33 @@ function createWidget(data) {
     });
 }
 
-ipc.on('closeAllWidgets', function () {
+ipc.on('widget-alwaysontop', (sender, data)=>{
+    let index = widgets_noteid.indexOf(data);
+    if (typeof widgets[index] != 'undefined' || widgets[index] != null){
+        if (widgets[index].isAlwaysOnTop()){
+            widgets[index].setAlwaysOnTop(false);
+            widgets[index].webContents.send('setAlwaysOnTop', false);
+        } else {
+            widgets[index].setAlwaysOnTop(true);
+            widgets[index].webContents.send('setAlwaysOnTop', true);
+        }
+    }
+});
+
+ipc.on('widget-lock', (sender, data)=>{
+    let index = widgets_noteid.indexOf(data);
+    if (typeof widgets[index] != 'undefined' || widgets[index] != null){
+        if (widgets[index].isResizable()){
+            widgets[index].setResizable(false);
+            widgets[index].webContents.send('setLock', true);
+        } else {
+            widgets[index].setResizable(true);
+            widgets[index].webContents.send('setLock', false);
+        }
+    }
+});
+
+ipc.on('closeAllWidgets', ()=>{
     for (var i = 0; i < widgets.length; i++) {
         if (widgets[i] != null) {
             widgets[i].close();
