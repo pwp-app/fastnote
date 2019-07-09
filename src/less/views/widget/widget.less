@@ -11,10 +11,13 @@
 
 .container-widget{
     background: @color-widget-bg;
-    margin: 12px;
+    margin-left: 0;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    margin-top: 0px;
     padding: 12px 16px;
     border-radius: 12px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.25);
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.25);
     .app-drag();
 }
 .widget-controls-container{
@@ -34,6 +37,22 @@
 .widget-control i:hover{
     cursor: pointer;
     color: @color-trigger-hover-primary;
+}
+.widget-note-content{
+    overflow-y: auto;
+}
+.widget-note-content::-webkit-scrollbar {
+    width: 4px;
+}
+.widget-note-content::-webkit-scrollbar-thumb {
+    border-radius: 9px;
+    background-color: @color-secondary;
+}
+.widget-note-content::-webkit-scrollbar-button {
+    display: none;
+}
+.widget-note-content::-webkit-scrollbar-track-piece {
+    background-color: @color-widget-bg;
 }
 .widget-note-content>.note-text{
     color: @color-text-primary;

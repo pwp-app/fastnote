@@ -71,9 +71,13 @@ function createWidget(data) {
         ipc.once('widget-heightChange', (sender, height)=>{
             widget.setSize(widget.getSize()[0], height);
             targetY = targetY + height + 8;
-            if (height<800){
-                widget.setMaximumSize(999999, height);
+            //锁定最大高度
+            if (height<404){
+                widget.setMaximumSize(electron.screen.getPrimaryDisplay().size.width, height);
             }
+        });
+        ipc.once('widget-setMaxHeight', (sender, height)=>{
+            widget.setMaximumSize(electron.screen.getPrimaryDisplay().size.width, height);
         });
         widget.webContents.send('init', data.note);
     });

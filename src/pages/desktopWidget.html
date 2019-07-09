@@ -141,20 +141,27 @@
         </div>
     </div>
     <script>
+        var note;
         ipcRenderer.on('init', (sender, data) => {
+            note = data;
             renderNoteForWidget(data);
             setTimeout(()=>{
-                console.log(document.body.scrollHeight);
-                if (document.body.scrollHeight < 788){
-                    ipcRenderer.send('widget-heightChange', document.body.scrollHeight+12);
+                if (document.body.scrollHeight < 400){
+                    ipcRenderer.send('widget-heightChange', document.body.scrollHeight+4);
                 } else {
-                    ipcRenderer.send('widget-heightChange', 800);
+                    ipcRenderer.send('widget-heightChange', 404);
+                    ipcRenderer.send('widget-setMaxHeight', document.body.scrollHeight+4);
+                    $('.widget-note-content').css('height', 343);
                 }
-            },100);
+            },0);
         });
         //bind events
         $('.widget-control-close').click(()=>{
             window.close();
+        });
+        $(window).resize(function () {
+            //resize content
+            $('.widget-note-content').css('height', $(window).height() - 61);
         });
     </script>
     <span id="filter-x" style="display:none"></span>
