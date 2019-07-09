@@ -1,5 +1,6 @@
 let widgets = [];
 let widgets_noteid = [];
+let widget = null;
 
 const {
     BrowserWindow
@@ -10,12 +11,12 @@ const app = require('electron').app;
 const path = require('path');
 
 function createWidget(data) {
-    let widget = null;
     var conf = {
-        width: 600,
+        width: 460,
         height: 280,
+        minWidth: 320,
+        minHeight: 108,
         show: false,
-        resizable: false,
         webPreferences: {
             nodeIntegration: true
         },
@@ -45,7 +46,13 @@ function createWidget(data) {
         ipc.once('widget-window-ready',()=>{
             widget.show();
         });
-        widget.webContents.send('init', data);
+        ipc.on('widget-heightChange', function(sender, height){
+            widget.setSize(widget.getSize()[0], height);
+            if (height<800){
+                widget.setMaximumSize(999999, height);
+            }
+        });
+        widget.webContents.send('init', data.note);
     });
 }
 

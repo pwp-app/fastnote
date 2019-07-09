@@ -1,3 +1,5 @@
+@widget-titlebar-height: 20px;
+
 .widget-html{
     background: @color-transparent;
 }
@@ -10,10 +12,56 @@
 .container-widget{
     background: @color-widget-bg;
     margin: 12px;
+    padding: 12px 16px;
     border-radius: 12px;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.25);
+    .app-drag();
 }
-
-.widget-controls i{
+.widget-controls-container{
+    width: 100%;
+    height: @widget-titlebar-height;
+}
+.widget-control{
+    float: right;
+    margin-left: 16px;
+    width: 12px;
+    text-align: center;
+    -webkit-app-region: no-drag;
+}
+.widget-control i{
     color: @color-trigger-primary;
+}
+.widget-control i:hover{
+    cursor: pointer;
+    color: @color-trigger-hover-primary;
+}
+.widget-note-content>.note-text{
+    color: @color-text-primary;
+}
+.widget-note-content>.note-text>p{
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: 0.06em;
+    padding:0 !important;
+    margin:0 !important;
+    word-break:break-all;
+    overflow-x: hidden;
+    text-justify:auto;
+    user-select: text;
+}
+.widget-note-content>.note-text>a{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    text-decoration:underline;
+    letter-spacing: 0.06em;
+}
+.widget-note-content>.note-text>a:hover{
+    color: @color-text-primary;
+}
+.widget-split{
+    height: 1px;
+    margin-top: 6px;
+    margin-bottom: 8px;
+    background-color: @color-secondary;
 }

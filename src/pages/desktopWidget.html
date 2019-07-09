@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html class="widget-html">
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,6 +15,8 @@
     <link rel="stylesheet" href="static/font-awesome.min.css">
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
+    <script src="static/notes.render.widget.js"></script>
+    <script src="static/han.simple.js"></script>
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -65,7 +68,7 @@
                 settings = data;
                 settingsInit(settings);
             }
-            $(document).ready(function(){
+            $(document).ready(function () {
                 ipcRenderer.send("widget-window-ready");
             });
         });
@@ -76,7 +79,7 @@
             //build css
             if (settings == null) {
                 //read error
-                $('#main-style').attr('href','static/main.blackwhite.css');
+                $('#main-style').attr('href', 'static/main.blackwhite.css');
 
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
@@ -84,10 +87,10 @@
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
-                if (typeof settings.theme != 'undefined'){
-                    $('#main-style').attr('href','static/main.'+settings.theme+'.css');
+                if (typeof settings.theme != 'undefined') {
+                    $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
                 } else {
-                    $('#main-style').attr('href','static/main.blackwhite.css');
+                    $('#main-style').attr('href', 'static/main.blackwhite.css');
                 }
 
                 if (typeof settings.fontfamily != 'undefined') {
@@ -106,12 +109,12 @@
             }
             modStyle.innerHTML = cssText;
 
-            if (font == 'Source Han Sans CN'){
+            if (font == 'Source Han Sans CN') {
                 loadWebfont(font);
             }
         }
 
-        function loadWebfont(font){
+        function loadWebfont(font) {
             WebFont.load({
                 custom: {
                     families: [font]
@@ -120,26 +123,39 @@
         }
     </script>
 </head>
+
 <body class="widget-body">
     <div class="container-widget">
-        <div class="widget-controls">
-            <div class="widget-control-forcetop">
-                <i class="fa fa-caret-up"></i>
-            </div>
-            <div class="widget-control-close">
-                <i class="fa fa-times"></i>
+        <div class="widget-controls-container">
+            <div class="widget-controls">
+                <div class="widget-control widget-control-close">
+                    <i class="fa fa-times"></i>
+                </div>
             </div>
         </div>
+        <div class="widget-split"></div>
         <div class="widget-body">
             <div class="widget-note">
-                <div class="widget-note-header"></div>
                 <div class="widget-note-content"></div>
             </div>
         </div>
     </div>
     <script>
-        ipcRenderer.on('init', (data)=>{
-
+        ipcRenderer.on('init', (sender, data) => {
+            renderNoteForWidget(data);
+            setTimeout(()=>{
+                console.log(document.body.scrollHeight);
+                if (document.body.scrollHeight < 788){
+                    ipcRenderer.send('widget-heightChange', document.body.scrollHeight+12);
+                } else {
+                    ipcRenderer.send('widget-heightChange', 800);
+                }
+            },100);
+        });
+        //bind events
+        $('.widget-control-close').click(()=>{
+            window.close();
         });
     </script>
+    <span id="filter-x" style="display:none"></span>
 </body>

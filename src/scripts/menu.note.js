@@ -106,6 +106,7 @@ function popup_menu_note(isForceTop, hasPassword) {
                         ipcRenderer.send('createDesktopWidget', {
                             note: notes[i]
                         });
+                        return;
                     }
                 }
             }

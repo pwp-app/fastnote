@@ -62,9 +62,9 @@ function popup_menu_recyclebin() {
                     for (var i = 0; i < notes.length; i++) {
                         deleteNoteByObj(notes[i], false);
                     }
+                    displayInfobar('success', i18n[current_i18n].empty_recyclebin_success);
                 }
                 noteid_clicked = -1;
-                displayInfobar('success', i18n[current_i18n].empty_recyclebin_success);
             });
         }
     }));
