@@ -1,4 +1,5 @@
 var storage = require('electron-json-storage');
+var reg = require('./static/note.render.reg');
 
 //定义prototype
 String.prototype.startWith = function(compareStr){
@@ -16,18 +17,6 @@ var notes_selected = [];
 var notes_selected_withencrypted = [];
 
 var sort_mode = null;
-
-//markdown parser
-var mk_strong = /(\*\*)(.*)(\*\*)/gi;
-var mk_em = /(\*)(.*)(\*)/gi;
-var mk_link = /(\[)(.*)(\])(\()(.*)(\))/gi;
-var mk_hr = /(\n\s*(-\s*){3,}\s*\n)|(\n\s*(\*\s*){3,}\s*\n)|(\n\s*(_\s*){3,}\s*\n)/gi;
-var mk_h1 = /#&nbsp;(.+)/gi;
-var mk_h2 = /##&nbsp;(.+)/gi;
-var mk_h3 = /###&nbsp;(.+)/gi;
-var mk_h4 = /####&nbsp;(.+)/gi;
-var mk_h5 = /#####&nbsp;(.+)/gi;
-
 
 //初始化排序模式
 storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
@@ -64,9 +53,6 @@ function clearNoteList() {
     note_list_normal.innerHTML = "";
     selectModeEnabled = false; //刷新页面/列表时重置多选开关
 }
-
-//定义url过滤正则
-var reg_url = /(?!(href="))(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
 
 //渲染一条笔记
 function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown) {
@@ -111,14 +97,14 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         //process html tag
         text = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
         if (typeof markdown != "undefined" && markdown){
-            text = text.replace(mk_h5,'<noteh5>$1</noteh5>').replace(mk_h4,'<noteh4>$1</noteh4>').replace(mk_h3,'<noteh3>$1</noteh3>').replace(mk_h2,'<noteh2>$1</noteh2>').replace(mk_h1,'<noteh1>$1</noteh1>').replace(mk_hr,'\n</p><hr><p>')
-                .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
+            text = text.replace(reg.h5,'<noteh5>$1</noteh5>').replace(reg.h4,'<noteh4>$1</noteh4>').replace(reg.h3,'<noteh3>$1</noteh3>').replace(reg.h2,'<noteh2>$1</noteh2>').replace(reg.h1,'<noteh1>$1</noteh1>').replace(reg.hr,'\n</p><hr><p>')
+                .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
         }
         text = text.replace(/\n/gi,'<br>');
         text = insert_spacing(text, 0.15);
         //自动识别网页
         if (!markdown){
-            html += text.replace(reg_url, function (result) {
+            html += text.replace(reg.url, function (result) {
                 return '<a href="' + result + '">' + result + '</a>';
             });
         } else {
@@ -200,14 +186,14 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
         //process html tag
         text = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
         if (typeof markdown != "undefined" && markdown){
-            text = text.replace(mk_h5,'<noteh5>$1</noteh5>').replace(mk_h4,'<noteh4>$1</noteh4>').replace(mk_h3,'<noteh3>$1</noteh3>').replace(mk_h2,'<noteh2>$1</noteh2>').replace(mk_h1,'<noteh1>$1</noteh1>').replace(mk_hr,'\n</p><hr><p>')
-                .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
+            text = text.replace(reg.h5,'<noteh5>$1</noteh5>').replace(reg.h4,'<noteh4>$1</noteh4>').replace(reg.h3,'<noteh3>$1</noteh3>').replace(reg.h2,'<noteh2>$1</noteh2>').replace(reg.h1,'<noteh1>$1</noteh1>').replace(reg.hr,'\n</p><hr><p>')
+                .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
         }
         text = text.replace(/\n/gi,'<br>');
         text = insert_spacing(text, 0.15);
         //自动识别网页
         if (!markdown){
-            html += text.replace(reg_url, function (result) {
+            html += text.replace(reg.url, function (result) {
                 return '<a href="' + result + '">' + result + '</a>';
             });
         } else {
@@ -383,14 +369,14 @@ async function rerenderEditedNote(data, rawtext) {
 function resetEditedNoteText(data, t) {
     let text = $("#filter-x").text(t).html().replace(/ /g, '&nbsp;');
     if (typeof data.markdown != "undefined" && data.markdown){
-        text = text.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
-                .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
+        text = text.replace(reg.h5,'$1<noteh5>$2</noteh5>$3').replace(reg.h4,'$1<noteh4>$2</noteh4>$3').replace(reg.h3,'$1<noteh3>$2</noteh3>$3').replace(reg.h2,'$1<noteh2>$2</noteh2>$3').replace(reg.h1,'$1<noteh1>$2</noteh1>$3').replace(reg.hr,'\n</p><hr><p>')
+                .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
     }
     text = text.replace(/\n/gi,'<br>');
     text = insert_spacing(text, 0.15);
     var html = '<div class="note-text"><p>';
     if (typeof data.markdown == 'undefined' || !data.markdown){
-        html += text.replace(reg_url, function (result) {
+        html += text.replace(reg.url, function (result) {
             return '<a href="' + result + '">' + result + '</a>';
         });
     } else {
@@ -691,14 +677,14 @@ function checkNotePassword(e, noteid) {
             var html = '<div class="note-text" style="display:none;"><p>';
             let temp = $("#filter-x").text(decrypted_text).html().replace(/ /g, '&nbsp;');
             if (typeof markdown != "undefined" && markdown){
-                temp = temp.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
-                    .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
+                temp = temp.replace(reg.h5,'$1<noteh5>$2</noteh5>$3').replace(reg.h4,'$1<noteh4>$2</noteh4>$3').replace(reg.h3,'$1<noteh3>$2</noteh3>$3').replace(reg.h2,'$1<noteh2>$2</noteh2>$3').replace(reg.h1,'$1<noteh1>$2</noteh1>$3').replace(reg.hr,'\n</p><hr><p>')
+                    .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
             }
             temp = temp.replace(/\n/gi,'<br>');
             temp = insert_spacing(temp, 0.15);
             //自动识别网页
             if (markdown == 'false'){
-                html += temp.replace(reg_url, function (result) {
+                html += temp.replace(reg.url, function (result) {
                     return '<a href="' + result + '">' + result + '</a>';
                 });
             } else {
@@ -767,14 +753,14 @@ async function rerenderTextOfNote(noteid, text, animate=false){
     let html = '<div class="note-text"><p>';
     let temp = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
     if (typeof markdown != "undefined" && markdown == 'true'){
-        temp = temp.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
-            .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
+        temp = temp.replace(reg.h5,'$1<noteh5>$2</noteh5>$3').replace(reg.h4,'$1<noteh4>$2</noteh4>$3').replace(reg.h3,'$1<noteh3>$2</noteh3>$3').replace(reg.h2,'$1<noteh2>$2</noteh2>$3').replace(reg.h1,'$1<noteh1>$2</noteh1>$3').replace(reg.hr,'\n</p><hr><p>')
+            .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
     }
     temp = temp.replace(/\n/gi,'<br>');
     temp = insert_spacing(temp, 0.15);
     //自动识别网页
     if (markdown == 'false'){
-        html += temp.replace(reg_url, function (result) {
+        html += temp.replace(reg.url, function (result) {
             return '<a href="' + result + '">' + result + '</a>';
         });
     } else {
