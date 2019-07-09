@@ -1,4 +1,5 @@
 @widget-titlebar-height: 20px;
+@transparent-percent: 95%;
 
 .widget-html{
     background: @color-transparent;
@@ -9,7 +10,7 @@
     border-radius: 12px;
 }
 .container-widget{
-    background: @color-widget-bg;
+    background: fade(@color-widget-bg, @transparent-percent);
     margin: 0;
     padding: 12px 16px;
     border-radius: 12px;
@@ -43,10 +44,11 @@
     text-align: center;
 }
 .widget-icon i{
-    color: @color-trigger-primary;
+    color: fade(@color-trigger-primary, @transparent-percent);
 }
 .widget-control i{
-    color: @color-trigger-primary;
+    color: fade(@color-trigger-primary, @transparent-percent);
+    transition: all 0.1s;
 }
 .widget-control i:hover{
     cursor: pointer;
@@ -54,19 +56,21 @@
 }
 .widget-note-content{
     overflow-y: auto;
+    -webkit-app-region: no-drag;
 }
 .widget-note-content::-webkit-scrollbar {
     width: 4px;
+    z-index: 10;
 }
 .widget-note-content::-webkit-scrollbar-thumb {
     border-radius: 9px;
-    background-color: @color-secondary;
+    background-color: fade(@color-secondary, @transparent-percent);
 }
 .widget-note-content::-webkit-scrollbar-button {
     display: none;
 }
 .widget-note-content::-webkit-scrollbar-track-piece {
-    background-color: @color-widget-bg;
+    background-color: fade(@color-widget-bg, @transparent-percent);;
 }
 .widget-note-content>.note-text{
     color: @color-text-primary;
