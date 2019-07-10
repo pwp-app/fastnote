@@ -142,6 +142,15 @@ var DesktopWidget = {
         } else {
             createWidget(data);
         }
+    },
+    updateEditNote: (data)=>{
+        let note = data.note;
+        let index = widgets_noteid.indexOf(note.id);
+        if (index >= 0){
+            if (typeof widgets[index] != 'undefined' && widgets[index] != null){
+                widgets[index].webContents.send('update-edit-note', data.note);
+            }
+        }
     }
 };
 

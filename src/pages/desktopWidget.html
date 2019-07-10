@@ -146,6 +146,7 @@
     </div>
     <script>
         var note;
+        //ipc events
         ipcRenderer.on('init', (sender, data) => {
             note = data;
             //init text
@@ -190,6 +191,31 @@
             } else {
                 $('.widget-icon-lock').remove();
                 $('.container-widget').removeClass('app-nodrag');
+            }
+        });
+        ipcRenderer.on('note-recycled', (sender, data)=>{
+            window.close();
+        });
+        ipcRenderer.on('update-edit-note', (sender, data)=>{
+            if (data){
+                flag_resize = true;
+                renderNoteForWidget(data);
+                //rerender title
+                if (typeof data.title == 'undefined') {
+                    $('.widget-title-text').html('#' + data.id);
+                } else {
+                    $('.widget-title-text').html(data.title);
+                }
+                setTimeout(() => {
+                    if (document.body.scrollHeight < 400) {
+                        ipcRenderer.send('widget-heightChange', document.body.scrollHeight);
+                        flag_resize = false;
+                    } else {
+                        ipcRenderer.send('widget-heightChange', 400);
+                        ipcRenderer.send('widget-setMaxHeight', document.body.scrollHeight + 4);
+                        $('.widget-note-content').css('height', 339);
+                    }
+                }, 0);
             }
         });
 

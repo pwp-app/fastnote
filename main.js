@@ -151,6 +151,12 @@ function createWindow() {
         });
       }
     }
+    let widgets = desktopWidget.getWindows();
+    for (let i=0;i<widgets.length;i++){
+      if (typeof widgets[i] != 'undefined' && editWins[i] != null){
+        widgets[i].webContents.send('note-recycled');
+      }
+    }
   });
 
   //backup recovered
@@ -220,7 +226,7 @@ function createWindow() {
   win.on('closed', () => {
     win = null;
     app.quit();
-  })
+  });
 
   //getfocus
   win.on('ready-to-show', () => {
@@ -228,6 +234,7 @@ function createWindow() {
     //bind update event
     editWindow.bindEditEvent(function (data) {
       win.webContents.send('update-edit-note', data);
+      desktopWidget.updateEditNote(data);
     });
   });
 
@@ -242,7 +249,7 @@ function createWindow() {
     for (var i=0;i<windows.length;i++){
       windows[i].webContents.send('enable-lockscreen-minimize');
     }
-  })
+  });
   win.on('blur',()=>{
     var windows = BrowserWindow.getAllWindows();
     if (BrowserWindow.getFocusedWindow() == null){
@@ -250,7 +257,7 @@ function createWindow() {
         windows[i].webContents.send('enable-lockscreen-blur');
       }
     }
-  })
+  });
 }
 
 ipc.on('disable-lockscreen',()=>{
@@ -258,7 +265,7 @@ ipc.on('disable-lockscreen',()=>{
   for (var i=0;i<windows.length;i++){
     windows[i].webContents.send('disable-lockscreen');
   }
-})
+});
 
 //捕捉新建便签窗口的消息
 ipc.on('newnotewin-save', (sender, data)=>{
@@ -307,7 +314,7 @@ let checkForUpdates = () => {
   // 更新下载进度事件
   autoUpdater.on('download-progress', function (progressObj) {
     sendUpdateMessage('downloadProgress', progressObj);
-  })
+  });
   autoUpdater.on('update-downloaded', () => {
     sendUpdateMessage('update-downloaded');
   });
@@ -320,7 +327,7 @@ let checkForUpdates = () => {
 let openExternalURL = () => {
   ipc.on('openExternalURL', (e, msg) => {
     shell.openExternal(msg);
-  })
+  });
 }
 
 app.on('activate', () => {
