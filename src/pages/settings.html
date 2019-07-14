@@ -80,6 +80,13 @@
         //获取indebug
         global.indebug = remote.getGlobal('indebug');
 
+        if (!global.indebug){
+            Mousetrap.bind('ctrl+shift+i', (e)=>{
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
+
         //读取设置
         storage.get('settings', function (error, data) {
             if (error) {

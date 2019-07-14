@@ -70,6 +70,13 @@
         const UUID = require('../app/tools/uuid.js');
         const indebug = remote.getGlobal('indebug');
 
+        if (!indebug){
+            Mousetrap.bind('ctrl+shift+i', (e)=>{
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
+
         const WebFont = require('webfontloader');
 
         //import menu

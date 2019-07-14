@@ -57,7 +57,14 @@
         } = require('electron');
 
         //获取indebug
-        global.indebug = remote.getGlobal('indebug');
+        var indebug = remote.getGlobal('indebug');
+
+        if (!indebug){
+            Mousetrap.bind('ctrl+shift+i', (e)=>{
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
 
         storage.get('settings', function (error, data) {
             if (error) {
@@ -196,8 +203,8 @@
             </div>
         </div>
         <script>
-            if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json')) {
-                var read_res = fs.readFileSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json', 'utf-8'); //这里有同步让后面的update可以选择
+            if (fs.existsSync(storagePath + (indebug ? '/devTemp' : '') + '/storage/categories.json')) {
+                var read_res = fs.readFileSync(storagePath + (indebug ? '/devTemp' : '') + '/storage/categories.json', 'utf-8'); //这里有同步让后面的update可以选择
                 if (read_res) {
                     categories = JSON.parse(read_res);
                     for (var i = 0; i < categories.length; i++) {

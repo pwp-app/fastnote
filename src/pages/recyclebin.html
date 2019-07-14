@@ -56,7 +56,13 @@
         //define const
         const remote = require('electron').remote;
         const app = remote.app;
-        global.indebug = remote.getGlobal('indebug');
+        var indebug = remote.getGlobal('indebug');
+        if (!indebug){
+            Mousetrap.bind('ctrl+shift+i', (e)=>{
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
         //import json storage
         if (typeof storage != 'undefined') {
             var storage = require('electron-json-storage');
