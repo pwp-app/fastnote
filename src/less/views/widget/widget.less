@@ -1,0 +1,105 @@
+@widget-titlebar-height: 20px;
+@transparent-percent: 95%;
+
+.widget-html{
+    background: @color-transparent;
+}
+
+.widget-body{
+    background: @color-transparent;
+    border-radius: 12px;
+}
+.container-widget{
+    background-color: fade(@color-widget-bg, @transparent-percent);
+    margin: 0;
+    padding: 12px 16px;
+    border-radius: 12px;
+    .app-drag();
+}
+.widget-controls-container{
+    width: 100%;
+    height: @widget-titlebar-height;
+}
+.widget-title{
+    float: left;
+    width: 300px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: keep-all;
+    color: @color-text-primary;
+    font-size: 14px;
+}
+.widget-control{
+    float: right;
+    margin-left: 16px;
+    width: 12px;
+    text-align: center;
+    -webkit-app-region: no-drag;
+}
+.widget-icon{
+    float: right;
+    margin-left: 16px;
+    width: 12px;
+    text-align: center;
+}
+.widget-icon i{
+    color: fade(@color-trigger-primary, @transparent-percent);
+}
+.widget-control i{
+    color: fade(@color-trigger-primary, @transparent-percent);
+    transition: all 0.1s;
+}
+.widget-control i:hover{
+    cursor: pointer;
+    color: @color-trigger-hover-primary;
+}
+.widget-note-content{
+    overflow-y: auto;
+    -webkit-app-region: no-drag;
+}
+.widget-note-content::-webkit-scrollbar {
+    width: 4px;
+    z-index: 10;
+    background-color: fade(@color-primary, @transparent-percent)
+}
+.widget-note-content::-webkit-scrollbar-thumb {
+    border-radius: 9px;
+    background-color: fade(@color-secondary, @transparent-percent);
+}
+.widget-note-content::-webkit-scrollbar-button {
+    display: none;
+}
+.widget-note-content::-webkit-scrollbar-track-piece {
+    background-color: fade(@color-widget-bg, @transparent-percent);
+}
+.widget-note-content>.note-text{
+    color: @color-text-primary;
+}
+.widget-note-content>.note-text>p{
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: 0.06em;
+    padding:0 !important;
+    margin:0 !important;
+    word-break:break-all;
+    overflow-x: hidden;
+    text-justify:auto;
+    user-select: text;
+}
+.widget-note-content>.note-text>a{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    text-decoration:underline;
+    letter-spacing: 0.06em;
+}
+.widget-note-content>.note-text>a:hover{
+    color: @color-text-primary;
+}
+.widget-split{
+    height: 1px;
+    margin-top: 6px;
+    margin-bottom: 8px;
+    background-color: @color-secondary;
+}

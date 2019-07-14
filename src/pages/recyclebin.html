@@ -285,13 +285,13 @@
                                     $('.toast-multiselected').removeClass('toast-active');
                                 });
                             } else {
-                                $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
+                                $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                             }
                         } else {
                             $('#note_' + noteid_clicked).parent().addClass('note-selected');
                             notes_selected.push(noteid_clicked);
                             //set up toast
-                            $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
+                            $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                         }
                     } else {
                         noteLongClickTimeout = setTimeout(function () {
@@ -301,7 +301,7 @@
                             notes_selected.push(noteid_clicked);
                             //set up toast
                             $('.toast-multiselected').addClass('toast-active');
-                            $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
+                            $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                             $('.toast-multiselected').animateCss('fadeInRight faster');
                         }, 1000);
                     }
@@ -359,7 +359,7 @@
             if (!$('.toast-multiselected').hasClass('toast-active')) {
                 $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
             }
-            $('#toast-multiselected-text').html(i18n[current_i18n]['selected_left'] + notes_selected.length + i18n[current_i18n]['selected_right']);
+            $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
             return false;
         });
 

@@ -1,4 +1,5 @@
 var storage = require('electron-json-storage');
+var reg = require('./static/note.render.reg');
 
 //定义prototype
 String.prototype.startWith = function(compareStr){
@@ -16,18 +17,6 @@ var notes_selected = [];
 var notes_selected_withencrypted = [];
 
 var sort_mode = null;
-
-//markdown parser
-var mk_strong = /(\*\*)(.*)(\*\*)/gi;
-var mk_em = /(\*)(.*)(\*)/gi;
-var mk_link = /(\[)(.*)(\])(\()(.*)(\))/gi;
-var mk_hr = /(\n\s*(-\s*){3,}\s*\n)|(\n\s*(\*\s*){3,}\s*\n)|(\n\s*(_\s*){3,}\s*\n)/gi;
-var mk_h1 = /#&nbsp;(.+)/gi;
-var mk_h2 = /##&nbsp;(.+)/gi;
-var mk_h3 = /###&nbsp;(.+)/gi;
-var mk_h4 = /####&nbsp;(.+)/gi;
-var mk_h5 = /#####&nbsp;(.+)/gi;
-
 
 //初始化排序模式
 storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
@@ -65,9 +54,6 @@ function clearNoteList() {
     selectModeEnabled = false; //刷新页面/列表时重置多选开关
 }
 
-//定义url过滤正则
-var reg_url = /(?!(href="))(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi;
-
 //渲染一条笔记
 function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown) {
     if (typeof settings.language == 'undefined'){
@@ -101,24 +87,24 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
     var m_time = moment(rawtime, 'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
         var m_updatetime = moment(updaterawtime, 'YYYYMMDDHHmmss');
-        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n['render'][current_i18n]['updatetime']+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
-            '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n['render'][current_i18n]['createtime']+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+            '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n.render[current_i18n].createtime+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
-        html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
     if (typeof password == 'undefined') {
         html += '</div><div class="note-content"><div class="note-text"><p>';
         //process html tag
         text = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
         if (typeof markdown != "undefined" && markdown){
-            text = text.replace(mk_h5,'<noteh5>$1</noteh5>').replace(mk_h4,'<noteh4>$1</noteh4>').replace(mk_h3,'<noteh3>$1</noteh3>').replace(mk_h2,'<noteh2>$1</noteh2>').replace(mk_h1,'<noteh1>$1</noteh1>').replace(mk_hr,'\n</p><hr><p>')
-                .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
+            text = text.replace(reg.h5,'<noteh5>$1</noteh5>').replace(reg.h4,'<noteh4>$1</noteh4>').replace(reg.h3,'<noteh3>$1</noteh3>').replace(reg.h2,'<noteh2>$1</noteh2>').replace(reg.h1,'<noteh1>$1</noteh1>').replace(reg.hr,'\n</p><hr><p>')
+                .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
         }
         text = text.replace(/\n/gi,'<br>');
         text = insert_spacing(text, 0.15);
         //自动识别网页
         if (!markdown){
-            html += text.replace(reg_url, function (result) {
+            html += text.replace(reg.url, function (result) {
                 return '<a href="' + result + '">' + result + '</a>';
             });
         } else {
@@ -131,9 +117,9 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         //密码框
         html += '</div><div class="note-content"><div class="note-password" data-password="' + password + '" data-encrypted="' + text + '">';
         if (typeof inRecyclebin == 'undefined') {
-            html += '<span>'+i18n['render'][current_i18n]['password']+'</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
+            html += '<span>'+i18n.render[current_i18n].password+'</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
         } else {
-            html += '<p>['+i18n['render'][current_i18n]['encrypted_info']+']</p>';
+            html += '<p>['+i18n.render[current_i18n].encrypted_info+']</p>';
         }
         html += '</div></div></div></div>';
     }
@@ -190,24 +176,24 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
     var m_time = moment(rawtime, 'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
         var m_updatetime = moment(updaterawtime, 'YYYYMMDDHHmmss');
-        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n['render'][current_i18n]['updatetime']+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
-            '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n['render'][current_i18n]['createtime']+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+            '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n.render[current_i18n].createtime+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
-        html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
+        html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
     if (typeof password == 'undefined') {
         html += '</div><div class="note-content"><div class="note-text"><p>';
         //process html tag
         text = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
         if (typeof markdown != "undefined" && markdown){
-            text = text.replace(mk_h5,'<noteh5>$1</noteh5>').replace(mk_h4,'<noteh4>$1</noteh4>').replace(mk_h3,'<noteh3>$1</noteh3>').replace(mk_h2,'<noteh2>$1</noteh2>').replace(mk_h1,'<noteh1>$1</noteh1>').replace(mk_hr,'\n</p><hr><p>')
-                .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
+            text = text.replace(reg.h5,'<noteh5>$1</noteh5>').replace(reg.h4,'<noteh4>$1</noteh4>').replace(reg.h3,'<noteh3>$1</noteh3>').replace(reg.h2,'<noteh2>$1</noteh2>').replace(reg.h1,'<noteh1>$1</noteh1>').replace(reg.hr,'\n</p><hr><p>')
+                .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
         }
         text = text.replace(/\n/gi,'<br>');
         text = insert_spacing(text, 0.15);
         //自动识别网页
         if (!markdown){
-            html += text.replace(reg_url, function (result) {
+            html += text.replace(reg.url, function (result) {
                 return '<a href="' + result + '">' + result + '</a>';
             });
         } else {
@@ -220,9 +206,9 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
         //密码框
         html += '</div><div class="note-content"><div class="note-password" data-password="' + password + '" data-encrypted="' + text + '">';
         if (typeof inRecyclebin == 'undefined') {
-            html += '<span>'+i18n['render'][current_i18n]['password']+'</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
+            html += '<span>'+i18n.render[current_i18n].password+'</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
         } else {
-            html += '<p>['+i18n['render'][current_i18n]['encrypted_info']+']</p>';
+            html += '<p>['+i18n.render[current_i18n].encrypted_info+']</p>';
         }
         html += '</div></div></div></div>';
     }
@@ -292,7 +278,7 @@ async function rerenderEditedNote(data, rawtext) {
             $('#note_'+data.id+' .note-content .note-password').attr('data-encrypted',data.text);
         } else {
             //便签之前没有设置过密码
-            $('#note_'+data.id+' .note-content').prepend('<div class="note-password" data-password="' + data.password + '" data-encrypted="' + data.text + '" style="display: none;"><span>'+i18n['render'][current_i18n]['password']+'</span><input type="password" class="form-control" id="note_password_' + data.id + '" onkeydown="checkNotePassword(event, ' + data.id + ');"></div>');
+            $('#note_'+data.id+' .note-content').prepend('<div class="note-password" data-password="' + data.password + '" data-encrypted="' + data.text + '" style="display: none;"><span>'+i18n.render[current_i18n].password+'</span><input type="password" class="form-control" id="note_password_' + data.id + '" onkeydown="checkNotePassword(event, ' + data.id + ');"></div>');
             $('#note_'+data.id+' .note-header').append('<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + data.id + ')" style="display: inline-block !important;"></i>');
             $('#note_'+data.id+' .note-header .note-password-relock').animateCss('fadeIn morefaster');
         }
@@ -302,12 +288,12 @@ async function rerenderEditedNote(data, rawtext) {
     }
 
     //reset content of updatetime
-    var timeContent = '<p class="note-time note-updatetime han-element">' + i18n['render'][current_i18n]['updatetime']
-        data.updatetime + '</p>' + '<p class="note-time han-element">'+ i18n['render'][current_i18n]['createtime'] + data.time + '</p>';
+    var timeContent = '<p class="note-time note-updatetime han-element">' + i18n.render[current_i18n].updatetime
+        data.updatetime + '</p>' + '<p class="note-time han-element">'+ i18n.render[current_i18n].createtime + data.time + '</p>';
     let m_updatetime = moment(data.updaterawtime, 'YYYYMMDDHHmmss');
     let m_time = moment(data.rawtime, 'YYYYMMDDHHmmss');
-    var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n['render'][current_i18n]['updatetime']+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
-        '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n['render'][current_i18n]['updatetime']+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n['render'][current_i18n]['year']+'</timeyear><timemonth>]MM['+i18n['render'][current_i18n]['month']+'</timemonth><timeday>]DD['+i18n['render'][current_i18n]['day']+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
+    var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+        '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
     $('#note_' + data.id + ' .note-header time').html(timeContent);
     //open external event rebind
     $('#note_' + data.id + ' a').click(function (e) {
@@ -383,14 +369,14 @@ async function rerenderEditedNote(data, rawtext) {
 function resetEditedNoteText(data, t) {
     let text = $("#filter-x").text(t).html().replace(/ /g, '&nbsp;');
     if (typeof data.markdown != "undefined" && data.markdown){
-        text = text.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
-                .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
+        text = text.replace(reg.h5,'$1<noteh5>$2</noteh5>$3').replace(reg.h4,'$1<noteh4>$2</noteh4>$3').replace(reg.h3,'$1<noteh3>$2</noteh3>$3').replace(reg.h2,'$1<noteh2>$2</noteh2>$3').replace(reg.h1,'$1<noteh1>$2</noteh1>$3').replace(reg.hr,'\n</p><hr><p>')
+                .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
     }
     text = text.replace(/\n/gi,'<br>');
     text = insert_spacing(text, 0.15);
     var html = '<div class="note-text"><p>';
     if (typeof data.markdown == 'undefined' || !data.markdown){
-        html += text.replace(reg_url, function (result) {
+        html += text.replace(reg.url, function (result) {
             return '<a href="' + result + '">' + result + '</a>';
         });
     } else {
@@ -691,14 +677,14 @@ function checkNotePassword(e, noteid) {
             var html = '<div class="note-text" style="display:none;"><p>';
             let temp = $("#filter-x").text(decrypted_text).html().replace(/ /g, '&nbsp;');
             if (typeof markdown != "undefined" && markdown){
-                temp = temp.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
-                    .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
+                temp = temp.replace(reg.h5,'$1<noteh5>$2</noteh5>$3').replace(reg.h4,'$1<noteh4>$2</noteh4>$3').replace(reg.h3,'$1<noteh3>$2</noteh3>$3').replace(reg.h2,'$1<noteh2>$2</noteh2>$3').replace(reg.h1,'$1<noteh1>$2</noteh1>$3').replace(reg.hr,'\n</p><hr><p>')
+                    .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
             }
             temp = temp.replace(/\n/gi,'<br>');
             temp = insert_spacing(temp, 0.15);
             //自动识别网页
             if (markdown == 'false'){
-                html += temp.replace(reg_url, function (result) {
+                html += temp.replace(reg.url, function (result) {
                     return '<a href="' + result + '">' + result + '</a>';
                 });
             } else {
@@ -767,14 +753,14 @@ async function rerenderTextOfNote(noteid, text, animate=false){
     let html = '<div class="note-text"><p>';
     let temp = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
     if (typeof markdown != "undefined" && markdown == 'true'){
-        temp = temp.replace(mk_h5,'$1<noteh5>$2</noteh5>$3').replace(mk_h4,'$1<noteh4>$2</noteh4>$3').replace(mk_h3,'$1<noteh3>$2</noteh3>$3').replace(mk_h2,'$1<noteh2>$2</noteh2>$3').replace(mk_h1,'$1<noteh1>$2</noteh1>$3').replace(mk_hr,'\n</p><hr><p>')
-            .replace(mk_strong, '<strong>$2</strong>').replace(mk_em, '<em>$2</em>').replace(mk_link, '<a href="$5">$2</a>');
+        temp = temp.replace(reg.h5,'$1<noteh5>$2</noteh5>$3').replace(reg.h4,'$1<noteh4>$2</noteh4>$3').replace(reg.h3,'$1<noteh3>$2</noteh3>$3').replace(reg.h2,'$1<noteh2>$2</noteh2>$3').replace(reg.h1,'$1<noteh1>$2</noteh1>$3').replace(reg.hr,'\n</p><hr><p>')
+            .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
     }
     temp = temp.replace(/\n/gi,'<br>');
     temp = insert_spacing(temp, 0.15);
     //自动识别网页
     if (markdown == 'false'){
-        html += temp.replace(reg_url, function (result) {
+        html += temp.replace(reg.url, function (result) {
             return '<a href="' + result + '">' + result + '</a>';
         });
     } else {

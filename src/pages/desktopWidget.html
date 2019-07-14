@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html class="widget-html">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Fastnote</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--import requirements-->
+    <script>
+        window.$ = window.jQuery = require('./static/jquery.min.js');
+    </script>
+    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
+    <link rel="stylesheet" href="static/font-awesome.min.css">
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+    <link rel="stylesheet" href="static/animate.min.css">
+    <script src="static/notes.render.widget.js"></script>
+    <script src="static/han.simple.js"></script>
+    <script src="static/mousetrap.min.js"></script>
+    <script>
+        //load Animate CSS
+        $.fn.extend({
+            animateCss: function (animationName, callback) {
+                var animationEnd = (function (el) {
+                    var animations = {
+                        animation: 'animationend',
+                        OAnimation: 'oAnimationEnd',
+                        MozAnimation: 'mozAnimationEnd',
+                        WebkitAnimation: 'webkitAnimationEnd',
+                    };
+
+                    for (var t in animations) {
+                        if (typeof (el.style[t]) !== 'undefined') {
+                            return animations[t];
+                        }
+                    }
+                })(document.createElement('div'));
+
+                this.addClass('animated ' + animationName).one(animationEnd, function () {
+                    $(this).removeClass('animated ' + animationName);
+                    if (typeof callback === 'function') callback();
+                });
+
+                return this;
+            },
+        });
+        //define const
+        const remote = require('electron').remote;
+        const app = remote.app;
+        //import json storage
+        const storage = require('electron-json-storage');
+
+        const {
+            ipcRenderer
+        } = require('electron');
+
+        const WebFont = require('webfontloader');
+
+        var settings;
+
+        storage.get('settings', function (error, data) {
+            if (error) {
+                console.error(error);
+                settingsInit(null);
+                return;
+            } else {
+                //获取callback回传的json
+                settings = data;
+                settingsInit(settings);
+            }
+            $(document).ready(function () {
+                ipcRenderer.send("widget-window-ready");
+            });
+        });
+
+        function settingsInit(settings) {
+            var cssText = "";
+            var font = "";
+            //build css
+            if (settings == null) {
+                //read error
+                $('#main-style').attr('href', 'static/main.blackwhite.css');
+
+                cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
+                font = 'Source Han Sans CN';
+
+                console.error('A error occured when reading settings.');
+            } else {
+                //read success
+                if (typeof settings.theme != 'undefined') {
+                    $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
+                } else {
+                    $('#main-style').attr('href', 'static/main.blackwhite.css');
+                }
+
+                if (typeof settings.fontfamily != 'undefined') {
+                    cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
+                    font = settings.fontfamily;
+                } else {
+                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;';
+                    font = 'Source Han Sans CN';
+                }
+
+                if (typeof settings.widget_opacity != 'undefined'){
+                    $(document).ready(function(){
+                        let bgcolor = $('.container-widget').css('background-color');
+                        let reg_alpha = /(rgba\([0-9]{1,3},\s+[0-9]{1,3},\s+[0-9]{1,3},\s+)(0\.[0-9]+)(\))/i;
+                        bgcolor = bgcolor.replace(reg_alpha, '$1'+settings.widget_opacity/100+'$3');
+                        $('.container-widget').css('background-color', bgcolor);
+                    });
+                }
+
+                if (typeof settings.widget_defaultforcetop != 'undefined'){
+                    if (settings.widget_defaultforcetop){
+                        $(document).ready(function(){
+                            ipcRenderer.send('widget-alwaysontop', note.id);
+                        });
+                    }
+                }
+            }
+            var modStyle = document.querySelector('#modCSS');
+            if (modStyle === null) {
+                modStyle = document.createElement('style');
+                modStyle.id = 'modCSS';
+                document.body.appendChild(modStyle);
+            }
+            modStyle.innerHTML = cssText;
+
+            if (font == 'Source Han Sans CN') {
+                loadWebfont(font);
+            }
+        }
+
+        function loadWebfont(font) {
+            WebFont.load({
+                custom: {
+                    families: [font]
+                }
+            });
+        }
+    </script>
+</head>
+
+<body class="widget-body">
+    <div class="container-widget">
+        <div class="widget-controls-container">
+            <div class="widget-title">
+                <span class="widget-title-text"></span>
+            </div>
+            <div class="widget-controls">
+                <div class="widget-control widget-control-close">
+                    <i class="fa fa-times"></i>
+                </div>
+            </div>
+        </div>
+        <div class="widget-split"></div>
+        <div class="widget-body">
+            <div class="widget-note">
+                <div class="widget-note-content"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var note;
+        //ipc events
+        ipcRenderer.on('init', (sender, data) => {
+            note = data;
+            //init text
+            renderNoteForWidget(data);
+            //init title
+            if (typeof data.title == 'undefined') {
+                $('.widget-title-text').html('#' + data.id);
+            } else {
+                $('.widget-title-text').html(data.title);
+            }
+            //init window
+            var flag_resize = true;
+            setTimeout(() => {
+                if (document.body.scrollHeight < 400) {
+                    ipcRenderer.send('widget-heightChange', document.body.scrollHeight);
+                    flag_resize = false;
+                } else {
+                    ipcRenderer.send('widget-heightChange', 400);
+                    ipcRenderer.send('widget-setMaxHeight', document.body.scrollHeight + 4);
+                    $('.widget-note-content').css('height', 339);
+                }
+                $(window).resize(function () {
+                    //resize content
+                    if (flag_resize) {
+                        $('.widget-note-content').css('height', $(window).height() - 61);
+                    }
+                    $('.widget-title').css('width', $(window).width() - 160);
+                });
+            }, 0);
+        });
+        ipcRenderer.on('setAlwaysOnTop', (sender, data)=>{
+            if (data){
+                $('.widget-controls').append('<div class="widget-icon widget-icon-forcetop"><i class="fa fa-caret-up"></i></div>');
+            } else {
+                $('.widget-icon-forcetop').remove();
+            }
+        });
+        ipcRenderer.on('setLock',(sender,data)=>{
+            if (data){
+                $('.widget-controls').append('<div class="widget-icon widget-icon-lock"><i class="fa fa-lock"></i></div>');
+                $('.container-widget').addClass('app-nodrag');
+            } else {
+                $('.widget-icon-lock').remove();
+                $('.container-widget').removeClass('app-nodrag');
+            }
+        });
+        ipcRenderer.on('note-recycled', (sender, data)=>{
+            window.close();
+        });
+        ipcRenderer.on('update-edit-note', (sender, data)=>{
+            if (data){
+                flag_resize = true;
+                renderNoteForWidget(data);
+                //rerender title
+                if (typeof data.title == 'undefined') {
+                    $('.widget-title-text').html('#' + data.id);
+                } else {
+                    $('.widget-title-text').html(data.title);
+                }
+                setTimeout(() => {
+                    if (document.body.scrollHeight < 400) {
+                        ipcRenderer.send('widget-heightChange', document.body.scrollHeight);
+                        flag_resize = false;
+                    } else {
+                        ipcRenderer.send('widget-heightChange', 400);
+                        ipcRenderer.send('widget-setMaxHeight', document.body.scrollHeight + 4);
+                        $('.widget-note-content').css('height', 339);
+                    }
+                }, 0);
+            }
+        });
+
+        //bind events
+        $('.widget-control-close').click(() => {
+            window.close();
+        });
+
+        Mousetrap.bind('ctrl+t', function () {
+            ipcRenderer.send('widget-alwaysontop', note.id);
+            return false;
+        });
+        Mousetrap.bind('ctrl+l', function () {
+            ipcRenderer.send('widget-lock', note.id);
+            return false;
+        });
+        Mousetrap.bind('ctrl+q', function () {
+            window.close();
+            return false;
+        });
+    </script>
+    <span id="filter-x" style="display:none"></span>
+</body>

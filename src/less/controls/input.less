@@ -19,3 +19,18 @@
 .br-invalid-underline{
     border-bottom: 1px solid @color-error !important;
 }
+.brcontrol-range{
+    border: none !important;
+    padding: 0 !important;
+    background-color: @color-text-primary !important;
+    -webkit-appearance: none;
+    border-radius: 50px;
+    height: 4px !important;
+}
+.brcontrol-range::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    border-radius: 50px;
+    height: 15px;
+    width: 15px;
+    background: darken(@color-text-primary, 15%);
+}

@@ -13,7 +13,7 @@ const {
 } = require('electron');
 
 //global settings
-global.indebug = true; //debug trigger
+global.indebug = false; //debug trigger
 global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
@@ -31,6 +31,7 @@ recycleWindow = require('./app/recyclebin');
 settingsWindow = require('./app/settings');
 newnoteWindow = require('./app/newnote');
 decryptionWindow = require('./app/decryption');
+desktopWidget = require('./app/widget');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -117,7 +118,7 @@ function createWindow() {
     recycleWindow.create();
   });
   //open edit window
-  ipc.on('openEditWindow', function (sender, data) {
+  ipc.on('openEditWindow', (sender, data) => {
     editWindow.showWindow(data);
   });
   //open settings window
@@ -132,8 +133,10 @@ function createWindow() {
   ipc.on('openDecryptionWindow', (sender, data)=>{
     decryptionWindow.show(data);
   });
-
-  ipc.on('reloadMainWindow', function (sender, data) {
+  ipc.on('createDesktopWidget', (sender, data)=>{
+    desktopWidget.create(data);
+  });
+  ipc.on('reloadMainWindow', (sender, data)=>{
     win.reload();
     checkForUpdates();
   });
@@ -146,6 +149,12 @@ function createWindow() {
           type: 'note-recycled',
           data: data
         });
+      }
+    }
+    let widgets = desktopWidget.getWindows();
+    for (let i=0;i<widgets.length;i++){
+      if (typeof widgets[i] != 'undefined' && editWins[i] != null){
+        widgets[i].webContents.send('note-recycled');
       }
     }
   });
@@ -217,7 +226,7 @@ function createWindow() {
   win.on('closed', () => {
     win = null;
     app.quit();
-  })
+  });
 
   //getfocus
   win.on('ready-to-show', () => {
@@ -225,6 +234,7 @@ function createWindow() {
     //bind update event
     editWindow.bindEditEvent(function (data) {
       win.webContents.send('update-edit-note', data);
+      desktopWidget.updateEditNote(data);
     });
   });
 
@@ -239,7 +249,7 @@ function createWindow() {
     for (var i=0;i<windows.length;i++){
       windows[i].webContents.send('enable-lockscreen-minimize');
     }
-  })
+  });
   win.on('blur',()=>{
     var windows = BrowserWindow.getAllWindows();
     if (BrowserWindow.getFocusedWindow() == null){
@@ -247,7 +257,7 @@ function createWindow() {
         windows[i].webContents.send('enable-lockscreen-blur');
       }
     }
-  })
+  });
 }
 
 ipc.on('disable-lockscreen',()=>{
@@ -255,7 +265,7 @@ ipc.on('disable-lockscreen',()=>{
   for (var i=0;i<windows.length;i++){
     windows[i].webContents.send('disable-lockscreen');
   }
-})
+});
 
 //捕捉新建便签窗口的消息
 ipc.on('newnotewin-save', (sender, data)=>{
@@ -304,7 +314,7 @@ let checkForUpdates = () => {
   // 更新下载进度事件
   autoUpdater.on('download-progress', function (progressObj) {
     sendUpdateMessage('downloadProgress', progressObj);
-  })
+  });
   autoUpdater.on('update-downloaded', () => {
     sendUpdateMessage('update-downloaded');
   });
@@ -317,7 +327,7 @@ let checkForUpdates = () => {
 let openExternalURL = () => {
   ipc.on('openExternalURL', (e, msg) => {
     shell.openExternal(msg);
-  })
+  });
 }
 
 app.on('activate', () => {

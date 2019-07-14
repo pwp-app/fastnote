@@ -21,7 +21,7 @@ function createDecryptionWindow(data){
         webPreferences: {
             nodeIntegration: true
         }
-    }
+    };
     if (process.platform == 'darwin')
         conf.titleBarStyle = 'hiddenInset';
     else
@@ -68,7 +68,7 @@ var decryptionWindow = {
             createDecryptionWindow(data);
         }
     }
-}
+};
 
 ipc.on('closeAllDecryptionWindow', function () {
     for (var i = 0; i < wins_decryption.length; i++) {
@@ -78,6 +78,8 @@ ipc.on('closeAllDecryptionWindow', function () {
             decryption_noteid[i] = null;
         }
     }
+    wins_decryption = [];
+    decryption_noteid = [];
 });
 
 module.exports = decryptionWindow;
