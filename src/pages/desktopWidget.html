@@ -101,6 +101,23 @@
                     cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;';
                     font = 'Source Han Sans CN';
                 }
+
+                if (typeof settings.widget_opacity != 'undefined'){
+                    $(document).ready(function(){
+                        let bgcolor = $('.container-widget').css('background-color');
+                        let reg_alpha = /(rgba\([0-9]{1,3},\s+[0-9]{1,3},\s+[0-9]{1,3},\s+)(0\.[0-9]+)(\))/i;
+                        bgcolor = bgcolor.replace(reg_alpha, '$1'+settings.widget_opacity/100+'$3');
+                        $('.container-widget').css('background-color', bgcolor);
+                    });
+                }
+
+                if (typeof settings.widget_defaultforcetop != 'undefined'){
+                    if (settings.widget_defaultforcetop){
+                        $(document).ready(function(){
+                            ipcRenderer.send('widget-alwaysontop', note.id);
+                        });
+                    }
+                }
             }
             var modStyle = document.querySelector('#modCSS');
             if (modStyle === null) {

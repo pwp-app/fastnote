@@ -140,5 +140,8 @@ i18n['en-us']={
     notes_conflict_message: 'Some of the notes in the backup conflict with the existing notes on the ID\n The ID of the note should be unique, otherwise the program will have an error. \nPlease handle the conflicts.',
     note_conflict_detail: 'Conflicting notes: \n',
     note_conflict_detail_content: ', Content: ',
-    desktop_widget: 'Create desktop widget'
+    desktop_widget: 'Create desktop widget',
+    settings_widget: 'Widget',
+    opacity: 'Opacity',
+    default_forcetop: 'Default top'
 };

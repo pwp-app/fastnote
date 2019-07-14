@@ -10,7 +10,7 @@
     border-radius: 12px;
 }
 .container-widget{
-    background: fade(@color-widget-bg, @transparent-percent);
+    background-color: fade(@color-widget-bg, @transparent-percent);
     margin: 0;
     padding: 12px 16px;
     border-radius: 12px;
@@ -61,6 +61,7 @@
 .widget-note-content::-webkit-scrollbar {
     width: 4px;
     z-index: 10;
+    background-color: fade(@color-primary, @transparent-percent)
 }
 .widget-note-content::-webkit-scrollbar-thumb {
     border-radius: 9px;
@@ -70,7 +71,7 @@
     display: none;
 }
 .widget-note-content::-webkit-scrollbar-track-piece {
-    background-color: fade(@color-widget-bg, @transparent-percent);;
+    background-color: fade(@color-widget-bg, @transparent-percent);
 }
 .widget-note-content>.note-text{
     color: @color-text-primary;

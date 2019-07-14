@@ -207,6 +207,17 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
             });
         }
     }));
+    //全选
+    menu_note_multiSelected.append(new MenuItem({
+        label: i18n[current_i18n].select_all,
+        click: function () {
+            $('.note-wrapper').addClass('note-selected');
+            notes_selected = [];
+            for (var i=0;i<note.length;i++){
+                
+            }
+        }
+    }));
     menu_note_multiSelected.on('menu-will-close', (event, args) => {
         $('.note-wrapper').removeClass('note-selected');
         if (selectModeEnabled) {

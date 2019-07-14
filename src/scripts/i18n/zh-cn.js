@@ -140,5 +140,8 @@ i18n['zh-cn']={
     notes_conflict_message: '恢复备份中的一些便签在ID上和现有便签产生冲突\n便签的ID应是唯一的，否则程序将出现错误。\n请处理冲突',
     note_conflict_detail: '存在冲突的便签：\n',
     note_conflict_detail_content: '，内容: ',
-    desktop_widget: '创建桌面组件'
+    desktop_widget: '创建桌面组件',
+    settings_widget: '桌面组件',
+    opacity: '透明度',
+    default_forcetop: '默认置顶'
 };
