@@ -153,7 +153,7 @@ function createWindow() {
     }
     let widgets = desktopWidget.getWindows();
     for (let i=0;i<widgets.length;i++){
-      if (typeof widgets[i] != 'undefined' && editWins[i] != null){
+      if (typeof widgets[i] != 'undefined' && widgets[i] != null){
         widgets[i].webContents.send('note-recycled');
       }
     }
