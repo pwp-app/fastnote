@@ -1572,54 +1572,72 @@
         $(document).ready(function() {
             $('#note-text').focus();
         });
+
+        //关闭选项的flag
+        var reloadWindow = false;
+        var closeOptionDialogShow = false;
+
+        ipcRenderer.on('before-reload', () => {
+            reloadWindow = true;
+        });
+
         //复写关闭窗口事件
         window.onbeforeunload = (e) => {
+            if (reloadWindow){
+                return;
+            }
             if (!settings.closeOption) {
-                dialog.showMessageBox({
-                    type: 'info',
-                    title: i18n[current_i18n].close_mainwindow_title,
-                    buttons: [i18n[current_i18n].close_minimize_to_tray, i18n[current_i18n].close_just_close],
-                    message: i18n[current_i18n].close_mainwindow_msg,
-                    defaultId: 0
-                }, (id) => {
-                    switch (id) {
-                        case 0:
-                            //复写设置
-                            settings.closeOption = 'tray';
-                            storage.set('settings', settings, (err) => {
-                                if (err) {
-                                    console.error(err)
-                                }
-                            });
-                            window.close();
-                            break;
-                        case 1:
-                            //复写设置
-                            settings.closeOption = 'close';
-                            //保存设置
-                            storage.set('settings', settings, (err) => {
-                                if (err) {
-                                    console.error(err)
-                                }
-                            });
-                            ipcRenderer.send('app-quitNow');
-                            break;
-                        default:
-                            window.close();
-                            break;
-                    }
-                });
+                if (!closeOptionDialogShow) {
+                    closeOptionDialogShow = true;
+                    dialog.showMessageBox({
+                        type: 'info',
+                        title: i18n[current_i18n].close_mainwindow_title,
+                        buttons: [i18n[current_i18n].close_minimize_to_tray, i18n[current_i18n].close_just_close],
+                        message: i18n[current_i18n].close_mainwindow_msg,
+                        defaultId: 0
+                    }, (id) => {
+                        switch (id) {
+                            case 0:
+                                //复写设置
+                                settings.closeOption = 'tray';
+                                storage.set('settings', settings, (err) => {
+                                    if (err) {
+                                        console.error(err)
+                                    }
+                                });
+                                window.close();
+                                break;
+                            case 1:
+                                //复写设置
+                                settings.closeOption = 'close';
+                                //保存设置
+                                storage.set('settings', settings, (err) => {
+                                    if (err) {
+                                        console.error(err)
+                                    }
+                                });
+                                ipcRenderer.send('app-quitNow');
+                                break;
+                            default:
+                                window.close();
+                                break;
+                        }
+                        reloadWindow = false;
+                        closeOptionDialogShow = false;
+                    });
+                    e.returnValue = false;
+                }
             } else {
                 switch (settings.closeOption) {
                     case 'close':
                         ipcRenderer.send('app-quitNow');
+                        console.log(1);
                         break;
                     case 'tray':
                         window.close();
                         break;
                 }
             }
-            e.returnValue = false // 相当于 `return false` ，但是不推荐使用
         }
     </script>
 

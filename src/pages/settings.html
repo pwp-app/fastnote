@@ -157,6 +157,12 @@
                 $.getScript('static/i18n/zh-cn.js');
             } else {
                 //read success
+                //init close option
+                if (typeof settings.closeOption != 'undefined'){
+                    initCloseOption(settings.closeOption);
+                } else {
+                    initCloseOption('tray');
+                }
                 //init language
                 if (typeof settings.language != 'undefined') {
                     if (settings.language != 'zh-cn') {
@@ -327,6 +333,12 @@
             });
         }
 
+        function initCloseOption(closeOption){
+            $(document).ready(function(){
+                $('#select-closeOption').val(closeOption);
+            });
+        }
+
         function initLockScreen(status) {
             switch (status) {
                 case 'enabled':
@@ -442,7 +454,7 @@
         </div>
         <script>
             var settings_window_height = {
-                general: 480,
+                general: 530,
                 notes: 380,
                 widget: 290,
                 display: 530,
@@ -525,6 +537,18 @@
                     <select class="form-control settings-select" id="select-language">
                         <option value="zh-cn">简体中文</option>
                         <option value="en-us">English</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span data-lang="close_option">关闭选项</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-closeOption">
+                        <option value="tray" data-lang="close_minimize_to_tray">最小化到托盘</option>
+                        <option value="close" data-lang="close_just_close">关闭</option>
                     </select>
                 </div>
             </div>
@@ -1194,6 +1218,7 @@
             var autoUpdateChannel = $('#select-updateChannel').val();
             var theme = $("#select-themes").val();
             var language = $('#select-language').val();
+            var closeOption = $('#select-closeOption').val();
 
             //获取显示设置
             var fontfamily = $('#select-fontfamily').val();
@@ -1214,6 +1239,7 @@
             settings.autoUpdateChannel = autoUpdateChannel;
             settings.theme = theme;
             settings.language = language;
+            settings.closeOption = closeOption;
             settings.widget_opacity = widget_opacity;
             settings.widget_defaultforcetop = widget_defaultforcetop;
             settings.fontfamily = fontfamily;

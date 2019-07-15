@@ -5,7 +5,7 @@ const ipc = require('electron').ipcMain;
 const storage = require('electron-json-storage');
 
 //global settings
-global.indebug = true; //debug trigger
+global.indebug = false; //debug trigger
 global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
@@ -27,7 +27,8 @@ desktopWidget = require('./app/widget');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win;
+var win;
+var tray;
 
 function createWindow() {
     // 创建浏览器窗口。
@@ -129,6 +130,7 @@ function createWindow() {
         desktopWidget.create(data);
     });
     ipc.on('reloadMainWindow', (sender, data) => {
+        win.webContents.send('before-reload');
         win.reload();
         checkForUpdates();
     });
@@ -263,30 +265,27 @@ ipc.on('newnotewin-save', (sender, data) => {
     win.webContents.send('newnotewin-save', data);
 });
 
-// Electron 会在初始化后并准备
-// 创建浏览器窗口时，调用这个函数。
-// 部分 API 在 ready 事件触发后才能使用。
+//创建托盘
 function createTray() {
-    tray = new Tray('./public/static/images/logo.png');
-    const contextMenu = Menu.buildFromTemplate([
-        { label: 'Item1', type: 'radio' },
-        { label: 'Item2', type: 'radio' },
-        { label: 'Item3', type: 'radio', checked: true },
-        { label: 'Item4', type: 'radio' }
+    tray = new Tray('./public/static/images/tray.ico');
+    let contextMenu = Menu.buildFromTemplate([
+        {
+            label: '退出',
+            click: ()=>{
+                app.exit();
+            }
+        }
     ]);
     tray.setToolTip('Fastnote');
     tray.setContextMenu(contextMenu);
+    tray.on('double-click',()=>{
+        if(win == null){
+            createWindow();
+        } else {
+            win.focus();
+        }
+    });
 }
-
-app.on('ready', () => {
-    createWindow();
-    createTray();
-});
-
-// 当全部窗口关闭时退出。
-app.on('window-all-closed', () => {
-    app.quit();
-});
 
 //自动更新事件定义
 let sendUpdateMessage = (message, data) => {
@@ -342,6 +341,16 @@ app.on('activate', () => {
     if (win === null) {
         createWindow();
     }
+});
+
+app.on('ready', () => {
+    createWindow();
+    createTray();
+});
+
+//窗口全部关闭的时候仍然保留托盘
+app.on('window-all-closed', (e) => {
+    e.preventDefault();
 });
 
 //event
