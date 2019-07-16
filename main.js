@@ -3,9 +3,10 @@ const { app, BrowserWindow, Menu, Tray, shell } = require('electron');
 const ipc = require('electron').ipcMain;
 //set storage
 const storage = require('electron-json-storage');
+const path = require('path');
 
 //global settings
-global.indebug = true; //debug trigger
+global.indebug = false; //debug trigger
 global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
@@ -87,8 +88,8 @@ function createWindow() {
         } else {
             feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
         }
-        // 加载应用的 index.html。
-        win.loadFile('public/index.html');
+        let viewpath = path.resolve(__dirname, './public/index.html');
+        win.loadFile(viewpath);
     });
 
     //uuid recevier
@@ -284,7 +285,8 @@ ipc.on('newnotewin-save', (sender, data) => {
 
 //创建托盘
 function createTray() {
-    tray = new Tray('./public/static/images/tray.ico');
+    let trayIco = path.resolve(__dirname, './public/static/images/tray.ico');
+    tray = new Tray(trayIco);
     let contextMenu = Menu.buildFromTemplate([
         {
             label: '退出',
