@@ -1,24 +1,21 @@
-.container-infobar {
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    align-items: center;
-}
+@infobar-width: 450px;
+@infobar-height: 35px;
 
 .infobar {
-    width: 450px;
-    height: 35px;
+    width: @infobar-width;
+    height: @infobar-height;
     text-align: center;
-    top: 0;
-    position: fixed;
     font-size: 14px;
     padding: 6px 15px;
     color: @color-secondary;
+    z-index: 20;
+    pointer-events: all !important;
+    margin: 0 auto;
     /* animate */
     .mid-duration();
 }
 
-.infobar i {
+.infobar i{
     margin-right: 15px;
 }
 
@@ -44,4 +41,15 @@
 
 .update-progress::-webkit-progress-value {
     background: @color-updateprogress-value;
+}
+
+.infobar-dismiss{
+    -webkit-app-region: no-drag !important;
+    float: right;
+    margin-top: 3px;
+    color: @color-secondary;
+    cursor: pointer;
+}
+.infobar-dismiss:hover{
+    color: @color-trigger-hover-primary;
 }
