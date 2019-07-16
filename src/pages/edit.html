@@ -59,6 +59,13 @@
         //获取indebug
         global.indebug = remote.getGlobal('indebug');
 
+        if (!global.indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
+
         //import requirements
         $.getScript('../app/infobar.js'); //import by jQuery
 
@@ -67,7 +74,7 @@
 
         var settings;
 
-        storage.get('settings', function (error, data) {
+        storage.get('settings', function(error, data) {
             if (error) {
                 console.error(error);
                 settingsInit(null);
@@ -77,7 +84,7 @@
                 settings = data;
                 settingsInit(settings);
             }
-            $(document).ready(function () {
+            $(document).ready(function() {
                 ipcRenderer.send("edit-window-ready");
             });
         });
@@ -98,12 +105,12 @@
                 //read success
                 if (typeof settings.language != 'undefined') {
                     if (settings.language != 'zh-cn') {
-                        $(document).ready(function () {
+                        $(document).ready(function() {
                             initLanguage();
                         });
                     } else {
                         current_i18n = 'zh-cn';
-                        $.getScript('static/i18n/zh-cn.js', function(){
+                        $.getScript('static/i18n/zh-cn.js', function() {
                             postElementsInit();
                         });
                     }
@@ -151,36 +158,36 @@
             applyLanguage(settings.language, postElementsInit);
         }
 
-         function postElementsInit() {
-                //初始化密码框
-                if (typeof passwordStatus != 'undefined') {
-                    if (passwordStatus == 'notset') {
-                        $('#input-password').attr('placeholder', i18n[current_i18n].placeholder_notset);
-                    } else if (passwordStatus == 'notchange') {
-                        $('#input-password').attr('placeholder', i18n[current_i18n].placeholder_notchange);
-                    }
-                }
-                //初始化header
-                if (typeof note.updatetime == 'undefined') {
-                    switch (current_i18n) {
-                        case 'zh-cn':
-                            $("#edit-header-time").html(i18n[current_i18n].edit_createtime + note.time);
-                            break;
-                        default:
-                            $("#edit-header-time").html(i18n[current_i18n].edit_createtime + note.time.replace(/年|月/g, '-').replace('日', ''));
-                            break;
-                    }
-                } else {
-                    switch (current_i18n) {
-                        case 'zh-cn':
-                            $("#edit-header-time").html(i18n[current_i18n].edit_updatetime + note.updatetime);
-                            break;
-                        default:
-                            $("#edit-header-time").html(i18n[current_i18n].edit_updatetime + note.updatetime.replace(/年|月/g, '-').replace('日', ''));
-                            break;
-                    }
+        function postElementsInit() {
+            //初始化密码框
+            if (typeof passwordStatus != 'undefined') {
+                if (passwordStatus == 'notset') {
+                    $('#input-password').attr('placeholder', i18n[current_i18n].placeholder_notset);
+                } else if (passwordStatus == 'notchange') {
+                    $('#input-password').attr('placeholder', i18n[current_i18n].placeholder_notchange);
                 }
             }
+            //初始化header
+            if (typeof note.updatetime == 'undefined') {
+                switch (current_i18n) {
+                    case 'zh-cn':
+                        $("#edit-header-time").html(i18n[current_i18n].edit_createtime + note.time);
+                        break;
+                    default:
+                        $("#edit-header-time").html(i18n[current_i18n].edit_createtime + note.time.replace(/年|月/g, '-').replace('日', ''));
+                        break;
+                }
+            } else {
+                switch (current_i18n) {
+                    case 'zh-cn':
+                        $("#edit-header-time").html(i18n[current_i18n].edit_updatetime + note.updatetime);
+                        break;
+                    default:
+                        $("#edit-header-time").html(i18n[current_i18n].edit_updatetime + note.updatetime.replace(/年|月/g, '-').replace('日', ''));
+                        break;
+                }
+            }
+        }
     </script>
 </head>
 
@@ -225,13 +232,13 @@
         </div>
         <script>
             var markdown_enabled = false;
-            $('#trigger-markdown').click(function(){
+            $('#trigger-markdown').click(function() {
                 text_edited = true;
-                if (markdown_enabled){
-                    markdown_enabled=false;
+                if (markdown_enabled) {
+                    markdown_enabled = false;
                     $('#trigger-markdown').removeClass('edit-markdown-checked');
                 } else {
-                    markdown_enabled=true;
+                    markdown_enabled = true;
                     $('#trigger-markdown').addClass('edit-markdown-checked');
                 }
             });
@@ -272,6 +279,13 @@
                     console.error(read_res);
                 }
             }
+
+            function reRenderCategories() {
+                $('#select-category').html('<option value="notalloc" data-lang="notalloc">未分类</option>');
+                for (var i = 0; i < categories.length; i++) {
+                    $('#select-category').append('<option value="' + categories[i].name + '">' + categories[i].name + '</option>');
+                }
+            }
         </script>
         <textarea class="text-edit" id="text-edit"></textarea>
     </div>
@@ -285,34 +299,34 @@
         var nowNoteId = 0;
         var text_edited = false;
         //文本是否编辑过
-        $("#text-edit").one('input', function () {
+        $("#text-edit").one('input', function() {
             text_edited = true;
         });
-        $("#input-title").one('input', function () {
+        $("#input-title").one('input', function() {
             text_edited = true;
         });
-        $("#input-password").one('input', function () {
+        $("#input-password").one('input', function() {
             text_edited = true;
         });
-        $('#select-category').one('change', function () {
+        $('#select-category').one('change', function() {
             text_edited = true;
         });
         //footer按钮事件绑定
-        $("#edit-btn-save").click(function () {
+        $("#edit-btn-save").click(function() {
             submitSave();
         });
 
-        $("#edit-btn-cancel").click(function () {
+        $("#edit-btn-cancel").click(function() {
             window.close();
         });
 
         var isComboKey = false;
-        Mousetrap.bind(['ctrl+s', 'ctrl+enter'], function () {
+        Mousetrap.bind(['ctrl+s', 'ctrl+enter'], function() {
             submitSave();
             return false;
         });
 
-        $("#text-edit").keydown(function (e) {
+        $("#text-edit").keydown(function(e) {
             var ctrlKey = e.ctrlKey || e.metaKey;
             //ctrl+enter 或 ctrl+s
             if ((ctrlKey && e.keyCode == 13) || (ctrlKey && e.keyCode == 83)) {
@@ -320,7 +334,7 @@
             }
         });
 
-        $("#input-title").keydown(function (e) {
+        $("#input-title").keydown(function(e) {
             var ctrlKey = e.ctrlKey || e.metaKey;
             //ctrl+enter 或 ctrl+s
             if ((ctrlKey && e.keyCode == 13) || (ctrlKey && e.keyCode == 83)) {
@@ -328,7 +342,7 @@
             }
         });
 
-        $("#input-password").keydown(function (e) {
+        $("#input-password").keydown(function(e) {
             var ctrlKey = e.ctrlKey || e.metaKey;
             //ctrl+enter 或 ctrl+s
             if ((ctrlKey && e.keyCode == 13) || (ctrlKey && e.keyCode == 83)) {
@@ -407,7 +421,7 @@
                         }
                     }
                     //初始化分类
-                    $(document).ready(function () {
+                    $(document).ready(function() {
                         if (typeof note.category != 'undefined') {
                             $('#select-category').val(note.category);
                         } else {
@@ -421,11 +435,11 @@
                         passwordStatus = 'notchange';
                     }
                     //初始化markdown
-                    if (typeof note.markdown == "undefined"){
+                    if (typeof note.markdown == "undefined") {
                         markdown_enabled = false;
                     } else {
                         markdown_enabled = note.markdown;
-                        if (markdown_enabled){
+                        if (markdown_enabled) {
                             //如果便签启用了markdown，则按钮初始处于按下状态
                             $('#trigger-markdown').addClass('edit-markdown-checked');
                         }
@@ -442,18 +456,30 @@
                 case 'category-removed':
                     $('#select-category option[value="' + data + '"]').remove();
                     break;
+                case 'category-rename':
+                    let old_selected = $('#select-category').val();
+                    let restore_selection = true;
+                    if (old_selected == categories[data.index].name) {
+                        restore_selection = false;
+                    }
+                    categories[data.index].name = data.newname;
+                    reRenderCategories();
+                    if (restore_selection) {
+                        $('#select-category').val(old_selected);
+                    }
+                    break;
                 default:
                     console.log('unknown message:' + type);
                     break;
             }
         });
 
-        ipcRenderer.on('readyToReload', function (sender, data) {
+        ipcRenderer.on('readyToReload', function(sender, data) {
             ipcRenderer.send('readyToReloadEditWindow', note);
         });
 
         //窗口大小变化
-        $(window).resize(function () {
+        $(window).resize(function() {
             resizeContent();
         });
 
@@ -470,7 +496,7 @@
         }
 
         //右键菜单相关事件绑定
-        $('#text-edit').mousedown(function (e) {
+        $('#text-edit').mousedown(function(e) {
             if (e.which == 3) {
                 if ($('#text-edit').val().trim().length > 0) {
                     if (getSelectText('text-edit').length > 0) {

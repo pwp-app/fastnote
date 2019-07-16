@@ -31,8 +31,8 @@
     <script>
         //load Animate CSS
         $.fn.extend({
-            animateCss: function (animationName, callback) {
-                var animationEnd = (function (el) {
+            animateCss: function(animationName, callback) {
+                var animationEnd = (function(el) {
                     var animations = {
                         animation: 'animationend',
                         OAnimation: 'oAnimationEnd',
@@ -41,13 +41,13 @@
                     };
 
                     for (var t in animations) {
-                        if (typeof (el.style[t]) !== 'undefined') {
+                        if (typeof(el.style[t]) !== 'undefined') {
                             return animations[t];
                         }
                     }
                 })(document.createElement('div'));
 
-                this.addClass('animated ' + animationName).one(animationEnd, function () {
+                this.addClass('animated ' + animationName).one(animationEnd, function() {
                     $(this).removeClass('animated ' + animationName);
                     if (typeof callback === 'function') callback();
                 });
@@ -80,8 +80,15 @@
         //获取indebug
         global.indebug = remote.getGlobal('indebug');
 
+        if (!global.indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
+
         //读取设置
-        storage.get('settings', function (error, data) {
+        storage.get('settings', function(error, data) {
             if (error) {
                 console.error(error);
                 settingsInit(null);
@@ -91,13 +98,13 @@
                 settings = data;
                 settingsInit(settings);
             }
-            $(document).ready(function () {
+            $(document).ready(function() {
                 ipcRenderer.send("settings-window-ready");
             });
         });
 
         //读取noteid
-        storage.get('notesid' + (global.indebug ? '_dev' : ''), function (error, data) {
+        storage.get('notesid' + (global.indebug ? '_dev' : ''), function(error, data) {
             if (error) {
                 console.error(error);
                 initNotesId(null);
@@ -111,7 +118,7 @@
         });
 
         //读取最后一次备份时间
-        storage.get('lastBackupTime', function (err, data) {
+        storage.get('lastBackupTime', function(err, data) {
             if (err) {
                 console.error(err);
             } else {
@@ -150,10 +157,16 @@
                 $.getScript('static/i18n/zh-cn.js');
             } else {
                 //read success
+                //init close option
+                if (typeof settings.closeOption != 'undefined'){
+                    initCloseOption(settings.closeOption);
+                } else {
+                    initCloseOption('tray');
+                }
                 //init language
                 if (typeof settings.language != 'undefined') {
                     if (settings.language != 'zh-cn') {
-                        $(document).ready(function () {
+                        $(document).ready(function() {
                             applyLanguage(settings.language);
                         });
                     } else {
@@ -237,7 +250,7 @@
                 } else {
                     initWidgetOpacity(95);
                 }
-                if (typeof settings.widget_defaultforcetop != 'undefined'){
+                if (typeof settings.widget_defaultforcetop != 'undefined') {
                     initWidgetDefaultForceTop(settings.widget_defaultforcetop);
                 } else {
                     initWidgetDefaultForceTop(false);
@@ -276,7 +289,7 @@
         //初始化自动更新相关设置
         //status -> bool
         function initAutoUpdate(status) {
-            $(document).ready(function () {
+            $(document).ready(function() {
                 if (status) {
                     $('#cb-autoUpdateEnabled').attr('checked', "true");
                     document.getElementById('select-updateChannel').disabled = false;
@@ -287,7 +300,7 @@
         }
 
         function initAutoUpdateChannel(channel) {
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#select-updateChannel').val(channel);
             });
         }
@@ -297,7 +310,7 @@
             if (typeof id == 'undefined') {
                 id = 0;
             }
-            $(document).ready(function () {
+            $(document).ready(function() {
                 id = id - 1; //存储的id是当前最后一个id+1
                 if (typeof id == 'number' && id >= 0) {
                     $('#span-notesId').html(id);
@@ -309,14 +322,20 @@
 
         //初始化通用设置
         function initTheme(theme) {
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#select-themes').val(theme);
             });
         }
 
         function initLanguage(language) {
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#select-language').val(language);
+            });
+        }
+
+        function initCloseOption(closeOption){
+            $(document).ready(function(){
+                $('#select-closeOption').val(closeOption);
             });
         }
 
@@ -341,11 +360,11 @@
         //初始化widget
         function initWidgetOpacity(opacity) {
             $('#range-widget-opacity').val(opacity);
-            $('#range-widget-opacity-label').text(opacity/100);
+            $('#range-widget-opacity-label').text(opacity / 100);
         }
 
-        function initWidgetDefaultForceTop(forceTop){
-            $(document).ready(function () {
+        function initWidgetDefaultForceTop(forceTop) {
+            $(document).ready(function() {
                 if (forceTop) {
                     $('#cb-widget-defaultForceTop').attr('checked', "true");
                 }
@@ -354,50 +373,50 @@
 
         //初始化显示设置选项
         function initFontFamilySetting(font) {
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#select-fontfamily').val(font);
             });
         }
 
         function initFontSize(fontsize) {
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#select-fontsize').val(fontsize);
             });
         }
 
         function initTextAlign(align) {
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#select-textalign').val(align);
             });
         }
 
         function initLineHeight(lineheight) {
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#select-lineheight').val(lineheight);
             });
         }
 
         function initLetterSpacing(letterspacing) {
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#select-letterspacing').val(letterspacing);
             });
         }
 
         function initDateDisplay(datedisplay) {
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#select-datedisplay').val(datedisplay);
             });
         }
 
         function initTimeDisplay(timedisplay) {
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('#select-timedisplay').val(timedisplay);
             });
         }
 
         function initLastBackupTime(lasttime) {
             if (typeof lasttime == 'string') {
-                $(document).ready(function () {
+                $(document).ready(function() {
                     $('#btn-backupNotes').html("备份（最近一次: " + lasttime + "）");
                 });
             }
@@ -435,28 +454,28 @@
         </div>
         <script>
             var settings_window_height = {
-                general: 480,
+                general: 530,
                 notes: 380,
                 widget: 290,
                 display: 530,
             }; //general notes display
             //绑定点击事件
-            $('.settings-titles-block').click(function () {
+            $('.settings-titles-block').click(function() {
                 $('.settings-titles-block').removeClass('settings-titles-clicked');
                 $(this).addClass('settings-titles-clicked');
                 $('.settings-sections').addClass('settings-sections-hidden');
                 $('.' + $(this).attr('data-target')).removeClass('settings-sections-hidden');
             });
-            $('.settings-titles-general').click(function () {
+            $('.settings-titles-general').click(function() {
                 ipcRenderer.send("settings-window-heightChange", settings_window_height.general);
             })
-            $('.settings-titles-notes').click(function () {
+            $('.settings-titles-notes').click(function() {
                 ipcRenderer.send("settings-window-heightChange", settings_window_height.notes);
             });
-            $('.settings-titles-widget').click(function () {
+            $('.settings-titles-widget').click(function() {
                 ipcRenderer.send("settings-window-heightChange", settings_window_height.widget);
             });
-            $('.settings-titles-display').click(function () {
+            $('.settings-titles-display').click(function() {
                 ipcRenderer.send("settings-window-heightChange", settings_window_height.display);
             });
         </script>
@@ -518,6 +537,18 @@
                     <select class="form-control settings-select" id="select-language">
                         <option value="zh-cn">简体中文</option>
                         <option value="en-us">English</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span data-lang="close_option">关闭选项</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-closeOption">
+                        <option value="tray" data-lang="close_minimize_to_tray">最小化到托盘</option>
+                        <option value="close" data-lang="close_just_close">关闭</option>
                     </select>
                 </div>
             </div>
@@ -589,7 +620,7 @@
                             $('#input-lockscreen-password').addClass('is-invalid');
                         } else {
                             settings.lockpassword = crypto.createHmac('sha256', 'fastnote').update(lockpassword).digest('hex');
-                            storage.set('settings', settings, function (error) {
+                            storage.set('settings', settings, function(error) {
                                 if (error) {
                                     dialog.showMessageBox({
                                         type: 'error',
@@ -621,10 +652,10 @@
                             title: '确认操作',
                             message: '确定要取消锁屏密码吗？',
                             detail: '这会使你保存的便签变得不安全。'
-                        }, function (res) {
+                        }, function(res) {
                             if (res == 1) {
                                 settings.lockpassword = undefined;
-                                storage.set('settings', settings, function (error) {
+                                storage.set('settings', settings, function(error) {
                                     if (error) {
                                         dialog.showMessageBox({
                                             type: 'error',
@@ -701,7 +732,7 @@
                             name: 'Fastnote 备份',
                             extensions: ['fnbak']
                         }]
-                    }, function (filename) {
+                    }, function(filename) {
                         isBackupDialogOpened = false;
                         if (typeof filename == "string" && filename.length > 0) {
                             //保存备份
@@ -721,7 +752,7 @@
                                     setLastBackupTime();
                                 } else if (typeof t == 'object') {
                                     var failed = "";
-                                    t.failedNotes.forEach(function (filename) {
+                                    t.failedNotes.forEach(function(filename) {
                                         failed = failed + filename + "\n";
                                     })
                                     dialog.showMessageBox({
@@ -761,7 +792,7 @@
                     }
                     //当前Note的数目
                     var notes_count = 0;
-                    files.forEach(function (file) {
+                    files.forEach(function(file) {
                         try {
                             var file_stat = fs.statSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + file);
                         } catch (err) {
@@ -841,7 +872,7 @@
                             extensions: ['*']
                         }],
                         properties: ["openFile"]
-                    }, function (filePath) {
+                    }, function(filePath) {
                         isImportDialogOpened = false;
                         if (filePath.length > 0) {
                             filePath = filePath[0];
@@ -852,7 +883,7 @@
                                 title: '确认',
                                 message: '确定要导入这个备份吗？',
                                 detail: '备份文件路径: ' + filePath
-                            }, function (res) {
+                            }, function(res) {
                                 if (res == 0) {
                                     //确认导入
                                     fs.readFile(filePath, (err, data) => {
@@ -934,7 +965,7 @@
                                                                 "\n便签内容: " + (note.text.length > 20 ? note.text.substring(0, 20) + "..." : note.text),
                                                             defaultId: 1,
                                                             buttons: ['覆盖', '跳过']
-                                                        }, function (res) {
+                                                        }, function(res) {
                                                             switch (res) {
                                                                 case 0:
                                                                     fs.writeFile(storagePath + (global.indebug ? '/devTemp' : '') + "/notes/" + backup.filename, backup.content, (err) => {
@@ -1049,11 +1080,11 @@
                 </div>
                 <div></div>
                 <div class="settings-item-child settings-item-control">
-                    <input class="brcontrol-range" id="range-widget-opacity" type="range" min="0" max="100" value="95"/>
+                    <input class="brcontrol-range" id="range-widget-opacity" type="range" min="0" max="100" value="95" />
                     <span class="brcontrol-range-label" id="range-widget-opacity-label">0.95</span>
                 </div>
                 <script>
-                    $('#range-widget-opacity').on('input propertychange', function () {
+                    $('#range-widget-opacity').on('input propertychange', function() {
                         $('#range-widget-opacity-label').text($('#range-widget-opacity').val() / 100);
                     });
                 </script>
@@ -1072,226 +1103,229 @@
                     </div>
                 </div>
             </div>
-            <div class="settings-sections settings-display settings-sections-hidden">
-                <div class="settings-item">
-                    <div class="settings-item-child settings-item-title">
-                        <span data-lang="font">字体</span>
-                    </div>
-                    <div></div>
-                    <div class="settings-item-child settings-item-control">
-                        <select class="form-control settings-select" id="select-fontfamily">
-                            <option style="font-family: Source Han Sans CN Arial !important;" value="Source Han Sans CN" data-lang="source_han_sans">思源黑体</option>
-                            <option style="font-family: Microsoft Yahei !important;" value="Microsoft Yahei" data-lang="microsoft_yahei">微软雅黑</option>
-                            <option style="font-family: DengXian !important;" value="DengXian" data-lang="dengxian">等线</option>
-                            <option style="font-family: Arial !important;" value="Arial">Arial</option>
-                        </select>
-                    </div>
+        </div>
+        <div class="settings-sections settings-display settings-sections-hidden">
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span data-lang="font">字体</span>
                 </div>
-                <div class="settings-item">
-                    <div class="settings-item-child settings-item-title">
-                        <span data-lang="font_size">便签字号</span>
-                    </div>
-                    <div></div>
-                    <div class="settings-item-child settings-item-control">
-                        <select class="form-control settings-select" id="select-fontsize">
-                            <option style="font-size: 16px !important;" value="16">16px</option>
-                            <option style="font-size: 15px !important;" value="15">15px</option>
-                            <option style="font-size: 14px !important;" value="14">14px</option>
-                            <option style="font-size: 13px !important;" value="13">13px</option>
-                            <option style="font-size: 12px !important;" value="12">12px</option>
-                        </select>
-                    </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-fontfamily">
+                        <option style="font-family: Source Han Sans CN Arial !important;" value="Source Han Sans CN" data-lang="source_han_sans">思源黑体</option>
+                        <option style="font-family: Microsoft Yahei !important;" value="Microsoft Yahei" data-lang="microsoft_yahei">微软雅黑</option>
+                        <option style="font-family: DengXian !important;" value="DengXian" data-lang="dengxian">等线</option>
+                        <option style="font-family: Arial !important;" value="Arial">Arial</option>
+                    </select>
                 </div>
-                <div class="settings-item">
-                    <div class="settings-item-child settings-item-title">
-                        <span data-lang="content_align">内容对齐</span>
-                    </div>
-                    <div></div>
-                    <div class="settings-item-child settings-item-control">
-                        <select class="form-control settings-select" id="select-textalign">
-                            <option value="left" data-lang="align_left">左对齐</option>
-                            <option value="justify" data-lang="align_justify">两端对齐</option>
-                        </select>
-                    </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span data-lang="font_size">便签字号</span>
                 </div>
-                <div class="settings-item">
-                    <div class="settings-item-child settings-item-title">
-                        <span data-lang="lineheight">便签行高</span>
-                    </div>
-                    <div></div>
-                    <div class="settings-item-child settings-item-control">
-                        <select class="form-control settings-select" id="select-lineheight">
-                            <option value="26">26px</option>
-                            <option value="24">24px</option>
-                            <option value="22">22px</option>
-                            <option value="20">20px</option>
-                            <option value="18">18px</option>
-                        </select>
-                    </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-fontsize">
+                        <option style="font-size: 16px !important;" value="16">16px</option>
+                        <option style="font-size: 15px !important;" value="15">15px</option>
+                        <option style="font-size: 14px !important;" value="14">14px</option>
+                        <option style="font-size: 13px !important;" value="13">13px</option>
+                        <option style="font-size: 12px !important;" value="12">12px</option>
+                    </select>
                 </div>
-                <div class="settings-item">
-                    <div class="settings-item-child settings-item-title">
-                        <span data-lang="letter_spacing">便签字间距</span>
-                    </div>
-                    <div></div>
-                    <div class="settings-item-child settings-item-control">
-                        <select class="form-control settings-select" id="select-letterspacing">
-                            <option value="0.08">0.08em</option>
-                            <option value="0.06">0.06em</option>
-                            <option value="0.04">0.04em</option>
-                            <option value="0.02">0.02em</option>
-                        </select>
-                    </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span data-lang="content_align">内容对齐</span>
                 </div>
-                <div class="settings-item">
-                    <div class="settings-item-child settings-item-title">
-                        <span data-lang="date_display">日期显示</span>
-                    </div>
-                    <div></div>
-                    <div class="settings-item-child settings-item-control">
-                        <select class="form-control settings-select" id="select-datedisplay">
-                            <option value="all" data-lang="display_all">显示所有</option>
-                            <option value="createonly" data-lang="display_createonly">仅显示创建日期</option>
-                            <option value="updateonly" data-lang="display_updateonly">仅显示更新日期</option>
-                            <option value="none" data-lang="display_noshow">不显示</option>
-                        </select>
-                    </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-textalign">
+                        <option value="left" data-lang="align_left">左对齐</option>
+                        <option value="justify" data-lang="align_justify">两端对齐</option>
+                    </select>
                 </div>
-                <div class="settings-item">
-                    <div class="settings-item-child settings-item-title">
-                        <span data-lang="time_display">时间显示</span>
-                    </div>
-                    <div></div>
-                    <div class="settings-item-child settings-item-control">
-                        <select class="form-control settings-select" id="select-timedisplay">
-                            <option value="all" data-lang="time_all">YYYY年MM月DD日 HH:mm:ss</option>
-                            <option value="noyear" data-lang="time_noyear">MM月DD日 HH:mm:ss</option>
-                            <option value="notime" data-lang="time_notime">YYYY年MM月DD日</option>
-                            <option value="noyearandtime" data-lang="time_noyearandtime">MM月DD日</option>
-                        </select>
-                    </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span data-lang="lineheight">便签行高</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-lineheight">
+                        <option value="26">26px</option>
+                        <option value="24">24px</option>
+                        <option value="22">22px</option>
+                        <option value="20">20px</option>
+                        <option value="18">18px</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span data-lang="letter_spacing">便签字间距</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-letterspacing">
+                        <option value="0.08">0.08em</option>
+                        <option value="0.06">0.06em</option>
+                        <option value="0.04">0.04em</option>
+                        <option value="0.02">0.02em</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span data-lang="date_display">日期显示</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-datedisplay">
+                        <option value="all" data-lang="display_all">显示所有</option>
+                        <option value="createonly" data-lang="display_createonly">仅显示创建日期</option>
+                        <option value="updateonly" data-lang="display_updateonly">仅显示更新日期</option>
+                        <option value="none" data-lang="display_noshow">不显示</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-item">
+                <div class="settings-item-child settings-item-title">
+                    <span data-lang="time_display">时间显示</span>
+                </div>
+                <div></div>
+                <div class="settings-item-child settings-item-control">
+                    <select class="form-control settings-select" id="select-timedisplay">
+                        <option value="all" data-lang="time_all">YYYY年MM月DD日 HH:mm:ss</option>
+                        <option value="noyear" data-lang="time_noyear">MM月DD日 HH:mm:ss</option>
+                        <option value="notime" data-lang="time_notime">YYYY年MM月DD日</option>
+                        <option value="noyearandtime" data-lang="time_noyearandtime">MM月DD日</option>
+                    </select>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="setting-buttons">
-            <button class="btn btn-danger brbtn-danger" onclick='window.close();' data-lang="cancel">取消</button>
-            <button class="btn btn-primary brbtn-primary" onclick="saveSettings();" data-lang="save">保存</button>
-        </div>
+    <div class="setting-buttons">
+        <button class="btn btn-danger brbtn-danger" onclick='window.close();' data-lang="cancel">取消</button>
+        <button class="btn btn-primary brbtn-primary" onclick="saveSettings();" data-lang="save">保存</button>
+    </div>
 
-        <script>
-            function saveSettings() {
-                //获取通用设置
-                var autoUpdateStatus = document.getElementById('cb-autoUpdateEnabled').checked;
-                var autoUpdateChannel = $('#select-updateChannel').val();
-                var theme = $("#select-themes").val();
-                var language = $('#select-language').val();
+    <script>
+        function saveSettings() {
+            //获取通用设置
+            var autoUpdateStatus = document.getElementById('cb-autoUpdateEnabled').checked;
+            var autoUpdateChannel = $('#select-updateChannel').val();
+            var theme = $("#select-themes").val();
+            var language = $('#select-language').val();
+            var closeOption = $('#select-closeOption').val();
 
-                //获取显示设置
-                var fontfamily = $('#select-fontfamily').val();
-                var fontsize = $('#select-fontsize').val();
-                var textalign = $('#select-textalign').val();
-                var lineheight = $('#select-lineheight').val();
-                var letterspacing = $('#select-letterspacing').val();
-                var datedisplay = $('#select-datedisplay').val();
-                var timedisplay = $('#select-timedisplay').val();
-                var locktype = $('#select-locktype').val();
+            //获取显示设置
+            var fontfamily = $('#select-fontfamily').val();
+            var fontsize = $('#select-fontsize').val();
+            var textalign = $('#select-textalign').val();
+            var lineheight = $('#select-lineheight').val();
+            var letterspacing = $('#select-letterspacing').val();
+            var datedisplay = $('#select-datedisplay').val();
+            var timedisplay = $('#select-timedisplay').val();
+            var locktype = $('#select-locktype').val();
 
-                //获取桌面组件设置
-                var widget_opacity = $('#range-widget-opacity').val();
-                var widget_defaultforcetop = document.getElementById('cb-widget-defaultForceTop').checked;
+            //获取桌面组件设置
+            var widget_opacity = $('#range-widget-opacity').val();
+            var widget_defaultforcetop = document.getElementById('cb-widget-defaultForceTop').checked;
 
-                //构造设置obj
-                settings.autoUpdateStatus = autoUpdateStatus;
-                settings.autoUpdateChannel = autoUpdateChannel;
-                settings.theme = theme;
-                settings.language = language;
-                settings.widget_opacity = widget_opacity;
-                settings.widget_defaultforcetop = widget_defaultforcetop;
-                settings.fontfamily = fontfamily;
-                settings.fontsize = fontsize;
-                settings.textalign = textalign;
-                settings.lineheight = lineheight;
-                settings.letterspacing = letterspacing;
-                settings.datedisplay = datedisplay;
-                settings.timedisplay = timedisplay;
-                settings.locktype = locktype;
+            //构造设置obj
+            settings.autoUpdateStatus = autoUpdateStatus;
+            settings.autoUpdateChannel = autoUpdateChannel;
+            settings.theme = theme;
+            settings.language = language;
+            settings.closeOption = closeOption;
+            settings.widget_opacity = widget_opacity;
+            settings.widget_defaultforcetop = widget_defaultforcetop;
+            settings.fontfamily = fontfamily;
+            settings.fontsize = fontsize;
+            settings.textalign = textalign;
+            settings.lineheight = lineheight;
+            settings.letterspacing = letterspacing;
+            settings.datedisplay = datedisplay;
+            settings.timedisplay = timedisplay;
+            settings.locktype = locktype;
 
-                //保存设置
-                storage.set('settings', settings, function (error) {
-                    if (error) {
-                        dialog.showMessageBox({
-                            type: 'error',
-                            title: '错误',
-                            message: '保存设置时发生错误。',
-                            detail: error
-                        });
-                    } else {
-                        //通知窗体刷新
-                        ipcRenderer.send('reloadMainWindow');
-                        ipcRenderer.send('reloadRecycleWindow');
-                        ipcRenderer.send('reloadAllEditWindow');
-                        ipcRenderer.send('reloadAboutWindow');
-                        //关闭窗体
-                        window.close();
-                    }
-                });
-            }
-        </script>
+            //保存设置
+            storage.set('settings', settings, function(error) {
+                if (error) {
+                    dialog.showMessageBox({
+                        type: 'error',
+                        title: '错误',
+                        message: '保存设置时发生错误。',
+                        detail: error
+                    });
+                } else {
+                    //通知窗体刷新
+                    ipcRenderer.send('reloadMainWindow');
+                    ipcRenderer.send('reloadRecycleWindow');
+                    ipcRenderer.send('reloadAllEditWindow');
+                    ipcRenderer.send('reloadAboutWindow');
+                    //关闭窗体
+                    window.close();
+                }
+            });
+        }
+    </script>
 
-        <script>
-            $.getScript('../app/notes_reset.js');
+    <script>
+        $.getScript('../app/notes_reset.js');
 
-            function reloadNotesId() {
-                storage.get('notesid' + (global.indebug ? '_dev' : ''), function (error, data) {
-                    if (error) {
-                        console.error(error);
-                        initNotesId(null);
-                        return;
-                    } else {
-                        //获取callback回传的json
-                        var notesid = data;
-                        initNotesId(notesid.id);
-                    }
-                });
-            }
+        function reloadNotesId() {
+            storage.get('notesid' + (global.indebug ? '_dev' : ''), function(error, data) {
+                if (error) {
+                    console.error(error);
+                    initNotesId(null);
+                    return;
+                } else {
+                    //获取callback回传的json
+                    var notesid = data;
+                    initNotesId(notesid.id);
+                }
+            });
+        }
 
-            function resetSettings() {
-                dialog.showMessageBox({
-                    type: "warning",
-                    buttons: ['取消', '确认'],
-                    defaultId: 0,
-                    title: '确认操作',
-                    message: '确定要重置设置吗？该操作将不可撤回。',
-                    detail: '所有已保存的设置都讲还原为默认值。'
-                }, function (response) {
-                    if (response == 1) {
-                        storage.remove('settings', function (error) {
-                            if (error) {
-                                console.error(error);
-                                dialog.showMessageBox({
-                                    type: "error",
-                                    title: '错误',
-                                    message: '重置设置时遇到了错误。',
-                                    detail: error
-                                });
-                            } else {
-                                //通知其他窗体重新载入
-                                ipcRenderer.send('reloadMainWindow');
-                                ipcRenderer.send('reloadRecycleWindow');
-                                ipcRenderer.send('closeAllEditWindow');
-                                dialog.showMessageBox({
-                                    type: "info",
-                                    title: '完成',
-                                    message: '设置已重置。'
-                                });
-                                ipcRenderer.send('reloadSettingsWindow');
-                            }
-                        });
-                    }
-                });
-            }
-        </script>
+        function resetSettings() {
+            dialog.showMessageBox({
+                type: "warning",
+                buttons: ['取消', '确认'],
+                defaultId: 0,
+                title: '确认操作',
+                message: '确定要重置设置吗？该操作将不可撤回。',
+                detail: '所有已保存的设置都讲还原为默认值。'
+            }, function(response) {
+                if (response == 1) {
+                    storage.remove('settings', function(error) {
+                        if (error) {
+                            console.error(error);
+                            dialog.showMessageBox({
+                                type: "error",
+                                title: '错误',
+                                message: '重置设置时遇到了错误。',
+                                detail: error
+                            });
+                        } else {
+                            //通知其他窗体重新载入
+                            ipcRenderer.send('reloadMainWindow');
+                            ipcRenderer.send('reloadRecycleWindow');
+                            ipcRenderer.send('closeAllEditWindow');
+                            dialog.showMessageBox({
+                                type: "info",
+                                title: '完成',
+                                message: '设置已重置。'
+                            });
+                            ipcRenderer.send('reloadSettingsWindow');
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

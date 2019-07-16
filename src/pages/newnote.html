@@ -57,9 +57,16 @@
         } = require('electron');
 
         //获取indebug
-        global.indebug = remote.getGlobal('indebug');
+        var indebug = remote.getGlobal('indebug');
 
-        storage.get('settings', function (error, data) {
+        if (!indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
+
+        storage.get('settings', function(error, data) {
             if (error) {
                 console.error(error);
                 settingsInit(null);
@@ -69,7 +76,7 @@
                 settings = data;
                 settingsInit(settings);
             }
-            $(document).ready(function () {
+            $(document).ready(function() {
                 ipcRenderer.send("newnote-window-ready");
             });
         });
@@ -90,7 +97,7 @@
                 //read success
                 if (typeof settings.language != 'undefined') {
                     if (settings.language != 'zh-cn') {
-                        $(document).ready(function () {
+                        $(document).ready(function() {
                             applyLanguage(settings.language);
                         });
                     } else {
@@ -139,7 +146,7 @@
         //init category
         ipcRenderer.on('init-category', (sender, data) => {
             if (data != 'notalloc' && data != 'all') {
-                $(document).ready(function () {
+                $(document).ready(function() {
                     $('#select-category').val(data);
                 });
             }
@@ -196,8 +203,8 @@
             </div>
         </div>
         <script>
-            if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json')) {
-                var read_res = fs.readFileSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json', 'utf-8'); //这里有同步让后面的update可以选择
+            if (fs.existsSync(storagePath + (indebug ? '/devTemp' : '') + '/storage/categories.json')) {
+                var read_res = fs.readFileSync(storagePath + (indebug ? '/devTemp' : '') + '/storage/categories.json', 'utf-8'); //这里有同步让后面的update可以选择
                 if (read_res) {
                     categories = JSON.parse(read_res);
                     for (var i = 0; i < categories.length; i++) {
@@ -207,11 +214,29 @@
                     console.error(read_res);
                 }
             }
+            function reRenderCategories() {
+                $('#select-category').html('<option value="notalloc" data-lang="notalloc">未分类</option>');
+                for (var i = 0; i < categories.length; i++) {
+                    $('#select-category').append('<option value="' + categories[i].name + '">' + categories[i].name + '</option>');
+                }
+            }
             ipcRenderer.on('category-added', (sender, data) => {
                 $('#select-category').append('<option value="' + data + '">' + data + '</option>');
             });
             ipcRenderer.on('category-removed', (sender, data) => {
                 $('#select-category option[value="' + data + '"]').remove();
+            });
+            ipcRenderer.on('category-rename', (sender, data)=>{
+                let old_selected = $('#select-category').val();
+                let restore_selection = true;
+                if (old_selected == categories[data.index].name){
+                    restore_selection = false;
+                }
+                categories[data.index].name = data.newname;
+                reRenderCategories();
+                if (restore_selection){
+                    $('#select-category').val(old_selected);
+                }
             });
         </script>
         <div class="container-newnotewin-text">
@@ -226,7 +251,7 @@
         </div>
         <script>
             var markdown_enabled = false;
-            $('#trigger-markdown').click(function () {
+            $('#trigger-markdown').click(function() {
                 if (markdown_enabled) {
                     markdown_enabled = false;
                     $('#trigger-markdown').removeClass('newnotewin-markdown-checked');
@@ -242,7 +267,7 @@
             <button class="br-btn btn-noback" id="newnote-btn-save" onclick="submitSave();" data-lang="save">保存</button>
         </div>
         <script>
-            $(window).resize(function () {
+            $(window).resize(function() {
                 resizeContent();
             });
 
@@ -259,7 +284,7 @@
             }
 
             //事件绑定
-            $("#text-newnote").keydown(function (e) {
+            $("#text-newnote").keydown(function(e) {
                 var ctrlKey = e.ctrlKey || e.metaKey;
                 //ctrl+enter 或 ctrl+s
                 if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
@@ -267,7 +292,7 @@
                 }
             });
 
-            $("#input-title").keydown(function (e) {
+            $("#input-title").keydown(function(e) {
                 var ctrlKey = e.ctrlKey || e.metaKey;
                 //ctrl+enter 或 ctrl+s
                 if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
@@ -275,7 +300,7 @@
                 }
             });
 
-            $("#input-password").keydown(function (e) {
+            $("#input-password").keydown(function(e) {
                 var ctrlKey = e.ctrlKey || e.metaKey;
                 //ctrl+enter 或 ctrl+s
                 if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {

@@ -57,6 +57,14 @@
 
         const WebFont = require('webfontloader');
 
+        var indebug = remote.getGlobal('indebug');
+        if (!indebug){
+            Mousetrap.bind('ctrl+shift+i', (e)=>{
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
+
         var settings;
 
         storage.get('settings', function (error, data) {
