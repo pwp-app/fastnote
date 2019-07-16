@@ -261,6 +261,11 @@
             window.close();
             return false;
         });
+
+        $(document).on('click', '.note-text a', function (e) {
+            ipcRenderer.send('openExternalURL', $(this).attr('href'));
+            e.preventDefault();
+        });
     </script>
     <span id="filter-x" style="display:none"></span>
 </body>
