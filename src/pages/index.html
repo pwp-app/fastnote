@@ -1306,7 +1306,7 @@
 
         //绑定除了add的每个li的点击
         $(document).on('click', '#category-menu li:not(#category-add):not(#category-add-inside)', function() {
-            var category_clicked = $(this).attr('data-name');
+            let category_clicked = $(this).attr('data-name');
             if (category_clicked != current_category && !categoryEditMode) {
                 //移除选中
                 switch (current_category) {
@@ -1333,6 +1333,17 @@
                 //写入current_category
                 saveCurrentCategory();
             }
+        });
+        $(document).on('dblclick', '#category-menu li:not(#category-add):not(#category-add-inside)', function() {
+            let category_clicked = $(this).attr('data-name');
+            if (!categoryEditMode || category_clicked == 'all' || category_clicked == 'notalloc') {
+                return;
+            }
+            $('#category-custom-' + category_clicked).children('.category-item-name').children('span').hide();
+            $('#category-custom-' + category_clicked).children('.category-item-name').children('input').show();
+            //解决光标在input最前面的问题
+            let t = $('#category-custom-' + category_clicked).children('.category-item-name').children('input').val();
+            $('#category-custom-' + category_clicked).children('.category-item-name').children('input').val("").focus().val(t);
         });
 
         //绑定每个自定义分类中的删除按钮
@@ -1421,6 +1432,7 @@
         $('.category-header-button').click(function() {
             if (categoryEditMode) {
                 disableCategoryEditMode();
+                saveCategoriesName();
             } else {
                 enableCategoryEditMode();
             }
@@ -1465,6 +1477,37 @@
             //sortable
             $('.category-menu-custom li').css('-webkit-user-drag', 'none');
             $('.category-menu-custom li').css('-webkit-user-select', 'none');
+        }
+
+        function saveCategoriesName(){
+            $('.category-edit-input').each((i, e)=>{
+                let index = parseInt($(e).attr('data-index'));
+                let newname = $(e).val().trim();
+                //判断名称是否发生了改变
+                if (categories[index].name != newname){
+                    //当前分类的名称发生了修改
+                    if (categories[index].name == current_category){
+                        //更新当前分类相关的内容
+                        current_category = newname;
+                        saveCurrentCategory();
+                        renderCurrentCategory();
+                    }
+                    //修改当前的data-name
+                    $('#category-custom-' + categories[index].name).parent().attr('data-name', newname);
+                    //修改id
+                    $('#category-custom-' + categories[index].name).attr('id', 'category-custom-'+newname);
+                    //向其他窗口发送rename通知
+                    console.log('sent');
+                    ipcRenderer.send('category_rename', {
+                        index: index,
+                        newname: newname
+                    });
+                }
+                categories[index].name = newname;
+            });
+            saveCategories();
+            //重新渲染分类相关的内容
+            renderCategorySelect();
         }
     </script>
 

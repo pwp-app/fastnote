@@ -158,8 +158,8 @@ async function saveCategories(){
     });
 }
 
-function renderCategoryToList(name, count, animate=false){
-    var html = '<li data-name="'+name+'" draggable="true"><div id="category-custom-'+name+'"><div class="category-item-name"><span>'+name+'</span></div><div class="category-item-count"><span>'+count+'</span></div><div class="category-item-delbtn"><i class="fa fa-minus-circle" aria-hidden="true"></i></div></div></li>';
+function renderCategoryToList(index, name, count, animate=false){
+    var html = '<li data-name="'+name+'" draggable="true"><div id="category-custom-'+name+'"><div class="category-item-name"><span>'+name+'</span><input class="category-edit-input" value="'+name+'" data-index="'+index+'"></div><div class="category-item-count"><span>'+count+'</span></div><div class="category-item-delbtn"><i class="fa fa-minus-circle" aria-hidden="true"></i></div></div></li>';
     $('.category-menu-custom').append(html);
     //如果是编辑模式下添加的，样式和编辑模式统一
     if (categoryEditMode){
@@ -181,7 +181,7 @@ function renderCategoryToSelect(name){
 async function renderCategoryList(){
     $('.category-menu-custom').html('');    //先清空
     for (var i=0;i<categories.length;i++){
-        renderCategoryToList(categories[i].name, categories[i].count);
+        renderCategoryToList(i, categories[i].name, categories[i].count);
     }
 }
 
@@ -256,7 +256,6 @@ async function minorCategoryCount(name, render=false, save=false){
             return;
         }
     }
-    
 }
 
 function checkCategoryEmpty(){

@@ -5,7 +5,7 @@ const ipc = require('electron').ipcMain;
 const storage = require('electron-json-storage');
 
 //global settings
-global.indebug = false; //debug trigger
+global.indebug = true; //debug trigger
 global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
@@ -160,7 +160,7 @@ function createWindow() {
     });
 
     //分类有修改
-    ipc.on('category_added', function(sender, data) {
+    ipc.on('category_added', (sender, data)=>{
         let editWins = editWindow.getWins();
         for (let i = 0; i < editWins.length; i++) {
             if (typeof editWins[i] != 'undefined' && editWins[i] != null) {
@@ -177,7 +177,7 @@ function createWindow() {
             }
         }
     });
-    ipc.on('category_removed', function(sender, data) {
+    ipc.on('category_removed', (sender, data)=>{
         let editWins = editWindow.getWins();
         for (let i = 0; i < editWins.length; i++) {
             if (typeof editWins[i] != 'undefined' && editWins[i] != null) {
@@ -191,6 +191,23 @@ function createWindow() {
         for (let i = 0; i < newnoteWins.length; i++) {
             if (typeof newnoteWins[i] != 'undefined' && newnoteWins[i] != null) {
                 newnoteWins[i].webContents.send('category-removed', data);
+            }
+        }
+    });
+    ipc.on('category_rename', (sender, data)=>{
+        let editWins = editWindow.getWins();
+        for (let i = 0; i < editWins.length; i++) {
+            if (typeof editWins[i] != 'undefined' && editWins[i] != null) {
+                editWins[i].webContents.send('message', {
+                    type: 'category-rename',
+                    data: data
+                });
+            }
+        }
+        let newnoteWins = newnoteWindow.getWins();
+        for (let i = 0; i < newnoteWins.length; i++) {
+            if (typeof newnoteWins[i] != 'undefined' && newnoteWins[i] != null) {
+                newnoteWins[i].webContents.send('category-rename', data);
             }
         }
     });
