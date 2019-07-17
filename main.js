@@ -12,6 +12,11 @@ const ipc = require('electron').ipcMain;
 const storage = require('electron-json-storage');
 const path = require('path');
 
+const singleInstanceLock = app.requestSingleInstanceLock();
+if (!singleInstanceLock){
+    app.exit();
+}
+
 //global settings
 global.indebug = true; //debug trigger
 global.isOS64 = true; //OS flag
@@ -376,6 +381,15 @@ app.on('activate', () => {
 app.on('ready', () => {
     createWindow();
     createTray();
+});
+
+app.on('second-instance', ()=>{
+    if (win){
+        if (win.isMinimized()){
+            win.restore();
+        }
+        win.focus();
+    }
 });
 
 //窗口全部关闭的时候仍然保留托盘
