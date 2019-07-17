@@ -70,6 +70,20 @@
         const UUID = require('../app/tools/uuid.js');
         const indebug = remote.getGlobal('indebug');
 
+        //初始化Fastnote cloud
+        const cloudConfig = require('../app/cloud/config.js');
+        if (indebug) {
+            var cloud_protocol = cloudConfig.dev.protocol;
+            var cloud_host = cloudConfig.dev.host;
+            var cloud_port = cloudConfig.dev.port;
+            var cloud_apibase = cloudConfig.dev.protocol + '://' + cloudConfig.dev.host + ':' + cloudConfig.dev.port
+        } else {
+            var cloud_protocol = cloudConfig.release.protocol;
+            var cloud_host = cloudConfig.release.host;
+            var cloud_port = cloudConfig.release.port;
+            var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + ':' + cloudConfig.release.port
+        }
+
         if (!indebug) {
             Mousetrap.bind('ctrl+shift+i', (e) => {
                 e.preventDefault();
@@ -750,6 +764,11 @@
                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
             </button>
         </div>
+        <div class="trigger-cloud">
+            <button class="br-btn btn-noback bottombar-trigger" id="btn-cloud-trigger">
+                <i class="fa fa-user" aria-hidden="true"></i>
+            </button>
+        </div>
         <div class="bottom-bar-statusbar" id="statusbar">
             <div class="statusbar-item" id="statusbar-item-alwaysontop"><i class="fa fa-caret-up"></i></div>
         </div>
@@ -1070,12 +1089,20 @@
         });
         //打开主菜单
         $('#btn-mainmenu-trigger').on('click', function() {
-            if (!isMainMenuOpen && !isCategoryOpen) {
+            if (!isMainMenuOpen && !isCategoryOpen && !isCloudOpen) {
                 openMainMenu();
             }
         });
         //绑定主菜单快捷键
         Mousetrap.bind('esc', function() {
+            if (isCategoryOpen) {
+                closeCategory();
+                return;
+            }
+            if (isCloudOpen) {
+                closeCloudPanel();
+                return;
+            }
             if (isMainMenuOpen) {
                 closeMainMenu();
             } else {
@@ -1220,6 +1247,7 @@
             </div>
         </div>
     </div>
+
     <script>
         var isCategoryOpen = false;
 
@@ -1297,7 +1325,7 @@
         });
 
         $('#btn-category-trigger').on('click', function() {
-            if (!isMainMenuOpen && !isCategoryOpen) {
+            if (!isMainMenuOpen && !isCategoryOpen && !isCloudOpen) {
                 openCategory();
             }
         });
@@ -1480,14 +1508,14 @@
             $('.category-menu-custom li').css('-webkit-user-select', 'none');
         }
 
-        function saveCategoriesName(){
-            $('.category-edit-input').each((i, e)=>{
+        function saveCategoriesName() {
+            $('.category-edit-input').each((i, e) => {
                 let index = parseInt($(e).attr('data-index'));
                 let newname = $(e).val().trim();
                 //判断名称是否发生了改变
-                if (categories[index].name != newname){
+                if (categories[index].name != newname) {
                     //当前分类的名称发生了修改
-                    if (categories[index].name == current_category){
+                    if (categories[index].name == current_category) {
                         //更新当前分类相关的内容
                         current_category = newname;
                         saveCurrentCategory();
@@ -1496,7 +1524,7 @@
                     //修改当前的data-name
                     $('#category-custom-' + categories[index].name).parent().attr('data-name', newname);
                     //修改id
-                    $('#category-custom-' + categories[index].name).attr('id', 'category-custom-'+newname);
+                    $('#category-custom-' + categories[index].name).attr('id', 'category-custom-' + newname);
                     //向其他窗口发送rename通知
                     console.log('sent');
                     ipcRenderer.send('category_rename', {
@@ -1510,6 +1538,62 @@
             //重新渲染分类相关的内容
             renderCategorySelect();
         }
+    </script>
+
+    <div class="cloud-background"></div>
+    <div class="container-cloud">
+        <div class="cloud-panel">
+            <div class="cloud-header">
+                <div class="cloud-header-title">
+                    <p>Fastnote Cloud</p>
+                </div>
+            </div>
+            <div class="category-split"></div>
+            <div class="cloud-body cloud-body-notlogin">
+                <ul class="cloud-menu">
+                    <li id="cloud-menuitem-login">
+                        <span data-lang="login">登录</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var isCloudOpen = false;
+
+        function openCloudPanel() {
+            $('.cloud-background').css('display', 'block');
+            $('.cloud-background').animateCss('fadeIn');
+            $('.container-cloud').css('display', 'block');
+            $('.container-cloud').animateCss('fadeInLeft');
+            //根据登录状态决定启用
+
+            isCloudOpen = true;
+        }
+
+        function closeCloudPanel() {
+            if (isCloudOpen) {
+                $('.cloud-background').css('width', '100%'); //动态修改宽度防止阻挡
+                $('.cloud-background').animateCss('fadeOut', function() {
+                    $('.cloud-background').css('display', 'none');
+                });
+                $('.container-cloud').animateCss('fadeOutLeft', function() {
+                    $('.container-cloud').css('display', 'none');
+                    isCloudOpen = false;
+                });
+            }
+        }
+
+        $('#btn-cloud-trigger').on('click', () => {
+            if (!isMainMenuOpen && !isCategoryOpen && !isCloudOpen) {
+                openCloudPanel();
+            }
+        });
+
+        $('.cloud-background').on('mousedown', () => {
+            closeCloudPanel();
+        });
     </script>
 
     <script>
@@ -1627,7 +1711,7 @@
 
         //复写关闭窗口事件
         window.onbeforeunload = (e) => {
-            if (reloadWindow){
+            if (reloadWindow) {
                 return;
             }
             if (!settings.closeOption) {
@@ -1683,7 +1767,7 @@
             }
         }
 
-        ipcRenderer.on('tray-reload', ()=>{
+        ipcRenderer.on('tray-reload', () => {
             ipcRenderer.send("reloadMainWindow"); //重载
             ipcRenderer.send('reloadRecycleWindow');
             ipcRenderer.send('reloadAllEditWindow');
@@ -1691,6 +1775,38 @@
             ipcRenderer.send('reloadAllWidgets');
             closeMainMenu();
         });
+    </script>
+
+    <script>
+        var cloud_serveronline = true;
+        //检测服务器状态
+        function checkServerStatus() {
+            $.ajax({
+                url: cloud_apibase + '/api/common/ping',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 1000,
+                success: () => {
+                    if (!cloud_serveronline) {
+                        console.log('Fastnote Cloud server is online now, user module enabled.');
+                    }
+                    cloud_serveronline = true;
+                    $('.trigger-cloud').css('display', 'inline-block');
+                },
+                error: () => {
+                    if (cloud_serveronline) {
+                        console.error('Fastnote Cloud server is not online, user module disabled.');
+                    }
+                    cloud_serveronline = false;
+                    //每5分钟检查一次服务器是否在线
+                    setTimeout(() => {
+                        checkServerStatus();
+                    }, 300000);
+                }
+            })
+        }
+        //执行服务器状态检查
+        checkServerStatus();
     </script>
 
     <script>
