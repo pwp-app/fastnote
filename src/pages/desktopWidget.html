@@ -244,6 +244,10 @@
             }
         });
 
+        ipcRenderer.on('readyToReload', ()=>{
+            ipcRenderer.send('widget-reload-ready', note);
+        });
+
         //bind events
         $('.widget-control-close').click(() => {
             window.close();
@@ -260,6 +264,11 @@
         Mousetrap.bind('ctrl+q', function () {
             window.close();
             return false;
+        });
+
+        $(document).on('click', '.note-text a', function (e) {
+            ipcRenderer.send('openExternalURL', $(this).attr('href'));
+            e.preventDefault();
         });
     </script>
     <span id="filter-x" style="display:none"></span>

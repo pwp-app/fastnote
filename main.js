@@ -1,12 +1,24 @@
-const { app, BrowserWindow, Menu, Tray, shell } = require('electron');
+const {
+    app,
+    BrowserWindow,
+    Menu,
+    MenuItem,
+    Tray,
+    shell
+} = require('electron');
 //ipc主进程
 const ipc = require('electron').ipcMain;
 //set storage
 const storage = require('electron-json-storage');
 const path = require('path');
 
+const singleInstanceLock = app.requestSingleInstanceLock();
+if (!singleInstanceLock){
+    app.exit();
+}
+
 //global settings
-global.indebug = false; //debug trigger
+global.indebug = true; //debug trigger
 global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
@@ -161,7 +173,7 @@ function createWindow() {
     });
 
     //分类有修改
-    ipc.on('category_added', (sender, data)=>{
+    ipc.on('category_added', (sender, data) => {
         let editWins = editWindow.getWins();
         for (let i = 0; i < editWins.length; i++) {
             if (typeof editWins[i] != 'undefined' && editWins[i] != null) {
@@ -178,7 +190,7 @@ function createWindow() {
             }
         }
     });
-    ipc.on('category_removed', (sender, data)=>{
+    ipc.on('category_removed', (sender, data) => {
         let editWins = editWindow.getWins();
         for (let i = 0; i < editWins.length; i++) {
             if (typeof editWins[i] != 'undefined' && editWins[i] != null) {
@@ -195,7 +207,7 @@ function createWindow() {
             }
         }
     });
-    ipc.on('category_rename', (sender, data)=>{
+    ipc.on('category_rename', (sender, data) => {
         let editWins = editWindow.getWins();
         for (let i = 0; i < editWins.length; i++) {
             if (typeof editWins[i] != 'undefined' && editWins[i] != null) {
@@ -287,18 +299,24 @@ ipc.on('newnotewin-save', (sender, data) => {
 function createTray() {
     let trayIco = path.resolve(__dirname, './public/static/images/tray.ico');
     tray = new Tray(trayIco);
-    let contextMenu = Menu.buildFromTemplate([
-        {
-            label: '退出',
-            click: ()=>{
-                app.exit();
-            }
+    let contextMenu = Menu.buildFromTemplate([{
+        label: '退出',
+        click: () => {
+            app.exit();
         }
-    ]);
+    }]);
+    if(win != null){
+        contextMenu.insert(0, new MenuItem({
+            label: '重新载入',
+            click: ()=>{
+                win.webContents.send('tray-reload');
+            }
+        }));
+    }
     tray.setToolTip('Fastnote');
     tray.setContextMenu(contextMenu);
-    tray.on('double-click',()=>{
-        if(win == null){
+    tray.on('double-click', () => {
+        if (win == null) {
             createWindow();
         } else {
             win.focus();
@@ -348,11 +366,9 @@ let checkForUpdates = () => {
 };
 
 //打开外部链接事件监听
-let openExternalURL = () => {
-    ipc.on('openExternalURL', (e, msg) => {
-        shell.openExternal(msg);
-    });
-};
+ipc.on('openExternalURL', (e, msg) => {
+    shell.openExternal(msg);
+});
 
 app.on('activate', () => {
     // 在macOS上，当单击dock图标并且没有其他窗口打开时，
@@ -367,10 +383,16 @@ app.on('ready', () => {
     createTray();
 });
 
+app.on('second-instance', ()=>{
+    if (win){
+        if (win.isMinimized()){
+            win.restore();
+        }
+        win.focus();
+    }
+});
+
 //窗口全部关闭的时候仍然保留托盘
 app.on('window-all-closed', (e) => {
     e.preventDefault();
 });
-
-//event
-openExternalURL();

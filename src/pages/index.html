@@ -1118,6 +1118,7 @@
             ipcRenderer.send('reloadRecycleWindow');
             ipcRenderer.send('reloadAllEditWindow');
             ipcRenderer.send('reloadAboutWindow');
+            ipcRenderer.send('reloadAllWidgets');
             closeMainMenu();
         });
         $('#mainmenu-btn-exit').click(function() {
@@ -1674,7 +1675,6 @@
                 switch (settings.closeOption) {
                     case 'close':
                         ipcRenderer.send('app-quitNow');
-                        console.log(1);
                         break;
                     case 'tray':
                         window.close();
@@ -1682,6 +1682,15 @@
                 }
             }
         }
+
+        ipcRenderer.on('tray-reload', ()=>{
+            ipcRenderer.send("reloadMainWindow"); //重载
+            ipcRenderer.send('reloadRecycleWindow');
+            ipcRenderer.send('reloadAllEditWindow');
+            ipcRenderer.send('reloadAboutWindow');
+            ipcRenderer.send('reloadAllWidgets');
+            closeMainMenu();
+        });
     </script>
 
     <script>

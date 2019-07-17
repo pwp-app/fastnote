@@ -118,9 +118,24 @@ ipc.on('widget-lock', (sender, data)=>{
     }
 });
 
+ipc.on('reloadAllWidgets', ()=>{
+    for (var i=0;i<widgets.length;i++){
+        if (typeof widgets[i] != 'undefined' && widgets[i] != null) {
+            widgets[i].webContents.send('readyToReload');
+        }
+    }
+});
+
+ipc.on('widget-reload-ready', (e, data)=>{
+    e.sender.reload();
+    e.sender.once('did-finish-load', () => {
+        e.sender.send('init', data);
+    });
+});
+
 ipc.on('closeAllWidgets', ()=>{
     for (var i = 0; i < widgets.length; i++) {
-        if (widgets[i] != null) {
+        if (typeof widgets[i] != 'undefined' && widgets[i] != null) {
             widgets[i].close();
         }
     }

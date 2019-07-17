@@ -118,7 +118,7 @@ ipc.on('closeAllEditWindow', function (event, data) {
 ipc.on('reloadAllEditWindow', function (event, data) {
     for (var i = 0; i < win_edits.length; i++) {
         if (win_edits[i] != null) {
-            win_edits[i].send('readyToReload');
+            win_edits[i].webContents.send('readyToReload');
         }
     }
 });
