@@ -2,6 +2,7 @@ const {
     app,
     BrowserWindow,
     Menu,
+    MenuItem,
     Tray,
     shell
 } = require('electron');
@@ -299,6 +300,14 @@ function createTray() {
             app.exit();
         }
     }]);
+    if(win != null){
+        contextMenu.insert(0, new MenuItem({
+            label: '重新载入',
+            click: ()=>{
+                win.webContents.send('tray-reload');
+            }
+        }));
+    }
     tray.setToolTip('Fastnote');
     tray.setContextMenu(contextMenu);
     tray.on('double-click', () => {

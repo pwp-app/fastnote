@@ -244,6 +244,10 @@
             }
         });
 
+        ipcRenderer.on('readyToReload', ()=>{
+            ipcRenderer.send('widget-reload-ready', note);
+        });
+
         //bind events
         $('.widget-control-close').click(() => {
             window.close();
