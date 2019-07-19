@@ -1561,7 +1561,9 @@
             <div class="cloud-body cloud-body-notlogin">
                 <ul class="cloud-menu">
                     <li id="cloud-menuitem-login">
-                        <span data-lang="login">登录</span>
+                        <div class="cloud-menuitem-label">
+                            <span data-lang="login">登录</span>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -1605,7 +1607,7 @@
         });
 
         //menu item events
-        $('#cloud-menuitem-login').click(() => {
+        $('#cloud-menuitem-login').on('click', () => {
             ipcRenderer.send('openLoginWindow');
         });
     </script>

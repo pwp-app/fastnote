@@ -29,7 +29,7 @@ function createLoginWindow(){
 
     win_login = new BrowserWindow(conf);
 
-    var viewpath = path.resolve(__dirname, '../public/cloud/login.html');
+    var viewpath = path.resolve(__dirname, '../../../public/cloud/login.html');
     win_login.loadFile(viewpath);
 
     win_login.on('closed', () => {
@@ -37,9 +37,9 @@ function createLoginWindow(){
     });
 
     win_login.on('ready-to-show', ()=>{
-        ipc.once('login-window-ready',()=>{
+        //ipc.once('login-window-ready',()=>{
             win_login.show();
-        });
+        //});
     });
 }
 

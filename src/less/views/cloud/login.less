@@ -1,9 +1,86 @@
+
+@color-login-bg: lighten(@color-primary, 2%);
 .login-body{
-    background: @color-primary;
+    background: @color-login-bg;
     .no-select-and-drag();
 }
-.login-titlebar {
-    position: absolute;
-    top: 0px;
-    padding: 0 !important;
+.login-body>.container-titlebar{
+    background-color: @color-login-bg !important;
+}
+.container-login{
+    width:100%;
+    height:100%;
+    position: fixed;
+    display: block;
+    background-color: @color-login-bg;
+    border-top: solid 1px lighten(@color-window-top-border, 5%);
+    padding: 18px 24px;
+}
+#login-title{
+    font-size: 13px !important;
+    padding: 9px 12px;
+}
+.login-logo{
+    display: inline-block;
+}
+.login-logo img{
+    width: 72px;
+}
+.login-title{
+    display: inline-block;
+    color: @color-text-primary;
+    font-size: 20px;
+    position: relative;
+    bottom: 28px;
+    margin-left: 22px;
+    letter-spacing: 0.05em;
+}
+.login-body{
+    margin-top: 14px;
+}
+.login-form-group{
+    display: grid;
+    grid-template-columns: 12% 5% 83%;
+    grid-template-rows: 42px;
+    align-items: left;
+    margin-top: 12px;
+}
+.login-form-label{
+    font-size: 14px;
+    color: @color-text-primary;
+    margin-top: 6px;
+    margin-left: 7px;
+    .no-select-and-drag();
+}
+.login-form-control input{
+    height: 34px;
+    font-size: 13px;
+    color: @color-text-primary;
+    background: darken(@color-control-bg, 2%);
+    border: 1px solid @color-control-border;
+    vertical-align: middle;
+    padding-left: 16px;
+}
+.login-form-control input:focus{
+    color: @color-text-primary;
+    background: darken(@color-control-bg, 4%);
+    border: 1px solid @color-control-border;
+    outline: none !important;
+    box-shadow: none !important;
+}
+.login-form-button{
+    margin-top: 12px;
+}
+.login-button{
+    width: 68px;
+    height: 36px;
+    text-align: center;
+    font-size: 14px !important;
+    letter-spacing: 0.05em;
+    padding:4px 16px !important;
+    margin-left: 8px;
+    background: #383838 !important;
+}
+.login-button:hover{
+    background: darken(#383838, 5%) !important;
 }

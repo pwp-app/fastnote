@@ -8,12 +8,14 @@
 
     <!--import requirements-->
     <script>
-        window.$ = window.jQuery = require('./static/jquery.min.js');
+        window.$ = window.jQuery = require('../static/jquery.min.js');
     </script>
-    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
-    <link rel="stylesheet" href="static/font-awesome.min.css">
-    <link rel="stylesheet" href="static/bootstrap.min.css">
-    <link rel="stylesheet" href="static/animate.min.css">
+    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="../static/main.white.css" />
+    <link rel="stylesheet" href="../static/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/animate.min.css">
+    <script src="static/encryption.js"></script>
+    <script src="static/i18n.js"></script>
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -54,6 +56,7 @@
         const WebFont = require('webfontloader');
 
         var indebug = remote.getGlobal('indebug');
+
         if (!indebug) {
             Mousetrap.bind('ctrl+shift+i', (e) => {
                 e.preventDefault();
@@ -74,7 +77,7 @@
                 settingsInit(settings);
             }
             $(document).ready(function() {
-                ipcRenderer.send("about-window-ready");
+                ipcRenderer.send("login-window-ready");
             });
         });
 
@@ -84,18 +87,34 @@
             //build css
             if (settings == null) {
                 //read error
-                $('#main-style').attr('href', 'static/main.blackwhite.css');
-
+                $('#main-style').attr('href', '../static/main.blackwhite.css');
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
-
+                current_i18n = 'zh-cn';
+                $.getScript('../static/i18n/zh-cn.js');
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
-                if (typeof settings.theme != 'undefined') {
-                    $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
+                if (typeof settings.language != 'undefined') {
+                    if (settings.language != 'zh-cn') {
+                        $(document).ready(function() {
+                            initLanguage();
+                        });
+                    } else {
+                        current_i18n = 'zh-cn';
+                        $.getScript('../static/i18n/zh-cn.js', function() {
+                            postElementsInit();
+                        });
+                    }
+                    current_i18n = settings.language;
                 } else {
-                    $('#main-style').attr('href', 'static/main.blackwhite.css');
+                    current_i18n = 'zh-cn';
+                    $.getScript('../static/i18n/zh-cn.js');
+                }
+                if (typeof settings.theme != 'undefined') {
+                    $('#main-style').attr('href', '../static/main.' + settings.theme + '.css');
+                } else {
+                    $('#main-style').attr('href', '../static/main.blackwhite.css');
                 }
 
                 if (typeof settings.fontfamily != 'undefined') {
@@ -119,6 +138,15 @@
             }
         }
 
+        function initLanguage() {
+            applyLanguage(settings.language, postElementsInit);
+        }
+
+        //语言初始化后处理
+        function postElementsInit(){
+
+        }
+
         function loadWebfont(font) {
             WebFont.load({
                 custom: {
@@ -130,8 +158,9 @@
 </head>
 
 <body class="login-body">
-    <div class="login-titlebar col-lg-12 drag">
-        <div id="electron-titlebar" class="titlebar drag" style="position: fixed !important;z-index: 10;"></div>
+    <div class="container-titlebar col-lg-12 drag">
+        <div class="title" id="login-title" data-lang='editnote'>登录</div>
+        <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 999;"></div>
     </div>
     <script>
         require('electron-titlebar');
@@ -139,8 +168,8 @@
     <div class="container-login">
         <div class="login-header">
             <div class="login-logo">
-                <img class="about-logo-default" src="static/images/logo.png"></img>
-                <img class="about-logo-blackwhite" src="static/images/logo.blackwhite.png"></img>
+                <img class="login-logo-default" src="../static/images/logo.png"></img>
+                <img class="login-logo-blackwhite" src="../static/images/logo.blackwhite.png"></img>
             </div>
             <div class="login-title">
                 <span data-lang="login_title">登录到<handefault></handefault>Fastnote Cloud</span>
@@ -148,23 +177,32 @@
         </div>
         <div class="login-body">
             <div class="login-form">
-                <div class="login-form-control">
-                    <div>
-                        <span>用户名</span>
+                <div class="login-form-group">
+                    <div class="login-form-label">
+                        <span data-lang="username">用户名</span>
                     </div>
-                    <div>
-                        <input class="brcontrol-input" type="text">
+                    <div></div>
+                    <div class="login-form-control">
+                        <input class="form-control brcontrol-input" type="text">
                     </div>
                 </div>
-                <div class="login-form-control">
-                    <div>
-                        <span>密码</span>
+                <div class="login-form-group">
+                    <div class="login-form-label">
+                        <span data-lang="password">密码</span>
                     </div>
-                    <div>
-                        <input class="brcontrol-input" type="password">
+                    <div></div>
+                    <div class="login-form-control">
+                        <input class="form-control brcontrol-input" type="password">
                     </div>
+                </div>
+                <div class="login-form-button" style="float: right;">
+                    <button class="btn btn-secondary brbtn-primary login-button" data-lang="register">注册</button>
+                    <button class="btn btn-secondary brbtn-primary login-button" data-lang="login" onclick="checkLoginForm();">登录</button>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        
+    </script>
 </body>
