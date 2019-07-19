@@ -148,5 +148,8 @@ i18n['zh-cn']={
     close_minimize_to_tray: '最小化到托盘',
     close_just_close: '关闭程序',
     close_mainwindow_msg: '请选择点击关闭按钮后需要执行的操作，该操作也将会在你下次点击关闭按钮时自动执行',
-    login: '登录'
+    login: '登录',
+    register: '注册',
+    username: '用户名',
+    login_title: '登录到<handefault></handefault>Fastnote Cloud'
 };

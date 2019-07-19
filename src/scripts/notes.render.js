@@ -603,9 +603,20 @@ async function operateForceTopNote(noteid, status) {
             break;
         }
     }
-    var note_style = $('#note_'+noteid+' .note-content').attr('style');
+    let note_style = $('#note_'+noteid+' .note-content').attr('style');
+    let overheight = $('#note_'+noteid+' .note-content').hasClass('note-overheight');
     refreshNoteList(function(){
-        $('#note_'+noteid+' .note-content').attr('style', note_style);
+        if (overheight){
+            setTimeout(()=>{
+                $('#note_'+noteid+' .note-content').addClass('note-overheight');
+                $('#note_'+noteid+' .note-content').removeAttr('style');
+            }, 0);
+        } else {
+            setTimeout(()=>{
+                $('#note_'+noteid+' .note-content').removeClass('note-overheight');
+                $('#note_'+noteid+' .note-content').attr('style', note_style);
+            }, 0);
+        }
     });
     renderNotesOfCategory(current_category);
 }

@@ -465,7 +465,7 @@
             function bindNoteClickEvent() {
                 //滚动条不响应选择事件
                 $('.note-content').off('mousedown').on('mousedown', function(e) {
-                    if (e.offsetX >= $('.note-content').width()) {
+                    if (e.offsetX >= $(this).width()) {
                         e.stopPropagation();
                     }
                 });
@@ -1313,7 +1313,7 @@
                         putCategoryToArr(category_name); //添加到数组
                         //通知主进程分类有更改
                         ipcRenderer.send('category_added', category_name);
-                        renderCategoryToList(category_name, 0, true); //渲染到页面
+                        renderCategoryToList(categories.length - 1, category_name, 0, true); //渲染到页面
                         renderCategoryToSelect(category_name); //渲染到select
                         saveCategories(); //保存便签分类
                         $('#category-add').show();
@@ -1561,7 +1561,9 @@
             <div class="cloud-body cloud-body-notlogin">
                 <ul class="cloud-menu">
                     <li id="cloud-menuitem-login">
-                        <span data-lang="login">登录</span>
+                        <div class="cloud-menuitem-label">
+                            <span data-lang="login">登录</span>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -1605,7 +1607,7 @@
         });
 
         //menu item events
-        $('#cloud-menuitem-login').click(() => {
+        $('#cloud-menuitem-login').on('click', () => {
             ipcRenderer.send('openLoginWindow');
         });
     </script>

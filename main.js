@@ -30,13 +30,14 @@ const {
 let feedUrl = ``;
 
 //import other window
-aboutWindow = require('./app/about');
-editWindow = require('./app/edit');
-recycleWindow = require('./app/recyclebin');
-settingsWindow = require('./app/settings');
-newnoteWindow = require('./app/newnote');
-decryptionWindow = require('./app/decryption');
-desktopWidget = require('./app/widget');
+const aboutWindow = require('./app/about');
+const editWindow = require('./app/edit');
+const recycleWindow = require('./app/recyclebin');
+const settingsWindow = require('./app/settings');
+const newnoteWindow = require('./app/newnote');
+const decryptionWindow = require('./app/decryption');
+const desktopWidget = require('./app/widget');
+const loginWindow = require('./app/cloud/windows/loginWindow');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -139,6 +140,11 @@ function createWindow() {
     ipc.on('openDecryptionWindow', (sender, data) => {
         decryptionWindow.show(data);
     });
+    //open login window
+    ipc.on('openLoginWindow', ()=>{
+        loginWindow.createWindow();
+    });
+    //create desktop widget
     ipc.on('createDesktopWidget', (sender, data) => {
         desktopWidget.create(data);
     });
