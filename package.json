@@ -24,7 +24,7 @@
     "popper.js": "^1.15.0"
   },
   "name": "fastnote",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "homepage": "https://note.pwp.app",
   "main": "main.js",
   "scripts": {

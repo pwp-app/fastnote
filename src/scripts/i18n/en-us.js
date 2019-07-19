@@ -147,5 +147,6 @@ i18n['en-us']={
     close_mainwindow_title: 'Closing Fastnote',
     close_minimize_to_tray: 'Minimize to tray',
     close_just_close: 'Close the program',
-    close_mainwindow_msg: 'Please select the action you need to perform after clicking the close button, which will also be automatically executed the next time you click the close button.'
+    close_mainwindow_msg: 'Please select the action you need to perform after clicking the close button, which will also be automatically executed the next time you click the close button.',
+    login: 'Login'
 };

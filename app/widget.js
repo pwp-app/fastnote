@@ -45,9 +45,6 @@ function createWidget(data) {
 
     _widget.loadFile(path.resolve(__dirname, '../public/desktopWidget.html'));
 
-    if (indebug)
-    _widget.webContents.openDevTools();
-
     _widget.on('close', ()=>{
         let widget_x = _widget.getPosition()[0];
         let widget_y = _widget.getPosition()[1];

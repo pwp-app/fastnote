@@ -34,9 +34,6 @@ function createDecryptionWindow(data){
 
     win_decryption.loadFile(path.resolve(__dirname, '../public/decryption.html'));
 
-    if (indebug)
-        win_decryption.webContents.openDevTools();
-
     win_decryption.on('closed', ()=>{
         let index = wins_decryption.indexOf(win_decryption);
         win_decryption[index] = null;
