@@ -43,9 +43,6 @@ function createAboutWindow() {
         win_settings.setContentSize(680, height);
     });
 
-    if (indebug)
-        win_settings.webContents.openDevTools();
-
     win_settings.on('closed', () => {
         win_settings = null;
     });

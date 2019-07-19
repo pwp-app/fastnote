@@ -1,0 +1,170 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Fastnote - 关于</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--import requirements-->
+    <script>
+        window.$ = window.jQuery = require('./static/jquery.min.js');
+    </script>
+    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
+    <link rel="stylesheet" href="static/font-awesome.min.css">
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+    <link rel="stylesheet" href="static/animate.min.css">
+    <script>
+        //load Animate CSS
+        $.fn.extend({
+            animateCss: function(animationName, callback) {
+                var animationEnd = (function(el) {
+                    var animations = {
+                        animation: 'animationend',
+                        OAnimation: 'oAnimationEnd',
+                        MozAnimation: 'mozAnimationEnd',
+                        WebkitAnimation: 'webkitAnimationEnd',
+                    };
+
+                    for (var t in animations) {
+                        if (typeof(el.style[t]) !== 'undefined') {
+                            return animations[t];
+                        }
+                    }
+                })(document.createElement('div'));
+
+                this.addClass('animated ' + animationName).one(animationEnd, function() {
+                    $(this).removeClass('animated ' + animationName);
+                    if (typeof callback === 'function') callback();
+                });
+
+                return this;
+            },
+        });
+        //define const
+        const remote = require('electron').remote;
+        const app = remote.app;
+        //import json storage
+        const storage = require('electron-json-storage');
+
+        const {
+            ipcRenderer
+        } = require('electron');
+
+        const WebFont = require('webfontloader');
+
+        var indebug = remote.getGlobal('indebug');
+        if (!indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
+
+        var settings;
+
+        storage.get('settings', function(error, data) {
+            if (error) {
+                console.error(error);
+                settingsInit(null);
+                return;
+            } else {
+                //获取callback回传的json
+                settings = data;
+                settingsInit(settings);
+            }
+            $(document).ready(function() {
+                ipcRenderer.send("about-window-ready");
+            });
+        });
+
+        function settingsInit(settings) {
+            var cssText = "";
+            var font = "";
+            //build css
+            if (settings == null) {
+                //read error
+                $('#main-style').attr('href', 'static/main.blackwhite.css');
+
+                cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
+                font = 'Source Han Sans CN';
+
+                console.error('A error occured when reading settings.');
+            } else {
+                //read success
+                if (typeof settings.theme != 'undefined') {
+                    $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
+                } else {
+                    $('#main-style').attr('href', 'static/main.blackwhite.css');
+                }
+
+                if (typeof settings.fontfamily != 'undefined') {
+                    cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
+                    font = settings.fontfamily;
+                } else {
+                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;';
+                    font = 'Source Han Sans CN';
+                }
+            }
+            var modStyle = document.querySelector('#modCSS');
+            if (modStyle === null) {
+                modStyle = document.createElement('style');
+                modStyle.id = 'modCSS';
+                document.body.appendChild(modStyle);
+            }
+            modStyle.innerHTML = cssText;
+
+            if (font == 'Source Han Sans CN') {
+                loadWebfont(font);
+            }
+        }
+
+        function loadWebfont(font) {
+            WebFont.load({
+                custom: {
+                    families: [font]
+                }
+            });
+        }
+    </script>
+</head>
+
+<body class="login-body">
+    <div class="login-titlebar col-lg-12 drag">
+        <div id="electron-titlebar" class="titlebar drag" style="position: fixed !important;z-index: 10;"></div>
+    </div>
+    <script>
+        require('electron-titlebar');
+    </script>
+    <div class="container-login">
+        <div class="login-header">
+            <div class="login-logo">
+                <img class="about-logo-default" src="static/images/logo.png"></img>
+                <img class="about-logo-blackwhite" src="static/images/logo.blackwhite.png"></img>
+            </div>
+            <div class="login-title">
+                <span data-lang="login_title">登录到<handefault></handefault>Fastnote Cloud</span>
+            </div>
+        </div>
+        <div class="login-body">
+            <div class="login-form">
+                <div class="login-form-control">
+                    <div>
+                        <span>用户名</span>
+                    </div>
+                    <div>
+                        <input class="brcontrol-input" type="text">
+                    </div>
+                </div>
+                <div class="login-form-control">
+                    <div>
+                        <span>密码</span>
+                    </div>
+                    <div>
+                        <input class="brcontrol-input" type="password">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

@@ -38,9 +38,6 @@ var RecycleWindow = {
             win_recycle.show();
         });
 
-        if (indebug)
-            win_recycle.webContents.openDevTools();
-
         win_recycle.on('closed', () => {
             win_recycle = null;
         });
