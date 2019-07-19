@@ -15,7 +15,6 @@ function createAboutWindow() {
         resizable: false,
         maximazable: false,
         show: false,
-        transparent: true,
         webPreferences: {
             nodeIntegration: true
         }
@@ -31,9 +30,6 @@ function createAboutWindow() {
     var viewpath = path.resolve(__dirname, '../public/about.html');
     win_about.loadFile(viewpath);
 
-    if (indebug)
-        win_about.webContents.openDevTools();
-
     win_about.on('closed', () => {
         win_about = null;
     });
@@ -41,7 +37,7 @@ function createAboutWindow() {
         win_about.webContents.send('set-uuid',global.uuid);
         win_about.webContents.send('os-status',global.isOS64);
     });
-    ipc.on('about-window-ready',()=>{
+    ipc.once('about-window-ready',()=>{
         win_about.show();
     });
 }

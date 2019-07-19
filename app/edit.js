@@ -37,9 +37,6 @@ function createEditWindow(data) {
     var viewpath = path.resolve(__dirname, '../public/edit.html');
     win_edit.loadFile(viewpath);
 
-    if (indebug)
-        win_edit.webContents.openDevTools();
-
     win_edit.on('closed', () => {
         let index = win_edits.indexOf(win_edit);
         win_edits[index] = null;

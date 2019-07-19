@@ -34,9 +34,6 @@ function createNewNoteWindow(data) {
     var viewpath = path.resolve(__dirname, '../public/newnote.html');
     win_newnote.loadFile(viewpath);
 
-    if (indebug)
-        win_newnote.webContents.openDevTools();
-
     win_newnote.on('ready-to-show', () => {
         ipc.once('newnote-window-ready', () => {
             win_newnote.show();

@@ -359,8 +359,6 @@
         </div>
     </div>
     <script src="static/lockscreen.js"></script>
-    <!-- infobar -->
-    <div class="container-infobar">
     </div>
     <!-- notes -->
     <div class="container-main">
@@ -1146,6 +1144,7 @@
             ipcRenderer.send('reloadAllEditWindow');
             ipcRenderer.send('reloadAboutWindow');
             ipcRenderer.send('reloadAllWidgets');
+            ipcRenderer.send('reloadLoginWindow');
             closeMainMenu();
         });
         $('#mainmenu-btn-exit').click(function() {
@@ -1526,17 +1525,27 @@
                     //修改id
                     $('#category-custom-' + categories[index].name).attr('id', 'category-custom-' + newname);
                     //向其他窗口发送rename通知
-                    console.log('sent');
                     ipcRenderer.send('category_rename', {
                         index: index,
                         newname: newname
                     });
+                    //改写便签的分类名称
+                    renameCategoryOfNote(categories[index].name, newname);
                 }
                 categories[index].name = newname;
             });
             saveCategories();
             //重新渲染分类相关的内容
             renderCategorySelect();
+        }
+
+        async function renameCategoryOfNote(oldname, newname) {
+            notes.forEach(note => {
+                if (note.category == oldname) {
+                    note.category = newname;
+                    saveNoteByObj(note);
+                }
+            });
         }
     </script>
 
@@ -1593,6 +1602,11 @@
 
         $('.cloud-background').on('mousedown', () => {
             closeCloudPanel();
+        });
+
+        //menu item events
+        $('#cloud-menuitem-login').click(() => {
+            ipcRenderer.send('openLoginWindow');
         });
     </script>
 
@@ -1773,6 +1787,7 @@
             ipcRenderer.send('reloadAllEditWindow');
             ipcRenderer.send('reloadAboutWindow');
             ipcRenderer.send('reloadAllWidgets');
+            ipcRenderer.send('reloadLoginWindow');
             closeMainMenu();
         });
     </script>
@@ -1813,6 +1828,23 @@
         //import requirements
         $.getScript('../app/infobar.js'); //import by jQuery
         $.getScript('../app/notes.js');
+    </script>
+
+    <script>
+        //便签分类数量的正确性检查
+        $(document).ready(() => {
+            setTimeout(() => {
+                let custom_total = 0;
+                for (var i = 0; i < categories.length; i++) {
+                    custom_total += categories[i].count;
+                }
+                if (notalloc_count + custom_total != notes.length) {
+                    recountNotes();
+                } else {
+                    console.log('Category count check passed.');
+                }
+            }, 3000);
+        });
     </script>
 
     <span id="filter-x" style="display:none"></span>
