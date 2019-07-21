@@ -1565,6 +1565,11 @@
                             <span data-lang="login">登录</span>
                         </div>
                     </li>
+                    <li id="cloud-menuitem-register">
+                        <div class="cloud-menuitem-label">
+                            <span data-lang="register">注册</span>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -1609,6 +1614,11 @@
         //menu item events
         $('#cloud-menuitem-login').on('click', () => {
             ipcRenderer.send('openLoginWindow');
+            closeCloudPanel();
+        });
+        $('#cloud-menuitem-register').on('click', ()=>{
+            ipcRenderer.send('openRegisterWindow');
+            closeCloudPanel();
         });
     </script>
 
@@ -1799,7 +1809,7 @@
         //检测服务器状态
         function checkServerStatus() {
             $.ajax({
-                url: cloud_apibase + '/api/common/ping',
+                url: cloud_apibase + '/common/ping',
                 type: 'GET',
                 dataType: 'json',
                 timeout: 1000,
@@ -1824,6 +1834,13 @@
         }
         //执行服务器状态检查
         checkServerStatus();
+
+        //注册成功事件
+        ipcRenderer.on('cloud-register-success', (sender, data)=>{
+            displayInfobar('success', i18n[current_i18n].register_success);
+            //获取userinfo
+            
+        });
     </script>
 
     <script>

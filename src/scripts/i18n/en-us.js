@@ -151,5 +151,8 @@ i18n['en-us']={
     login: 'Login',
     register: 'Register',
     username: 'Username',
-    login_title: 'Login to Fastnote Cloud'
+    login_title: 'Login to Fastnote Cloud',
+    register_needCaptcha: 'Validation code is required. Please login manually.',
+    register_tryLoginFailed: 'Attempt to login failed. Please login manually.',
+    register_success: 'Fastnote Cloud account has been registered successfully.'
 };

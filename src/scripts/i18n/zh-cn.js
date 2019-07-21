@@ -151,5 +151,8 @@ i18n['zh-cn']={
     login: '登录',
     register: '注册',
     username: '用户名',
-    login_title: '登录到<handefault></handefault>Fastnote Cloud'
+    login_title: '登录到<handefault></handefault>Fastnote Cloud',
+    register_needCaptcha: '需要验证码，请手动登录',
+    register_tryLoginFailed: '尝试登录失败，请手动登录',
+    register_success: 'Fastnote Cloud 用户注册成功'
 };
