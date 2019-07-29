@@ -1,5 +1,6 @@
 
 @color-login-bg: lighten(@color-primary, 2%);
+
 .login-body{
     background: @color-login-bg;
     .no-select-and-drag();
@@ -45,6 +46,9 @@
     align-items: left;
     margin-top: 12px;
 }
+#login-captcha-group{
+    grid-template-columns: 12% 5% 63.35% 5% 12% !important;
+}
 .login-form-label{
     font-size: 14px;
     color: @color-text-primary;
@@ -83,4 +87,9 @@
 }
 .login-button:hover{
     background: darken(#383838, 5%) !important;
+}
+#login-captcha{
+    width: 80px;
+    height: 34px;
+    cursor: pointer;
 }

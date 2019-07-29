@@ -142,7 +142,11 @@ function createWindow() {
     });
     //open login window
     ipc.on('openLoginWindow', ()=>{
-        loginWindow.createWindow();
+        loginWindow.createLoginWindow();
+    });
+    //open register window
+    ipc.on('openRegisterWindow', ()=>{
+        loginWindow.createRegisterWindow();
     });
     //create desktop widget
     ipc.on('createDesktopWidget', (sender, data) => {
@@ -233,7 +237,6 @@ function createWindow() {
 
     //always on top
     ipc.on('main-window-alwaysontop', () => {
-        console.log(1);
         if (win.isAlwaysOnTop()) {
             win.setAlwaysOnTop(false);
             win.webContents.send('win-alwaysontop', false);
@@ -241,6 +244,10 @@ function createWindow() {
             win.setAlwaysOnTop(true);
             win.webContents.send('win-alwaysontop', true);
         }
+    });
+
+    ipc.on('cloud-register-success', (sender, data)=>{
+        win.webContents.send('cloud-register-success', data);
     });
 
     ipc.on('cancel-encryption', function(sender, data) {
@@ -390,10 +397,13 @@ app.on('ready', () => {
 });
 
 app.on('second-instance', ()=>{
-    if (win){
+    if (win != null){
         if (win.isMinimized()){
             win.restore();
         }
+        win.focus();
+    } else {
+        createWindow();
         win.focus();
     }
 });
