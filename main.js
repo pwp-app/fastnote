@@ -397,10 +397,13 @@ app.on('ready', () => {
 });
 
 app.on('second-instance', ()=>{
-    if (win){
+    if (win != null){
         if (win.isMinimized()){
             win.restore();
         }
+        win.focus();
+    } else {
+        createWindow();
         win.focus();
     }
 });

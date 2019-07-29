@@ -1837,10 +1837,37 @@
 
         //注册成功事件
         ipcRenderer.on('cloud-register-success', (sender, data)=>{
+            //拉取用户信息
             displayInfobar('success', i18n[current_i18n].register_success);
-            //获取userinfo
-            
+            fetchUserInfo(data);
         });
+        //登录成功事件
+        ipcRenderer.on('cloud-login-success', (sender, data)=>{
+            //拉取用户信息
+            displayInfobar('success', i18n[current_i18n].login_success);
+            fetchUserInfo(data);
+        });
+
+        function fetchUserInfo(data){
+            $.ajax({
+                url: cloud_apibase + '/user/getinfo',
+                type: 'GET',
+                dataType: 'json',
+                headers: {
+                    Authorization: "Bearer "+data.token.token
+                },
+                success: (res)=>{
+                    if (res.code == 200){
+                        
+                    } else {
+                        console.error('error', '获取用户信息失败，请尝试手动登录');
+                    }
+                },
+                error: (res)=>{
+                    console.error('error', '获取用户信息失败，请尝试手动登录');
+                }
+            });
+        }
     </script>
 
     <script>
