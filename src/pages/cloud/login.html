@@ -57,13 +57,6 @@
 
         var indebug = remote.getGlobal('indebug');
 
-        if (!indebug) {
-            Mousetrap.bind('ctrl+shift+i', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        }
-
         var settings;
 
         storage.get('settings', function(error, data) {
@@ -339,6 +332,26 @@
         }
     </style>
     <script>
+        if (!indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            $(document).on('keydown', 'input[type="password"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+            $(document).on('keydown', 'input[type="text"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        }
         //import requirements
         $.getScript('../../app/infobar.js'); //import by jQuery
     </script>

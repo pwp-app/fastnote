@@ -29,8 +29,8 @@
 
         //load Animate CSS
         $.fn.extend({
-            animateCss: function (animationName, callback) {
-                var animationEnd = (function (el) {
+            animateCss: function(animationName, callback) {
+                var animationEnd = (function(el) {
                     var animations = {
                         animation: 'animationend',
                         OAnimation: 'oAnimationEnd',
@@ -39,13 +39,13 @@
                     };
 
                     for (var t in animations) {
-                        if (typeof (el.style[t]) !== 'undefined') {
+                        if (typeof(el.style[t]) !== 'undefined') {
                             return animations[t];
                         }
                     }
                 })(document.createElement('div'));
 
-                this.addClass('animated ' + animationName).one(animationEnd, function () {
+                this.addClass('animated ' + animationName).one(animationEnd, function() {
                     $(this).removeClass('animated ' + animationName);
                     if (typeof callback === 'function') callback();
                 });
@@ -57,12 +57,7 @@
         const remote = require('electron').remote;
         const app = remote.app;
         var indebug = remote.getGlobal('indebug');
-        if (!indebug){
-            Mousetrap.bind('ctrl+shift+i', (e)=>{
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        }
+
         //import json storage
         if (typeof storage != 'undefined') {
             var storage = require('electron-json-storage');
@@ -91,7 +86,7 @@
 
         var settings;
 
-        storage.get('settings', function (error, data) {
+        storage.get('settings', function(error, data) {
             if (error) {
                 console.error(error);
                 settingsInit(null);
@@ -101,7 +96,7 @@
                 settings = data;
                 settingsInit(settings);
             }
-            $(document).ready(function () {
+            $(document).ready(function() {
                 ipcRenderer.send("recyclebin-window-ready");
             });
         });
@@ -122,9 +117,9 @@
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
-                if (typeof settings.language != 'undefined'){
-                    if (settings.language != 'zh-cn'){
-                        $(document).ready(function(){
+                if (typeof settings.language != 'undefined') {
+                    if (settings.language != 'zh-cn') {
+                        $(document).ready(function() {
                             applyLanguage(settings.language);
                         });
                     } else {
@@ -248,7 +243,7 @@
                 showNoteList();
             }
             addNoteObjToArray(data);
-            refreshNoteList(null, function () {
+            refreshNoteList(null, function() {
                 bindNoteFoldDBL(data.id);
             });
             //animate
@@ -262,9 +257,9 @@
         var noteid_clicked = -1;
 
         //bind resize
-        $(window).resize(function () { //当浏览器大小变化时
+        $(window).resize(function() { //当浏览器大小变化时
             //调整note的高度
-            $('.note-content').each(function () {
+            $('.note-content').each(function() {
                 if ($(this).attr('class').indexOf('note-overheight') == -1) {
                     $(this).css('height', 'auto');
                 }
@@ -272,7 +267,7 @@
         });
 
         function bindNoteClickEvent() {
-            $('.note-wrapper').off('mousedown').on('mousedown', function (e) {
+            $('.note-wrapper').off('mousedown').on('mousedown', function(e) {
                 //提取点击的id
                 noteid_clicked = parseInt($(this).children('.note').attr("data-id"));
                 if (e.which == 1) {
@@ -285,7 +280,7 @@
                             //如果没有选中则退出
                             if (notes_selected.length <= 0) {
                                 selectModeEnabled = false;
-                                $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
+                                $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
                                     $('.toast-multiselected').removeClass('toast-active');
                                 });
                             } else {
@@ -298,7 +293,7 @@
                             $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                         }
                     } else {
-                        noteLongClickTimeout = setTimeout(function () {
+                        noteLongClickTimeout = setTimeout(function() {
                             selectModeEnabled = true;
                             $('#note_' + noteid_clicked).parent().addClass('note-selected');
                             notes_selected = [];
@@ -321,7 +316,7 @@
                             $('.note-wrapper').removeClass('note-selected');
                             $(this).addClass('note-selected');
                             popup_menu_recyclebin();
-                            $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
+                            $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
                                 $('.toast-multiselected').removeClass('toast-active');
                             });
                         }
@@ -334,26 +329,26 @@
                 //阻止事件冒泡到父元素
                 e.stopPropagation();
             });
-            $('.note-wrapper').off('mouseup').on('mouseup', function (e) {
+            $('.note-wrapper').off('mouseup').on('mouseup', function(e) {
                 if (e.which == 1) {
                     clearTimeout(noteLongClickTimeout);
                 }
             });
         }
 
-        $(document).ready(function () {
-            $('#note-list').mousedown(function (e) {
+        $(document).ready(function() {
+            $('#note-list').mousedown(function(e) {
                 if (selectModeEnabled) {
                     selectModeEnabled = false;
                     $('.note-wrapper').removeClass('note-selected');
-                    $('.toast-multiselected').animateCss('fadeOutRight faster', function () {
+                    $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
                         $('.toast-multiselected').removeClass('toast-active');
                     });
                 }
             });
         });
 
-        Mousetrap.bind('ctrl+a', function () {
+        Mousetrap.bind('ctrl+a', function() {
             selectModeEnabled = true;
             notes_selected = [];
             notes.forEach(note => {
@@ -368,6 +363,27 @@
         });
 
         bindNoteClickEvent();
+
+        if (!indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            $(document).on('keydown', 'input[type="password"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+            $(document).on('keydown', 'input[type="text"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        }
     </script>
 
     <script>

@@ -57,13 +57,6 @@
 
         var indebug = remote.getGlobal('indebug');
 
-        if (!indebug) {
-            Mousetrap.bind('ctrl+shift+i', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        }
-
         var settings;
 
         storage.get('settings', function(error, data) {
@@ -279,25 +272,25 @@
                     if (res.code == 200) {
                         //注册成功，测试是否可以登录，如果需要验证码则转到登录窗口
                         $.ajax({
-                            url: cloud_apibase+'/user/login',
+                            url: cloud_apibase + '/user/login',
                             type: 'POST',
                             dataType: 'json',
                             data: {
                                 username: username,
                                 password: sha256(password, 'fastnote'),
-                                client_type:'pc',
+                                client_type: 'pc',
                                 action: 'login',
                             },
-                            success: (res)=>{
-                                if (res.code != 200){
-                                    if (code == 402){
+                            success: (res) => {
+                                if (res.code != 200) {
+                                    if (code == 402) {
                                         displayInfobar('error', i18n[current_i18n].register_needCaptcha);
-                                        setTimeout(()=>{
+                                        setTimeout(() => {
                                             ipcRenderer.send('change-to-login', {
                                                 username: username,
                                                 needCaptcha: true
                                             });
-                                        },3000);
+                                        }, 3000);
                                     }
                                 } else {
                                     let cloud_userconfig = {
@@ -306,9 +299,9 @@
                                     }
                                     let cloud_usertoken = res.auth;
                                     //保存用户信息
-                                    storage.set('cloud_userconfig', cloud_userconfig, ()=>{
+                                    storage.set('cloud_userconfig', cloud_userconfig, () => {
                                         //保存token
-                                        storage.set('cloud_usertoken', cloud_usertoken, ()=>{
+                                        storage.set('cloud_usertoken', cloud_usertoken, () => {
                                             ipcRenderer.send('cloud-register-success', {
                                                 userconfig: cloud_userconfig,
                                                 token: cloud_usertoken
@@ -318,14 +311,14 @@
                                     });
                                 }
                             },
-                            error: ()=>{
+                            error: () => {
                                 displayInfobar('error', i18n[current_i18n].register_tryLoginFailed);
-                                setTimeout(()=>{
+                                setTimeout(() => {
                                     ipcRenderer.send('change-to-login', {
                                         username: username,
                                         needCaptcha: false
                                     });
-                                },3000);
+                                }, 3000);
                             }
                         })
                     } else {
@@ -358,6 +351,26 @@
         }
     </style>
     <script>
+        if (!indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            $(document).on('keydown', 'input[type="password"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+            $(document).on('keydown', 'input[type="text"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        }
         //import requirements
         $.getScript('../../app/infobar.js'); //import by jQuery
     </script>

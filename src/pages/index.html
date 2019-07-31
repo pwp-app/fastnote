@@ -1230,7 +1230,7 @@
                         <li id="category-add-inside">
                             <div class="category-ctrl-add">
                                 <div class="category-add-input">
-                                    <input id="input-category-add">
+                                    <input id="input-category-add" type="text">
                                 </div>
                                 <div class="category-add-btn">
                                     <i class="fa fa-times" aria-hidden="true"></i>
@@ -1612,7 +1612,7 @@
             ipcRenderer.send('openLoginWindow');
             closeCloudPanel();
         });
-        $('#cloud-menuitem-register').on('click', ()=>{
+        $('#cloud-menuitem-register').on('click', () => {
             ipcRenderer.send('openRegisterWindow');
             closeCloudPanel();
         });
@@ -1832,34 +1832,34 @@
         checkServerStatus();
 
         //注册成功事件
-        ipcRenderer.on('cloud-register-success', (sender, data)=>{
+        ipcRenderer.on('cloud-register-success', (sender, data) => {
             //拉取用户信息
             displayInfobar('success', i18n[current_i18n].register_success);
             fetchUserInfo(data);
         });
         //登录成功事件
-        ipcRenderer.on('cloud-login-success', (sender, data)=>{
+        ipcRenderer.on('cloud-login-success', (sender, data) => {
             //拉取用户信息
             displayInfobar('success', i18n[current_i18n].login_success);
             fetchUserInfo(data);
         });
 
-        function fetchUserInfo(data){
+        function fetchUserInfo(data) {
             $.ajax({
                 url: cloud_apibase + '/user/getinfo',
                 type: 'GET',
                 dataType: 'json',
                 headers: {
-                    Authorization: "Bearer "+data.token.token
+                    Authorization: "Bearer " + data.token.token
                 },
-                success: (res)=>{
-                    if (res.code == 200){
-                        
+                success: (res) => {
+                    if (res.code == 200) {
+
                     } else {
                         console.error('error', '获取用户信息失败，请尝试手动登录');
                     }
                 },
-                error: (res)=>{
+                error: (res) => {
                     console.error('error', '获取用户信息失败，请尝试手动登录');
                 }
             });
@@ -1894,14 +1894,26 @@
                 e.preventDefault();
                 e.stopPropagation();
             });
-            $('#note-text').on('keydown', (e)=>{
+            $('textarea').on('keydown', (e) => {
                 var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.keyCode == 73){
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log(2);
                 }
-                console.log(1);
+            });
+            $(document).on('keydown', 'input[type="password"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+            $(document).on('keydown', 'input[type="text"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
             });
         }
     </script>

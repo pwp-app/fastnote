@@ -59,13 +59,6 @@
         //获取indebug
         global.indebug = remote.getGlobal('indebug');
 
-        if (!global.indebug) {
-            Mousetrap.bind('ctrl+shift+i', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        }
-
         //import requirements
         $.getScript('../app/infobar.js'); //import by jQuery
 
@@ -245,7 +238,7 @@
             <div class="edit-info-item">
                 <label data-lang="title">标题</label>
                 <div class="edit-item-control">
-                    <input class="form-control" id="input-title" maxlength="64" placeholder="(无标题)">
+                    <input class="form-control" type="text" id="input-title" maxlength="64" placeholder="(无标题)">
                 </div>
             </div>
             <div style="margin-top: 8px;">
@@ -260,7 +253,7 @@
                 <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
                     <label data-lang="password">密码</label>
                     <div class="edit-item-control-half-right">
-                        <input class="form-control" id="input-password" type="password">
+                        <input class="form-control" type="text" id="input-password" type="password">
                     </div>
                 </div>
             </div>
@@ -519,6 +512,32 @@
             } else {
                 return document.selection.createRange().text;
             }
+        }
+
+        if (!global.indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            $(document).on('keydown', 'input[type="password"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+            $(document).on('keydown', 'input[type="text"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
         }
     </script>
 </body>

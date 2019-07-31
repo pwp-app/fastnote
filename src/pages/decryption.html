@@ -35,14 +35,8 @@
 
         //获取indebug
         global.indebug = remote.getGlobal('indebug');
-        if (!global.indebug){
-            Mousetrap.bind('ctrl+shift+i', (e)=>{
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        }
 
-        storage.get('settings', function (error, data) {
+        storage.get('settings', function(error, data) {
             if (error) {
                 console.error(error);
                 settingsInit(null);
@@ -52,7 +46,7 @@
                 settings = data;
                 settingsInit(settings);
             }
-            $(document).ready(function () {
+            $(document).ready(function() {
                 ipcRenderer.send("decryption-window-ready");
             });
         });
@@ -71,9 +65,9 @@
                 console.error('A error occured when reading settings.');
             } else {
                 //read success
-                if (typeof settings.language != 'undefined'){
-                    if (settings.language != 'zh-cn'){
-                        $(document).ready(function(){
+                if (typeof settings.language != 'undefined') {
+                    if (settings.language != 'zh-cn') {
+                        $(document).ready(function() {
                             applyLanguage(settings.language);
                         });
                     } else {
@@ -139,27 +133,28 @@
         </div>
     </div>
     <script>
-        $(document).ready(function(){
+        $(document).ready(function() {
             $('#input-password').focus();
         });
     </script>
     <script>
         var noteid;
         var sha256_password;
-        ipcRenderer.on('init', function (sender, data) {
+        ipcRenderer.on('init', function(sender, data) {
             noteid = data.id;
             $("#decryption-title").append(" #" + data.id);
             $("title").append(" - #" + data.id);
             sha256_password = data.password;
         });
-        $('#input-password').keydown(function (e) {
+        $('#input-password').keydown(function(e) {
             if (e.keyCode == 13) {
                 checkPassword();
             }
         });
-        $('#btn-decrypt').click(function(e){
+        $('#btn-decrypt').click(function(e) {
             checkPassword();
         });
+
         function checkPassword() {
             var p = $('#input-password').val().trim();
             if (sha256(p, 'fastnote') == sha256_password) {
@@ -171,6 +166,28 @@
             } else {
                 $('#input-password').addClass('br-invalid');
             }
+        }
+
+        if (!global.indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            $(document).on('keydown', 'input[type="password"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+            $(document).on('keydown', 'input[type="text"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
         }
     </script>
 </body>
