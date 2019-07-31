@@ -36,9 +36,9 @@ function createAboutWindow() {
     win_about.on('ready-to-show', () => {
         win_about.webContents.send('set-uuid',global.uuid);
         win_about.webContents.send('os-status',global.isOS64);
-    });
-    ipc.once('about-window-ready',()=>{
-        win_about.show();
+        ipc.once('about-window-ready',()=>{
+            win_about.show();
+        });
     });
 }
 
@@ -49,7 +49,7 @@ ipc.on('reloadAboutWindow',function(sender, data){
 });
 
 function showAboutWindow() {
-    if (win_about !== null) {
+    if (win_about != null) {
         if (win_about.isMinimized()) {
             win_about.restore();
         }

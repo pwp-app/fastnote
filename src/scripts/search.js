@@ -12,7 +12,7 @@ Mousetrap.bind('ctrl+f', function () {
 
 //绑定textarea的keydown
 $(document).ready(function(){
-    $('#note-text').keydown(function (e) {
+    $('#note-text').on('keydown', function (e) {
         var ctrlKey = e.ctrlKey || e.metaKey;
         if (ctrlKey && e.keyCode == 70) {
             if (searchOpened){
@@ -35,6 +35,7 @@ $('#input-search').bind('input propertychange', function () {
 $('#input-search').on('keydown', function (e) {
     if (e.keyCode == 27){
         closeSearchToast();
+        $('#note-text').focus();
         return;
     }
 });

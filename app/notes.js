@@ -53,8 +53,6 @@ if (typeof settings == "undefined"){
     readNoteFiles();
 }
 
-//绑定textarea的事件
-
 //tip是否显示的flag
 var note_submit_tip_show = true;
 textarea.on('input propertychange',function(e){

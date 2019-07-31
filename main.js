@@ -18,7 +18,7 @@ if (!singleInstanceLock){
 }
 
 //global settings
-global.indebug = true; //debug trigger
+global.indebug = false; //debug trigger
 global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage

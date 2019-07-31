@@ -84,13 +84,6 @@
             var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + ':' + cloudConfig.release.port
         }
 
-        if (!indebug) {
-            Mousetrap.bind('ctrl+shift+i', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        }
-
         const WebFont = require('webfontloader');
 
         //import menu
@@ -1095,14 +1088,17 @@
         Mousetrap.bind('esc', function() {
             if (isCategoryOpen) {
                 closeCategory();
+                $('#note-text').focus();
                 return;
             }
             if (isCloudOpen) {
                 closeCloudPanel();
+                $('#note-text').focus();
                 return;
             }
             if (isMainMenuOpen) {
                 closeMainMenu();
+                $('#note-text').focus();
             } else {
                 openMainMenu();
             }
@@ -1891,6 +1887,23 @@
                 }
             }, 3000);
         });
+
+        //屏蔽开发工具
+        if (!indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            $('#note-text').on('keydown', (e)=>{
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log(2);
+                }
+                console.log(1);
+            });
+        }
     </script>
 
     <span id="filter-x" style="display:none"></span>
