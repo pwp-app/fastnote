@@ -116,59 +116,39 @@ function putToRecyclebin(id, infoEnabled = true) {
                 path = note.rawtime + '.json';
             }
             if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + path)) {
-                if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/')) {
-                    fs.rename(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + path, storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + path, function (err) {
-                        if (err) {
-                            displayInfobar('error', i18n[current_i18n]['note_recycle_error']);
-                            readNoteFiles();
-                            throw (err);
-                        } else {
-                            //从数组里删除
-                            deleteNoteFromArr(id);
-                            //动画
-                            $('#note_' + id).animateCss('fadeOutLeft faster', function () {
-                                $('#note_' + id).parent().remove(); //动画结束后删除div
-                                if (notes.length <= 0) {
-                                    showNoteEmpty_Anim();
-                                }
-                            });
-                            //send to main process
-                            ipcRenderer.send('recycle-note', note_temp);
-                            if (infoEnabled) {
-                                displayInfobar('success', i18n[current_i18n]['note_recycle_success']);
-                            }
-                        }
-                    });
-                } else {
-                    fs.mkdirSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/');
-                    fs.rename(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + path, storagePath + '/notes/recyclebin/' + path, function (err) {
-                        if (err) {
-                            if (infoEnabled) {
-                                displayInfobar('error', i18n[current_i18n]['note_recycle_error']);
-                            }
-                            readNoteFiles();
-                            throw (err);
-                        } else {
-                            //从数组里删除
-                            deleteNoteFromArr(id);
-                            //动画
-                            $('#note_' + id).animateCss('fadeOutLeft faster', function () {
-                                $('#note_' + id).parent().remove(); //动画结束后删除div
-                                if (notes.length <= 0) {
-                                    showNoteEmpty_Anim();
-                                }
-                            });
-                            //send to main process
-                            ipcRenderer.send('recycle-note', note_temp);
-                            if (infoEnabled) {
-                                displayInfobar('success', i18n[current_i18n]['note_recycle_success']);
-                            }
-                        }
-                    });
+                if (!fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/')) {
+                    let res_mkdir = fs.mkdirSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/');
+                    if (!res_mkdir){
+                        displayInfobar('error', i18n[current_i18n].recycle_foldercreate_error);
+                        return;
+                    }
                 }
+                fs.rename(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + path, storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + path, function (err) {
+                    if (err) {
+                        displayInfobar('error', i18n[current_i18n].note_recycle_error);
+                        readNoteFiles();
+                        throw (err);
+                    } else {
+                        //从数组里删除
+                        deleteNoteFromArr(id);
+                        //动画
+                        $('#note_' + id).animateCss('fadeOutLeft faster', function () {
+                            $('#note_' + id).parent().remove(); //动画结束后删除div
+                            checkCategoryEmpty();
+                            if (notes.length <= 0) {
+                                showNoteEmpty_Anim();
+                            }
+                        });
+                        //send to main process
+                        ipcRenderer.send('recycle-note', note_temp);
+                        if (infoEnabled) {
+                            displayInfobar('success', i18n[current_i18n].note_recycle_success);
+                        }
+                    }
+                });
             } else {
                 if (infoEnabled) {
-                    displayInfobar('error', i18n[current_i18n]['recycle_cantfindfile']);
+                    displayInfobar('error', i18n[current_i18n].recycle_cantfindfile);
                 }
             }
             return false;
@@ -299,11 +279,11 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
     fs.writeFile(path, json, 'utf-8', function (err, data) {
         if (err) {
             console.error(err);
-            displayInfobar('error', i18n[current_i18n]['save_error']);
+            displayInfobar('error', i18n[current_i18n].save_error);
             return;
         } else {
             textarea.val('');
-            displayInfobar('success', i18n[current_i18n]['save_success']);
+            displayInfobar('success', i18n[current_i18n].save_success);
         }
     });
     notesid++;
@@ -323,7 +303,7 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
 }
 
 //基于note obj保存便签
-async function saveNoteByObj(note) {
+function saveNoteByObj(note) {
     //保存路径
     var path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + note.rawtime + (typeof note.offset != undefined ? note.offset > 0 ? "." + note.offset : "" : "") + '.json';
     //计算文件的offset

@@ -39,7 +39,7 @@ function readCurrentCategory() {
     }
 }
 
-async function saveCurrentCategory() {
+function saveCurrentCategory() {
     var data = {
         category: current_category
     };
@@ -158,7 +158,7 @@ function removeCategoryFromArr(name) {
     }
 }
 
-async function setNotesCategory(name, category) {
+function setNotesCategory(name, category) {
     var index;
     if (typeof category != "undefined") {
         index = indexOfCategory(name);
@@ -183,7 +183,7 @@ async function setNotesCategory(name, category) {
     renderCustomCategoryCount();
 }
 
-async function saveCategories() {
+function saveCategories() {
     if (!fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/')) {
         fs.mkdirSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/');
     }
@@ -215,14 +215,14 @@ function renderCategoryToSelect(name) {
     $('#select-note-category').append(html);
 }
 
-async function renderCategoryList() {
+function renderCategoryList() {
     $('.category-menu-custom').html(''); //先清空
     for (var i = 0; i < categories.length; i++) {
         renderCategoryToList(i, categories[i].name, categories[i].count);
     }
 }
 
-async function renderCategorySelect() {
+function renderCategorySelect() {
     $('#select-note-category').html('<option value="notalloc" data-lang="notalloc">未分类</option>');
     for (var i = 0; i < categories.length; i++) {
         renderCategoryToSelect(categories[i].name);
@@ -249,7 +249,7 @@ function renderCurrentCategory() {
     }
 }
 
-async function addCategoryCount(name, render = false, save = false) {
+function addCategoryCount(name, render = false, save = false) {
     if (typeof name == 'undefined' || name == 'notalloc') {
         notalloc_count++;
         renderSystemCategoryCount();
@@ -270,12 +270,14 @@ async function addCategoryCount(name, render = false, save = false) {
     }
 }
 
-async function minorCategoryCount(name, render = false, save = false) {
+function minorCategoryCount(name, checkEmpty = true, render = false, save = false) {
     if (typeof name == 'undefined' || name == 'notalloc') {
         notalloc_count--;
         renderSystemCategoryCount();
-        if (current_category == 'notalloc') {
-            checkCategoryEmpty();
+        if (checkEmpty) {
+            if (current_category == 'notalloc') {
+                checkCategoryEmpty();
+            }
         }
         return;
     }
@@ -286,7 +288,9 @@ async function minorCategoryCount(name, render = false, save = false) {
                 $('#category-custom-' + categories[i].name + ' .category-item-count span').html(categories[i].count); //渲染到UI上
                 renderSystemCategoryCount();
             }
-            checkCategoryEmpty();
+            if (checkEmpty) {
+                checkCategoryEmpty();
+            }
             if (save) {
                 saveCategories();
             }
@@ -307,12 +311,12 @@ function checkCategoryEmpty() {
     }
 }
 
-async function renderSystemCategoryCount() {
+function renderSystemCategoryCount() {
     $('#category-count-all').html(notes.length);
     $('#category-count-notalloc').html(notalloc_count);
 }
 
-async function renderCustomCategoryCount() {
+function renderCustomCategoryCount() {
     for (var i = 0; i < categories.length; i++) {
         $('#category-custom-' + categories[i].name + ' .category-item-count span').html(categories[i].count);
     }

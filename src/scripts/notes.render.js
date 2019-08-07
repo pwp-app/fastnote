@@ -237,7 +237,7 @@ function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, 
     },0);
 }
 
-async function rerenderEditedNote(data, rawtext) {
+function rerenderEditedNote(data, rawtext) {
     //分类
     if (current_category != 'all') {
         //便签编辑后已经不属于当前分类，从画面中移出并隐藏
@@ -356,7 +356,7 @@ async function rerenderEditedNote(data, rawtext) {
 
     //处理分类
     var category_name = $('#note_' + data.id).attr('data-category');
-    minorCategoryCount(category_name, true, true);
+    minorCategoryCount(category_name, true, true, true);
     addCategoryCount(data.category, true, true);
     $('#note_' + data.id).attr('data-category', data.category);
 
@@ -575,7 +575,7 @@ function deleteNoteFromArr(id) {
     notes.every(function (note, i) {
         if (note.id == id) {
             notes.splice(i, 1);
-            minorCategoryCount(note.category, true, true);
+            minorCategoryCount(note.category, false, true, true);
             return false;
         } else {
             return true;
@@ -594,7 +594,7 @@ function deleteNoteFromArr_recycle(id) {
     });
 }
 
-async function operateForceTopNote(noteid, status) {
+function operateForceTopNote(noteid, status) {
     for (var i = 0; i < notes.length; i++) {
         if (notes[i].id == noteid) {
             //处理note文件
@@ -621,7 +621,7 @@ async function operateForceTopNote(noteid, status) {
     renderNotesOfCategory(current_category);
 }
 
-async function operateForceTopNotes(notes_selected, status){
+function operateForceTopNotes(notes_selected, status){
     let notes_status = [];
     for (let i=0;i<notes_selected.length;i++){
         for (let j = 0; j < notes.length; j++) {
@@ -645,7 +645,7 @@ async function operateForceTopNotes(notes_selected, status){
     });
 }
 
-async function renderNotesOfCategory(name) {
+function renderNotesOfCategory(name) {
     //判断是否为空
     if (getCountOfCategory(name) < 1) {
         $('#note-empty-category').show();
@@ -756,7 +756,7 @@ function relockNote(noteid) {
 }
 
 //对便签文本进行再渲染
-async function rerenderTextOfNote(noteid, text, animate=false){
+function rerenderTextOfNote(noteid, text, animate=false){
     $('#note_'+noteid+' .note-content').html('');   //先清空note-content的内容
     //获取markdown设置
     let markdown = $('#note_'+noteid).attr('data-markdown');

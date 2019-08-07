@@ -426,14 +426,14 @@
             }
 
             //执行notes的替换
-            async function updateEditNoteinArray(data, refreshList = false) {
+            function updateEditNoteinArray(data, refreshList = false) {
                 for (var i = 0; i < notes.length; i++) {
                     if (notes[i].id == data.id) {
                         notes[i] = data;
                         if (refreshList) {
                             refreshNoteList();
                         }
-                        return;
+                        break;
                     }
                 }
             }
@@ -1396,7 +1396,7 @@
             });
         });
 
-        async function removeCategory(name, renderCount = true) {
+        function removeCategory(name, renderCount = true) {
             //删除分类
             removeCategoryFromArr(name);
             ipcRenderer.send('category_removed', name);
@@ -1417,7 +1417,7 @@
             }
         }
 
-        async function removeNotesOfCategory(name) {
+        function removeNotesOfCategory(name) {
             var notes_tobeDeleted = [];
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].category == name) {
@@ -1535,7 +1535,7 @@
             renderCategorySelect();
         }
 
-        async function renameCategoryOfNote(oldname, newname) {
+        function renameCategoryOfNote(oldname, newname) {
             notes.forEach(note => {
                 if (note.category == oldname) {
                     note.category = newname;
@@ -1703,7 +1703,7 @@
             });
         });
 
-        async function removePassword(noteid, rawpassword) {
+        function removePassword(noteid, rawpassword) {
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].id == noteid) {
                     notes[i].password = undefined; //取消密码
