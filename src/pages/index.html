@@ -1695,11 +1695,9 @@
         //取消加密
         ipcRenderer.on('cancel-encryption', function(sender, data) {
             removePassword(data.id, data.rawpassword);
+            $('#note_' + data.id + ' .note-header .note-password-relock').remove();
             $('#note_' + data.id + ' .note-content .note-password').animateCss('fadeOut morefaster', function() {
                 $('#note_' + data.id + ' .note-content .note-password').remove();
-            });
-            $('#note_' + data.id + ' .note-header .note-password-relock').animateCss('fadeOut morefaster', function() {
-                $('#note_' + data.id + ' .note-header .note-password-relock').remove();
             });
         });
 
@@ -1873,21 +1871,6 @@
     </script>
 
     <script>
-        //便签分类数量的正确性检查
-        $(document).ready(() => {
-            setTimeout(() => {
-                let custom_total = 0;
-                for (var i = 0; i < categories.length; i++) {
-                    custom_total += categories[i].count;
-                }
-                if (notalloc_count + custom_total != notes.length) {
-                    recountNotes();
-                } else {
-                    console.log('Category count check passed.');
-                }
-            }, 3000);
-        });
-
         //屏蔽开发工具
         if (!indebug) {
             Mousetrap.bind('ctrl+shift+i', (e) => {

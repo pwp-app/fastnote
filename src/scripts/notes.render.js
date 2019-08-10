@@ -274,6 +274,7 @@ function rerenderEditedNote(data, rawtext) {
         resetEditedNoteText(data, rawtext);
         //便签设置了密码，判断便签之前是否有密码
         if ($('#note_'+data.id+' .note-content .note-password').length>0){
+            //便签已经有密码
             $('#note_'+data.id+' .note-content .note-password').attr('data-password',data.password);
             $('#note_'+data.id+' .note-content .note-password').attr('data-encrypted',data.text);
         } else {
@@ -288,8 +289,6 @@ function rerenderEditedNote(data, rawtext) {
     }
 
     //reset content of updatetime
-    var timeContent = '<p class="note-time note-updatetime han-element">' + i18n.render[current_i18n].updatetime
-        data.updatetime + '</p>' + '<p class="note-time han-element">'+ i18n.render[current_i18n].createtime + data.time + '</p>';
     let m_updatetime = moment(data.updaterawtime, 'YYYYMMDDHHmmss');
     let m_time = moment(data.rawtime, 'YYYYMMDDHHmmss');
     var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
@@ -356,8 +355,12 @@ function rerenderEditedNote(data, rawtext) {
 
     //处理分类
     var category_name = $('#note_' + data.id).attr('data-category');
-    minorCategoryCount(category_name, true, true, true);
+    //如果分类未改变，到这个地方也会有-1+1的过程，如果-1之后为0再检查分类是否为empty，则会显示category-empty，故执行完-1+1后再检查
+    console.log(category_name);
+    console.log(data.category);
+    minorCategoryCount(category_name, false, true, true);
     addCategoryCount(data.category, true, true);
+    checkCategoryEmpty();
     $('#note_' + data.id).attr('data-category', data.category);
 
     //timeevent rebind
@@ -374,7 +377,7 @@ function resetEditedNoteText(data, t) {
     }
     text = text.replace(/\n/gi,'<br>');
     text = insert_spacing(text, 0.15);
-    var html = '<div class="note-text"><p>';
+    var html = '<p>';
     if (typeof data.markdown == 'undefined' || !data.markdown){
         html += text.replace(reg.url, function (result) {
             return '<a href="' + result + '">' + result + '</a>';
@@ -382,9 +385,9 @@ function resetEditedNoteText(data, t) {
     } else {
         html += text;
     }
-    html += '</p></div>';
+    html += '</p>';
     //reset note content on page
-    $("#note_" + data.id + " .note-content").html(html);
+    $("#note_" + data.id + " .note-content .note-text").html(html);
 }
 
 function bindNoteTimeClick(id) {

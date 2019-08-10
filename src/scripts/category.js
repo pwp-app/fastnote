@@ -68,24 +68,38 @@ function readCategoriesFile() {
     }
 }
 
+function checkCategoryCount() {
+    let custom_total = 0;
+    for (var i = 0; i < categories.length; i++) {
+        custom_total += categories[i].count;
+    }
+    if (notalloc_count + custom_total != notes.length) {
+        recountNotes();
+    } else {
+        console.log('Category count check passed.');
+    }
+}
+
 //重新计算note的数量
 function recountNotes() {
     let count_obj = {};
     //清点notes
-    notes.forEach(() => {
-        if (typeof notes.categories != 'undefined') {
-            if (notes.categories != 'notalloc') {
-                if (typeof count_obj[notes.categories].count == 'undefined') {
-                    count_obj[notes.categories].count = 1;
+    for (let i = 0; i < notes.length; i++) {
+        if (typeof notes[i].category != 'undefined') {
+            if (notes[i].category != 'notalloc') {
+                if (typeof count_obj[notes[i].category] == 'undefined') {
+                    count_obj[notes[i].category] = {};
+                    count_obj[notes[i].category].count = 1;
                 } else {
-                    count_obj[notes.categories].count++;
+                    count_obj[notes[i].category].count++;
                 }
             }
         }
-    });
+    }
+    console.log(count_obj);
     //覆盖categories的设置
-    for (let i = 0; i < categories; i++) {
-        if (typeof count_obj[categories[i].name].count != 'undefined') {
+    for (let i = 0; i < categories.length; i++) {
+        if (typeof count_obj[categories[i].name] != 'undefined') {
             categories[i].count = count_obj[categories[i].name].count;
         }
     }
@@ -94,7 +108,7 @@ function recountNotes() {
     for (let i = 0; i < categories.length; i++) {
         custom_total += categories[i].count;
     }
-    console.log(notalloc_count + custom_total);
+    console.log('Category verify total after fix: ' + (notalloc_count + custom_total));
     if (notalloc_count + custom_total == notes.length) {
         console.log('Category count is reset to correct values.');
         saveCategories();

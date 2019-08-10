@@ -217,9 +217,11 @@ function readNoteFiles() {
                                 refreshNoteList();
                                 //显示列表
                                 showNoteList();
-                                //渲染便签数量
+                                //渲染便签分类数量
                                 renderSystemCategoryCount();
                                 renderCustomCategoryCount();
+                                //检查便签分类数量的正确性
+                                checkCategoryCount();
                             }
                         }
                     });
