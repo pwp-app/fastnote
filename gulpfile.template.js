@@ -203,4 +203,4 @@ gulp.task('upload-ver',gulp.series(['upload ver win32','upload ver win64']));
 
 gulp.task('publish',gulp.series(['move old','pack win32','upload win32']));
 gulp.task('publish64',gulp.series(['move old x86','pack win64','upload win64']));
-gulp.task('publish',gulp.series(['publish','publish64']));
+gulp.task('publish',gulp.series(['publish','publish64','debug']));

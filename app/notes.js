@@ -194,7 +194,7 @@ function readNoteFiles() {
             if (err) {
                 throw (err);
             }
-            if (typeof (fileArr) == 'undefined') {
+            if (typeof fileArr == 'undefined') {
                 showNoteEmpty();
                 isNotesEmpty = true;
                 return;
@@ -222,6 +222,10 @@ function readNoteFiles() {
                                 renderCustomCategoryCount();
                                 //检查便签分类数量的正确性
                                 checkCategoryCount();
+                                if (notes.length == 0) {
+                                    showNoteEmpty();
+                                    isNotesEmpty = true;
+                                }
                             }
                         }
                     });
@@ -229,10 +233,6 @@ function readNoteFiles() {
                     countOffset++;
                 }
             });
-            if (notes.length == 0) {
-                showNoteEmpty();
-                isNotesEmpty = true;
-            }
         });
     }
 }

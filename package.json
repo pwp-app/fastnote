@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "ajv": "^6.10.1",
+    "ajv": "^6.10.2",
     "buffer-from": "^1.1.1",
     "electron-json-storage": "^4.1.6",
     "electron-titlebar": "0.0.3",
-    "electron-updater": "^4.0.14",
-    "locate-path": "^3.0.0",
+    "electron-updater": "^4.1.2",
+    "locate-path": "^5.0.0",
     "source-map": "^0.7.3",
     "webfontloader": "^1.6.28"
   },
@@ -13,18 +13,18 @@
     "animate.css": "^3.7.2",
     "awesome-bootstrap-checkbox": "^1.0.1",
     "bootstrap": "^4.3.1",
-    "electron": "^5.0.6",
-    "electron-builder": "^20.44.4",
+    "electron": "^6.0.1",
+    "electron-builder": "^21.2.0",
     "font-awesome": "^4.7.0",
     "gulp-qiniu-up": "^1.0.2",
-    "html5sortable": "^0.9.10",
+    "html5sortable": "^0.9.16",
     "jquery": "^3.4.1",
     "merge": "^1.2.1",
     "moment": "^2.24.0",
     "popper.js": "^1.15.0"
   },
   "name": "fastnote",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "homepage": "https://note.pwp.app",
   "main": "main.js",
   "scripts": {
