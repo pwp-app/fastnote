@@ -21,6 +21,7 @@ i18n['en-us']={
     confirm: 'Confirm',
     enable: 'Enable',
     disable: 'Disable',
+    close: 'Close',
     reset: 'Reset',
     newnote_tips: 'Using Ctrl+Enter to sumbit notes',
     note_empty: 'You haven\'t created any notes<br>You can quickly create notes below',

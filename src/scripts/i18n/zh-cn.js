@@ -21,6 +21,7 @@ i18n['zh-cn']={
     confirm: '确认',
     enable: '启用',
     disable: '禁用',
+    close: '关闭',
     reset: '重置',
     newnote_tips: '使用 Ctrl+Enter 提交便签',
     note_empty: '您还没有建立任何的便签<br>在下方你可以快速创建便签',

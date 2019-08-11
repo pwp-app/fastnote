@@ -29,13 +29,11 @@ storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '
 });
 //显示没有笔记的界面
 function showNoteEmpty() {
-    console.log(1);
     $('#note-empty').css('display', 'flex');
     $('.note-list').css('display', 'none');
 }
 
 function showNoteEmpty_Anim() {
-    console.log(2);
     $('#note-empty').css('display', 'flex');
     $('#note-empty').animateCss('fadeIn faster');
     $('.note-list').css('display', 'none');
