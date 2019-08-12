@@ -59,13 +59,6 @@
         //获取indebug
         var indebug = remote.getGlobal('indebug');
 
-        if (!indebug) {
-            Mousetrap.bind('ctrl+shift+i', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        }
-
         storage.get('settings', function(error, data) {
             if (error) {
                 console.error(error);
@@ -180,7 +173,7 @@
             <div class="edit-info-item">
                 <label data-lang="title">标题</label>
                 <div class="newnotewin-item-control">
-                    <input class="form-control" id="input-title" maxlength="64" placeholder="(无标题)">
+                    <input class="form-control" type="text" id="input-title" maxlength="64" placeholder="(无标题)">
                 </div>
             </div>
             <div style="margin-top: 8px;">
@@ -212,6 +205,7 @@
                     console.error(read_res);
                 }
             }
+
             function reRenderCategories() {
                 $('#select-category').html('<option value="notalloc" data-lang="notalloc">未分类</option>');
                 for (var i = 0; i < categories.length; i++) {
@@ -224,15 +218,15 @@
             ipcRenderer.on('category-removed', (sender, data) => {
                 $('#select-category option[value="' + data + '"]').remove();
             });
-            ipcRenderer.on('category-rename', (sender, data)=>{
+            ipcRenderer.on('category-rename', (sender, data) => {
                 let old_selected = $('#select-category').val();
                 let restore_selection = true;
-                if (old_selected == categories[data.index].name){
+                if (old_selected == categories[data.index].name) {
                     restore_selection = false;
                 }
                 categories[data.index].name = data.newname;
                 reRenderCategories();
-                if (restore_selection){
+                if (restore_selection) {
                     $('#select-category').val(old_selected);
                 }
             });
@@ -336,6 +330,27 @@
                 ipcRenderer.send('newnotewin-save', note);
                 //关闭窗口
                 window.close();
+            }
+
+            if (!indebug) {
+                Mousetrap.bind('ctrl+shift+i', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+                $(document).on('keydown', 'input[type="password"]', (e) => {
+                    var ctrlKey = e.ctrlKey || e.metaKey;
+                    if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+                $(document).on('keydown', 'input[type="text"]', (e) => {
+                    var ctrlKey = e.ctrlKey || e.metaKey;
+                    if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
             }
         </script>
     </div>

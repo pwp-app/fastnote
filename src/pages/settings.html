@@ -21,6 +21,7 @@
     <script src="static/encryption.js"></script>
     <script src="static/i18n.js"></script>
     <script src="static/bootstrap.min.js"></script>
+    <script src="static/mousetrap.min.js"></script>
     <script>
         var postprocess_i18n = [{
             selector: '#input-lockscreen-password',
@@ -79,13 +80,6 @@
 
         //获取indebug
         global.indebug = remote.getGlobal('indebug');
-
-        if (!global.indebug) {
-            Mousetrap.bind('ctrl+shift+i', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        }
 
         //读取设置
         storage.get('settings', function(error, data) {
@@ -158,7 +152,7 @@
             } else {
                 //read success
                 //init close option
-                if (typeof settings.closeOption != 'undefined'){
+                if (typeof settings.closeOption != 'undefined') {
                     initCloseOption(settings.closeOption);
                 } else {
                     initCloseOption('tray');
@@ -333,8 +327,8 @@
             });
         }
 
-        function initCloseOption(closeOption){
-            $(document).ready(function(){
+        function initCloseOption(closeOption) {
+            $(document).ready(function() {
                 $('#select-closeOption').val(closeOption);
             });
         }
@@ -1322,6 +1316,27 @@
                             ipcRenderer.send('reloadSettingsWindow');
                         }
                     });
+                }
+            });
+        }
+
+        if (!global.indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            $(document).on('keydown', 'input[type="password"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+            $(document).on('keydown', 'input[type="text"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
             });
         }

@@ -21,6 +21,7 @@ i18n['zh-cn']={
     confirm: '确认',
     enable: '启用',
     disable: '禁用',
+    close: '关闭',
     reset: '重置',
     newnote_tips: '使用 Ctrl+Enter 提交便签',
     note_empty: '您还没有建立任何的便签<br>在下方你可以快速创建便签',
@@ -148,6 +149,7 @@ i18n['zh-cn']={
     close_minimize_to_tray: '最小化到托盘',
     close_just_close: '关闭程序',
     close_mainwindow_msg: '请选择点击关闭按钮后需要执行的操作，该操作也将会在你下次点击关闭按钮时自动执行',
+    recycle_foldercreate_error: '无法创建回收站文件夹',
     login: '登录',
     register: '注册',
     username: '用户名',
@@ -155,5 +157,5 @@ i18n['zh-cn']={
     login_success: '登录成功',
     register_needCaptcha: '需要验证码，请手动登录',
     register_tryLoginFailed: '尝试登录失败，请手动登录',
-    register_success: 'Fastnote Cloud 用户注册成功'
+    register_success: 'Fastnote Cloud 用户注册成功',
 };
