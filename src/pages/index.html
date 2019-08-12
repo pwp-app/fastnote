@@ -1814,7 +1814,7 @@
     <script>
         var cloud_serveronline = true;
         //检测服务器状态
-        function checkServerStatus() {
+        function checkServerStatus(onlineCallback) {
             $.ajax({
                 url: cloud_apibase + '/common/ping',
                 type: 'GET',
@@ -1826,6 +1826,9 @@
                     }
                     cloud_serveronline = true;
                     $('.trigger-cloud').css('display', 'inline-block');
+                    if (typeof onlineCallback == "function"){
+                        onlineCallback();
+                    }
                 },
                 error: () => {
                     if (cloud_serveronline) {
@@ -1839,7 +1842,30 @@
                 }
             })
         }
-        //执行服务器状态检查
+
+        //检查登录状态
+        function checkLogin(){
+            storage.get('cloud_usertoken', (err, data)=>{
+                if (err){
+                    //cloud_usertoken不存在则获取token
+                    fetchUserToken();
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+
+        //获取授权token
+        function fetchUserToken(){
+            storage.get('cloud_userconfig', (err, data)=>{
+                if(err){
+                    //不存在userconfig
+                    console.error('Local cloud user config not found. Can\'t login to the server automatically.');
+                }
+            });
+        }
+
+        //执行服务器状态检查，如果服务器在线则检查登录状态
         checkServerStatus();
 
         //注册成功事件
@@ -1857,7 +1883,7 @@
 
         function fetchUserInfo(data) {
             $.ajax({
-                url: cloud_apibase + '/user/getinfo',
+                url: cloud_apibase + '/user/getInfo',
                 type: 'GET',
                 dataType: 'json',
                 headers: {
@@ -1865,7 +1891,7 @@
                 },
                 success: (res) => {
                     if (res.code == 200) {
-
+                        console.log(res);
                     } else {
                         console.error('error', '获取用户信息失败，请尝试手动登录');
                     }
