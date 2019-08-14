@@ -360,24 +360,24 @@
             <div class="right-wrapper">
                 <!-- multi-selected -->
                 <div class="brtoast toast-search">
-                    <div class="toast-search-icon">
+                    <div class="toast-icon">
                         <i class="fa fa-search" aria-hidden="true"></i>
                     </div>
                     <div class="toast-control toast-search-control">
                         <input type="text" class="form-control" id="input-search">
                     </div>
                     <script src="static/search.js"></script>
-                    <div class="toast-search-icon toast-search-close">
+                    <div class="toast-icon toast-close" id="toast-search-close">
                         <i class="fa fa-times" aria-hidden="true"></i>
                     </div>
                 </div>
                 <script>
-                    $('.toast-search-close').click(function() {
+                    $('#toast-search-close').click(function() {
                         closeSearchToast();
                     });
                 </script>
                 <div class="brtoast toast-multiselected">
-                    <p class="brtoast-normaltext" id="toast-multiselected-text"></p>
+                    <p class="toast-normaltext" id="toast-multiselected-text"></p>
                 </div>
             </div>
         </div>
@@ -738,6 +738,51 @@
             }
         });
     </script>
+
+    <div class="container-bottombar-float">
+        <div class="bottombar-float-wrapper">
+            <div class="bottombar-float-update">
+                <div id="toast-updateready" class="brtoast toast-autoheight toast-updateready">
+                    <div class="toast-normaltext-wrapper">
+                        <span class="toast-text" id="toast-updateready-text" data-lang="updateready_text">更新下载完成，应用会在关闭后自动更新。</span>
+                    </div>
+                    <div class="toast-control toast-control-right">
+                        <button class="btn brbtn brbtn-primary" id="updateready-btn-update" data-lang="update_now">立即更新</button>
+                        <button class="btn brbtn brbtn-primary" id="updateready-btn-close" data-lang="close">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $('#updateready-btn-close').click(() => {
+            closeUpdateReadyToast();
+        });
+
+        $('#updateready-btn-update').click(()=>{
+            ipcRenderer.send('app-quitNow');
+        });
+
+        var updateReadyToastOpened = false;
+
+        function popupUpdateReadyToast() {
+            updateReadyToastOpened = true;
+            $('#toast-updateready').addClass('toast-active');
+            $('#toast-updateready').animateCss('fadeInRight faster');
+        }
+
+        function closeUpdateReadyToast() {
+            if (updateReadyToastOpened) {
+                $('#toast-updateready').animateCss('fadeOutRight faster', function() {
+                    //focus the input
+                    $('#toast-updateready').removeClass('toast-active');
+                    updateReadyToastOpened = false;
+                });
+            }
+        }
+    </script>
+
     <div class="container-bottombar">
         <div class="trigger-mainmenu">
             <button class="br-btn btn-noback bottombar-trigger" id="btn-mainmenu-trigger">
@@ -915,7 +960,8 @@
 
     <!-- ipcRenderer -->
     <script>
-        let time = require('../app/tools/time.js');
+        var time = require('../app/tools/time.js');
+        var version_new;
         ipcRenderer.on('update-message', (event, {
             message,
             data
@@ -958,6 +1004,7 @@
                             function(result) {
                                 if (result != null && result != "" && typeof(result) != 'undefined') {
                                     //成功获取ver.json
+                                    version_new = result.ver;
                                     try {
                                         $('#update-title-span').text(i18n[current_i18n].newversion_detected + result.ver);
                                         document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
@@ -1015,14 +1062,20 @@
                         $('#infobar_update').remove();
                     });
                     displayInfobar('success', i18n[current_i18n].update_download_success, 5000);
-                    $('#statusbar').append(
-                        '<div class="statusbar-item" title="' + i18n[current_i18n].statusbar_update_title + '"><i class="fa fa-arrow-circle-up"></i></div>'
-                    );
+                    //向状态栏添加图标
+                    appendUpdateIconToStautsbar();
                 case 'error':
                     console.error(data);
                     break;
             }
         });
+
+        function appendUpdateIconToStautsbar() {
+            $('#statusbar').append(
+                '<div id="statusbar-item-updateready" class="statusbar-item" onclick="popupUpdateReadyToast()";><i class="fa fa-arrow-circle-up"></i></div>'
+            );
+        }
+
         //绑定按钮事件
         $('#btn-update-cancel').on('click', function() {
             $('.container-updater').animateCss('fadeOut', function() {
@@ -1826,7 +1879,7 @@
                     }
                     cloud_serveronline = true;
                     $('.trigger-cloud').css('display', 'inline-block');
-                    if (typeof onlineCallback == "function"){
+                    if (typeof onlineCallback == "function") {
                         onlineCallback();
                     }
                 },
@@ -1844,9 +1897,9 @@
         }
 
         //检查登录状态
-        function checkLogin(){
-            storage.get('cloud_usertoken', (err, data)=>{
-                if (err){
+        function checkLogin() {
+            storage.get('cloud_usertoken', (err, data) => {
+                if (err) {
                     //cloud_usertoken不存在则获取token
                     fetchUserToken();
                 } else {
@@ -1856,9 +1909,9 @@
         }
 
         //获取授权token
-        function fetchUserToken(){
-            storage.get('cloud_userconfig', (err, data)=>{
-                if(err){
+        function fetchUserToken() {
+            storage.get('cloud_userconfig', (err, data) => {
+                if (err) {
                     //不存在userconfig
                     console.error('Local cloud user config not found. Can\'t login to the server automatically.');
                 }
