@@ -157,5 +157,7 @@ i18n['en-us']={
     login_success: 'Login is successful',
     register_needCaptcha: 'Validation code is required. Please login manually.',
     register_tryLoginFailed: 'Attempt to login failed. Please login manually.',
-    register_success: 'Fastnote Cloud account has been registered successfully.'
+    register_success: 'Fastnote Cloud account has been registered successfully.',
+    update_now: 'Update now',
+    updateready_text: 'Update will start automatically after app closed.'
 };

@@ -1,6 +1,3 @@
-@toast-max-width: 350px;
-@toast-height: 40px;
-
 .container-right{
     position: absolute;
     width:@toast-max-width;
@@ -11,63 +8,4 @@
     max-width: @toast-max-width;
     float: right;
     margin:10px;
-}
-.brtoast{
-    margin:0 0 12px 0;
-    background: @color-toast-bg;
-    max-width: @toast-max-width;
-    width: max-content;
-    margin-left: auto;
-    height: @toast-height;
-    box-shadow: 2px 4px 4px @color-boxshadow-dark;
-    border: @color-toast-border;
-    display: none;
-}
-.brtoast-normaltext{
-    width: 100%;
-    padding:0px 18px;
-    line-height: @toast-height - 1;
-    font-size: 14px;
-    color: @color-toast-text;
-    .no-select-and-drag();
-}
-.toast-active{
-    display: block;
-}
-//toast-search
-.toast-search-icon{
-    color: @color-toast-text;
-    display: inline-block;
-    line-height: 40px;
-    margin: 0px 12px;
-}
-.toast-search-control{
-    display: inline-block;
-    position: relative;
-}
-.toast-search-control input{
-    width: 260px;
-}
-.toast-search-close {
-    margin: 0 12px 0 8px;
-}
-.toast-control input{
-    height: 25px;
-    padding: 2px 8px;
-    font-size: 14px;
-    color: @color-control-text;
-    background: @color-toast-search-bg;
-    border: none;
-}
-.toast-control input:focus{
-    color: @color-control-text;
-    background: @color-toast-search-bg;
-    border: none;
-    box-shadow: none;
-}
-.toast-control input::-webkit-input-placeholder {
-    color: @color-control-placeholder;
-}
-.toast-search-close {
-    cursor: pointer;
 }

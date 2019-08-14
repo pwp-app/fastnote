@@ -1,0 +1,82 @@
+@toast-max-width: 350px;
+@toast-height: 40px;
+
+.brtoast{
+    margin:0 0 12px 0;
+    background: @color-toast-bg;
+    max-width: @toast-max-width;
+    width: max-content;
+    margin-left: auto;
+    height: @toast-height;
+    box-shadow: 2px 4px 4px @color-boxshadow-dark;
+    border: @color-toast-border;
+    display: none;
+}
+.toast-autoheight{
+    height: auto;
+}
+.toast-text{
+    padding:0px 18px;
+    line-height: @toast-height - 1;
+    font-size: 14px;
+    color: @color-toast-text;
+    .no-select-and-drag();
+}
+.toast-normaltext{
+    width: 100%;
+    padding:0px 18px;
+    line-height: @toast-height - 1;
+    font-size: 14px;
+    color: @color-toast-text;
+    .no-select-and-drag();
+}
+.toast-active{
+    display: block;
+}
+.toast-icon {
+    color: @color-toast-text;
+    display: inline-block;
+    line-height: 40px;
+    margin: 0px 12px;
+}
+.toast-close {
+    margin: 0 12px 0 8px;
+}
+.toast-close {
+    cursor: pointer;
+}
+.toast-control-right{
+    text-align: right;
+    margin-right: 8px;
+}
+.toast-control button{
+    padding: 0 12px;
+    display: inline-block;
+    height: 28px;
+    font-size: 13px;
+}
+.toast-control input{
+    height: 25px;
+    padding: 2px 8px;
+    font-size: 14px;
+    color: @color-control-text;
+    background: @color-toast-search-bg;
+    border: none;
+}
+.toast-control input:focus{
+    color: @color-control-text;
+    background: @color-toast-search-bg;
+    border: none;
+    box-shadow: none;
+}
+.toast-control input::-webkit-input-placeholder {
+    color: @color-control-placeholder;
+}
+//toast-search
+.toast-search-control{
+    display: inline-block;
+    position: relative;
+}
+.toast-search-control input{
+    width: 260px;
+}
