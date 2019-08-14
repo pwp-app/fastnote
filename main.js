@@ -246,6 +246,10 @@ function createWindow() {
         }
     });
 
+    ipc.on('cloud-login-success', (sender, data)=>{
+        win.webContents.send('cloud-login-success', data);
+    });
+
     ipc.on('cloud-register-success', (sender, data)=>{
         win.webContents.send('cloud-register-success', data);
     });

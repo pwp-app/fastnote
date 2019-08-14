@@ -137,7 +137,7 @@
 
         //语言初始化后处理
         function postElementsInit() {
-
+            //do nothing
         }
 
         function loadWebfont(font) {
@@ -270,7 +270,6 @@
                     username: username,
                     password: sha256(password, 'fastnote'),
                     client_type: 'pc',
-                    action: 'login',
                     captchaCode: captchaCode
                 },
                 success: (res) => {

@@ -67,7 +67,6 @@ textarea.on('input propertychange',function(e){
         if (!note_submit_tip_show){
             note_submit_tip_show = true;
             $('.note-text-submittip').removeAttr('style');
-            console.log(1);
             $('.note-text-submittip').animateCss('fadeIn morefaster');
         }
     }

@@ -132,12 +132,12 @@
         }
 
         function initLanguage() {
-            applyLanguage(settings.language, postElementsInit);
+            applyLanguage(settings.language);
         }
 
         //语言初始化后处理
         function postElementsInit() {
-
+            //do nothing
         }
 
         function loadWebfont(font) {
@@ -223,7 +223,7 @@
     </div>
     <script>
         function initCaptcha() {
-            $('#login-captcha').attr('src', cloud_apibase + '/common/captcha/get?action=login&rand=' + Math.random());
+            $('#login-captcha').attr('src', cloud_apibase + '/common/captcha/get?action=register&rand=' + Math.random());
         }
 
         $('#login-captcha').on('click', () => {
@@ -248,27 +248,23 @@
                 flag_pass = false;
             }
             if (flag_pass) {
-                if (needCaptcha) {
-                    submitRegister(username, password, captchaCode);
-                } else {
-                    submitRegister(username, password);
-                }
+                submitRegister(username, password, captchaCode);
             }
         }
 
         function submitRegister(username, password, captchaCode) {
             $.ajax({
-                url: cloud_apibase + '/user/login',
+                url: cloud_apibase + '/user/register',
                 type: 'POST',
                 dataType: 'json',
                 data: {
                     username: username,
                     password: sha256(password, 'fastnote'),
                     client_type: 'pc',
-                    action: 'register',
-                    captchaCode: captchaCode
+                    captcha_code: captchaCode
                 },
                 success: (res) => {
+                    //注册成功
                     if (res.code == 200) {
                         //注册成功，测试是否可以登录，如果需要验证码则转到登录窗口
                         $.ajax({
@@ -278,11 +274,11 @@
                             data: {
                                 username: username,
                                 password: sha256(password, 'fastnote'),
-                                client_type: 'pc',
-                                action: 'login',
+                                client_type: 'pc'
                             },
                             success: (res) => {
                                 if (res.code != 200) {
+                                    //使用注册信息登录时失败
                                     if (code == 402) {
                                         displayInfobar('error', i18n[current_i18n].register_needCaptcha);
                                         setTimeout(() => {
@@ -293,6 +289,7 @@
                                         }, 3000);
                                     }
                                 } else {
+                                    //使用刚注册的信息登录成功
                                     let cloud_userconfig = {
                                         username: username,
                                         password: sha256(password, 'fastnote')
@@ -320,26 +317,22 @@
                                     });
                                 }, 3000);
                             }
-                        })
+                        });
                     } else {
-                        if (res.code == 401) {
-                            displayInfobar('error', '用户名或密码不正确');
-                        } else if (res.code == 402) {
-                            displayInfobar('error', '验证码错误');
-                        }
-                        if (typeof res.verifyCodeRequired != 'undefined' && res.verifyCodeRequired) {
-                            //需要验证码
-                            needCaptcha = true;
-                            //UI
-                            $('#login-captcha-group').show();
+                        if (res.code == 402){
+                            displayInfobar('error', '验证码错误，请重新输入');
+                            initCaptcha();  //刷新验证码
+                        } else {
+                            displayInfobar('error', '出现错误，注册失败');
+                            console.error(res);
                         }
                     }
                 },
                 error: (err) => {
-                    displayInfobar('error', '网络错误，登录失败');
+                    displayInfobar('error', '出现错误，注册失败');
                     console.error(err);
                 }
-            })
+            });
         }
 
         initCaptcha();

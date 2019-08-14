@@ -224,6 +224,8 @@
         ipcRenderer.on('update-edit-note', (sender, data)=>{
             if (data){
                 flag_resize = true;
+                //clear text in widget
+                $('.widget-note-content').html('');
                 renderNoteForWidget(data);
                 //rerender title
                 if (typeof data.title == 'undefined') {
