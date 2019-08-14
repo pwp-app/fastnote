@@ -21,6 +21,7 @@ i18n['en-us']={
     confirm: 'Confirm',
     enable: 'Enable',
     disable: 'Disable',
+    close: 'Close',
     reset: 'Reset',
     newnote_tips: 'Using Ctrl+Enter to sumbit notes',
     note_empty: 'You haven\'t created any notes<br>You can quickly create notes below',
@@ -148,5 +149,13 @@ i18n['en-us']={
     close_minimize_to_tray: 'Minimize to tray',
     close_just_close: 'Close the program',
     close_mainwindow_msg: 'Please select the action you need to perform after clicking the close button, which will also be automatically executed the next time you click the close button.',
-    login: 'Login'
+    recycle_foldercreate_error: 'An error occured when creating the recycle bin folder.',
+    login: 'Login',
+    register: 'Register',
+    username: 'Username',
+    login_title: 'Login to Fastnote Cloud',
+    login_success: 'Login is successful',
+    register_needCaptcha: 'Validation code is required. Please login manually.',
+    register_tryLoginFailed: 'Attempt to login failed. Please login manually.',
+    register_success: 'Fastnote Cloud account has been registered successfully.'
 };

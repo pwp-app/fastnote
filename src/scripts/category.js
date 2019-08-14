@@ -39,7 +39,7 @@ function readCurrentCategory() {
     }
 }
 
-async function saveCurrentCategory() {
+function saveCurrentCategory() {
     var data = {
         category: current_category
     };
@@ -68,24 +68,38 @@ function readCategoriesFile() {
     }
 }
 
+function checkCategoryCount() {
+    let custom_total = 0;
+    for (var i = 0; i < categories.length; i++) {
+        custom_total += categories[i].count;
+    }
+    if (notalloc_count + custom_total != notes.length) {
+        recountNotes();
+    } else {
+        console.log('Category count check passed.');
+    }
+}
+
 //重新计算note的数量
 function recountNotes() {
     let count_obj = {};
     //清点notes
-    notes.forEach(() => {
-        if (typeof notes.categories != 'undefined') {
-            if (notes.categories != 'notalloc') {
-                if (typeof count_obj[notes.categories].count == 'undefined') {
-                    count_obj[notes.categories].count = 1;
+    for (let i = 0; i < notes.length; i++) {
+        if (typeof notes[i].category != 'undefined') {
+            if (notes[i].category != 'notalloc') {
+                if (typeof count_obj[notes[i].category] == 'undefined') {
+                    count_obj[notes[i].category] = {};
+                    count_obj[notes[i].category].count = 1;
                 } else {
-                    count_obj[notes.categories].count++;
+                    count_obj[notes[i].category].count++;
                 }
             }
         }
-    });
+    }
+    console.log(count_obj);
     //覆盖categories的设置
-    for (let i = 0; i < categories; i++) {
-        if (typeof count_obj[categories[i].name].count != 'undefined') {
+    for (let i = 0; i < categories.length; i++) {
+        if (typeof count_obj[categories[i].name] != 'undefined') {
             categories[i].count = count_obj[categories[i].name].count;
         }
     }
@@ -94,7 +108,7 @@ function recountNotes() {
     for (let i = 0; i < categories.length; i++) {
         custom_total += categories[i].count;
     }
-    console.log(notalloc_count + custom_total);
+    console.log('Category verify total after fix: ' + (notalloc_count + custom_total));
     if (notalloc_count + custom_total == notes.length) {
         console.log('Category count is reset to correct values.');
         saveCategories();
@@ -158,7 +172,7 @@ function removeCategoryFromArr(name) {
     }
 }
 
-async function setNotesCategory(name, category) {
+function setNotesCategory(name, category) {
     var index;
     if (typeof category != "undefined") {
         index = indexOfCategory(name);
@@ -183,7 +197,7 @@ async function setNotesCategory(name, category) {
     renderCustomCategoryCount();
 }
 
-async function saveCategories() {
+function saveCategories() {
     if (!fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/')) {
         fs.mkdirSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/');
     }
@@ -196,7 +210,7 @@ async function saveCategories() {
 }
 
 function renderCategoryToList(index, name, count, animate = false) {
-    var html = '<li data-name="' + name + '" draggable="true"><div id="category-custom-' + name + '"><div class="category-item-name"><span>' + name + '</span><input class="category-edit-input" value="' + name + '" data-index="' + index + '"></div><div class="category-item-count"><span>' + count + '</span></div><div class="category-item-delbtn"><i class="fa fa-minus-circle" aria-hidden="true"></i></div></div></li>';
+    var html = '<li data-name="' + name + '" draggable="true"><div id="category-custom-' + name + '"><div class="category-item-name"><span>' + name + '</span><input class="category-edit-input" type="text" value="' + name + '" data-index="' + index + '"></div><div class="category-item-count"><span>' + count + '</span></div><div class="category-item-delbtn"><i class="fa fa-minus-circle" aria-hidden="true"></i></div></div></li>';
     $('.category-menu-custom').append(html);
     //如果是编辑模式下添加的，样式和编辑模式统一
     if (categoryEditMode) {
@@ -215,14 +229,14 @@ function renderCategoryToSelect(name) {
     $('#select-note-category').append(html);
 }
 
-async function renderCategoryList() {
+function renderCategoryList() {
     $('.category-menu-custom').html(''); //先清空
     for (var i = 0; i < categories.length; i++) {
         renderCategoryToList(i, categories[i].name, categories[i].count);
     }
 }
 
-async function renderCategorySelect() {
+function renderCategorySelect() {
     $('#select-note-category').html('<option value="notalloc" data-lang="notalloc">未分类</option>');
     for (var i = 0; i < categories.length; i++) {
         renderCategoryToSelect(categories[i].name);
@@ -249,7 +263,7 @@ function renderCurrentCategory() {
     }
 }
 
-async function addCategoryCount(name, render = false, save = false) {
+function addCategoryCount(name, render = false, save = false) {
     if (typeof name == 'undefined' || name == 'notalloc') {
         notalloc_count++;
         renderSystemCategoryCount();
@@ -270,12 +284,14 @@ async function addCategoryCount(name, render = false, save = false) {
     }
 }
 
-async function minorCategoryCount(name, render = false, save = false) {
+function minorCategoryCount(name, checkEmpty = true, render = false, save = false) {
     if (typeof name == 'undefined' || name == 'notalloc') {
         notalloc_count--;
         renderSystemCategoryCount();
-        if (current_category == 'notalloc') {
-            checkCategoryEmpty();
+        if (checkEmpty) {
+            if (current_category == 'notalloc') {
+                checkCategoryEmpty();
+            }
         }
         return;
     }
@@ -286,7 +302,9 @@ async function minorCategoryCount(name, render = false, save = false) {
                 $('#category-custom-' + categories[i].name + ' .category-item-count span').html(categories[i].count); //渲染到UI上
                 renderSystemCategoryCount();
             }
-            checkCategoryEmpty();
+            if (checkEmpty) {
+                checkCategoryEmpty();
+            }
             if (save) {
                 saveCategories();
             }
@@ -307,12 +325,12 @@ function checkCategoryEmpty() {
     }
 }
 
-async function renderSystemCategoryCount() {
+function renderSystemCategoryCount() {
     $('#category-count-all').html(notes.length);
     $('#category-count-notalloc').html(notalloc_count);
 }
 
-async function renderCustomCategoryCount() {
+function renderCustomCategoryCount() {
     for (var i = 0; i < categories.length; i++) {
         $('#category-custom-' + categories[i].name + ' .category-item-count span').html(categories[i].count);
     }

@@ -84,13 +84,6 @@
             var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + ':' + cloudConfig.release.port
         }
 
-        if (!indebug) {
-            Mousetrap.bind('ctrl+shift+i', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        }
-
         const WebFont = require('webfontloader');
 
         //import menu
@@ -433,14 +426,14 @@
             }
 
             //执行notes的替换
-            async function updateEditNoteinArray(data, refreshList = false) {
+            function updateEditNoteinArray(data, refreshList = false) {
                 for (var i = 0; i < notes.length; i++) {
                     if (notes[i].id == data.id) {
                         notes[i] = data;
                         if (refreshList) {
                             refreshNoteList();
                         }
-                        return;
+                        break;
                     }
                 }
             }
@@ -465,7 +458,7 @@
             function bindNoteClickEvent() {
                 //滚动条不响应选择事件
                 $('.note-content').off('mousedown').on('mousedown', function(e) {
-                    if (e.offsetX >= $('.note-content').width()) {
+                    if (e.offsetX >= $(this).width()) {
                         e.stopPropagation();
                     }
                 });
@@ -912,8 +905,9 @@
 
             <div class="update-footer">
                 <div class="control-group" style="-webkit-user-select: none">
-                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-cancel" data-lang="cancel">取消</button>
-                    <button type="button" class="br-btn btn-noback control-item" id="btn-update-confirm" data-lang="download">下载</button>
+                    <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-close" data-lang="close">关闭</button>
+                    <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-cancel" data-lang="cancel">取消</button>
+                    <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-confirm" data-lang="download">下载</button>
                 </div>
             </div>
         </div>
@@ -963,6 +957,7 @@
                         $.getJSON(path_verfile + time.getRawCurrentMillTime(), //时间戳避免缓存
                             function(result) {
                                 if (result != null && result != "" && typeof(result) != 'undefined') {
+                                    //成功获取ver.json
                                     try {
                                         $('#update-title-span').text(i18n[current_i18n].newversion_detected + result.ver);
                                         document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
@@ -987,16 +982,21 @@
                                         }
                                         //强制更新
                                         if (typeof result.forceupdate != 'undefined' && result.forceupdate) {
-                                            $('#btn-update-cancel').hide();
+                                            $('#btn-update-confirm').show();
                                         } else {
+                                            $('#btn-update-confirm').show();
                                             $('#btn-update-cancel').show();
                                         }
                                         $('.update-contents-loading').css('display', 'none');
                                     } catch (err) {
+                                        //获取失败
+                                        $('#btn-update-close').show();
                                         console.error(err);
                                         $('#update-loading-span').innerHTML = i18n[current_i18n].loading_updatelog_failed;
                                     }
                                 } else {
+                                    //获取失败
+                                    $('#btn-update-close').show();
                                     $('#update-loading-span').innerHTML = i18n[current_i18n].loading_updatelog_failed;
                                 }
                             }
@@ -1025,6 +1025,12 @@
         });
         //绑定按钮事件
         $('#btn-update-cancel').on('click', function() {
+            $('.container-updater').animateCss('fadeOut', function() {
+                $('.container-updater').removeAttr('style');
+            });
+            ipcRenderer.send('updateCancelled');
+        });
+        $('#btn-update-close').on('click', function() {
             $('.container-updater').animateCss('fadeOut', function() {
                 $('.container-updater').removeAttr('style');
             });
@@ -1095,14 +1101,17 @@
         Mousetrap.bind('esc', function() {
             if (isCategoryOpen) {
                 closeCategory();
+                $('#note-text').focus();
                 return;
             }
             if (isCloudOpen) {
                 closeCloudPanel();
+                $('#note-text').focus();
                 return;
             }
             if (isMainMenuOpen) {
                 closeMainMenu();
+                $('#note-text').focus();
             } else {
                 openMainMenu();
             }
@@ -1234,7 +1243,7 @@
                         <li id="category-add-inside">
                             <div class="category-ctrl-add">
                                 <div class="category-add-input">
-                                    <input id="input-category-add">
+                                    <input id="input-category-add" type="text">
                                 </div>
                                 <div class="category-add-btn">
                                     <i class="fa fa-times" aria-hidden="true"></i>
@@ -1313,7 +1322,7 @@
                         putCategoryToArr(category_name); //添加到数组
                         //通知主进程分类有更改
                         ipcRenderer.send('category_added', category_name);
-                        renderCategoryToList(category_name, 0, true); //渲染到页面
+                        renderCategoryToList(categories.length - 1, category_name, 0, true); //渲染到页面
                         renderCategoryToSelect(category_name); //渲染到select
                         saveCategories(); //保存便签分类
                         $('#category-add').show();
@@ -1400,7 +1409,7 @@
             });
         });
 
-        async function removeCategory(name, renderCount = true) {
+        function removeCategory(name, renderCount = true) {
             //删除分类
             removeCategoryFromArr(name);
             ipcRenderer.send('category_removed', name);
@@ -1421,7 +1430,7 @@
             }
         }
 
-        async function removeNotesOfCategory(name) {
+        function removeNotesOfCategory(name) {
             var notes_tobeDeleted = [];
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].category == name) {
@@ -1539,7 +1548,7 @@
             renderCategorySelect();
         }
 
-        async function renameCategoryOfNote(oldname, newname) {
+        function renameCategoryOfNote(oldname, newname) {
             notes.forEach(note => {
                 if (note.category == oldname) {
                     note.category = newname;
@@ -1561,7 +1570,14 @@
             <div class="cloud-body cloud-body-notlogin">
                 <ul class="cloud-menu">
                     <li id="cloud-menuitem-login">
-                        <span data-lang="login">登录</span>
+                        <div class="cloud-menuitem-label">
+                            <span data-lang="login">登录</span>
+                        </div>
+                    </li>
+                    <li id="cloud-menuitem-register">
+                        <div class="cloud-menuitem-label">
+                            <span data-lang="register">注册</span>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -1605,8 +1621,13 @@
         });
 
         //menu item events
-        $('#cloud-menuitem-login').click(() => {
+        $('#cloud-menuitem-login').on('click', () => {
             ipcRenderer.send('openLoginWindow');
+            closeCloudPanel();
+        });
+        $('#cloud-menuitem-register').on('click', () => {
+            ipcRenderer.send('openRegisterWindow');
+            closeCloudPanel();
         });
     </script>
 
@@ -1687,15 +1708,13 @@
         //取消加密
         ipcRenderer.on('cancel-encryption', function(sender, data) {
             removePassword(data.id, data.rawpassword);
+            $('#note_' + data.id + ' .note-header .note-password-relock').remove();
             $('#note_' + data.id + ' .note-content .note-password').animateCss('fadeOut morefaster', function() {
                 $('#note_' + data.id + ' .note-content .note-password').remove();
             });
-            $('#note_' + data.id + ' .note-header .note-password-relock').animateCss('fadeOut morefaster', function() {
-                $('#note_' + data.id + ' .note-header .note-password-relock').remove();
-            });
         });
 
-        async function removePassword(noteid, rawpassword) {
+        function removePassword(noteid, rawpassword) {
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].id == noteid) {
                     notes[i].password = undefined; //取消密码
@@ -1795,9 +1814,9 @@
     <script>
         var cloud_serveronline = true;
         //检测服务器状态
-        function checkServerStatus() {
+        function checkServerStatus(onlineCallback) {
             $.ajax({
-                url: cloud_apibase + '/api/common/ping',
+                url: cloud_apibase + '/common/ping',
                 type: 'GET',
                 dataType: 'json',
                 timeout: 1000,
@@ -1807,6 +1826,9 @@
                     }
                     cloud_serveronline = true;
                     $('.trigger-cloud').css('display', 'inline-block');
+                    if (typeof onlineCallback == "function"){
+                        onlineCallback();
+                    }
                 },
                 error: () => {
                     if (cloud_serveronline) {
@@ -1820,8 +1842,65 @@
                 }
             })
         }
-        //执行服务器状态检查
+
+        //检查登录状态
+        function checkLogin(){
+            storage.get('cloud_usertoken', (err, data)=>{
+                if (err){
+                    //cloud_usertoken不存在则获取token
+                    fetchUserToken();
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+
+        //获取授权token
+        function fetchUserToken(){
+            storage.get('cloud_userconfig', (err, data)=>{
+                if(err){
+                    //不存在userconfig
+                    console.error('Local cloud user config not found. Can\'t login to the server automatically.');
+                }
+            });
+        }
+
+        //执行服务器状态检查，如果服务器在线则检查登录状态
         checkServerStatus();
+
+        //注册成功事件
+        ipcRenderer.on('cloud-register-success', (sender, data) => {
+            //拉取用户信息
+            displayInfobar('success', i18n[current_i18n].register_success);
+            fetchUserInfo(data);
+        });
+        //登录成功事件
+        ipcRenderer.on('cloud-login-success', (sender, data) => {
+            //拉取用户信息
+            displayInfobar('success', i18n[current_i18n].login_success);
+            fetchUserInfo(data);
+        });
+
+        function fetchUserInfo(data) {
+            $.ajax({
+                url: cloud_apibase + '/user/getInfo',
+                type: 'GET',
+                dataType: 'json',
+                headers: {
+                    Authorization: "Bearer " + data.token.token
+                },
+                success: (res) => {
+                    if (res.code == 200) {
+                        console.log(res);
+                    } else {
+                        console.error('error', '获取用户信息失败，请尝试手动登录');
+                    }
+                },
+                error: (res) => {
+                    console.error('error', '获取用户信息失败，请尝试手动登录');
+                }
+            });
+        }
     </script>
 
     <script>
@@ -1831,20 +1910,34 @@
     </script>
 
     <script>
-        //便签分类数量的正确性检查
-        $(document).ready(() => {
-            setTimeout(() => {
-                let custom_total = 0;
-                for (var i = 0; i < categories.length; i++) {
-                    custom_total += categories[i].count;
+        //屏蔽开发工具
+        if (!indebug) {
+            Mousetrap.bind('ctrl+shift+i', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            $('textarea').on('keydown', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
-                if (notalloc_count + custom_total != notes.length) {
-                    recountNotes();
-                } else {
-                    console.log('Category count check passed.');
+            });
+            $(document).on('keydown', 'input[type="password"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
-            }, 3000);
-        });
+            });
+            $(document).on('keydown', 'input[type="text"]', (e) => {
+                var ctrlKey = e.ctrlKey || e.metaKey;
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        }
     </script>
 
     <span id="filter-x" style="display:none"></span>

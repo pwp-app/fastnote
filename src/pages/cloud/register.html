@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>登录</title>
+    <title>注册</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!--import requirements-->
@@ -132,7 +132,7 @@
         }
 
         function initLanguage() {
-            applyLanguage(settings.language, postElementsInit);
+            applyLanguage(settings.language);
         }
 
         //语言初始化后处理
@@ -166,7 +166,7 @@
 
 <body class="login-body">
     <div class="container-titlebar col-lg-12 drag">
-        <div class="title" id="login-title" data-lang='login'>登录</div>
+        <div class="title" id="login-title" data-lang='register'>注册</div>
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 999;"></div>
     </div>
     <script>
@@ -179,7 +179,7 @@
                 <img class="login-logo-blackwhite" src="../static/images/logo.blackwhite.png"></img>
             </div>
             <div class="login-title">
-                <span data-lang="login_title">登录到<handefault></handefault>Fastnote Cloud</span>
+                <span data-lang="register">注册</span>
             </div>
         </div>
         <div class="login-body">
@@ -202,7 +202,7 @@
                         <input class="form-control brcontrol-input" id="input-password" type="password">
                     </div>
                 </div>
-                <div class="login-form-group" id="login-captcha-group" style="display: none;">
+                <div class="login-form-group" id="login-captcha-group">
                     <div class="login-form-label">
                         <span data-lang="password">验证码</span>
                     </div>
@@ -216,24 +216,21 @@
                     </div>
                 </div>
                 <div class="login-form-button" style="float: right;">
-                    <button class="btn btn-secondary brbtn-primary login-button" data-lang="register">注册</button>
-                    <button class="btn btn-secondary brbtn-primary login-button" data-lang="login" onclick="checkLoginForm();">登录</button>
+                    <button class="btn btn-secondary brbtn-primary login-button" data-lang="register" onclick="checkRegisterForm();">注册</button>
                 </div>
             </div>
         </div>
     </div>
     <script>
-        var needCaptcha = false;
-
         function initCaptcha() {
-            $('#login-captcha').attr('src', cloud_apibase + '/common/captcha/get?action=login&rand=' + Math.random());
+            $('#login-captcha').attr('src', cloud_apibase + '/common/captcha/get?action=register&rand=' + Math.random());
         }
 
         $('#login-captcha').on('click', () => {
             initCaptcha();
         });
 
-        function checkLoginForm() {
+        function checkRegisterForm() {
             let username = $('#input-username').val();
             let password = $('#input-password').val();
             let captchaCode = $('#input-captcha').val();
@@ -246,83 +243,99 @@
                 $('#input-password').addClass('br-invalid');
                 flag_pass = false;
             }
-            if (needCaptcha) {
-                if (captchaCode.length < 1) {
-                    $('#input-captcha').addClass('br-invalid');
-                    flag_pass = false;
-                }
+            if (captchaCode.length < 1) {
+                $('#input-captcha').addClass('br-invalid');
+                flag_pass = false;
             }
             if (flag_pass) {
-                if (needCaptcha) {
-                    submitLogin(username, password, captchaCode);
-                } else {
-                    submitLogin(username, password);
-                }
+                submitRegister(username, password, captchaCode);
             }
         }
 
-        function submitLogin(username, password, captchaCode) {
+        function submitRegister(username, password, captchaCode) {
             $.ajax({
-                url: cloud_apibase + '/user/login',
+                url: cloud_apibase + '/user/register',
                 type: 'POST',
                 dataType: 'json',
                 data: {
                     username: username,
                     password: sha256(password, 'fastnote'),
                     client_type: 'pc',
-                    captchaCode: captchaCode
+                    captcha_code: captchaCode
                 },
                 success: (res) => {
+                    //注册成功
                     if (res.code == 200) {
-                        //登录成功
-                        let cloud_userconfig = {
-                            username: username,
-                            password: sha256(password, 'fastnote')
-                        }
-                        let cloud_usertoken = res.auth;
-                        //保存用户信息
-                        storage.set('cloud_userconfig', cloud_userconfig, () => {
-                            //保存token
-                            storage.set('cloud_usertoken', cloud_usertoken, () => {
-                                ipcRenderer.send('cloud-login-success', {
-                                    userconfig: cloud_userconfig,
-                                    token: cloud_usertoken
-                                });
-                                window.close();
-                            });
+                        //注册成功，测试是否可以登录，如果需要验证码则转到登录窗口
+                        $.ajax({
+                            url: cloud_apibase + '/user/login',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                username: username,
+                                password: sha256(password, 'fastnote'),
+                                client_type: 'pc'
+                            },
+                            success: (res) => {
+                                if (res.code != 200) {
+                                    //使用注册信息登录时失败
+                                    if (code == 402) {
+                                        displayInfobar('error', i18n[current_i18n].register_needCaptcha);
+                                        setTimeout(() => {
+                                            ipcRenderer.send('change-to-login', {
+                                                username: username,
+                                                needCaptcha: true
+                                            });
+                                        }, 3000);
+                                    }
+                                } else {
+                                    //使用刚注册的信息登录成功
+                                    let cloud_userconfig = {
+                                        username: username,
+                                        password: sha256(password, 'fastnote')
+                                    }
+                                    let cloud_usertoken = res.auth;
+                                    //保存用户信息
+                                    storage.set('cloud_userconfig', cloud_userconfig, () => {
+                                        //保存token
+                                        storage.set('cloud_usertoken', cloud_usertoken, () => {
+                                            ipcRenderer.send('cloud-register-success', {
+                                                userconfig: cloud_userconfig,
+                                                token: cloud_usertoken
+                                            });
+                                            window.close();
+                                        });
+                                    });
+                                }
+                            },
+                            error: () => {
+                                displayInfobar('error', i18n[current_i18n].register_tryLoginFailed);
+                                setTimeout(() => {
+                                    ipcRenderer.send('change-to-login', {
+                                        username: username,
+                                        needCaptcha: false
+                                    });
+                                }, 3000);
+                            }
                         });
                     } else {
-                        if (res.code == 401) {
-                            displayInfobar('error', '用户名或密码不正确');
-                        } else if (res.code == 402) {
-                            displayInfobar('error', '验证码错误');
-                        }
-                        if (typeof res.verifyCodeRequired != 'undefined' && res.verifyCodeRequired) {
-                            //需要验证码
-                            needCaptcha = true;
-                            //UI
-                            $('#login-captcha-group').show();
-                            //初始化验证码
-                            initCaptcha();
+                        if (res.code == 402){
+                            displayInfobar('error', '验证码错误，请重新输入');
+                            initCaptcha();  //刷新验证码
+                        } else {
+                            displayInfobar('error', '出现错误，注册失败');
+                            console.error(res);
                         }
                     }
                 },
                 error: (err) => {
-                    displayInfobar('error', '网络错误，登录失败');
+                    displayInfobar('error', '出现错误，注册失败');
                     console.error(err);
                 }
-            })
+            });
         }
 
-        ipcRenderer.on('page-changed', (sender, data) => {
-            if (typeof data != 'undefined') {
-                $('#input-username').val(data.username);
-                if (needCaptcha) {
-                    $('#login-captcha-group').show();
-                    initCaptcha();
-                }
-            }
-        });
+        initCaptcha();
     </script>
     <style>
         .infobar {

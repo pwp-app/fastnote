@@ -30,13 +30,14 @@ const {
 let feedUrl = ``;
 
 //import other window
-aboutWindow = require('./app/about');
-editWindow = require('./app/edit');
-recycleWindow = require('./app/recyclebin');
-settingsWindow = require('./app/settings');
-newnoteWindow = require('./app/newnote');
-decryptionWindow = require('./app/decryption');
-desktopWidget = require('./app/widget');
+const aboutWindow = require('./app/about');
+const editWindow = require('./app/edit');
+const recycleWindow = require('./app/recyclebin');
+const settingsWindow = require('./app/settings');
+const newnoteWindow = require('./app/newnote');
+const decryptionWindow = require('./app/decryption');
+const desktopWidget = require('./app/widget');
+const loginWindow = require('./app/cloud/windows/loginWindow');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -139,6 +140,15 @@ function createWindow() {
     ipc.on('openDecryptionWindow', (sender, data) => {
         decryptionWindow.show(data);
     });
+    //open login window
+    ipc.on('openLoginWindow', ()=>{
+        loginWindow.createLoginWindow();
+    });
+    //open register window
+    ipc.on('openRegisterWindow', ()=>{
+        loginWindow.createRegisterWindow();
+    });
+    //create desktop widget
     ipc.on('createDesktopWidget', (sender, data) => {
         desktopWidget.create(data);
     });
@@ -227,7 +237,6 @@ function createWindow() {
 
     //always on top
     ipc.on('main-window-alwaysontop', () => {
-        console.log(1);
         if (win.isAlwaysOnTop()) {
             win.setAlwaysOnTop(false);
             win.webContents.send('win-alwaysontop', false);
@@ -235,6 +244,14 @@ function createWindow() {
             win.setAlwaysOnTop(true);
             win.webContents.send('win-alwaysontop', true);
         }
+    });
+
+    ipc.on('cloud-login-success', (sender, data)=>{
+        win.webContents.send('cloud-login-success', data);
+    });
+
+    ipc.on('cloud-register-success', (sender, data)=>{
+        win.webContents.send('cloud-register-success', data);
     });
 
     ipc.on('cancel-encryption', function(sender, data) {
@@ -384,10 +401,13 @@ app.on('ready', () => {
 });
 
 app.on('second-instance', ()=>{
-    if (win){
+    if (win != null){
         if (win.isMinimized()){
             win.restore();
         }
+        win.focus();
+    } else {
+        createWindow();
         win.focus();
     }
 });
