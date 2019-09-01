@@ -335,6 +335,12 @@
             });
         }
 
+        $('#input-captcha').on('keydown', function(e){
+            if (e.keyCode == 13){
+                checkRegisterForm();
+            }
+        });
+
         initCaptcha();
     </script>
     <style>

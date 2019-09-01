@@ -323,6 +323,12 @@
                 }
             }
         });
+
+        $('#input-password').on('keydown', function(e){
+            if (e.keyCode == 13){
+                checkLoginForm();
+            }
+        });
     </script>
     <style>
         .infobar {
