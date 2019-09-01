@@ -162,6 +162,9 @@
             var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + ':' + cloudConfig.release.port
         }
     </script>
+    <script>
+        const reg_email = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+    </script>
 </head>
 
 <body class="login-body">
@@ -202,9 +205,27 @@
                         <input class="form-control brcontrol-input" id="input-password" type="password">
                     </div>
                 </div>
+                <div class="login-form-group">
+                    <div class="login-form-label">
+                        <span data-lang="confirm_password">确认密码</span>
+                    </div>
+                    <div></div>
+                    <div class="login-form-control">
+                        <input class="form-control brcontrol-input" id="input-confirmpassword" type="password">
+                    </div>
+                </div>
+                <div class="login-form-group">
+                    <div class="login-form-label">
+                        <span data-lang="email">邮箱</span>
+                    </div>
+                    <div></div>
+                    <div class="login-form-control">
+                        <input class="form-control brcontrol-input" id="input-email" type="text">
+                    </div>
+                </div>
                 <div class="login-form-group" id="login-captcha-group">
                     <div class="login-form-label">
-                        <span data-lang="password">验证码</span>
+                        <span data-lang="captcha">验证码</span>
                     </div>
                     <div></div>
                     <div class="login-form-control">
@@ -234,6 +255,9 @@
             let username = $('#input-username').val();
             let password = $('#input-password').val();
             let captchaCode = $('#input-captcha').val();
+            let confirmPassword = $('#input-confirmpassword').val();
+            let email = $('#input-email').val();
+
             let flag_pass = true;
             if (username.length < 1) {
                 $('#input-username').addClass('br-invalid');
@@ -243,10 +267,30 @@
                 $('#input-password').addClass('br-invalid');
                 flag_pass = false;
             }
+            if (confirmPassword.length < 1) {
+                $('#input-confirmpassword').addClass('br-invalid');
+                flag_pass = false;
+            }
+            if (email.length < 1) {
+                $('#input-email').addClass('br-invalid');
+                flag_pass = false;
+            }
             if (captchaCode.length < 1) {
                 $('#input-captcha').addClass('br-invalid');
                 flag_pass = false;
             }
+
+            if (password != confirmPassword){
+                $('#input-password').addClass('br-invalid');
+                $('#input-confirmpassword').addClass('br-invalid');
+                flag_pass = false;
+            }
+
+            if (!reg_email.test(email)){
+                $('#input-email').addClass('br-invalid');
+                flag_pass = false;
+            }
+
             if (flag_pass) {
                 submitRegister(username, password, captchaCode);
             }

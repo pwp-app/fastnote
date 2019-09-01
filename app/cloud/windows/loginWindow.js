@@ -47,7 +47,7 @@ function createLoginWindow() {
 function createRegisterWindow() {
     var conf = {
         width: 600,
-        height: 380,
+        height: 480,
         //resizable: false,
         maximazable: false,
         show: false,
