@@ -1636,6 +1636,15 @@
                     <div class="cloud-menuitem-split"></div>
                 </ul>
             </div>
+            <div class="cloud-body cloud-body-user" style="display: none;">
+                <ul class="cloud-menu">
+                    <li id="cloud-menuitem-userinfo">
+                        <div class="cloud-user-avatar">
+
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -1993,10 +2002,34 @@
                 }
             });
         }
+        //启用开发控制台，引入控制台js
+        var devconsoleOpened = false;
+        if (indebug){
+            Mousetrap.bind('ctrl+shift+1', function(){
+                if (devconsoleOpened){
+                    devconsoleOpened = false;
+                    $('.container-devconsole').animateCss('fadeOutUp', function(){
+                        $('.console-devconsole').hide();
+                    });
+                } else {
+                    devconsoleOpened = true;
+                    $('.container-devconsole').show();
+                    $('.container-devconsole').animateCss('fadeInDown');
+                }
+            });
+            $.getScript('static/devconsole.js');
+        }
     </script>
 
     <span id="filter-x" style="display:none"></span>
 
+    <div class="container-devconsole">
+        <div class="devconsole-wrapper">
+            <div class="devconsole-controls">
+                <input type="text" class="form-control" id="input-devconsole">
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
