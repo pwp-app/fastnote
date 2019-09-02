@@ -760,7 +760,7 @@
             closeUpdateReadyToast();
         });
 
-        $('#updateready-btn-update').click(()=>{
+        $('#updateready-btn-update').click(() => {
             ipcRenderer.send('app-quitNow');
         });
 
@@ -1620,7 +1620,7 @@
                 </div>
             </div>
             <div class="cloud-split" style="margin-bottom: 8px !important"></div>
-            <div class="cloud-body cloud-body-notlogin">
+            <div class="cloud-body cloud-body-nologin">
                 <ul class="cloud-menu">
                     <li id="cloud-menuitem-login">
                         <div class="cloud-menuitem-label">
@@ -1640,7 +1640,25 @@
                 <ul class="cloud-menu">
                     <li id="cloud-menuitem-userinfo">
                         <div class="cloud-user-avatar">
-
+                            <img src="static/images/default_avatar.png">
+                        </div>
+                        <div class="cloud-user-baseinfo">
+                            <span id="cloud-user-username"></span>
+                        </div>
+                    </li>
+                    <li id="cloud-menuitem-sync">
+                        <div class="cloud-menuitem-label">
+                            <span data-lang="sync">同步</span>
+                        </div>
+                    </li>
+                    <li id="cloud-menuitem-usersettings">
+                        <div class="cloud-menuitem-label">
+                            <span data-lang="user_settings">用户设置</span>
+                        </div>
+                    </li>
+                    <li id="cloud-menuitem-logout">
+                        <div class="cloud-menuitem-label">
+                            <span data-lang="logout">登出</span>
                         </div>
                     </li>
                 </ul>
@@ -1945,6 +1963,8 @@
             fetchUserInfo(data);
         });
 
+        var cloud_userinfo;
+
         function fetchUserInfo(data) {
             $.ajax({
                 url: cloud_apibase + '/user/getInfo',
@@ -1955,7 +1975,12 @@
                 },
                 success: (res) => {
                     if (res.code == 200) {
-                        console.log(res);
+                        cloud_userinfo = res.data;
+                        //成功拉取userinfo
+                        $('.cloud-body-nologin').hide();
+                        $('.cloud-body-user').show();
+                        //填入username
+                        $('#cloud-user-username').text(res.data.username);
                     } else {
                         console.error('error', '获取用户信息失败，请尝试手动登录');
                     }
@@ -2004,11 +2029,11 @@
         }
         //启用开发控制台，引入控制台js
         var devconsoleOpened = false;
-        if (indebug){
-            Mousetrap.bind('ctrl+shift+1', function(){
-                if (devconsoleOpened){
+        if (indebug) {
+            Mousetrap.bind('ctrl+shift+1', function() {
+                if (devconsoleOpened) {
                     devconsoleOpened = false;
-                    $('.container-devconsole').animateCss('fadeOutUp', function(){
+                    $('.container-devconsole').animateCss('fadeOutUp', function() {
                         $('.console-devconsole').hide();
                     });
                 } else {
