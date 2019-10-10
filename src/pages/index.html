@@ -1703,6 +1703,14 @@
             }
         }
 
+        function switchCloudPanelToNoLogon() {
+            $('.cloud-body-user').animateCss('fadeOut morefaster', function() {
+                $('.cloud-body-user').hide();
+                $('.cloud-body-nologin').show();
+                $('.cloud-body-nologin').animateCss('fadeIn morefaster');
+            });
+        }
+
         $('#btn-cloud-trigger').on('click', () => {
             if (!isMainMenuOpen && !isCategoryOpen && !isCloudOpen) {
                 openCloudPanel();
@@ -1948,36 +1956,35 @@
                     //每5分钟检查一次服务器是否在线
                     setTimeout(() => {
                         checkServerStatus(onlineCallback);
-                    }, 300000);
+                    }, 1000 * 60 * 5);
                 }
             })
         }
 
         // 检查用户登录状态
-        // return: Promise -> T: token有效 F: token失效
-        function checkLogin() {
-            return new Promise((resolve, reject) => {
-                $.ajax({
-                    url: cloud_apibase + '/common/ping/auth',
-                    type: 'GET',
-                    timeout: 5000,
-                    success: function(res) {
-                        if (res.code == 200) {
-                            resolve(true);
-                        } else {
-                            resolve(false);
-                        }
-                    },
-                    error: function() {
-                        resolve(false);
-                    }
-                });
-            });
+        // params: success callback, failed callback
+        function checkLogin(success, failed) {
+            $.ajax({
+                url: cloud_apibase + '/common/ping/auth',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                headers: {
+                    Authorization: "Bearer " + cloud_token
+                }
+            }).then((res) => {
+                if (res.code == 200) {
+                    success();
+                } else {
+                    failed();
+                }
+            }, failed);
         }
 
         // 刷新本地的token
-        async function refreshToken() {
-            if (await checkLogin()) {
+        function refreshToken() {
+            checkLogin(() => {
+                // 登录态验证成功
                 // 当前token尚未报废，申请一个新的token，客户端丢弃旧的token
                 $.ajax({
                     url: cloud_apibase + '/user/refresh',
@@ -1995,19 +2002,19 @@
                         console.error('Cannot refresh user token.');
                     }
                 });
-            } else {
+            }, () => {
                 // 当前token已经报废，需要从登录的关口获取
-                let res_autologin = await cloudAutoLogin();
-                if (!res_autologin) {
+                cloudAutoLogin(() => {
+                    console.log('User token refreshed.');
+                }, () => {
                     // 无法从登录关口获取新的token
                     displayInfobar('error', i18n[current_i18n].logon_status_lost);
                     // 切换到未登录状态下的UI
-                    $('.cloud-body-user').hide();
-                    $('.cloud-body-nologin').show();
+                    switchCloudPanelToNoLogon();
                     // 清理token缓存
                     cloud_token = null;
-                }
-            }
+                });
+            });
         }
 
         // 设置token保鲜，在token过期时间的90%时触发
@@ -2018,38 +2025,43 @@
         }
 
         // 用暂存的信息自动登录
-        function cloudAutoLogin() {
-            return new Promise((resolve, reject) => {
-                storage.get('cloud_userconfig', (res) => {
-                    if (res) {
-                        $.ajax({
-                            url: cloud_apibase + '/user/login',
-                            type: 'POST',
-                            data: {
-                                username: res.username,
-                                password: res.password,
-                                clientType: 'pc',
-                                autologin: true
-                            },
-                            success: (res) => {
-                                if (res.code == 200) {
-                                    cloud_token = res.auth.token;
-                                    cloud_token_expires = res.auth.expires;
-                                    setFutureTokenRefresh();
-                                    resolve(true);
-                                } else {
-                                    resolve(false);
-                                }
-                            },
-                            error: (err) => {
-                                resolve(false);
-                            }
-                        });
+        function cloudAutoLogin(success, failed) {
+            storage.get('cloud_userconfig', (err, res) => {
+                if (err) {
+                    failed();
+                    return;
+                }
+                $.ajax({
+                    url: cloud_apibase + '/user/login',
+                    type: 'POST',
+                    timeout: 10000,
+                    data: {
+                        username: res.username,
+                        password: res.password,
+                        clientType: 'pc',
+                        autologin: true
+                    },
+                    dataType: 'json'
+                }).then((res) => {
+                    if (res.code == 200) {
+                        cloud_token = res.auth.token;
+                        cloud_token_expires = res.auth.expires;
+                        setFutureTokenRefresh();
+                        success();
                     } else {
-                        resolve(false);
+                        failed();
                     }
+                }, () => {
+                    failed();
                 });
             });
+        }
+
+        // 登录成功后调用
+        function afterLoginSuccess() {
+            $('.cloud-body-nologin').hide();
+            $('.cloud-body-user').show();
+            fetchUserInfo(cloud_token);
         }
 
         // 登录成功事件
@@ -2061,7 +2073,7 @@
             // 启用token保鲜
             setFutureTokenRefresh();
             // 拉取用户信息
-            fetchUserInfo(cloud_token);
+            afterLoginSuccess();
         });
 
         // 注册成功事件
@@ -2073,22 +2085,24 @@
             // 启用token保鲜
             setFutureTokenRefresh();
             // 拉取用户信息
-            fetchUserInfo(cloud_token);
+            afterLoginSuccess();
         });
 
         // 登出
-        async function cloudUserLogout() {
+        function cloudUserLogout() {
             // 先进行authping，判断token是否已经失效了，已经失效直接切到登出
-            if (await checkLogin()) {
+            checkLogin(() => {
                 // token还有效，需要通过API对token进行报废
                 $.ajax({
                     url: cloud_apibase + '/user/logout',
                     type: 'GET',
                     dataType: 'json',
+                    headers: {
+                        Authorization: "Bearer " + cloud_token
+                    },
                     success: function(res) {
                         // 切换到未登录状态下的UI
-                        $('.cloud-body-user').hide();
-                        $('.cloud-body-nologin').show();
+                        switchCloudPanelToNoLogon();
                         // 清理token缓存
                         cloud_token = null;
                         displayInfobar('success', i18n[current_i18n].logout_success);
@@ -2098,33 +2112,35 @@
                         displayInfobar('error', i18n[current_i18n].logout_failed);
                     }
                 });
-            } else {
+            }, () => {
                 // 切换到未登录状态下的UI
-                $('.cloud-body-user').hide();
-                $('.cloud-body-nologin').show();
+                switchCloudPanelToNoLogon();
                 // 清理token缓存
                 cloud_token = null;
+                // 清理缓存的cloud_userconfig
+                storage.remove('cloud_userconfig', (err)=>{
+                    if (err) {
+                        console.error('Cannot remove stored cloud user config.');
+                    }
+                });
                 displayInfobar('success', i18n[current_i18n].logout_success);
-            }
+            })
         }
 
         /* 从服务器获取用户信息
          * param: token - jwttoken
          */
-        function fetchUserInfo(token) {
+        function fetchUserInfo() {
             $.ajax({
                 url: cloud_apibase + '/user/getInfo',
                 type: 'GET',
                 dataType: 'json',
                 headers: {
-                    Authorization: "Bearer " + token
+                    Authorization: "Bearer " + cloud_token
                 },
                 success: (res) => {
                     if (res.code == 200) {
                         cloud_userinfo = res.data;
-                        //成功拉取userinfo
-                        $('.cloud-body-nologin').hide();
-                        $('.cloud-body-user').show();
                         //填入username
                         $('#cloud-user-username').text(res.data.username);
                     } else {
@@ -2137,8 +2153,19 @@
             });
         }
 
+        // 自动登录包装
+        function runCloudAutoLogin() {
+            cloudAutoLogin(() => {
+                afterLoginSuccess();
+            }, () => {
+                console.error('Auto login to Fastnote Cloud failed.');
+            });
+        }
+
         // 执行服务器状态检查，如果服务器在线则检查登录状态
         checkServerStatus();
+        // 执行自动登录
+        runCloudAutoLogin();
     </script>
 
     <script>
