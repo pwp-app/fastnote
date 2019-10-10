@@ -64,6 +64,11 @@
                 e.stopPropagation();
             });
         }
+        // 屏蔽F11
+        Mousetrap.bind('f11', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
 
         var settings;
 

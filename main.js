@@ -64,9 +64,6 @@ function createWindow() {
 
     win = new BrowserWindow(conf);
 
-    if (indebug) {
-        win.webContents.openDevTools();
-    }
     var settings;
     storage.get('settings', function(err, data) {
         if (err) {

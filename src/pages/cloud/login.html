@@ -282,14 +282,12 @@
                         let cloud_usertoken = res.auth;
                         //保存用户信息
                         storage.set('cloud_userconfig', cloud_userconfig, () => {
-                            //保存token
-                            storage.set('cloud_usertoken', cloud_usertoken, () => {
-                                ipcRenderer.send('cloud-login-success', {
-                                    userconfig: cloud_userconfig,
-                                    token: cloud_usertoken
-                                });
-                                window.close();
+                            //向主窗体发送token
+                            ipcRenderer.send('cloud-login-success', {
+                                userconfig: cloud_userconfig,
+                                token: cloud_usertoken
                             });
+                            window.close();
                         });
                     } else {
                         if (res.code == 401) {
@@ -324,8 +322,8 @@
             }
         });
 
-        $('#input-password').on('keydown', function(e){
-            if (e.keyCode == 13){
+        $('#input-password').on('keydown', function(e) {
+            if (e.keyCode == 13) {
                 checkLoginForm();
             }
         });
@@ -357,7 +355,12 @@
                 }
             });
         }
-        //import requirements
-        $.getScript('../../app/infobar.js'); //import by jQuery
+        // 屏蔽F11
+        Mousetrap.bind('f11', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        // import requirements
+        $.getScript('../../app/infobar.js'); // import by jQuery
     </script>
 </body>

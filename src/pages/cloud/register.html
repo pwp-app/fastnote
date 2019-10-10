@@ -280,13 +280,13 @@
                 flag_pass = false;
             }
 
-            if (password != confirmPassword){
+            if (password != confirmPassword) {
                 $('#input-password').addClass('br-invalid');
                 $('#input-confirmpassword').addClass('br-invalid');
                 flag_pass = false;
             }
 
-            if (!reg_email.test(email)){
+            if (!reg_email.test(email)) {
                 $('#input-email').addClass('br-invalid');
                 flag_pass = false;
             }
@@ -341,14 +341,12 @@
                                     let cloud_usertoken = res.auth;
                                     //保存用户信息
                                     storage.set('cloud_userconfig', cloud_userconfig, () => {
-                                        //保存token
-                                        storage.set('cloud_usertoken', cloud_usertoken, () => {
-                                            ipcRenderer.send('cloud-register-success', {
-                                                userconfig: cloud_userconfig,
-                                                token: cloud_usertoken
-                                            });
-                                            window.close();
+                                        //向主窗体发送token
+                                        ipcRenderer.send('cloud-login-success', {
+                                            userconfig: cloud_userconfig,
+                                            token: cloud_usertoken
                                         });
+                                        window.close();
                                     });
                                 }
                             },
@@ -363,9 +361,9 @@
                             }
                         });
                     } else {
-                        if (res.code == 402){
+                        if (res.code == 402) {
                             displayInfobar('error', '验证码错误，请重新输入');
-                            initCaptcha();  //刷新验证码
+                            initCaptcha(); //刷新验证码
                         } else {
                             displayInfobar('error', '出现错误，注册失败');
                             console.error(res);
@@ -379,8 +377,8 @@
             });
         }
 
-        $('#input-captcha').on('keydown', function(e){
-            if (e.keyCode == 13){
+        $('#input-captcha').on('keydown', function(e) {
+            if (e.keyCode == 13) {
                 checkRegisterForm();
             }
         });
@@ -414,7 +412,12 @@
                 }
             });
         }
-        //import requirements
-        $.getScript('../../app/infobar.js'); //import by jQuery
+        // 屏蔽F11
+        Mousetrap.bind('f11', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        // import requirements
+        $.getScript('../../app/infobar.js'); // import by jQuery
     </script>
 </body>

@@ -162,5 +162,8 @@ i18n['en-us']={
     register_tryLoginFailed: 'Attempt to login failed. Please login manually.',
     register_success: 'Fastnote Cloud account has been registered successfully.',
     update_now: 'Update now',
-    updateready_text: 'Update will start automatically after app closed.'
+    updateready_text: 'Update will start automatically after app closed.',
+    logout_failed: 'Logout failed.',
+    logout_success: 'Logout success.',
+    logon_status_lost: 'Fastnote Cloud logon status is invalid, please login again'
 };
