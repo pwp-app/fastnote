@@ -2074,6 +2074,8 @@
             setFutureTokenRefresh();
             // 拉取用户信息
             afterLoginSuccess();
+            // 获取firstsync状态
+            fetchFirstSyncStatus();
         });
 
         // 注册成功事件
@@ -2162,10 +2164,46 @@
             });
         }
 
+        // 获取用户首次同步的状态
+        function fetchFirstSyncStatus(success, failed){
+            $.ajax({
+                url: cloud_apibase + '/user/firstsync_status',
+                type: 'GET',
+                dataType: 'json',
+            }).then((res)=>{
+                if (res.code == 200){
+                    success();
+                } else {
+                    failed();
+                }
+            }, failed);
+        }
+
         // 执行服务器状态检查，如果服务器在线则检查登录状态
         checkServerStatus();
         // 执行自动登录
         runCloudAutoLogin();
+    </script>
+
+    <!-- 云服务相关 - 操作日志 -->
+    <script>
+        // 操作日志相关类
+        class OperationLog{
+            constructor(type, noteid) {
+                this.type = type;
+                this.noteid = noteid;
+            }
+        }
+        // 操作日志的全局变量
+        var note_operation_log = [];
+        // 读取操作日志列表
+        storage.get('note_operation_log', (err, res)=>{
+            if (err){
+                console.info('No stored operation log.');
+                return;
+            }
+            note_operation_log = res;
+        })
     </script>
 
     <script>

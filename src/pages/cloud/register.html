@@ -327,7 +327,7 @@
                                     if (code == 402) {
                                         displayInfobar('error', i18n[current_i18n].register_needCaptcha);
                                         setTimeout(() => {
-                                            ipcRenderer.send('change-to-login', {
+                                            ipcRenderer.send('switch-to-login', {
                                                 username: username,
                                                 needCaptcha: true
                                             });
@@ -343,7 +343,7 @@
                                     //保存用户信息
                                     storage.set('cloud_userconfig', cloud_userconfig, () => {
                                         //向主窗体发送token
-                                        ipcRenderer.send('cloud-login-success', {
+                                        ipcRenderer.send('cloud-register-success', {
                                             userconfig: cloud_userconfig,
                                             token: cloud_usertoken
                                         });
@@ -354,7 +354,7 @@
                             error: () => {
                                 displayInfobar('error', i18n[current_i18n].register_tryLoginFailed);
                                 setTimeout(() => {
-                                    ipcRenderer.send('change-to-login', {
+                                    ipcRenderer.send('switch-to-login', {
                                         username: username,
                                         needCaptcha: false
                                     });

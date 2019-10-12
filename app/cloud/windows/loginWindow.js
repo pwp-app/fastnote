@@ -5,16 +5,20 @@ const {
     BrowserWindow
 } = require('electron');
 
-//ipc主进程
+// ipc主进程
 const ipc = require('electron').ipcMain;
 
 const app = require('electron').app;
 const path = require('path');
 
+// consts
+const loginWindowHeight = 320;
+const registerWindowHeight = 480;
+
 function createLoginWindow() {
     var conf = {
         width: 600,
-        height: 320,
+        height: loginWindowHeight,
         //resizable: false,
         maximazable: false,
         show: false,
@@ -47,7 +51,7 @@ function createLoginWindow() {
 function createRegisterWindow() {
     var conf = {
         width: 600,
-        height: 480,
+        height: registerWindowHeight,
         //resizable: false,
         maximazable: false,
         show: false,
@@ -79,13 +83,17 @@ function createRegisterWindow() {
 
 ipc.on('height-change', (sender, data)=>{
     if (win_login != null){
-        win_login.setSize(widget.getSize()[0], data);
+        win_login.setSize(win_login.getSize()[0], data);
     }
 });
 
-ipc.on('change-to-login',(sender,data)=>{
+ipc.on('switch-to-register', (sender, data)=>{
+    loginWindow.switchToRegister();
+});
+
+ipc.on('switch-to-login',(sender,data)=>{
     if (typeof data != 'undefined'){
-        this.changeToLogin();
+        loginWindow.switchToLogin();
         win_login.webContents.send('page-changed', data);
     }
 });
@@ -106,7 +114,7 @@ const loginWindow = {
             if (status != 'login') {
                 let viewpath = path.resolve(__dirname, '../../../public/cloud/login.html');
                 win_login.loadFile(viewpath);
-                win_login.setSize(widget.getSize()[0], 320);
+                win_login.setSize(win_login.getSize()[0], loginWindowHeight);
             }
         } else {
             createLoginWindow();
@@ -122,18 +130,18 @@ const loginWindow = {
             if (status != 'register') {
                 let viewpath = path.resolve(__dirname, '../../../public/cloud/register.html');
                 win_login.loadFile(viewpath);
-                win_login.setSize(widget.getSize()[0], 380);
+                win_login.setSize(win_login.getSize()[0], registerWindowHeight);
             }
         } else {
             createRegisterWindow();
             status = 'register';
         }
     },
-    changeToLogin: ()=>{
+    switchToLogin: ()=>{
         if (status == 'register') {
             let viewpath = path.resolve(__dirname, '../../../public/cloud/register.html');
             win_login.loadFile(viewpath);
-            win_login.setSize(widget.getSize()[0], 320);
+            win_login.setSize(win_login.getSize()[0], loginWindowHeight);
         } else {
             if (win_login.isMinimized()) {
                 win_login.restore();
@@ -141,11 +149,11 @@ const loginWindow = {
             win_login.focus();
         }
     },
-    changeToRegister: () => {
+    switchToRegister: () => {
         if (status == 'login') {
             let viewpath = path.resolve(__dirname, '../../../public/cloud/register.html');
             win_login.loadFile(viewpath);
-            win_login.setSize(widget.getSize()[0], 380);
+            win_login.setSize(win_login.getSize()[0], registerWindowHeight);
         } else {
             if (win_login.isMinimized()) {
                 win_login.restore();
