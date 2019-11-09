@@ -12,6 +12,7 @@ const app = require('electron').app;
 const path = require('path');
 
 var targetY = -1;
+
 function createWidget(data) {
     let _widget = null;
     var screenWidth = electron.screen.getPrimaryDisplay().size.width;
@@ -25,7 +26,7 @@ function createWidget(data) {
         width: 460,
         height: 280,
         minWidth: 320,
-        minHeight: 108,
+        minHeight: 86,
         show: false,
         webPreferences: {
             nodeIntegration: true
@@ -60,6 +61,9 @@ function createWidget(data) {
         let index = widgets.indexOf(_widget);
         widgets.splice(index, 1);
         widgets_noteid.splice(index, 1);
+        if (widgets.length < 1){
+            targetY = -1;
+        }
     });
 
     _widget.on('ready-to-show', ()=>{
@@ -70,7 +74,7 @@ function createWidget(data) {
             widget.setSize(widget.getSize()[0], height);
             targetY = targetY + height + 8;
             //锁定最大高度
-            if (height<400){
+            if (height < 400){
                 widget.setMaximumSize(electron.screen.getPrimaryDisplay().size.width, height);
             }
         });

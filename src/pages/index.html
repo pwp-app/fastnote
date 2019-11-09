@@ -27,6 +27,7 @@
     <script src="static/moment.min.js"></script>
     <script src="static/html5sortable.min.js"></script>
     <script src="static/notes.render.js"></script>
+    <script src="static/cloud.sync.js"></script>
     <script>
         //i18n
         var postprocess_i18n = [{
@@ -1989,6 +1990,9 @@
                 $.ajax({
                     url: cloud_apibase + '/user/refresh',
                     type: 'GET',
+                    headers: {
+                        Authorization: "Bearer " + cloud_token
+                    },
                     success: function(res) {
                         if (res.code == 200) {
                             cloud_token = res.data.token;
@@ -2075,7 +2079,17 @@
             // 拉取用户信息
             afterLoginSuccess();
             // 获取firstsync状态
-            fetchFirstSyncStatus();
+            fetchFirstSyncStatus(function(data){
+                if (data.firstSync){
+                    // 已首次同步
+                    cloud_sync();
+                } else {
+                    // 用户还没有首次同步过
+                    cloud_firstSync();
+                }
+            }, function(data){
+                console.error('Fetch first sync status error.');
+            });
         });
 
         // 注册成功事件
@@ -2088,6 +2102,14 @@
             setFutureTokenRefresh();
             // 拉取用户信息
             afterLoginSuccess();
+            // 获取firstsync状态
+            fetchFirstSyncStatus(function(data){
+                if (data.firstSync){
+                    firstSync();
+                }
+            }, function(data){
+                console.error('Fetch first sync status error.');
+            });
         });
 
         // 登出
@@ -2120,7 +2142,7 @@
                 // 清理token缓存
                 cloud_token = null;
                 // 清理缓存的cloud_userconfig
-                storage.remove('cloud_userconfig', (err)=>{
+                storage.remove('cloud_userconfig', (err) => {
                     if (err) {
                         console.error('Cannot remove stored cloud user config.');
                     }
@@ -2165,14 +2187,17 @@
         }
 
         // 获取用户首次同步的状态
-        function fetchFirstSyncStatus(success, failed){
+        function fetchFirstSyncStatus(success, failed) {
             $.ajax({
                 url: cloud_apibase + '/user/firstsync_status',
                 type: 'GET',
                 dataType: 'json',
-            }).then((res)=>{
-                if (res.code == 200){
-                    success();
+                headers: {
+                    Authorization: "Bearer " + cloud_token
+                }
+            }).then((res) => {
+                if (res.code == 200) {
+                    success(res.data);
                 } else {
                     failed();
                 }
@@ -2188,7 +2213,7 @@
     <!-- 云服务相关 - 操作日志 -->
     <script>
         // 操作日志相关类
-        class OperationLog{
+        class OperationLog {
             constructor(type, noteid) {
                 this.type = type;
                 this.noteid = noteid;
@@ -2197,13 +2222,13 @@
         // 操作日志的全局变量
         var note_operation_log = [];
         // 读取操作日志列表
-        storage.get('note_operation_log', (err, res)=>{
-            if (err){
+        storage.get('note_operation_log', (err, res) => {
+            if (err) {
                 console.info('No stored operation log.');
                 return;
             }
             note_operation_log = res;
-        })
+        });
     </script>
 
     <script>
