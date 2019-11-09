@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="../static/font-awesome.min.css">
     <link rel="stylesheet" href="../static/bootstrap.min.css">
     <link rel="stylesheet" href="../static/animate.min.css">
+    <script src="../static/mousetrap.min.js"></script>
     <script src="../static/encryption.js"></script>
     <script src="../static/i18n.js"></script>
     <script>
@@ -204,7 +205,7 @@
                 </div>
                 <div class="login-form-group" id="login-captcha-group" style="display: none;">
                     <div class="login-form-label">
-                        <span data-lang="password">验证码</span>
+                        <span data-lang="captcha">验证码</span>
                     </div>
                     <div></div>
                     <div class="login-form-control">
@@ -216,9 +217,14 @@
                     </div>
                 </div>
                 <div class="login-form-button" style="float: right;">
-                    <button class="btn btn-secondary brbtn-primary login-button" data-lang="register">注册</button>
+                    <button class="btn btn-secondary brbtn-primary login-button" data-lang="register" onclick="switchToRegister();">注册</button>
                     <button class="btn btn-secondary brbtn-primary login-button" data-lang="login" onclick="checkLoginForm();">登录</button>
                 </div>
+                <script>
+                    function switchToRegister(){
+                        ipcRenderer.send('switch-to-register');
+                    }
+                </script>
             </div>
         </div>
     </div>
@@ -274,7 +280,7 @@
                 },
                 success: (res) => {
                     if (res.code == 200) {
-                        //登录成功
+                        // 登录成功
                         let cloud_userconfig = {
                             username: username,
                             password: sha256(password, 'fastnote')
@@ -282,14 +288,12 @@
                         let cloud_usertoken = res.auth;
                         //保存用户信息
                         storage.set('cloud_userconfig', cloud_userconfig, () => {
-                            //保存token
-                            storage.set('cloud_usertoken', cloud_usertoken, () => {
-                                ipcRenderer.send('cloud-login-success', {
-                                    userconfig: cloud_userconfig,
-                                    token: cloud_usertoken
-                                });
-                                window.close();
+                            //向主窗体发送token
+                            ipcRenderer.send('cloud-login-success', {
+                                userconfig: cloud_userconfig,
+                                token: cloud_usertoken
                             });
+                            window.close();
                         });
                     } else {
                         if (res.code == 401) {
@@ -298,11 +302,11 @@
                             displayInfobar('error', '验证码错误');
                         }
                         if (typeof res.verifyCodeRequired != 'undefined' && res.verifyCodeRequired) {
-                            //需要验证码
+                            // 需要验证码
                             needCaptcha = true;
                             //UI
                             $('#login-captcha-group').show();
-                            //初始化验证码
+                            // 初始化验证码
                             initCaptcha();
                         }
                     }
@@ -321,6 +325,12 @@
                     $('#login-captcha-group').show();
                     initCaptcha();
                 }
+            }
+        });
+
+        $('#input-password').on('keydown', function(e) {
+            if (e.keyCode == 13) {
+                checkLoginForm();
             }
         });
     </script>
@@ -351,7 +361,13 @@
                 }
             });
         }
-        //import requirements
-        $.getScript('../../app/infobar.js'); //import by jQuery
+        // 屏蔽F11
+        Mousetrap.bind('f11', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        // import requirements
+        $.getScript('../../app/infobar.js'); // import by jQuery
     </script>
 </body>

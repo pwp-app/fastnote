@@ -27,6 +27,7 @@
     <script src="static/moment.min.js"></script>
     <script src="static/html5sortable.min.js"></script>
     <script src="static/notes.render.js"></script>
+    <script src="static/cloud.sync.js"></script>
     <script>
         //i18n
         var postprocess_i18n = [{
@@ -47,6 +48,7 @@
         //define const
         var remote = require('electron').remote;
         var app = remote.app;
+
         //import json storage
         if (typeof storage != 'undefined') {
             var storage = require('electron-json-storage');
@@ -328,6 +330,8 @@
                 timeout: 5000
             });
         }
+
+        const CronJob = require('cron').CronJob;
     </script>
 </head>
 
@@ -360,24 +364,24 @@
             <div class="right-wrapper">
                 <!-- multi-selected -->
                 <div class="brtoast toast-search">
-                    <div class="toast-search-icon">
+                    <div class="toast-icon">
                         <i class="fa fa-search" aria-hidden="true"></i>
                     </div>
                     <div class="toast-control toast-search-control">
                         <input type="text" class="form-control" id="input-search">
                     </div>
                     <script src="static/search.js"></script>
-                    <div class="toast-search-icon toast-search-close">
+                    <div class="toast-icon toast-close" id="toast-search-close">
                         <i class="fa fa-times" aria-hidden="true"></i>
                     </div>
                 </div>
                 <script>
-                    $('.toast-search-close').click(function() {
+                    $('#toast-search-close').click(function() {
                         closeSearchToast();
                     });
                 </script>
                 <div class="brtoast toast-multiselected">
-                    <p class="brtoast-normaltext" id="toast-multiselected-text"></p>
+                    <p class="toast-normaltext" id="toast-multiselected-text"></p>
                 </div>
             </div>
         </div>
@@ -738,6 +742,53 @@
             }
         });
     </script>
+
+    <div class="container-bottombar-float">
+        <div class="bottombar-float-wrapper">
+            <div class="bottombar-float-update">
+                <div id="toast-updateready" class="brtoast toast-autoheight toast-updateready">
+                    <div class="toast-normaltext-wrapper">
+                        <span class="toast-text" id="toast-updateready-text" data-lang="updateready_text">更新下载完成，应用会在关闭后自动更新。</span>
+                    </div>
+                    <div class="toast-control toast-control-right">
+                        <button class="btn brbtn brbtn-primary" id="updateready-btn-update" data-lang="update_now">立即更新</button>
+                        <button class="btn brbtn brbtn-primary" id="updateready-btn-close" data-lang="close">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 更新通知浮窗 -->
+    <script>
+        $('#updateready-btn-close').click(() => {
+            closeUpdateReadyToast();
+        });
+
+        $('#updateready-btn-update').click(() => {
+            ipcRenderer.send('app-quitNow');
+        });
+
+        var updateReadyToastOpened = false;
+
+        function popupUpdateReadyToast() {
+            updateReadyToastOpened = true;
+            $('#toast-updateready').addClass('toast-active');
+            $('#toast-updateready').animateCss('fadeInRight faster');
+        }
+
+        function closeUpdateReadyToast() {
+            if (updateReadyToastOpened) {
+                $('#toast-updateready').animateCss('fadeOutRight faster', function() {
+                    //focus the input
+                    $('#toast-updateready').removeClass('toast-active');
+                    updateReadyToastOpened = false;
+                });
+            }
+        }
+    </script>
+
+    <!-- 底栏 -->
     <div class="container-bottombar">
         <div class="trigger-mainmenu">
             <button class="br-btn btn-noback bottombar-trigger" id="btn-mainmenu-trigger">
@@ -887,7 +938,7 @@
         }
     </script>
 
-    <!-- update -->
+    <!-- 自动更新UI -->
     <div class="container-updater">
         <div class="update-block">
             <div class="update-title">
@@ -913,9 +964,10 @@
         </div>
     </div>
 
-    <!-- ipcRenderer -->
+    <!-- 自动更新 -->
     <script>
-        let time = require('../app/tools/time.js');
+        var time = require('../app/tools/time.js');
+        var version_new;
         ipcRenderer.on('update-message', (event, {
             message,
             data
@@ -958,6 +1010,7 @@
                             function(result) {
                                 if (result != null && result != "" && typeof(result) != 'undefined') {
                                     //成功获取ver.json
+                                    version_new = result.ver;
                                     try {
                                         $('#update-title-span').text(i18n[current_i18n].newversion_detected + result.ver);
                                         document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
@@ -1015,14 +1068,20 @@
                         $('#infobar_update').remove();
                     });
                     displayInfobar('success', i18n[current_i18n].update_download_success, 5000);
-                    $('#statusbar').append(
-                        '<div class="statusbar-item" title="' + i18n[current_i18n].statusbar_update_title + '"><i class="fa fa-arrow-circle-up"></i></div>'
-                    );
+                    //向状态栏添加图标
+                    appendUpdateIconToStautsbar();
                 case 'error':
                     console.error(data);
                     break;
             }
         });
+
+        function appendUpdateIconToStautsbar() {
+            $('#statusbar').append(
+                '<div id="statusbar-item-updateready" class="statusbar-item" onclick="popupUpdateReadyToast()";><i class="fa fa-arrow-circle-up"></i></div>'
+            );
+        }
+
         //绑定按钮事件
         $('#btn-update-cancel').on('click', function() {
             $('.container-updater').animateCss('fadeOut', function() {
@@ -1045,7 +1104,7 @@
         })
     </script>
 
-    <!-- main menu -->
+    <!-- 主菜单 -->
     <div class="mainmenu-background"></div>
     <div class="container-mainmenu">
         <div class="mainmenu-panel">
@@ -1085,6 +1144,7 @@
         </div>
     </div>
 
+    <!-- 主菜单、快捷键、窗口大小调整相关 -->
     <script>
         //绑定主菜单的动画事件
         let isMainMenuOpen = false;
@@ -1197,6 +1257,7 @@
         });
     </script>
 
+    <!-- 分类侧边菜单 -->
     <div class="category-background"></div>
     <div class="container-category">
         <div class="category-panel">
@@ -1256,6 +1317,7 @@
         </div>
     </div>
 
+    <!-- 分类相关 -->
     <script>
         var isCategoryOpen = false;
 
@@ -1558,6 +1620,7 @@
         }
     </script>
 
+    <!-- 云服务侧边菜单 -->
     <div class="cloud-background"></div>
     <div class="container-cloud">
         <div class="cloud-panel">
@@ -1566,24 +1629,56 @@
                     <p>Fastnote Cloud</p>
                 </div>
             </div>
-            <div class="category-split"></div>
-            <div class="cloud-body cloud-body-notlogin">
+            <div class="cloud-split" style="margin-bottom: 8px !important"></div>
+            <div class="cloud-body cloud-body-nologin">
                 <ul class="cloud-menu">
                     <li id="cloud-menuitem-login">
                         <div class="cloud-menuitem-label">
                             <span data-lang="login">登录</span>
                         </div>
                     </li>
+                    <div class="cloud-menuitem-split"></div>
                     <li id="cloud-menuitem-register">
                         <div class="cloud-menuitem-label">
                             <span data-lang="register">注册</span>
                         </div>
                     </li>
+                    <div class="cloud-menuitem-split"></div>
+                </ul>
+            </div>
+            <div class="cloud-body cloud-body-user" style="display: none;">
+                <ul class="cloud-menu cloud-menu-user">
+                    <li id="cloud-menuitem-userinfo">
+                        <div class="cloud-user-avatar">
+                            <img src="static/images/default_avatar.png">
+                        </div>
+                        <div class="cloud-user-baseinfo">
+                            <span id="cloud-user-username"></span>
+                        </div>
+                    </li>
+                    <div class="cloud-menuitem-split"></div>
+                    <li id="cloud-menuitem-sync">
+                        <div class="cloud-menuitem-label">
+                            <span data-lang="sync">同步</span>
+                        </div>
+                    </li>
+                    <li id="cloud-menuitem-usersettings">
+                        <div class="cloud-menuitem-label">
+                            <span data-lang="user_settings">用户设置</span>
+                        </div>
+                    </li>
+                    <li id="cloud-menuitem-logout">
+                        <div class="cloud-menuitem-label">
+                            <span data-lang="logout">登出</span>
+                        </div>
+                    </li>
+                    <div class="cloud-menuitem-split"></div>
                 </ul>
             </div>
         </div>
     </div>
 
+    <!-- Cloud 菜单相关 -->
     <script>
         var isCloudOpen = false;
 
@@ -1592,8 +1687,7 @@
             $('.cloud-background').animateCss('fadeIn');
             $('.container-cloud').css('display', 'block');
             $('.container-cloud').animateCss('fadeInLeft');
-            //根据登录状态决定启用
-
+            // 根据登录状态决定启用
             isCloudOpen = true;
         }
 
@@ -1610,6 +1704,14 @@
             }
         }
 
+        function switchCloudPanelToNoLogon() {
+            $('.cloud-body-user').animateCss('fadeOut morefaster', function() {
+                $('.cloud-body-user').hide();
+                $('.cloud-body-nologin').show();
+                $('.cloud-body-nologin').animateCss('fadeIn morefaster');
+            });
+        }
+
         $('#btn-cloud-trigger').on('click', () => {
             if (!isMainMenuOpen && !isCategoryOpen && !isCloudOpen) {
                 openCloudPanel();
@@ -1620,17 +1722,24 @@
             closeCloudPanel();
         });
 
-        //menu item events
+        // menu item events
+        // 登录
         $('#cloud-menuitem-login').on('click', () => {
             ipcRenderer.send('openLoginWindow');
             closeCloudPanel();
         });
+        // 注册
         $('#cloud-menuitem-register').on('click', () => {
             ipcRenderer.send('openRegisterWindow');
             closeCloudPanel();
         });
+        // 登出
+        $('#cloud-menuitem-logout').on('click', () => {
+            cloudUserLogout();
+        });
     </script>
 
+    <!-- 本地备份导入 -->
     <script>
         //backup recovered
         ipcRenderer.on('backup-recover-completed', function() {
@@ -1704,6 +1813,7 @@
         });
     </script>
 
+    <!-- 便签加密相关 -->
     <script>
         //取消加密
         ipcRenderer.on('cancel-encryption', function(sender, data) {
@@ -1728,13 +1838,14 @@
         }
     </script>
 
+    <!-- 窗口与托盘相关 -->
     <script>
-        //聚焦到输入文本框
+        // 聚焦到输入文本框
         $(document).ready(function() {
             $('#note-text').focus();
         });
 
-        //关闭选项的flag
+        // 关闭选项的flag
         var reloadWindow = false;
         var closeOptionDialogShow = false;
 
@@ -1742,7 +1853,7 @@
             reloadWindow = true;
         });
 
-        //复写关闭窗口事件
+        // 复写关闭窗口事件
         window.onbeforeunload = (e) => {
             if (reloadWindow) {
                 return;
@@ -1811,9 +1922,17 @@
         });
     </script>
 
+    <!-- 云服务 -->
     <script>
+        // 服务器状态标识
         var cloud_serveronline = true;
-        //检测服务器状态
+        // 用户token暂存
+        var cloud_token;
+        var cloud_token_expires;
+        // 用户信息暂存
+        var cloud_userinfo;
+
+        // 检测服务器状态
         function checkServerStatus(onlineCallback) {
             $.ajax({
                 url: cloud_apibase + '/common/ping',
@@ -1826,7 +1945,7 @@
                     }
                     cloud_serveronline = true;
                     $('.trigger-cloud').css('display', 'inline-block');
-                    if (typeof onlineCallback == "function"){
+                    if (typeof onlineCallback == "function") {
                         onlineCallback();
                     }
                 },
@@ -1837,61 +1956,217 @@
                     cloud_serveronline = false;
                     //每5分钟检查一次服务器是否在线
                     setTimeout(() => {
-                        checkServerStatus();
-                    }, 300000);
+                        checkServerStatus(onlineCallback);
+                    }, 1000 * 60 * 5);
                 }
             })
         }
 
-        //检查登录状态
-        function checkLogin(){
-            storage.get('cloud_usertoken', (err, data)=>{
-                if (err){
-                    //cloud_usertoken不存在则获取token
-                    fetchUserToken();
+        // 检查用户登录状态
+        // params: success callback, failed callback
+        function checkLogin(success, failed) {
+            $.ajax({
+                url: cloud_apibase + '/common/ping/auth',
+                type: 'GET',
+                dataType: 'json',
+                timeout: 5000,
+                headers: {
+                    Authorization: "Bearer " + cloud_token
+                }
+            }).then((res) => {
+                if (res.code == 200) {
+                    success();
                 } else {
-                    console.log(data);
+                    failed();
                 }
+            }, failed);
+        }
+
+        // 刷新本地的token
+        function refreshToken() {
+            checkLogin(() => {
+                // 登录态验证成功
+                // 当前token尚未报废，申请一个新的token，客户端丢弃旧的token
+                $.ajax({
+                    url: cloud_apibase + '/user/refresh',
+                    type: 'GET',
+                    headers: {
+                        Authorization: "Bearer " + cloud_token
+                    },
+                    success: function(res) {
+                        if (res.code == 200) {
+                            cloud_token = res.data.token;
+                            cloud_token_expires = res.data.expires;
+                            console.log('User token refreshed.');
+                            // 针对新获取到的token启用保鲜
+                            setFutureTokenRefresh();
+                        }
+                    },
+                    error: function() {
+                        console.error('Cannot refresh user token.');
+                    }
+                });
+            }, () => {
+                // 当前token已经报废，需要从登录的关口获取
+                cloudAutoLogin(() => {
+                    console.log('User token refreshed.');
+                }, () => {
+                    // 无法从登录关口获取新的token
+                    displayInfobar('error', i18n[current_i18n].logon_status_lost);
+                    // 切换到未登录状态下的UI
+                    switchCloudPanelToNoLogon();
+                    // 清理token缓存
+                    cloud_token = null;
+                });
             });
         }
 
-        //获取授权token
-        function fetchUserToken(){
-            storage.get('cloud_userconfig', (err, data)=>{
-                if(err){
-                    //不存在userconfig
-                    console.error('Local cloud user config not found. Can\'t login to the server automatically.');
+        // 设置token保鲜，在token过期时间的90%时触发
+        function setFutureTokenRefresh() {
+            setTimeout(function() {
+                refreshToken();
+            }, cloud_token_expires * 1000 * 0.9);
+        }
+
+        // 用暂存的信息自动登录
+        function cloudAutoLogin(success, failed) {
+            storage.get('cloud_userconfig', (err, res) => {
+                if (err) {
+                    failed();
+                    return;
                 }
+                $.ajax({
+                    url: cloud_apibase + '/user/login',
+                    type: 'POST',
+                    timeout: 10000,
+                    data: {
+                        username: res.username,
+                        password: res.password,
+                        clientType: 'pc',
+                        autologin: true
+                    },
+                    dataType: 'json'
+                }).then((res) => {
+                    if (res.code == 200) {
+                        cloud_token = res.auth.token;
+                        cloud_token_expires = res.auth.expires;
+                        setFutureTokenRefresh();
+                        success();
+                    } else {
+                        failed();
+                    }
+                }, () => {
+                    failed();
+                });
             });
         }
 
-        //执行服务器状态检查，如果服务器在线则检查登录状态
-        checkServerStatus();
+        // 登录成功后调用
+        function afterLoginSuccess() {
+            $('.cloud-body-nologin').hide();
+            $('.cloud-body-user').show();
+            fetchUserInfo(cloud_token);
+        }
 
-        //注册成功事件
-        ipcRenderer.on('cloud-register-success', (sender, data) => {
-            //拉取用户信息
-            displayInfobar('success', i18n[current_i18n].register_success);
-            fetchUserInfo(data);
-        });
-        //登录成功事件
+        // 登录成功事件
         ipcRenderer.on('cloud-login-success', (sender, data) => {
-            //拉取用户信息
             displayInfobar('success', i18n[current_i18n].login_success);
-            fetchUserInfo(data);
+            // token设置
+            cloud_token = data.token.token;
+            cloud_token_expires = data.token.expires;
+            // 启用token保鲜
+            setFutureTokenRefresh();
+            // 拉取用户信息
+            afterLoginSuccess();
+            // 获取firstsync状态
+            fetchFirstSyncStatus(function(data){
+                if (data.firstSync){
+                    // 已首次同步
+                    cloud_sync();
+                } else {
+                    // 用户还没有首次同步过
+                    cloud_firstSync();
+                }
+            }, function(data){
+                console.error('Fetch first sync status error.');
+            });
         });
 
-        function fetchUserInfo(data) {
+        // 注册成功事件
+        ipcRenderer.on('cloud-register-success', (sender, data) => {
+            displayInfobar('success', i18n[current_i18n].register_success);
+            // token设置
+            cloud_token = data.token.token;
+            cloud_token_expires = data.token.expires;
+            // 启用token保鲜
+            setFutureTokenRefresh();
+            // 拉取用户信息
+            afterLoginSuccess();
+            // 获取firstsync状态
+            fetchFirstSyncStatus(function(data){
+                if (data.firstSync){
+                    firstSync();
+                }
+            }, function(data){
+                console.error('Fetch first sync status error.');
+            });
+        });
+
+        // 登出
+        function cloudUserLogout() {
+            // 先进行authping，判断token是否已经失效了，已经失效直接切到登出
+            checkLogin(() => {
+                // token还有效，需要通过API对token进行报废
+                $.ajax({
+                    url: cloud_apibase + '/user/logout',
+                    type: 'GET',
+                    dataType: 'json',
+                    headers: {
+                        Authorization: "Bearer " + cloud_token
+                    },
+                    success: function(res) {
+                        // 切换到未登录状态下的UI
+                        switchCloudPanelToNoLogon();
+                        // 清理token缓存
+                        cloud_token = null;
+                        displayInfobar('success', i18n[current_i18n].logout_success);
+                    },
+                    error: function(err) {
+                        console.error(err.message);
+                        displayInfobar('error', i18n[current_i18n].logout_failed);
+                    }
+                });
+            }, () => {
+                // 切换到未登录状态下的UI
+                switchCloudPanelToNoLogon();
+                // 清理token缓存
+                cloud_token = null;
+                // 清理缓存的cloud_userconfig
+                storage.remove('cloud_userconfig', (err) => {
+                    if (err) {
+                        console.error('Cannot remove stored cloud user config.');
+                    }
+                });
+                displayInfobar('success', i18n[current_i18n].logout_success);
+            })
+        }
+
+        /* 从服务器获取用户信息
+         * param: token - jwttoken
+         */
+        function fetchUserInfo() {
             $.ajax({
                 url: cloud_apibase + '/user/getInfo',
                 type: 'GET',
                 dataType: 'json',
                 headers: {
-                    Authorization: "Bearer " + data.token.token
+                    Authorization: "Bearer " + cloud_token
                 },
                 success: (res) => {
                     if (res.code == 200) {
-                        console.log(res);
+                        cloud_userinfo = res.data;
+                        //填入username
+                        $('#cloud-user-username').text(res.data.username);
                     } else {
                         console.error('error', '获取用户信息失败，请尝试手动登录');
                     }
@@ -1901,16 +2176,70 @@
                 }
             });
         }
+
+        // 自动登录包装
+        function runCloudAutoLogin() {
+            cloudAutoLogin(() => {
+                afterLoginSuccess();
+            }, () => {
+                console.error('Auto login to Fastnote Cloud failed.');
+            });
+        }
+
+        // 获取用户首次同步的状态
+        function fetchFirstSyncStatus(success, failed) {
+            $.ajax({
+                url: cloud_apibase + '/user/firstsync_status',
+                type: 'GET',
+                dataType: 'json',
+                headers: {
+                    Authorization: "Bearer " + cloud_token
+                }
+            }).then((res) => {
+                if (res.code == 200) {
+                    success(res.data);
+                } else {
+                    failed();
+                }
+            }, failed);
+        }
+
+        // 执行服务器状态检查，如果服务器在线则检查登录状态
+        checkServerStatus();
+        // 执行自动登录
+        runCloudAutoLogin();
+    </script>
+
+    <!-- 云服务相关 - 操作日志 -->
+    <script>
+        // 操作日志相关类
+        class OperationLog {
+            constructor(type, noteid) {
+                this.type = type;
+                this.noteid = noteid;
+            }
+        }
+        // 操作日志的全局变量
+        var note_operation_log = [];
+        // 读取操作日志列表
+        storage.get('note_operation_log', (err, res) => {
+            if (err) {
+                console.info('No stored operation log.');
+                return;
+            }
+            note_operation_log = res;
+        });
     </script>
 
     <script>
-        //import requirements
-        $.getScript('../app/infobar.js'); //import by jQuery
+        // import requirements
+        $.getScript('../app/infobar.js'); // import by jQuery
         $.getScript('../app/notes.js');
     </script>
 
+    <!-- 开发工具屏蔽与控制台 -->
     <script>
-        //屏蔽开发工具
+        // 屏蔽开发工具
         if (!indebug) {
             Mousetrap.bind('ctrl+shift+i', (e) => {
                 e.preventDefault();
@@ -1938,10 +2267,40 @@
                 }
             });
         }
+        // 屏蔽F11
+        Mousetrap.bind('f11', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        // 启用开发控制台，引入控制台js
+        var devconsoleOpened = false;
+        if (indebug) {
+            Mousetrap.bind('ctrl+shift+1', function() {
+                if (devconsoleOpened) {
+                    devconsoleOpened = false;
+                    $('.container-devconsole').animateCss('fadeOutUp', function() {
+                        $('.console-devconsole').hide();
+                    });
+                } else {
+                    devconsoleOpened = true;
+                    $('.container-devconsole').show();
+                    $('.container-devconsole').animateCss('fadeInDown');
+                }
+            });
+            $.getScript('static/devconsole.js');
+        }
     </script>
 
     <span id="filter-x" style="display:none"></span>
 
+    <!-- 控制台 -->
+    <div class="container-devconsole">
+        <div class="devconsole-wrapper">
+            <div class="devconsole-controls">
+                <input type="text" class="form-control" id="input-devconsole">
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

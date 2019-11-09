@@ -1340,6 +1340,11 @@
                 }
             });
         }
+        // 屏蔽F11
+        Mousetrap.bind('f11', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
     </script>
 </body>
 

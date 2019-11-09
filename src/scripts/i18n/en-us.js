@@ -23,6 +23,9 @@ i18n['en-us']={
     disable: 'Disable',
     close: 'Close',
     reset: 'Reset',
+    email: 'Email',
+    captcha: 'Captcha',
+    confirm_password: 'Confirm password',
     newnote_tips: 'Using Ctrl+Enter to sumbit notes',
     note_empty: 'You haven\'t created any notes<br>You can quickly create notes below',
     note_empty_category: 'There are no notes in the current category<br>You can quickly create notes below',
@@ -157,5 +160,10 @@ i18n['en-us']={
     login_success: 'Login is successful',
     register_needCaptcha: 'Validation code is required. Please login manually.',
     register_tryLoginFailed: 'Attempt to login failed. Please login manually.',
-    register_success: 'Fastnote Cloud account has been registered successfully.'
+    register_success: 'Fastnote Cloud account has been registered successfully.',
+    update_now: 'Update now',
+    updateready_text: 'Update will start automatically after app closed.',
+    logout_failed: 'Logout failed.',
+    logout_success: 'Logout success.',
+    logon_status_lost: 'Fastnote Cloud logon status is invalid, please login again'
 };

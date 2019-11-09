@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../static/animate.min.css">
     <script src="../static/encryption.js"></script>
     <script src="../static/i18n.js"></script>
+    <script src="../static/mousetrap.min.js"></script>
     <script>
         //load Animate CSS
         $.fn.extend({
@@ -162,6 +163,9 @@
             var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + ':' + cloudConfig.release.port
         }
     </script>
+    <script>
+        const reg_email = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+    </script>
 </head>
 
 <body class="login-body">
@@ -202,9 +206,27 @@
                         <input class="form-control brcontrol-input" id="input-password" type="password">
                     </div>
                 </div>
+                <div class="login-form-group">
+                    <div class="login-form-label">
+                        <span data-lang="confirm_password">确认密码</span>
+                    </div>
+                    <div></div>
+                    <div class="login-form-control">
+                        <input class="form-control brcontrol-input" id="input-confirmpassword" type="password">
+                    </div>
+                </div>
+                <div class="login-form-group">
+                    <div class="login-form-label">
+                        <span data-lang="email">邮箱</span>
+                    </div>
+                    <div></div>
+                    <div class="login-form-control">
+                        <input class="form-control brcontrol-input" id="input-email" type="text">
+                    </div>
+                </div>
                 <div class="login-form-group" id="login-captcha-group">
                     <div class="login-form-label">
-                        <span data-lang="password">验证码</span>
+                        <span data-lang="captcha">验证码</span>
                     </div>
                     <div></div>
                     <div class="login-form-control">
@@ -234,6 +256,9 @@
             let username = $('#input-username').val();
             let password = $('#input-password').val();
             let captchaCode = $('#input-captcha').val();
+            let confirmPassword = $('#input-confirmpassword').val();
+            let email = $('#input-email').val();
+
             let flag_pass = true;
             if (username.length < 1) {
                 $('#input-username').addClass('br-invalid');
@@ -243,10 +268,30 @@
                 $('#input-password').addClass('br-invalid');
                 flag_pass = false;
             }
+            if (confirmPassword.length < 1) {
+                $('#input-confirmpassword').addClass('br-invalid');
+                flag_pass = false;
+            }
+            if (email.length < 1) {
+                $('#input-email').addClass('br-invalid');
+                flag_pass = false;
+            }
             if (captchaCode.length < 1) {
                 $('#input-captcha').addClass('br-invalid');
                 flag_pass = false;
             }
+
+            if (password != confirmPassword) {
+                $('#input-password').addClass('br-invalid');
+                $('#input-confirmpassword').addClass('br-invalid');
+                flag_pass = false;
+            }
+
+            if (!reg_email.test(email)) {
+                $('#input-email').addClass('br-invalid');
+                flag_pass = false;
+            }
+
             if (flag_pass) {
                 submitRegister(username, password, captchaCode);
             }
@@ -282,7 +327,7 @@
                                     if (code == 402) {
                                         displayInfobar('error', i18n[current_i18n].register_needCaptcha);
                                         setTimeout(() => {
-                                            ipcRenderer.send('change-to-login', {
+                                            ipcRenderer.send('switch-to-login', {
                                                 username: username,
                                                 needCaptcha: true
                                             });
@@ -297,21 +342,19 @@
                                     let cloud_usertoken = res.auth;
                                     //保存用户信息
                                     storage.set('cloud_userconfig', cloud_userconfig, () => {
-                                        //保存token
-                                        storage.set('cloud_usertoken', cloud_usertoken, () => {
-                                            ipcRenderer.send('cloud-register-success', {
-                                                userconfig: cloud_userconfig,
-                                                token: cloud_usertoken
-                                            });
-                                            window.close();
+                                        //向主窗体发送token
+                                        ipcRenderer.send('cloud-register-success', {
+                                            userconfig: cloud_userconfig,
+                                            token: cloud_usertoken
                                         });
+                                        window.close();
                                     });
                                 }
                             },
                             error: () => {
                                 displayInfobar('error', i18n[current_i18n].register_tryLoginFailed);
                                 setTimeout(() => {
-                                    ipcRenderer.send('change-to-login', {
+                                    ipcRenderer.send('switch-to-login', {
                                         username: username,
                                         needCaptcha: false
                                     });
@@ -319,9 +362,9 @@
                             }
                         });
                     } else {
-                        if (res.code == 402){
+                        if (res.code == 402) {
                             displayInfobar('error', '验证码错误，请重新输入');
-                            initCaptcha();  //刷新验证码
+                            initCaptcha(); //刷新验证码
                         } else {
                             displayInfobar('error', '出现错误，注册失败');
                             console.error(res);
@@ -334,6 +377,12 @@
                 }
             });
         }
+
+        $('#input-captcha').on('keydown', function(e) {
+            if (e.keyCode == 13) {
+                checkRegisterForm();
+            }
+        });
 
         initCaptcha();
     </script>
@@ -364,7 +413,12 @@
                 }
             });
         }
-        //import requirements
-        $.getScript('../../app/infobar.js'); //import by jQuery
+        // 屏蔽F11
+        Mousetrap.bind('f11', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        // import requirements
+        $.getScript('../../app/infobar.js'); // import by jQuery
     </script>
 </body>

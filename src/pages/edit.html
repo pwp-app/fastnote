@@ -519,11 +519,6 @@
                 e.preventDefault();
                 e.stopPropagation();
             });
-
-            Mousetrap.bind('ctrl+shift+i', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
             $(document).on('keydown', 'input[type="password"]', (e) => {
                 var ctrlKey = e.ctrlKey || e.metaKey;
                 if (ctrlKey && e.shiftKey && e.keyCode == 73) {
@@ -539,5 +534,10 @@
                 }
             });
         }
+        // 屏蔽F11
+        Mousetrap.bind('f11', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
     </script>
 </body>

@@ -13,8 +13,8 @@ const path = require('path');
 function createNewNoteWindow(data) {
     let win_newnote = null;
     var conf = {
-        width: 680,
-        height: 450,
+        width: 620,
+        height: 400,
         minWidth: 520,
         minHeight: 300,
         show: false,

@@ -64,6 +64,11 @@
                 e.stopPropagation();
             });
         }
+        // 屏蔽F11
+        Mousetrap.bind('f11', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
 
         var settings;
 
@@ -113,8 +118,11 @@
                 if (typeof settings.widget_opacity != 'undefined'){
                     $(document).ready(function(){
                         let bgcolor = $('.container-widget').css('background-color');
-                        let reg_alpha = /(rgba\([0-9]{1,3},\s+[0-9]{1,3},\s+[0-9]{1,3},\s+)(0\.[0-9]+)(\))/i;
+                        let reg_alpha = /(rgba\([0-9]{1,3},\s+[0-9]{1,3},\s+[0-9]{1,3},\s+)([0-9.]+)(\))/i;
+                        console.log(bgcolor);
+                        console.log(settings.widget_opacity);
                         bgcolor = bgcolor.replace(reg_alpha, '$1'+settings.widget_opacity/100+'$3');
+                        console.log(bgcolor);
                         $('.container-widget').css('background-color', bgcolor);
                     });
                 }
@@ -183,21 +191,18 @@
                 $('.widget-title-text').html(data.title);
             }
             //init window
-            var flag_resize = true;
             setTimeout(() => {
                 if (document.body.scrollHeight < 400) {
-                    ipcRenderer.send('widget-heightChange', document.body.scrollHeight);
-                    flag_resize = false;
+                    ipcRenderer.send('widget-heightChange', document.body.scrollHeight + 4);
+                    ipcRenderer.send('widget-setMaxHeight', document.body.scrollHeight + 4);
                 } else {
                     ipcRenderer.send('widget-heightChange', 400);
                     ipcRenderer.send('widget-setMaxHeight', document.body.scrollHeight + 4);
-                    $('.widget-note-content').css('height', 339);
+                    $('.widget-note-content').css('height', 329);
                 }
                 $(window).resize(function () {
                     //resize content
-                    if (flag_resize) {
-                        $('.widget-note-content').css('height', $(window).height() - 61);
-                    }
+                    $('.widget-note-content').css('height', $(window).height() - 61);
                     $('.widget-title').css('width', $(window).width() - 160);
                 });
             }, 0);
@@ -236,7 +241,6 @@
                 setTimeout(() => {
                     if (document.body.scrollHeight < 400) {
                         ipcRenderer.send('widget-heightChange', document.body.scrollHeight);
-                        flag_resize = false;
                     } else {
                         ipcRenderer.send('widget-heightChange', 400);
                         ipcRenderer.send('widget-setMaxHeight', document.body.scrollHeight + 4);

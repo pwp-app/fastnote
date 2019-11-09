@@ -53,7 +53,7 @@ var RecycleWindow = {
             for (var i = 0; i < windows.length; i++) {
                 windows[i].webContents.send('enable-lockscreen-minimize');
             }
-        })
+        });
         win_recycle.on('blur', () => {
             var windows = BrowserWindow.getAllWindows();
             if (BrowserWindow.getFocusedWindow() == null) {
@@ -61,9 +61,9 @@ var RecycleWindow = {
                     windows[i].webContents.send('enable-lockscreen-blur');
                 }
             }
-        })
+        });
     }
-}
+};
 
 //ipc listen
 ipc.on('recycle-note', function (sender, data) {
