@@ -1,8 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/backrunner/Fastnote/master/assets/images/logo.png" style="width:100px;"></img>
-</p>
-<p align="center" style="font-size:28px;letter-spacing:0.05em">
-    Fastnote
+    <img src="https://raw.githubusercontent.com/backrunner/Fastnote/master/Readme.header.png"></img>
 </p>
 
 # 一个高效的便签应用
