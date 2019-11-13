@@ -15,6 +15,7 @@
         <img src="https://img.shields.io/github/license/backrunner/Fastnote?style=flat-square"></img>
     </a>
 </p>
+
 # 一个高效的便签应用
 
 ## 概述
