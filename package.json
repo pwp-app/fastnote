@@ -3,25 +3,25 @@
     "ajv": "^6.10.2",
     "buffer-from": "^1.1.1",
     "electron-titlebar": "0.0.3",
-    "electron-updater": "^4.1.2",
+    "electron-updater": "^4.2.0",
     "locate-path": "^5.0.0",
     "source-map": "^0.7.3",
-    "webfontloader": "^1.6.28"
+    "webfontloader": "^1.6.28",
+    "electron-json-storage": "^4.1.8"
   },
   "devDependencies": {
     "animate.css": "^3.7.2",
     "awesome-bootstrap-checkbox": "^1.0.1",
     "bootstrap": "^4.3.1",
-    "electron": "^6.0.12",
-    "electron-builder": "^21.2.0",
-    "electron-json-storage": "^4.1.8",
+    "electron": "^7.1.1",
+    "electron-builder": "^22.1.0",
     "font-awesome": "^4.7.0",
     "gulp-qiniu-up": "^1.0.2",
     "html5sortable": "^0.9.17",
     "jquery": "^3.4.1",
     "merge": "^1.2.1",
     "moment": "^2.24.0",
-    "popper.js": "^1.15.0"
+    "popper.js": "^1.16.0"
   },
   "name": "fastnote",
   "version": "0.2.15",

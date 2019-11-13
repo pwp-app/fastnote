@@ -6,7 +6,7 @@ const config = {
     },
     release: {
         protocol: 'http',
-        host: 'note.pwp.app',
+        host: '',
         port: 8000
     }
 };

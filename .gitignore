@@ -35,5 +35,6 @@ public
 old_version
 
 gulpfile.js
+config.js
 
 *.bat

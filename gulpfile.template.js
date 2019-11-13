@@ -159,13 +159,7 @@ gulp.task('upload win32', function(){
     version = JSON.parse(version);
     return gulp.src(['dist/Fastnote Setup '+version.ver+'.exe','dist/*.yml','dist/ver.json'])
         .pipe(qn({
-            qiniu: {
-                accessKey: '',
-                secretKey: '',
-                bucket: '',
-                origin: '',
-                uploadURL: '',
-            },
+            qiniu: {},
             prefix: 'fastnote/win32/',
             forceUpload: true
         }));
@@ -180,7 +174,6 @@ gulp.task('upload win64', function(){
             forceUpload: true
         }));
 });
-
 gulp.task('upload ver win32', function(){
     return gulp.src('dist/ver.json')
         .pipe(qn({

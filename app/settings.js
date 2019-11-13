@@ -16,10 +16,8 @@ function createSettingsWindow() {
         height: 530,
         resizable: false,
         maximazable: false,
-        minHeight: 0,
         useContentSize: true,
         show: false,
-        transparent: true,
         webPreferences: {
             nodeIntegration: true
         }
