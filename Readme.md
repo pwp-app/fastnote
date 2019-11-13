@@ -1,7 +1,20 @@
 <p align="center">
     <img src="https://raw.githubusercontent.com/backrunner/Fastnote/master/Readme.header.png"></img>
 </p>
-
+<p align="center">
+    <a href="https://github.com/backrunner/Fastnote/releases">
+        <img src="https://img.shields.io/github/v/tag/backrunner/Fastnote?label=version&style=flat-square"></img>
+    </a>
+    <a href="https://github.com/backrunner/Fastnote/commits/master">
+        <img src="https://img.shields.io/github/last-commit/backrunner/Fastnote?style=flat-square"></img>
+    </a>
+    <a href="https://github.com/backrunner/Fastnote/commits/master">
+        <img src="https://img.shields.io/github/commits-since/backrunner/Fastnote/0.2.15?style=flat-square"></img>
+    </a>
+    <a href="https://github.com/backrunner/Fastnote/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/backrunner/Fastnote?style=flat-square"></img>
+    </a>
+</p>
 # 一个高效的便签应用
 
 ## 概述
