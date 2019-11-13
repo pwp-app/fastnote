@@ -1,17 +1,17 @@
 <p align="center">
-    <img src="https://github.com/backrunner/Fastnote/blob/master/assets/images/logo.png?raw=true" style="width:120px;"></img>
+    <img src="https://raw.githubusercontent.com/backrunner/Fastnote/master/assets/images/logo.png" style="width:100px;"></img>
 </p>
-<p align="center">
+<p align="center" style="font-size:28px;letter-spacing:0.05em">
     Fastnote
 </p>
 
-# Fastnote
+# 一个高效的便签应用
 
 ## 概述
 
-Fastnote 是一个高效的、基于 Electron 开发的桌面速记工具。
+Fastnote 是一个高效的、基于 Electron 开发的便签应用。
 
-我们致力于通过“类聊天”的交互方式打造高效的便签速记体验，让你从此逃离在桌面上靠新建 txt 记事的日子。
+我们致力于通过“类聊天”的交互方式打造高效的速记体验，让你从此逃离在桌面上靠新建 txt 记事的日子。
 
 未来将加入云同步、分享等功能，且计划开发其他平台的客户端。
 
