@@ -1,76 +1,93 @@
-![Fastnote](https://github.com/backrunner/Fastnote/blob/master/assets/images/logo.png?raw=true)
+<p align="center">
+    <img src="https://github.com/backrunner/Fastnote/blob/master/assets/images/logo.png?raw=true" style="width:120px;"></img>
+</p>
+<p align="center">
+    Fastnote
+</p>
 
 # Fastnote
 
 ## 概述
 
-Fastnote是一个高效的、基于Electron开发的桌面速记工具。
+Fastnote 是一个高效的、基于 Electron 开发的桌面速记工具。
 
-我们致力于通过“类聊天”的交互方式打造高效的便签速记体验，让你从此逃离在桌面上靠新建txt记事的日子。
+我们致力于通过“类聊天”的交互方式打造高效的便签速记体验，让你从此逃离在桌面上靠新建 txt 记事的日子。
 
 未来将加入云同步、分享等功能，且计划开发其他平台的客户端。
 
 ## 获取应用
 
-请前往官网下载
+### 下载并安装稳定版（推荐）
+
+请前往官网下载本应用，目前仅提供 Windows 版本
 
 [note.pwp.app](https://note.pwp.app)
 
+下载后直接运行安装包即可
+
 后续会考虑上架微软商店，但目前只提供官网这一个下载渠道。
 
-## 使用方法
+### 获取源码并通过源码启动
 
-### 基于源码使用
-
-使用命令提示符进入项目目录，用以下命令启动应用：
+获取源代码：
 
 ```shell
-electron .
+git clone -b master https://github.com/backrunner/Fastnote.git
 ```
 
-如需开启开发模式，请执行：
+进入项目目录，用以下命令启动应用：
+
+```shell
+npm run start
+```
+
+如需开启开发模式，请执行以下命令，再启动应用：
 
 ```javascript
 gulp debug
 ```
 
-### 使用稳定版（推荐）
+## 分支说明
 
-前往[项目主页](https://note.pwp.app)下载安装，应用支持自动更新。
+master - 主分支
+dev - 开发分支，完成某一阶段后代码会合入 master
+dev-cloud - 云同步功能的开发分支，该分支会在同步功能大体完成后废弃
 
-## 项目目录结构
+## 目录说明
 
 app     ->  应用源码
-
 > app/tools   ->  工具脚本
-
 assets  ->  图片素材
-
 src     ->  页面源码
-
 > src/less    ->  页面样式
 > src/pages   ->  页面文件
 > src/scripts ->  页面脚本
 
 ## 可用命令
 
-打包整个应用
-
-```shell
-npm run build
-```
-
-生成文件至public
+生成静态文件至 public
 
 ```shell
 gulp build
-gulp clean-build    //清理环境后生成
+gulp clean-build    // 清理环境后生成
 ```
 
-监控文件改动实时生成（页面部分）
+清理 public 目录
+
+```shell
+gulp clean
+```
+
+监控文件改动并实时生成（页面部分）
 
 ```shell
 gulp watch
+```
+
+打包应用
+
+```shell
+npm run build
 ```
 
 发布（使用七牛云对象存储，需在gulpfile.js里设置相关变量）
@@ -88,4 +105,4 @@ gulp publish
 
 ## 许可证
 
-GPLv3 © BackRunner
+[GPLv3](https://github.com/backrunner/Fastnote/blob/master/LICENSE) © BackRunner
