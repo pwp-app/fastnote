@@ -16,7 +16,7 @@
     </a>
 </p>
 
-# 一个高效的便签应用
+# Fastnote
 
 ## 概述
 
@@ -61,15 +61,20 @@ gulp debug
 ## 分支说明
 
 master - 主分支
+
 dev - 开发分支，完成某一阶段后代码会合入 master
+
 dev-cloud - 云同步功能的开发分支，该分支会在同步功能大体完成后废弃
 
 ## 目录说明
 
 app     ->  应用源码
 > app/tools   ->  工具脚本
+
 assets  ->  图片素材
+
 src     ->  页面源码
+
 > src/less    ->  页面样式
 > src/pages   ->  页面文件
 > src/scripts ->  页面脚本

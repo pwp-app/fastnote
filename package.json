@@ -34,6 +34,11 @@
     "test": "electron ."
   },
   "author": "BackRunner",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backrunner/Fastnote.git"
+  },
+  "license": "GPLv3",
   "build": {
     "files": [
       "!.vscode/**/*",
@@ -43,6 +48,11 @@
       "!old_version/**/*",
       "!icon.ico"
     ],
+    
+    "bugs":{
+      "url": "",
+      "email": "dev@backrunner.top"
+    },
     "appId": "app.pwp.fastnote",
     "compression": "maximum",
     "productName": "Fastnote",
