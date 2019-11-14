@@ -69,6 +69,7 @@ dev-cloud - 云同步功能的开发分支，该分支会在同步功能大体�
 ## 目录说明
 
 app     ->  应用源码
+
 > app/tools   ->  工具脚本
 
 assets  ->  图片素材
@@ -76,7 +77,9 @@ assets  ->  图片素材
 src     ->  页面源码
 
 > src/less    ->  页面样式
+
 > src/pages   ->  页面文件
+
 > src/scripts ->  页面脚本
 
 ## 可用命令
