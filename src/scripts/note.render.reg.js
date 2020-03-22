@@ -8,7 +8,7 @@ const render_reg = {
     h3: /###&nbsp;(.+)/gi,
     h4: /####&nbsp;(.+)/gi,
     h5: /#####&nbsp;(.+)/gi,
-    url: /(?!(href="))(http|ftp|https|mailto):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi
+    url: /(?!(href="))(http|ftp|https|mailto):\/\/([\w\-_]+(\.[\w\-_]+)|(localhost))+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/gi
 };
 
 module.exports = render_reg;
