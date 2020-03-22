@@ -1,15 +1,16 @@
-var gulp = require('gulp');
-var less = require('gulp-less');
-var cssmin = require('gulp-clean-css');
-var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
-var htmlmin = require('gulp-htmlmin');
-var rename = require('gulp-rename');
-var replace = require('gulp-replace');
-var shell = require('gulp-shell');
-var qn = require('gulp-qiniu-up');
-var fs = require('fs');
-var del = require('del');
+const gulp = require('gulp');
+const less = require('gulp-less');
+const cssmin = require('gulp-clean-css');
+const concat = require('gulp-concat');
+const uglify = require('gulp-uglify');
+const htmlmin = require('gulp-htmlmin');
+const rename = require('gulp-rename');
+const replace = require('gulp-replace');
+const shell = require('gulp-shell');
+const qn = require('gulp-qiniu-up');
+const fs = require('fs');
+const del = require('del');
+const qiniuConfig = require('./qiniu.config');
 
 //jquery
 gulp.task('jquery',async function(){
@@ -159,7 +160,7 @@ gulp.task('upload win32', function(){
     version = JSON.parse(version);
     return gulp.src(['dist/Fastnote Setup '+version.ver+'.exe','dist/*.yml','dist/ver.json'])
         .pipe(qn({
-            qiniu: {},
+            qiniu: qiniuConfig,
             prefix: 'fastnote/win32/',
             forceUpload: true
         }));
@@ -169,7 +170,7 @@ gulp.task('upload win64', function(){
     version = JSON.parse(version);
     return gulp.src(['dist/Fastnote Setup '+version.ver+'.exe','dist/*.yml','dist/ver.json'])
         .pipe(qn({
-            qiniu: {},
+            qiniu: qiniuConfig,
             prefix: 'fastnote/win32/x64/',
             forceUpload: true
         }));
@@ -177,7 +178,7 @@ gulp.task('upload win64', function(){
 gulp.task('upload ver win32', function(){
     return gulp.src('dist/ver.json')
         .pipe(qn({
-            qiniu: {},
+            qiniu: qiniuConfig,
             prefix: 'fastnote/win32/',
             forceUpload: true
         }));
@@ -186,7 +187,7 @@ gulp.task('upload ver win32', function(){
 gulp.task('upload ver win64', function(){
     return gulp.src('dist/ver.json')
         .pipe(qn({
-            qiniu: {},
+            qiniu: qiniuConfig,
             prefix: 'fastnote/win32/x64/',
             forceUpload: true
         }));

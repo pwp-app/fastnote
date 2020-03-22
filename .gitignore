@@ -34,7 +34,7 @@ node_modules
 public
 old_version
 
-gulpfile.js
+qiniu.config.js
 config.js
 
 *.bat
