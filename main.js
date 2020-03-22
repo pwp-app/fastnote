@@ -41,12 +41,12 @@ const loginWindow = require('./app/cloud/windows/loginWindow');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-var win;
-var tray;
+let win;
+let tray;
 
 function createWindow() {
     // 创建浏览器窗口。
-    var conf = {
+    let conf = {
         width: 1280,
         height: 800,
         minWidth: 480,
@@ -263,19 +263,29 @@ function createWindow() {
     // 当 window 被关闭，这个事件会被触发。
     win.on('closed', () => {
         win = null;
+        // 更换托盘菜单
+        if (tray) {
+            let contextMenu = createContextMenu('destoryed');
+            tray.setContextMenu(contextMenu);
+        }
     });
 
     //getfocus
     win.on('ready-to-show', () => {
         checkForUpdates();
-        //bind update event
+        // 更换托盘菜单
+        if (tray) {
+            let contextMenu = createContextMenu('created');
+            tray.setContextMenu(contextMenu);
+        }
+        // bind update event
         editWindow.bindEditEvent(function(data) {
             win.webContents.send('update-edit-note', data);
             desktopWidget.updateEditNote(data);
         });
     });
 
-    //锁屏
+    // 锁屏
     win.on('minimize', () => {
         var windows = BrowserWindow.getAllWindows();
         for (let i = 0; i < windows.length; i++) {
@@ -313,22 +323,7 @@ ipc.on('newnotewin-save', (sender, data) => {
 function createTray() {
     let trayIco = path.resolve(__dirname, './public/static/images/tray.ico');
     tray = new Tray(trayIco);
-    let contextMenu = Menu.buildFromTemplate([{
-        label: '退出',
-        click: () => {
-            app.exit();
-        }
-    }]);
-    if(win != null){
-        contextMenu.insert(0, new MenuItem({
-            label: '重新载入',
-            click: ()=>{
-                win.webContents.send('tray-reload');
-            }
-        }));
-    }
     tray.setToolTip('Fastnote');
-    tray.setContextMenu(contextMenu);
     tray.on('double-click', () => {
         if (win == null) {
             createWindow();
@@ -336,6 +331,52 @@ function createTray() {
             win.focus();
         }
     });
+}
+
+function createContextMenu(mode) {
+    let contextMenu;
+    // 窗口已经启动时的菜单
+    if (mode == 'created') {
+        contextMenu = Menu.buildFromTemplate([{
+            label: '退出',
+            click: () => {
+                app.exit();
+            }
+        }]);
+        contextMenu.insert(0, new MenuItem({
+            label: '重新载入',
+            click: ()=>{
+                if (win != null) {
+                    if (win.isMinimized()) {
+                        win.restore();
+                        win.focus();
+                    }
+                    win.webContents.send('tray-reload');
+                }
+            }
+        }));
+    } else if (mode == 'destoryed') {
+        contextMenu = Menu.buildFromTemplate([{
+            label: '退出',
+            click: () => {
+                app.exit();
+            }
+        }]);
+        contextMenu.insert(0, new MenuItem({
+            label: '显示',
+            click: ()=>{
+                if (win == null) {
+                    createWindow();
+                } else {
+                    if (win.isMinimized()) {
+                        win.restore();
+                        win.focus();
+                    }
+                }
+            }
+        }));
+    }
+    return contextMenu;
 }
 
 //自动更新事件定义
@@ -393,8 +434,8 @@ app.on('activate', () => {
 });
 
 app.on('ready', () => {
-    createWindow();
     createTray();
+    createWindow();
 });
 
 app.on('second-instance', ()=>{
