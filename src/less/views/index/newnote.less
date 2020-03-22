@@ -95,28 +95,24 @@
     margin-left: 0px;
     margin-right: -8px;
     float: right;
-}
-
-.newnote-markdown>button{
-    padding: 0;
-    height: 18px;
-    margin-top: -2.4px;
-    border-radius: 4px !important;
-}
-
-.newnote-markdown>button>svg{
-    width: 28px;
-    height: 26px;
-    margin-top: -4px;
-    margin-left: 2px;
-}
-
-.newnote-markdown>button:hover>svg>path{
-    fill: @color-trigger-hover-primary;
-}
-
-.newnote-markdown>button>svg>path{
-    fill: @color-trigger-primary;
+    button{
+        padding: 0;
+        height: 18px;
+        margin-top: -2.4px;
+        border-radius: 4px !important;
+        svg {
+            width: 28px;
+            height: 26px;
+            margin-top: -4px;
+            margin-left: 2px;
+            path {
+                fill: @color-trigger-primary;
+            }
+        }
+    }
+    button:hover > svg > path{
+        fill: @color-trigger-hover-primary;
+    }
 }
 
 .newnote-markdown-checked{
