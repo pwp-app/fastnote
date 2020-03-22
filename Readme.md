@@ -112,6 +112,14 @@ gulp publish
 - [ ] 首次同步
 - [ ] 用于云同步的操作日志系统
 
+## 项目未来
+
+由于该项目的开发方式不太适合进一步扩展，待功能基本完成后会考虑使用Vue重构，相关消息会更新到这里。
+
+这并不代表着该项目会停止维护，但是可能会减少新功能的添加，直到重构完成，该项目将作为 Legacy 版本继续存在。
+
+重构的版本短期内将不会兼容现有版本的数据。
+
 ## 许可证
 
 [GPLv3](https://github.com/backrunner/Fastnote/blob/master/LICENSE) © BackRunner
