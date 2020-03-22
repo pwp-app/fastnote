@@ -193,7 +193,7 @@ function readNoteFiles() {
             if (err) {
                 throw (err);
             }
-            if (typeof fileArr == 'undefined') {
+            if (typeof fileArr == 'undefined' || fileArr.length < 1) {
                 showNoteEmpty();
                 isNotesEmpty = true;
                 return;
