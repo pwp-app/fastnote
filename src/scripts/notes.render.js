@@ -55,7 +55,7 @@ function clearNoteList() {
 }
 
 //渲染一条笔记
-function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown) {
+function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown, isPrepend = false, animate = false) {
     if (typeof settings.language == 'undefined'){
         current_i18n = 'zh-cn';
     } else {
@@ -97,8 +97,7 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         //process html tag
         text = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
         if (typeof markdown != "undefined" && markdown){
-            text = text.replace(reg.h5,'<noteh5>$1</noteh5>').replace(reg.h4,'<noteh4>$1</noteh4>').replace(reg.h3,'<noteh3>$1</noteh3>').replace(reg.h2,'<noteh2>$1</noteh2>').replace(reg.h1,'<noteh1>$1</noteh1>').replace(reg.hr,'\n</p><hr><p>')
-                .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
+            text = getMarkdownText(text);
         }
         text = text.replace(/\n/gi,'<br>');
         text = insert_spacing(text, 0.15);
@@ -126,15 +125,32 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
 
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
-            $('.note-list-forceTop').append($(html));
+            if (isPrepend) {
+                $('.note-list-forceTop').prepend($(html));
+            } else {
+                $('.note-list-forceTop').append($(html));
+            }
+        } else {
+            if (isPrepend) {
+                $('.note-list-normal').prepend($(html));
+            } else {
+                $('.note-list-normal').append($(html));
+            }
+        }
+    } else {
+        if (isPrepend) {
+            $('.note-list-normal').prepend($(html));
         } else {
             $('.note-list-normal').append($(html));
         }
-    } else {
-        $('.note-list-normal').append($(html));
     }
 
-    //open external on os default webbrowser
+    // animate
+    if (animate) {
+        $('#note_' + id).animateCss('fadeInLeft faster');
+    }
+
+    // open external on os default webbrowser
     $('#note_' + id + ' a').click(function (e) {
         ipcRenderer.send('openExternalURL', $(this).attr('href'));
         e.preventDefault();
@@ -146,95 +162,10 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         bindNoteTimeClick(id);
     },0);
 }
+
 //在顶部渲染Note
 function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown) {
-    //构造html
-    var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '" data-markdown="'+ (typeof markdown == 'undefined'?'false':markdown)+'"><div class="note-header"><span class="note-no">';
-    html += '#' + id + '</span>';
-    //渲染note-title
-    var titletext = "";
-    if (typeof title != 'undefined') {
-        if (title.length > 50) {
-            titletext = '<titlep1>' + insert_spacing(title.substring(0, 16), 0.12) + '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(title.substring(18, 32), 0.12) + '</titlep2><titlesusp2>...</titlesusp2><titlep3>' + insert_spacing(title.substring(32, 50), 0.12) + '</titlep3><titlesusp3>...</titlesusp3><titlep4>' + insert_spacing(title.substring(50), 0.12) + '</titlep4>';
-        } else if (title.length > 32) {
-            titletext = '<titlep1>' + insert_spacing(title.substring(0, 16), 0.12) + '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(title.substring(18, 32), 0.12) + '<titlesusp2>...</titlesusp2><titlep3>' + insert_spacing(title.substring(32), 0.12) + '</titlep3>';
-        } else if (title.length > 16) {
-            titletext = '<titlep1>' + insert_spacing(title.substring(0, 16), 0.12) + '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(title.substring(18), 0.12) + '</titlep2>';
-        } else {
-            titletext = insert_spacing(title, 0.12);
-        }
-    }
-    html += '<span class="note-title">' + titletext + '</span>';
-    //置顶标志
-    if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
-        if (forceTop) {
-            html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
-        }
-    }
-    //选择性显示时间
-    var m_time = moment(rawtime, 'YYYYMMDDHHmmss');
-    if (typeof (updaterawtime) != 'undefined') {
-        var m_updatetime = moment(updaterawtime, 'YYYYMMDDHHmmss');
-        html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
-            '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n.render[current_i18n].createtime+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
-    } else {
-        html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
-    }
-    if (typeof password == 'undefined') {
-        html += '</div><div class="note-content"><div class="note-text"><p>';
-        //process html tag
-        text = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
-        if (typeof markdown != "undefined" && markdown){
-            text = text.replace(reg.h5,'<noteh5>$1</noteh5>').replace(reg.h4,'<noteh4>$1</noteh4>').replace(reg.h3,'<noteh3>$1</noteh3>').replace(reg.h2,'<noteh2>$1</noteh2>').replace(reg.h1,'<noteh1>$1</noteh1>').replace(reg.hr,'\n</p><hr><p>')
-                .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
-        }
-        text = text.replace(/\n/gi,'<br>');
-        text = insert_spacing(text, 0.15);
-        //自动识别网页
-        if (!markdown){
-            html += text.replace(reg.url, function (result) {
-                return '<a href="' + result + '">' + result + '</a>';
-            });
-        } else {
-            html += text;
-        }
-        html += '</p></div></div></div></div>';
-    } else {
-        //再锁定按钮
-        html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + id + ')"></i>';
-        //密码框
-        html += '</div><div class="note-content"><div class="note-password" data-password="' + password + '" data-encrypted="' + text + '">';
-        if (typeof inRecyclebin == 'undefined') {
-            html += '<span>'+i18n.render[current_i18n].password+'</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
-        } else {
-            html += '<p>['+i18n.render[current_i18n].encrypted_info+']</p>';
-        }
-        html += '</div></div></div></div>';
-    }
-    //置顶
-    if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
-        if (forceTop) {
-            $('.note-list-forceTop').prepend($(html));
-        } else {
-            $('.note-list-normal').prepend($(html));
-        }
-    } else {
-        $('.note-list-normal').prepend($(html));
-    }
-
-    //animate
-    $('#note_' + id).animateCss('fadeInLeft faster');
-    //open external on os default webbrowser
-    $('#note_' + id + ' a').click(function (e) {
-        ipcRenderer.send('openExternalURL', $(this).attr('href'));
-        e.preventDefault();
-    });
-
-    setTimeout(function(){
-        bindNoteFoldDBL(id);
-        bindNoteTimeClick(id);
-    },0);
+    renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown, true, true);
 }
 
 function rerenderEditedNote(data, rawtext) {
@@ -356,8 +287,6 @@ function rerenderEditedNote(data, rawtext) {
     //处理分类
     var category_name = $('#note_' + data.id).attr('data-category');
     //如果分类未改变，到这个地方也会有-1+1的过程，如果-1之后为0再检查分类是否为empty，则会显示category-empty，故执行完-1+1后再检查
-    console.log(category_name);
-    console.log(data.category);
     minorCategoryCount(category_name, false, true, true);
     addCategoryCount(data.category, true, true);
     checkCategoryEmpty();
@@ -372,8 +301,7 @@ function rerenderEditedNote(data, rawtext) {
 function resetEditedNoteText(data, t) {
     let text = $("#filter-x").text(t).html().replace(/ /g, '&nbsp;');
     if (typeof data.markdown != "undefined" && data.markdown){
-        text = text.replace(reg.h5,'$1<noteh5>$2</noteh5>$3').replace(reg.h4,'$1<noteh4>$2</noteh4>$3').replace(reg.h3,'$1<noteh3>$2</noteh3>$3').replace(reg.h2,'$1<noteh2>$2</noteh2>$3').replace(reg.h1,'$1<noteh1>$2</noteh1>$3').replace(reg.hr,'\n</p><hr><p>')
-                .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
+        text = getMarkdownText(text);
     }
     text = text.replace(/\n/gi,'<br>');
     text = insert_spacing(text, 0.15);
@@ -691,8 +619,7 @@ function checkNotePassword(e, noteid) {
             var html = '<div class="note-text" style="display:none;"><p>';
             let temp = $("#filter-x").text(decrypted_text).html().replace(/ /g, '&nbsp;');
             if (typeof markdown != "undefined" && markdown){
-                temp = temp.replace(reg.h5,'$1<noteh5>$2</noteh5>$3').replace(reg.h4,'$1<noteh4>$2</noteh4>$3').replace(reg.h3,'$1<noteh3>$2</noteh3>$3').replace(reg.h2,'$1<noteh2>$2</noteh2>$3').replace(reg.h1,'$1<noteh1>$2</noteh1>$3').replace(reg.hr,'\n</p><hr><p>')
-                    .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
+                text = getMarkdownText(text);
             }
             temp = temp.replace(/\n/gi,'<br>');
             temp = insert_spacing(temp, 0.15);
@@ -767,8 +694,7 @@ function rerenderTextOfNote(noteid, text, animate=false){
     let html = '<div class="note-text"><p>';
     let temp = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
     if (typeof markdown != "undefined" && markdown == 'true'){
-        temp = temp.replace(reg.h5,'$1<noteh5>$2</noteh5>$3').replace(reg.h4,'$1<noteh4>$2</noteh4>$3').replace(reg.h3,'$1<noteh3>$2</noteh3>$3').replace(reg.h2,'$1<noteh2>$2</noteh2>$3').replace(reg.h1,'$1<noteh1>$2</noteh1>$3').replace(reg.hr,'\n</p><hr><p>')
-            .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
+        text = getMarkdownText(text);
     }
     temp = temp.replace(/\n/gi,'<br>');
     temp = insert_spacing(temp, 0.15);
@@ -800,4 +726,12 @@ function rerenderTextOfNote(noteid, text, animate=false){
         //绑定时间
         bindNoteTimeClick(noteid);
     },0);
+}
+
+// 解析并渲染markdown
+function getMarkdownText(text) {
+    text = text.replace(reg.h5,'<noteh5>$1</noteh5>').replace(reg.h4,'<noteh4>$1</noteh4>').replace(reg.h3,'<noteh3>$1</noteh3>')
+        .replace(reg.h2,'<noteh2>$1</noteh2>').replace(reg.h1,'<noteh1>$1</noteh1>').replace(reg.hr,'\n</p><hr><p>')
+        .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
+    return text;
 }
