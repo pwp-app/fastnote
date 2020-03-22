@@ -92,28 +92,33 @@
 noteh1{
     font-size: 18px;
     font-weight: bold;
-    line-height: 40px;
+    line-height: 36px;
+    vertical-align: middle;
 }
 
 noteh2{
     font-size: 17px;
     font-weight: bold;
-    line-height: 36px;
+    line-height: 32px;
+    vertical-align: middle;
 }
 noteh3{
     font-size: 16px;
     font-weight: bold;
     line-height: 32px;
+    vertical-align: middle;
 }
 noteh4{
     font-size: 15px;
     font-weight: bold;
     line-height: 28px;
+    vertical-align: middle;
 }
 noteh5{
     font-size: 14px;
     font-weight: bold;
     line-height: 28px;
+    vertical-align: middle;
 }
 
 //title的自定义标签样式
@@ -172,30 +177,29 @@ titlesusp1, titlesusp2,titlesusp3{
     width: 100%;
     margin-top:8px !important;
     margin-bottom: 5px !important;
-}
-
-.note-content p{
-    font-size: 15px;
-    line-height: 24px;
-    letter-spacing: 0.06em;
-    padding:0 !important;
-    margin:0 !important;
-    word-break:break-all;
-    overflow-x: hidden;
-    text-justify:auto;
-    user-select: text;
-}
-
-.note-content a{
-    margin-top: 5px;
-    margin-bottom: 5px;
-    color: @color-text-primary;
-    font-size: 15px;
-    text-decoration:underline;
-    letter-spacing: 0.06em;
-}
-.note-content a:hover{
-    color: @color-text-primary;
+    p {
+        font-size: 15px;
+        line-height: 24px;
+        letter-spacing: 0.06em;
+        padding:0 !important;
+        margin:0 !important;
+        word-break:break-all;
+        overflow-x: hidden;
+        text-justify:auto;
+        user-select: text;
+        vertical-align: middle;
+    }
+    a {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        color: @color-text-primary;
+        font-size: 15px;
+        text-decoration:underline;
+        letter-spacing: 0.06em;
+    }
+    a:hover{
+        color: @color-text-primary;
+    }
 }
 
 .note-selected{
