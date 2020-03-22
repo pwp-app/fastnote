@@ -4,7 +4,7 @@
     "buffer-from": "^1.1.1",
     "electron-json-storage": "^4.1.8",
     "electron-titlebar": "0.0.3",
-    "electron-updater": "^4.2.0",
+    "electron-updater": "^4.2.5",
     "gulp": "^4.0.2",
     "locate-path": "^5.0.0",
     "source-map": "^0.7.3",
@@ -31,7 +31,7 @@
     "jquery": "^3.4.1",
     "merge": "^1.2.1",
     "moment": "^2.24.0",
-    "popper.js": "^1.16.0"
+    "popper.js": "^1.16.1"
   },
   "name": "fastnote",
   "version": "0.2.15",
