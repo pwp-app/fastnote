@@ -96,7 +96,6 @@ function recountNotes() {
             }
         }
     }
-    console.log(count_obj);
     //覆盖categories的设置
     for (let i = 0; i < categories.length; i++) {
         if (typeof count_obj[categories[i].name] != 'undefined') {
