@@ -1,23 +1,19 @@
 @import "./color.common.less";
+@import "./color.default.less";
 
 @color-primary: @color-white;
 @color-secondary: @color-white;
 
 @color-danger: @color-white;
 
-//hover and shadow
-@color-primary-hover: lighten(@color-primary, 10%);
-@color-primary-darkhover: darken(@color-primary, 10%);
-@color-danger-darkhover: darken(@color-danger, 10%);
-
-//shadow
+// shadow
 @color-boxshadow: @color-white;
 @color-boxshadow-dark: @color-white;
 
-//border
+// border
 @color-border-primary: @color-lightgray;
 
-//text
+// text
 @color-text-primary: @color-white;
 @color-text-secondary: @color-white;
 @color-control-text: @color-white;
@@ -27,23 +23,23 @@
 @color-textarea-color: @color-white;
 @color-textarea-background: @color-white;
 
-//infobar
+// infobar
 @color-success: #00c13f;
 @color-warning: #f4b300;
 @color-error: #ff2e12;
 @color-info: darken(@color-primary, 15%);
 
-//updater progressbar
+// updater progressbar
 @color-updateprogress-background: @color-info;
 @color-updateprogress-value: #1fadff85;
 
-//mainmenu
+// mainmenu
 @color-mainmenu-primary: @color-white;
 @color-mainmenu-background: @color-white;
 @color-mainmenu-hover: lighten(@color-mainmenu-primary, 42%);
 @color-mainmenu-split: @color-white;
 
-//note
+// note
 @color-note-background: @color-white;
 @color-note-text: @color-white;
 @color-note-selected: @color-white;
@@ -51,35 +47,7 @@
 @color-note-empty: @color-white;
 @color-newnote-float-border: none;
 
-//bottombar
+// bottombar
 @color-trigger-primary: @color-white;
 @color-trigger-hover-primary: @color-white;
 @color-trigger-bg-checked: @color-white;
-
-//toast
-@color-toast-bg: @color-white;
-@color-toast-text: @color-white;
-@color-toast-border: none;
-@color-toast-search-bg: white;
-
-//about
-@color-about-primary: @color-white;
-@color-about-bg: @color-secondary;
-
-//settings
-@color-settings-text: @color-white;
-@color-settings-titles-clicked: @color-white;
-@color-settings-titles-clicked-bg: @color-white;
-@color-settings-select-disabled: @color-white;
-@color-settings-background: @color-white;
-@color-settings-controlborder: @color-white;
-
-//updater
-@color-updater-text: @color-white;
-@color-updater-text-red: @color-white;
-
-//edit
-@color-window-top-border: @color-white;
-
-//widget
-@color-widget-bg: @color-notelist-background;
