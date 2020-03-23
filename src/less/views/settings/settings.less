@@ -1,3 +1,5 @@
+@settings-title-width: 160px;
+
 .settings-body{
     background-color: @color-settings-background !important;
 }
@@ -23,8 +25,13 @@
     margin:0;
     padding:0;
 }
+.settings-titles-block:hover{
+    background: lighten(@color-primary, 3.75%);
+    transition: 0.2s;
+    cursor: pointer;
+}
 .settings-titles-clicked{
-    background: @color-settings-titles-clicked-bg;
+    background: @color-settings-titles-clicked-bg !important;
     color: @color-settings-titles-clicked;
 }
 .settings-titles-icon{
@@ -41,143 +48,176 @@
 }
 /* sections */
 .settings-sections{
-    margin:28px 24px 0px 24px;
+    margin: 28px 52px;
 }
 .settings-sections-hidden{
-    display:none;
+    display: none;
 }
 .settings-item{
-    display: grid;
-    grid-template-columns: 28% 8% 64%;
-    grid-template-rows: 45px;
-    align-items: left;
-    margin-top:3px;
+    display: flex;
+    align-items: center;
+    margin-top: 14px;
 }
 .settings-item-title{
     font-size: 15px;
     text-align: left;
-    margin-top:6px;
     width: auto;
-    margin-left:45px;
     color: @color-settings-text;
     .no-select-and-drag();
+    width: @settings-title-width;
+    line-height: 28px;
 }
-.settings-item-control input{
-    height: 34px;
-    font-size: 13px;
-    color: @color-settings-text;
-    background: @color-settings-background;
-    border: 1px solid @color-settings-controlborder;
+// 控件
+.settings-item-control {
+    flex: 1 1 auto;
     vertical-align: middle;
-    padding-left: 16px;
-}
-.settings-item-control input:focus{
-    color: @color-settings-text;
-    background: darken(@color-settings-background, 5%);
-    border: 1px solid darken(@color-settings-controlborder, 20%);
-    outline: none !important;
-    box-shadow: none !important;
-}
-.settings-item-control>.brcontrol-range{
-    width: 300px;
-    display: inline-block;
-}
-.settings-item-control>.brcontrol-range-label{
-    margin-left: 18px;
-}
-.settings-item-control input::-webkit-input-placeholder {
-    color: @color-control-placeholder;
-}
-.settings-item-control select{
-    height: 34px;
-    font-size: 13px;
-    color: @color-settings-text;
-    background: @color-settings-background;
-    border: 1px solid @color-settings-controlborder;
-    vertical-align: middle;
-}
-.settings-item-control select:disabled{
-    cursor: not-allowed;
-    background: @color-settings-select-disabled;
-}
-.settings-item-control select:hover:enabled{
-    background: darken(@color-settings-background, 5%);
-}
-.settings-item-control select:focus{
-    color: @color-settings-text;
-    background: darken(@color-settings-background, 5%);
-    border: 1px solid darken(@color-settings-controlborder, 20%);
-    outline: none !important;
-    box-shadow: none !important;
-}
-.settings-item-control button{
-    font-size: 14px;
-    width:100%;
-}
-.settings-item-control span{
-    line-height: 34px;
-    font-size: 14px;
-    width:100%;
-    color: @color-settings-text;
-    .no-select-and-drag();
-}
-.settings-item-control{
-    width:90%;
-}
-.settings-control-checkbox{
-    margin-top: 7px;
-    margin-left: -1px;
-    .no-select-and-drag();
-}
-.settings-control-checkbox input[type="checkbox"]+label::before{
-    background-color: @color-settings-background !important;
-    border-color: @color-settings-controlborder !important;
-}
-.settings-control-checkbox input[type="checkbox"]+label{
-    font-size: 14px;
-    padding-top: 4px;
-    color: @color-settings-text !important;
-}
-.settings-control-checkbox input[type="checkbox"]:checked+label::after {
-    color: @color-text-primary !important;
-}
-.settings-control-checkbox input[type="checkbox"]:focus+label::before {
-    border-color: @color-settings-controlborder !important;
-    outline: none !important;
-}
-.settings-control-checkbox input[type="checkbox"]:focus+label::after {
-    border-color: @color-settings-controlborder !important;
-    outline: none !important;
-}
-.setting-buttons{
-    right:15px;
-    bottom:12px;
-    width: max-content;
-    position: absolute;
-    display: flex;
-}
-.setting-buttons button{
-    font-size: 14px;
-    margin-left: 8px;
-    text-align: center;
-    padding:3px 15px !important;
-    letter-spacing: 0.05em;
+    line-height: 32px;
+    input{
+        height: 34px;
+        font-size: 13px;
+        color: @color-settings-text;
+        background: @color-settings-background;
+        border: 1px solid @color-settings-controlborder;
+        vertical-align: middle;
+        padding-left: 16px;
+    }
+    input:focus{
+        color: @color-settings-text;
+        background: darken(@color-settings-background, 5%);
+        border: 1px solid darken(@color-settings-controlborder, 20%);
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    .brcontrol-range{
+        width: 100%;
+    }
+    .brcontrol-range-label{
+        margin-left: 18px;
+    }
+    input::-webkit-input-placeholder {
+        color: @color-control-placeholder;
+    }
+    select{
+        height: 34px;
+        font-size: 13px;
+        color: @color-settings-text;
+        background: @color-settings-background;
+        border: 1px solid @color-settings-controlborder;
+        vertical-align: middle;
+    }
+    select:disabled{
+        cursor: not-allowed;
+        background: @color-settings-select-disabled;
+    }
+    select:hover:enabled{
+        background: darken(@color-settings-background, 5%);
+    }
+    select:focus{
+        color: @color-settings-text;
+        background: darken(@color-settings-background, 5%);
+        border: 1px solid darken(@color-settings-controlborder, 20%);
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    button{
+        font-size: 14px;
+        width:100%;
+    }
+    span{
+        line-height: 34px;
+        font-size: 14px;
+        width:100%;
+        color: @color-settings-text;
+        .no-select-and-drag();
+    }
 }
 
-//lock screen
+// 复选框
+.settings-control-checkbox{
+    transform: translateY(4px);
+    .no-select-and-drag();
+    input[type="checkbox"]+label::before{
+        background-color: @color-settings-background !important;
+        border-color: @color-settings-controlborder !important;
+    }
+    input[type="checkbox"]+label{
+        font-size: 14px;
+        padding-top: 4px;
+        color: @color-settings-text !important;
+    }
+    input[type="checkbox"]:checked+label::after {
+        color: @color-text-primary !important;
+        transform: translateY(-8px);
+    }
+    input[type="checkbox"]:focus+label::before {
+        border-color: @color-settings-controlborder !important;
+        outline: none !important;
+    }
+    input[type="checkbox"]:focus+label::after {
+        border-color: @color-settings-controlborder !important;
+        outline: none !important;
+    }
+}
+
+.settings-control-range {
+    display: flex;
+    align-items: center;
+    line-height: 32px;
+    input {
+        flex-grow: 1;
+    }
+    span {
+        padding-top: 1px;
+        width: 100px;
+    }
+}
+
+.setting-buttons{
+    position: absolute;
+    right: 52px;
+    bottom: 18px;
+    button{
+        font-size: 13px;
+        margin-left: 4px;
+        text-align: center;
+        padding: 5px 16px !important;
+        letter-spacing: 0.05em;
+    }
+    button:nth-of-type(1) {
+        margin-left: 0;
+    }
+}
+
+// 锁屏
+#settings-item-lockscreen-default {
+    display: flex;
+}
+#settings-item-lockscreen-input {
+    flex: 1 1 auto;
+    flex-grow: 1;
+}
+#settings-item-lockscreen-default-enable {
+    width: 86px;
+    margin-left: 8px;
+}
 #settings-item-lockscreen-enabled{
     display: none;
+    button {
+        margin-right: 8px;
+    }
+    #btn-resetLockScreen {
+        width: 160px;
+    }
+    #btn-disableLockScreen {
+        width: 108px;
+    }
+    select {
+        flex-grow: 1;
+    }
+}
+.settings-button-lockscreen-icon {
+    margin-left: 8px;
 }
 #settings-item-lockscreen-default-reset{
     display: none;
-}
-.settings-button-lockscreen-icon{
-    margin-left: 10px;
-    width: 36px !important;
-    height: 34px !important;
-}
-
-#btn-enableLockScreen{
-    padding-left: 0 !important;
-    padding-right: 0 !important;
 }
