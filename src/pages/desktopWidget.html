@@ -119,10 +119,7 @@
                     $(document).ready(function(){
                         let bgcolor = $('.container-widget').css('background-color');
                         let reg_alpha = /(rgba\([0-9]{1,3},\s+[0-9]{1,3},\s+[0-9]{1,3},\s+)([0-9.]+)(\))/i;
-                        console.log(bgcolor);
-                        console.log(settings.widget_opacity);
                         bgcolor = bgcolor.replace(reg_alpha, '$1'+settings.widget_opacity/100+'$3');
-                        console.log(bgcolor);
                         $('.container-widget').css('background-color', bgcolor);
                     });
                 }
