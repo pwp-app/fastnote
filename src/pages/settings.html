@@ -603,7 +603,7 @@
                                     .digest("hex");
                                 storage.set("settings", settings, function(error) {
                                     if (error) {
-                                        dialog.showMessageBox({
+                                        dialog.showMessageBoxSync({
                                             type: "error",
                                             title: "错误",
                                             message: "启用锁屏时发生错误。",
@@ -640,7 +640,7 @@
                                         settings.lockpassword = undefined;
                                         storage.set("settings", settings, function(error) {
                                             if (error) {
-                                                dialog.showMessageBox({
+                                                dialog.showMessageBoxSync({
                                                     type: "error",
                                                     title: "错误",
                                                     message: "禁用锁屏时发生错误。",
@@ -881,7 +881,7 @@
                 //保存设置
                 storage.set("settings", settings, function(error) {
                     if (error) {
-                        dialog.showMessageBox({
+                        dialog.showMessageBoxSync({
                             type: "error",
                             title: "错误",
                             message: "保存设置时发生错误。",
@@ -932,7 +932,7 @@
                             storage.remove("settings", function(error) {
                                 if (error) {
                                     console.error(error);
-                                    dialog.showMessageBox({
+                                    dialog.showMessageBoxSync({
                                         type: "error",
                                         title: "错误",
                                         message: "重置设置时遇到了错误。",
@@ -943,7 +943,7 @@
                                     ipcRenderer.send("reloadMainWindow");
                                     ipcRenderer.send("reloadRecycleWindow");
                                     ipcRenderer.send("closeAllEditWindow");
-                                    dialog.showMessageBox({
+                                    dialog.showMessageBoxSync({
                                         type: "info",
                                         title: "完成",
                                         message: "设置已重置。"

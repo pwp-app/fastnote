@@ -1447,26 +1447,22 @@
         $(document).on('click', '.category-item-delbtn', function() {
             //获取分类名称
             var name = $(this).parent().parent().attr('data-name');
-            dialog.showMessageBox({
+            let ret = dialog.showMessageBoxSync({
                 type: "warning",
                 buttons: [i18n[current_i18n].button_cancel, i18n[current_i18n].button_delete, i18n[current_i18n].delete_category_and_note],
                 defaultId: 0,
                 title: i18n[current_i18n].confirm_operation,
                 message: i18n[current_i18n].confirm_delete_category_left + name + i18n[current_i18n].confirm_delete_category_right,
                 detail: i18n[current_i18n].delete_category_and_note_detail
-            }).then(res => {
-                if (res.response != 0) {
-                    //确定删除
-                    if (res == 1) {
-                        removeCategory(name);
-                        //该分类下的便签分类全部修改为未分类
-                        setNotesCategory(name, undefined);
-                    } else if (res == 2) {
-                        removeNotesOfCategory(name);
-                        removeCategory(name, false);
-                    }
-                }
             });
+            if (ret == 1) {
+                removeCategory(name);
+                // 该分类下的便签分类全部修改为未分类
+                setNotesCategory(name, undefined);
+            } else if (ret == 2) {
+                removeNotesOfCategory(name);
+                removeCategory(name, false);
+            }
         });
 
         function removeCategory(name, renderCount = true) {
@@ -1772,40 +1768,38 @@
                     detail += "ID: " + note.id + i18n[current_i18n].note_conflict_detail_content + (note.text.length > 20 ? note.text.substring(
                         0, 20) + "..." : note.text) + "\n";
                 });
-                dialog.showMessageBox({
+                let ret = dialog.showMessageBoxSync({
                     title: i18n[current_i18n].notes_conflict,
                     message: i18n[current_i18n].notes_conflict_message,
                     detail: detail,
                     buttons: [i18n[current_i18n].button_dealwithconflict, i18n[current_i18n].button_delete]
-                }).then(res => {
-                    if (res.response == 0) {
-                        //处理冲突
+                });
+                if (ret == 0) {
+                    //处理冲突
+                    conflictNotes.forEach(note => {
+                        note.id = notesid;
+                        saveNoteByObj(note);
+                        notesid++;
+                    });
+                    //冲突处理完毕
+                    readNoteFiles();
+                    saveNotesId();
+                } else if (ret == 1) {
+                    let ret = dialog.showMessageBoxSync({
+                        type: 'warning',
+                        message: i18n[current_i18n].delete_conflict_notes,
+                        detail: detail,
+                        buttons: [i18n[current_i18n].button_yes, i18n[current_i18n].button_no]
+                    });
+                    if (ret == 0) {
                         conflictNotes.forEach(note => {
-                            note.id = notesid;
-                            saveNoteByObj(note);
-                            notesid++;
+                            deleteNoteByObj(note);
                         });
-                        //冲突处理完毕
+                        //删除完毕
                         readNoteFiles();
                         saveNotesId();
-                    } else if (res.response == 1) {
-                        dialog.showMessageBox({
-                            type: 'warning',
-                            message: i18n[current_i18n].delete_conflict_notes,
-                            detail: detail,
-                            buttons: [i18n[current_i18n].button_yes, i18n[current_i18n].button_no]
-                        }).then(res => {
-                            if (res == 0) {
-                                conflictNotes.forEach(note => {
-                                    deleteNoteByObj(note);
-                                });
-                                //删除完毕
-                                readNoteFiles();
-                                saveNotesId();
-                            }
-                        });
                     }
-                });
+                }
             }
             saveNotesId();
         });
