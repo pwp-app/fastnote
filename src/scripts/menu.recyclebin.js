@@ -57,8 +57,8 @@ function popup_menu_recyclebin() {
                 title: i18n[current_i18n].confirm_operation,
                 message: i18n[current_i18n].empty_recyclebin_message,
                 detail: i18n[current_i18n].empty_recyclebin_detail
-            }, function (res) {
-                if (res == 1) {
+            }).then(res => {
+                if (res.response == 1) {
                     for (var i = 0; i < notes.length; i++) {
                         deleteNoteByObj(notes[i], false);
                     }

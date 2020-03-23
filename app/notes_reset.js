@@ -10,8 +10,8 @@ $('#btn-resetNotes').click(function(){
         title:'确认操作',
         message:'确定要重置便签吗？该操作将不可撤回。',
         detail:'所有已保存的便签、回收站内的便签将全部清除，重置后便签序号从0开始重新计算。'
-    }, function(response){
-        if (response == 1){
+    }).then(res => {
+        if (res.response == 1){
             storage.remove('notesid'+(global.indebug?'_dev':''), function(error){
                 if (error){
                     console.error(error);
