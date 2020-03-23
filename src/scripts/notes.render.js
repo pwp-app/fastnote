@@ -1,10 +1,12 @@
 var storage = require('electron-json-storage');
 var reg = require('./static/note.render.reg');
 
-//定义prototype
+// prototype
 String.prototype.startWith = function(compareStr){
     return this.indexOf(compareStr) == 0;
 }
+
+// *** 变量 ***
 
 //保存所有的notes
 var notes = [];
@@ -18,15 +20,51 @@ var notes_selected_withencrypted = [];
 
 var sort_mode = null;
 
-//初始化排序模式
+// *** jQuery缓存 ***
+
+var noteList = {}
+var filterX;
+
+$(document).ready(() => {
+    noteList['normal'] = $('#note-list-normal');
+    noteList['forceTop'] = $('#note-list-forceTop');
+    filterX = $('#filter-x');
+});
+
+// *** 即时执行 ***
+
+// 初始化排序模式
 storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
     if (err) {
-        console.log(err);
+        console.error(err);
         sort_mode = 'id'; //设置为默认值
         return;
     }
     sort_mode = data.mode;
 });
+
+// 绑定外链
+$(document).on('click', '.note a', function (e) {
+    ipcRenderer.send('openExternalURL', $(this).attr('href'));
+    e.preventDefault();
+});
+
+// 绑定时间点击事件
+
+$(document).on('click', '.note-header .note-updatetime', function(e) {
+    let id = $(e.currentTarget).parentsUntil('.note').attr('data-id');
+    $(`#note_${id} .note-header .note-updatetime`).css('display', 'none');
+    $(`#note_${id} .note-header .note-createtime`).css('display', 'initial');
+});
+
+$(document).on('click', '.note-header .note-createtime', function(e) {
+    let id = $(e.currentTarget).parentsUntil('.note').attr('data-id');
+    $(`#note_${id} .note-header .note-updatetime`).css('display', 'initial');
+    $(`#note_${id} .note-header .note-createtime`).css('display', 'none');
+});
+
+// *** 定义 ***
+
 //显示没有笔记的界面
 function showNoteEmpty() {
     $('#note-empty').css('display', 'flex');
@@ -54,17 +92,43 @@ function clearNoteList() {
     selectModeEnabled = false; //刷新页面/列表时重置多选开关
 }
 
-//渲染一条笔记
-function renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown, isPrepend = false, animate = false) {
+// 初始化渲染（渲染整个列表）
+function initialRender() {
+    sortNotes(sort_mode); // 排序
+    let html = [];
+    let html_forceTop = [];
+    // 渲染
+    for (let i = 0; i < notes.length; i++) {
+        let rendered = renderNote(notes[i], immediate=false);
+        if (rendered.forceTop) {
+            html_forceTop.push(rendered.html);
+        } else {
+            html.push(rendered.html);
+        }
+    }
+    // DOM操作
+    noteList.forceTop.append(html_forceTop.join(''));
+    noteList.normal.append(html.join(''));
+    // 绑定Note的点击事件
+    bindNoteClickEvent();
+    if (typeof inRecyclebin == 'undefined') { //回收站内不进行分类渲染
+        renderNotesOfCategory(current_category);
+    }
+}
+
+// 渲染一条笔记
+function renderNote(note, immediate = true, isPrepend = false, animate = false) {
+    let { id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown } = note;
     if (typeof settings.language == 'undefined'){
         current_i18n = 'zh-cn';
     } else {
         current_i18n = settings.language;
     }
-    var html = '<div class="note-wrapper"><div class="note' + (typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "") + '" id="note_' + id +
-        '" data-id="' + id + '" data-category="' + (typeof category != 'undefined' ? category : 'notalloc') + '" data-markdown="'+ (typeof markdown == 'undefined'?'false':markdown)+'"><div class="note-header"><span class="note-no">';
-    html += '#' + id + '</span>';
-    //渲染note-title
+    var html = `<div class="note-wrapper"><div class="note${(typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "")}" id="note_${id}"
+         data-id="${id}" data-category="${(typeof category != 'undefined' ? category : 'notalloc')}"
+         data-markdown="${(typeof markdown == 'undefined'?'false':markdown)}"><div class="note-header">
+         <span class="note-no">#${id}</span>`;
+    // 渲染note-title
     var titletext = "";
     if (typeof title != 'undefined') {
         if (title.length > 50) {
@@ -83,7 +147,7 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
             html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
         }
     }
-    //选择性显示时间
+    // 选择性显示时间
     var m_time = moment(rawtime, 'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
         var m_updatetime = moment(updaterawtime, 'YYYYMMDDHHmmss');
@@ -94,14 +158,14 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
     }
     if (typeof password == 'undefined') {
         html += '</div><div class="note-content"><div class="note-text"><p>';
-        //process html tag
-        text = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
+        // process html tag
+        text = filterX.text(text).html().replace(/ /g, '&nbsp;');
         if (typeof markdown != "undefined" && markdown){
             text = getMarkdownText(text);
         }
         text = text.replace(/\n/gi,'<br>');
         text = insert_spacing(text, 0.15);
-        //自动识别网页
+        // 自动识别网页
         if (!markdown){
             html += text.replace(reg.url, function (result) {
                 return '<a href="' + result + '">' + result + '</a>';
@@ -111,9 +175,9 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         }
         html += '</p></div></div></div></div>';
     } else {
-        //再锁定按钮
+        // 再锁定按钮
         html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + id + ')"></i>';
-        //密码框
+        // 密码框
         html += '</div><div class="note-content"><div class="note-password" data-password="' + password + '" data-encrypted="' + text + '">';
         if (typeof inRecyclebin == 'undefined') {
             html += '<span>'+i18n.render[current_i18n].password+'</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
@@ -123,25 +187,34 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         html += '</div></div></div></div>';
     }
 
+    // 不即时渲染，返回html
+    if (!immediate) {
+        return {
+            forceTop: typeof forceTop != 'undefined' && forceTop,
+            html: html
+        };
+    }
+
+    // 即时渲染
     if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
         if (forceTop) {
             if (isPrepend) {
-                $('.note-list-forceTop').prepend($(html));
+                noteList.forceTop.prepend($(html));
             } else {
-                $('.note-list-forceTop').append($(html));
+                noteList.forceTop.append($(html));
             }
         } else {
             if (isPrepend) {
-                $('.note-list-normal').prepend($(html));
+                noteList.normal.prepend($(html));
             } else {
-                $('.note-list-normal').append($(html));
+                noteList.normal.append($(html));
             }
         }
     } else {
         if (isPrepend) {
-            $('.note-list-normal').prepend($(html));
+            noteList.normal.prepend($(html));
         } else {
-            $('.note-list-normal').append($(html));
+            noteList.normal.append($(html));
         }
     }
 
@@ -150,22 +223,15 @@ function renderNote(id, rawtime, updaterawtime, title, category, password, text,
         $('#note_' + id).animateCss('fadeInLeft faster');
     }
 
-    // open external on os default webbrowser
-    $('#note_' + id + ' a').click(function (e) {
-        ipcRenderer.send('openExternalURL', $(this).attr('href'));
-        e.preventDefault();
-    });
-
     setTimeout(function(){
-        //防止读取不了便签内容的高度
+        // 防止读取不了便签内容的高度
         bindNoteFoldDBL(id);
-        bindNoteTimeClick(id);
     },0);
 }
 
 //在顶部渲染Note
-function renderNoteAtTop(id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown) {
-    renderNote(id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown, true, true);
+function renderNoteAtTop(note) {
+    renderNote(note, immediate = false, isPrepend = true, animate = true);
 }
 
 function rerenderEditedNote(data, rawtext) {
@@ -225,11 +291,6 @@ function rerenderEditedNote(data, rawtext) {
     var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
         '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
     $('#note_' + data.id + ' .note-header time').html(timeContent);
-    //open external event rebind
-    $('#note_' + data.id + ' a').click(function (e) {
-        ipcRenderer.send('openExternalURL', $(this).attr('href'));
-        e.preventDefault();
-    });
 
     //处理标题
     if (typeof data.title != 'undefined') {
@@ -291,15 +352,10 @@ function rerenderEditedNote(data, rawtext) {
     addCategoryCount(data.category, true, true);
     checkCategoryEmpty();
     $('#note_' + data.id).attr('data-category', data.category);
-
-    //timeevent rebind
-    setTimeout(function(){
-        bindNoteTimeClick(data.id);
-    },0);
 }
 
 function resetEditedNoteText(data, t) {
-    let text = $("#filter-x").text(t).html().replace(/ /g, '&nbsp;');
+    let text = filterX.text(t).html().replace(/ /g, '&nbsp;');
     if (typeof data.markdown != "undefined" && data.markdown){
         text = getMarkdownText(text);
     }
@@ -316,17 +372,6 @@ function resetEditedNoteText(data, t) {
     html += '</p>';
     //reset note content on page
     $("#note_" + data.id + " .note-content .note-text").html(html);
-}
-
-function bindNoteTimeClick(id) {
-    $('#note_' + id + ' .note-updatetime').off('click').on('click', function () {
-        $('#note_' + id + ' .note-header .note-updatetime').css('display', 'none');
-        $('#note_' + id + ' .note-header .note-createtime').css('display', 'initial');
-    });
-    $('#note_' + id + ' .note-createtime').off('click').on('click', function () {
-        $('#note_' + id + ' .note-header .note-updatetime').css('display', 'initial');
-        $('#note_' + id + ' .note-header .note-createtime').css('display', 'none');
-    });
 }
 
 //绑定note的双击折叠
@@ -430,31 +475,17 @@ function refreshNoteList(callback) {
             if (typeof sort_mode != 'string') {
                 sort_mode = 'id';
             }
-            sortNotes(sort_mode); //排序
-            for (var i = 0; i < notes.length; i++) {
-                setTimeout(renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop,notes[i].markdown),0);
-            }
-            //绑定Note的点击事件
-            bindNoteClickEvent();
-            if (typeof inRecyclebin == 'undefined') { //回收站内不进行分类渲染
-                renderNotesOfCategory(current_category);
-            }
-            //callback
+            // 渲染列表
+            initialRender(notes);
+            // callback
             if (typeof (callback) === 'function') {
                 callback();
             }
         });
     } else {
-        sortNotes(sort_mode); //排序
-        for (var i = 0; i < notes.length; i++) {
-            setTimeout(renderNote(notes[i].id, notes[i].rawtime, notes[i].updaterawtime, notes[i].title, notes[i].category, notes[i].password, notes[i].text, notes[i].forceTop, notes[i].markdown),0);
-        }
-        //绑定Note的点击事件
-        bindNoteClickEvent();
-        if (typeof inRecyclebin == 'undefined') { //回收站内不进行分类渲染
-            renderNotesOfCategory(current_category);
-        }
-        //callback
+        // 渲染列表
+        initialRender(notes);
+        // callback
         if (typeof (callback) === 'function') {
             callback();
         }
@@ -617,7 +648,7 @@ function checkNotePassword(e, noteid) {
             let markdown = $('#note_'+noteid).attr('data-markdown');
             //生成html
             var html = '<div class="note-text" style="display:none;"><p>';
-            let temp = $("#filter-x").text(decrypted_text).html().replace(/ /g, '&nbsp;');
+            let temp = filterX.text(decrypted_text).html().replace(/ /g, '&nbsp;');
             if (typeof markdown != "undefined" && markdown){
                 text = getMarkdownText(text);
             }
@@ -649,17 +680,8 @@ function checkNotePassword(e, noteid) {
                 $('#note_' + noteid + ' .note-header .note-password-relock').attr('style', 'display: inline-block !important;');
                 $('#note_' + noteid + ' .note-header .note-password-relock').animateCss('fadeIn morefaster');
 
-                //animate
-                //open external on os default webbrowser
-                $('#note_' + noteid + ' a').click(function (e) {
-                    ipcRenderer.send('openExternalURL', $(this).attr('href'));
-                    e.preventDefault();
-                });
-
                 setTimeout(function(){//auto fold
                     bindNoteFoldDBL(noteid);
-                    //绑定时间
-                    bindNoteTimeClick(noteid);
                 },0);
             });
         } else {
@@ -692,7 +714,7 @@ function rerenderTextOfNote(noteid, text, animate=false){
     let markdown = $('#note_'+noteid).attr('data-markdown');
 
     let html = '<div class="note-text"><p>';
-    let temp = $("#filter-x").text(text).html().replace(/ /g, '&nbsp;');
+    let temp = filterX.text(text).html().replace(/ /g, '&nbsp;');
     if (typeof markdown != "undefined" && markdown == 'true'){
         text = getMarkdownText(text);
     }
@@ -715,16 +737,8 @@ function rerenderTextOfNote(noteid, text, animate=false){
         $('#note_' + noteid + ' .note-content').animateCss('fadeIn morefaster');
     }
 
-    //open external on os default webbrowser
-    $('#note_' + noteid + ' a').click(function (e) {
-        ipcRenderer.send('openExternalURL', $(this).attr('href'));
-        e.preventDefault();
-    });
-
     setTimeout(function(){//auto fold
         bindNoteFoldDBL(noteid);
-        //绑定时间
-        bindNoteTimeClick(noteid);
     },0);
 }
 

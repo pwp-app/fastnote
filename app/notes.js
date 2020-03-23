@@ -298,7 +298,7 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
     //分类的empty隐藏
     $('#note-empty-category').hide();
     //在顶部渲染Note
-    renderNoteAtTop(note.id, note.rawtime, note.updaterawtime, note.title, note.category, note.password, note.text, note.forceTop, note.markdown);
+    renderNoteAtTop(note);
     //绑定Note的点击事件
     bindNoteClickEvent();
 }
