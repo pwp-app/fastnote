@@ -1,7 +1,7 @@
 @import "./color.common.less";
 
-@color-primary: #1faeff;
-@color-secondary: @color-white;
+@color-primary: #3590f3;
+@color-secondary: #fafafa;
 
 @color-danger: #dc3545;
 
@@ -11,8 +11,8 @@
 @color-danger-darkhover: darken(@color-danger, 10%);
 
 //shadow
-@color-boxshadow: rgba(0, 0, 0, .2);
-@color-boxshadow-dark: @color-deepgray;
+@color-boxshadow: rgba(0, 0, 0, .12);
+@color-boxshadow-dark: rgba(0, 0, 0, .175);
 
 //border
 @color-border-primary: @color-lightgray;
@@ -39,13 +39,15 @@
 
 //mainmenu
 @color-mainmenu-primary: @color-gray;
-@color-mainmenu-background: @color-white;
-@color-mainmenu-hover: lighten(@color-mainmenu-primary, 42%);
+@color-mainmenu-background: @color-secondary;
+@color-mainmenu-hover: darken(@color-mainmenu-background, 5%);
 @color-mainmenu-split: rgb(216, 216, 216);
 
 //note
-@color-note-selected: @color-lightblack;
+@color-note-background: @color-primary;
+@color-note-text: @color-text-primary;
 @color-notelist-background: @color-white;
+@color-note-selected: darken(@color-notelist-background, 8.5%);
 @color-note-empty: @color-text-secondary;
 @color-newnote-float-border: 1px solid darken(@color-primary, 10%);
 

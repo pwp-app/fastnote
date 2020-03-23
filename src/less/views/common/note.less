@@ -52,18 +52,27 @@
 }
 
 .note {
-    color: @color-text-primary;
-    background-color: @color-primary;
+    color: @color-note-text;
+    background-color: @color-note-background;
     border-radius: 8px;
-    box-shadow: 2px 2px 2px @color-boxshadow-dark;
+    box-shadow: 0px 2px 8px @color-boxshadow-dark;
     padding: 6px 12px;
     /* animate */
     .short-duration();
     pointer-events: auto !important;
 }
 
-.note-wrapper{
-    padding:9px 12px;
+.note-wrapper {
+    padding: 6px 12px;
+}
+
+// 头部和最后留出间距
+.note-wrapper:nth-of-type(1) {
+    padding-top: 10px;
+}
+
+.note-wrapper:last-child {
+    padding-bottom: 10px;
 }
 
 .note-header {

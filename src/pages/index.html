@@ -117,7 +117,7 @@
             //build css
             if (settings == null) {
                 //read error
-                $('#main-style').attr('href', 'static/main.blackwhite.css');
+                $('#main-style').attr('href', 'static/main.default.css');
 
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
@@ -149,7 +149,7 @@
                 if (typeof settings.theme != 'undefined') {
                     $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
                 } else {
-                    $('#main-style').attr('href', 'static/main.blackwhite.css');
+                    $('#main-style').attr('href', 'static/main.default.css');
                 }
 
                 if (typeof settings.fontfamily != 'undefined') {
@@ -1454,8 +1454,8 @@
                 title: i18n[current_i18n].confirm_operation,
                 message: i18n[current_i18n].confirm_delete_category_left + name + i18n[current_i18n].confirm_delete_category_right,
                 detail: i18n[current_i18n].delete_category_and_note_detail
-            }, function(res) {
-                if (res != 0) {
+            }).then(res => {
+                if (res.response != 0) {
                     //确定删除
                     if (res == 1) {
                         removeCategory(name);
@@ -1777,7 +1777,7 @@
                     message: i18n[current_i18n].notes_conflict_message,
                     detail: detail,
                     buttons: [i18n[current_i18n].button_dealwithconflict, i18n[current_i18n].button_delete]
-                }, function(res) {
+                }).then(res => {
                     if (res == 0) {
                         //处理冲突
                         conflictNotes.forEach(note => {
@@ -1794,7 +1794,7 @@
                             message: i18n[current_i18n].delete_conflict_notes,
                             detail: detail,
                             buttons: [i18n[current_i18n].button_yes, i18n[current_i18n].button_no]
-                        }, function(res) {
+                        }).then(res => {
                             if (res == 0) {
                                 conflictNotes.forEach(note => {
                                     deleteNoteByObj(note);
@@ -1865,8 +1865,8 @@
                         buttons: [i18n[current_i18n].close_minimize_to_tray, i18n[current_i18n].close_just_close],
                         message: i18n[current_i18n].close_mainwindow_msg,
                         defaultId: 0
-                    }, (id) => {
-                        switch (id) {
+                    }).then(res => {
+                        switch (res.response) {
                             case 0:
                                 //复写设置
                                 settings.closeOption = 'tray';

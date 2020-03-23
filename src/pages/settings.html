@@ -1,968 +1,942 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Fastnote - 设置</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <!--import requirements-->
+        <script>
+            window.$ = window.jQuery = require("./static/jquery.min.js");
+            //requirements
+            var moment = require("./static/moment.min.js");
+        </script>
+        <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
+        <link rel="stylesheet" href="static/font-awesome.min.css" />
+        <link rel="stylesheet" href="static/bootstrap.min.css" />
+        <link rel="stylesheet" href="static/animate.min.css" />
+        <link rel="stylesheet" href="static/awesome-bootstrap-checkbox.min.css" />
+        <script src="static/encryption.js"></script>
+        <script src="static/i18n.js"></script>
+        <script src="static/bootstrap.min.js"></script>
+        <script src="static/mousetrap.min.js"></script>
+        <script>
+            var postprocess_i18n = [
+                {
+                    selector: "#input-lockscreen-password",
+                    attr: "placeholder",
+                    key: "placeholder_lockscreen"
+                }
+            ];
+        </script>
+        <script>
+            //load Animate CSS
+            $.fn.extend({
+                animateCss: function(animationName, callback) {
+                    var animationEnd = (function(el) {
+                        var animations = {
+                            animation: "animationend",
+                            OAnimation: "oAnimationEnd",
+                            MozAnimation: "mozAnimationEnd",
+                            WebkitAnimation: "webkitAnimationEnd"
+                        };
 
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Fastnote - 设置</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!--import requirements-->
-    <script>
-        window.$ = window.jQuery = require('./static/jquery.min.js');
-        //requirements
-        var moment = require('./static/moment.min.js');
-    </script>
-    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
-    <link rel="stylesheet" href="static/font-awesome.min.css">
-    <link rel="stylesheet" href="static/bootstrap.min.css">
-    <link rel="stylesheet" href="static/animate.min.css">
-    <link rel="stylesheet" href="static/awesome-bootstrap-checkbox.min.css">
-    <script src="static/encryption.js"></script>
-    <script src="static/i18n.js"></script>
-    <script src="static/bootstrap.min.js"></script>
-    <script src="static/mousetrap.min.js"></script>
-    <script>
-        var postprocess_i18n = [{
-            selector: '#input-lockscreen-password',
-            attr: 'placeholder',
-            key: 'placeholder_lockscreen'
-        }];
-    </script>
-    <script>
-        //load Animate CSS
-        $.fn.extend({
-            animateCss: function(animationName, callback) {
-                var animationEnd = (function(el) {
-                    var animations = {
-                        animation: 'animationend',
-                        OAnimation: 'oAnimationEnd',
-                        MozAnimation: 'mozAnimationEnd',
-                        WebkitAnimation: 'webkitAnimationEnd',
-                    };
-
-                    for (var t in animations) {
-                        if (typeof(el.style[t]) !== 'undefined') {
-                            return animations[t];
+                        for (var t in animations) {
+                            if (typeof el.style[t] !== "undefined") {
+                                return animations[t];
+                            }
                         }
-                    }
-                })(document.createElement('div'));
+                    })(document.createElement("div"));
 
-                this.addClass('animated ' + animationName).one(animationEnd, function() {
-                    $(this).removeClass('animated ' + animationName);
-                    if (typeof callback === 'function') callback();
-                });
+                    this.addClass("animated " + animationName).one(animationEnd, function() {
+                        $(this).removeClass("animated " + animationName);
+                        if (typeof callback === "function") callback();
+                    });
 
-                return this;
-            },
-        });
-        //define const
-        const remote = require('electron').remote;
-        const app = remote.app;
-        //import json storage
-        const storage = require('electron-json-storage');
-
-        const {
-            dialog
-        } = require('electron').remote;
-
-        const {
-            ipcRenderer
-        } = require('electron');
-
-        let time = require('../app/tools/time.js');
-
-        const WebFont = require('webfontloader');
-
-        var storagePath = app.getPath('userData');
-
-        var settings;
-
-        //获取indebug
-        global.indebug = remote.getGlobal('indebug');
-
-        //读取设置
-        storage.get('settings', function(error, data) {
-            if (error) {
-                console.error(error);
-                settingsInit(null);
-                return;
-            } else {
-                //获取callback回传的json
-                settings = data;
-                settingsInit(settings);
-            }
-            $(document).ready(function() {
-                ipcRenderer.send("settings-window-ready");
-            });
-        });
-
-        //读取noteid
-        storage.get('notesid' + (global.indebug ? '_dev' : ''), function(error, data) {
-            if (error) {
-                console.error(error);
-                initNotesId(null);
-                return;
-            } else {
-                //获取callback回传的json
-                if (typeof data != 'undefined') {
-                    initNotesId(data.id);
-                }
-            }
-        });
-
-        //读取最后一次备份时间
-        storage.get('lastBackupTime', function(err, data) {
-            if (err) {
-                console.error(err);
-            } else {
-                if (typeof data != 'undefined') {
-                    initLastBackupTime(data.lasttime);
-                }
-            }
-        });
-
-        function settingsInit(settings) {
-            var cssText = "";
-            //build css
-            if (settings == null) {
-                //read error
-                $('#main-style').attr('href', 'static/main.blackwhite.css');
-
-                initTheme('blackwhite');
-                initFont('Source Han Sans CN');
-                //初始化设置
-                //init auto update
-                initAutoUpdate(true);
-                initLanguage('zh-cn');
-
-                //default settings
-                initFontSize("16");
-                initTextAlign("justify");
-                initLineHeight("24");
-                initLetterSpacing("0.06");
-                initDateDisplay("all");
-                initTimeDisplay("all");
-
-                initWidgetOpacity(95);
-                initWidgetDefaultForceTop(false);
-
-                current_i18n = 'zh-cn';
-                $.getScript('static/i18n/zh-cn.js');
-            } else {
-                //read success
-                //init close option
-                if (typeof settings.closeOption != 'undefined') {
-                    initCloseOption(settings.closeOption);
-                } else {
-                    initCloseOption('tray');
-                }
-                //init language
-                if (typeof settings.language != 'undefined') {
-                    if (settings.language != 'zh-cn') {
-                        $(document).ready(function() {
-                            applyLanguage(settings.language);
-                        });
-                    } else {
-                        $.getScript('static/i18n/zh-cn.js');
-                    }
-                    initLanguage(settings.language);
-                    current_i18n = settings.language;
-                } else {
-                    current_i18n = 'zh-cn';
-                    $.getScript('static/i18n/zh-cn.js');
-                }
-                //init themes
-                if (typeof settings.theme != 'undefined') {
-                    initTheme(settings.theme);
-                    $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
-                } else {
-                    initTheme('blackwhite');
-                    $('#main-style').attr('href', 'static/main.blackwhite.css');
-                }
-
-                //init font family
-                if (typeof settings.fontfamily != 'undefined') {
-                    initFont(settings.fontfamily);
-                } else {
-                    initFont('Source Han Sans CN');
-                }
-                //init auto update
-                if (typeof settings.autoUpdateStatus != 'undefined') {
-                    if (settings.autoUpdateStatus) {
-                        initAutoUpdate(true);
-                    } else {
-                        initAutoUpdate(false);
-                    }
-                } else {
-                    initAutoUpdate(true); //default true
-                }
-                //init auto update channel
-                if (typeof settings.autoUpdateChannel != 'undefined') {
-                    initAutoUpdateChannel(settings.autoUpdateChannel);
-                }
-
-                if (typeof settings.fontsize != 'undefined') {
-                    initFontSize(settings.fontsize);
-                } else {
-                    initFontSize("16");
-                }
-                if (typeof settings.textalign != 'undefined') {
-                    initTextAlign(settings.textalign);
-                } else {
-                    initTextAlign("justify");
-                }
-                if (typeof settings.lineheight != 'undefined') {
-                    initLineHeight(settings.lineheight);
-                } else {
-                    initLineHeight("24");
-                }
-                if (typeof settings.letterspacing != 'undefined') {
-                    initLetterSpacing(settings.letterspacing);
-                } else {
-                    initLetterSpacing("0.06");
-                }
-                if (typeof settings.datedisplay != 'undefined') {
-                    initDateDisplay(settings.datedisplay);
-                } else {
-                    initDateDisplay("all");
-                }
-                if (typeof settings.timedisplay != 'undefined') {
-                    initTimeDisplay(settings.timedisplay);
-                } else {
-                    initTimeDisplay("all");
-                }
-                //init lockscreen
-                if (typeof settings.lockpassword != 'undefined') {
-                    initLockScreen("enabled");
-                } else {
-                    initLockScreen("disabled");
-                }
-                //init widget
-                if (typeof settings.widget_opacity != 'undefined') {
-                    initWidgetOpacity(settings.widget_opacity);
-                } else {
-                    initWidgetOpacity(95);
-                }
-                if (typeof settings.widget_defaultforcetop != 'undefined') {
-                    initWidgetDefaultForceTop(settings.widget_defaultforcetop);
-                } else {
-                    initWidgetDefaultForceTop(false);
-                }
-            }
-        }
-
-        //初始化页面字体
-        function initFont(font) {
-            var cssText = 'body {font-family:' + font + ' !important;}';
-            var modStyle = document.querySelector('#modCSS');
-            if (modStyle === null) {
-                modStyle = document.createElement('style');
-                modStyle.id = 'modCSS';
-                document.body.appendChild(modStyle);
-            }
-            modStyle.innerHTML = cssText;
-
-            //init settings ui
-            initFontFamilySetting(font);
-
-            if (font == 'Source Han Sans CN') {
-                loadWebfont(font);
-            }
-        }
-
-        //加载webfont
-        function loadWebfont(font) {
-            WebFont.load({
-                custom: {
-                    families: [font]
+                    return this;
                 }
             });
-        }
+            //define const
+            const remote = require("electron").remote;
+            const app = remote.app;
+            //import json storage
+            const storage = require("electron-json-storage");
 
-        //初始化自动更新相关设置
-        //status -> bool
-        function initAutoUpdate(status) {
-            $(document).ready(function() {
-                if (status) {
-                    $('#cb-autoUpdateEnabled').attr('checked', "true");
-                    document.getElementById('select-updateChannel').disabled = false;
+            const { dialog } = require("electron").remote;
+
+            const { ipcRenderer } = require("electron");
+
+            let time = require("../app/tools/time.js");
+
+            const WebFont = require("webfontloader");
+
+            var storagePath = app.getPath("userData");
+
+            var settings;
+
+            //获取indebug
+            global.indebug = remote.getGlobal("indebug");
+
+            //读取设置
+            storage.get("settings", function(error, data) {
+                if (error) {
+                    console.error(error);
+                    settingsInit(null);
+                    return;
                 } else {
-                    document.getElementById('select-updateChannel').disabled = true;
+                    //获取callback回传的json
+                    settings = data;
+                    settingsInit(settings);
                 }
-            });
-        }
-
-        function initAutoUpdateChannel(channel) {
-            $(document).ready(function() {
-                $('#select-updateChannel').val(channel);
-            });
-        }
-
-        //初始化Notesid
-        function initNotesId(id) {
-            if (typeof id == 'undefined') {
-                id = 0;
-            }
-            $(document).ready(function() {
-                id = id - 1; //存储的id是当前最后一个id+1
-                if (typeof id == 'number' && id >= 0) {
-                    $('#span-notesId').html(id);
-                } else {
-                    $('#span-notesId').html('0');
-                }
-            });
-        }
-
-        //初始化通用设置
-        function initTheme(theme) {
-            $(document).ready(function() {
-                $('#select-themes').val(theme);
-            });
-        }
-
-        function initLanguage(language) {
-            $(document).ready(function() {
-                $('#select-language').val(language);
-            });
-        }
-
-        function initCloseOption(closeOption) {
-            $(document).ready(function() {
-                $('#select-closeOption').val(closeOption);
-            });
-        }
-
-        function initLockScreen(status) {
-            switch (status) {
-                case 'enabled':
-                    $('#settings-item-lockscreen-enabled').css('display', 'block');
-                    $('#settings-item-lockscreen-default').css('display', 'none');
-                    if (typeof settings.locktype != 'undefined') {
-                        $('#select-locktype').val(settings.locktype);
-                    } else {
-                        $('#select-locktype').val('manual');
-                    }
-                    break;
-                case 'disabled':
-                    $('#settings-item-lockscreen-enabled').css('display', 'none');
-                    $('#settings-item-lockscreen-default').css('display', 'block');
-                    break;
-            }
-        }
-
-        //初始化widget
-        function initWidgetOpacity(opacity) {
-            $('#range-widget-opacity').val(opacity);
-            $('#range-widget-opacity-label').text(opacity / 100);
-        }
-
-        function initWidgetDefaultForceTop(forceTop) {
-            $(document).ready(function() {
-                if (forceTop) {
-                    $('#cb-widget-defaultForceTop').attr('checked', "true");
-                }
-            });
-        }
-
-        //初始化显示设置选项
-        function initFontFamilySetting(font) {
-            $(document).ready(function() {
-                $('#select-fontfamily').val(font);
-            });
-        }
-
-        function initFontSize(fontsize) {
-            $(document).ready(function() {
-                $('#select-fontsize').val(fontsize);
-            });
-        }
-
-        function initTextAlign(align) {
-            $(document).ready(function() {
-                $('#select-textalign').val(align);
-            });
-        }
-
-        function initLineHeight(lineheight) {
-            $(document).ready(function() {
-                $('#select-lineheight').val(lineheight);
-            });
-        }
-
-        function initLetterSpacing(letterspacing) {
-            $(document).ready(function() {
-                $('#select-letterspacing').val(letterspacing);
-            });
-        }
-
-        function initDateDisplay(datedisplay) {
-            $(document).ready(function() {
-                $('#select-datedisplay').val(datedisplay);
-            });
-        }
-
-        function initTimeDisplay(timedisplay) {
-            $(document).ready(function() {
-                $('#select-timedisplay').val(timedisplay);
-            });
-        }
-
-        function initLastBackupTime(lasttime) {
-            if (typeof lasttime == 'string') {
                 $(document).ready(function() {
-                    $('#btn-backupNotes').html("备份（最近一次: " + lasttime + "）");
+                    ipcRenderer.send("settings-window-ready");
+                });
+            });
+
+            //读取noteid
+            storage.get("notesid" + (global.indebug ? "_dev" : ""), function(error, data) {
+                if (error) {
+                    console.error(error);
+                    initNotesId(null);
+                    return;
+                } else {
+                    //获取callback回传的json
+                    if (typeof data != "undefined") {
+                        initNotesId(data.id);
+                    }
+                }
+            });
+
+            //读取最后一次备份时间
+            storage.get("lastBackupTime", function(err, data) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    if (typeof data != "undefined") {
+                        initLastBackupTime(data.lasttime);
+                    }
+                }
+            });
+
+            function settingsInit(settings) {
+                var cssText = "";
+                //build css
+                if (settings == null) {
+                    //read error
+                    $("#main-style").attr("href", "static/main.default.css");
+
+                    initTheme("default");
+                    initFont("Source Han Sans CN");
+                    //初始化设置
+                    //init auto update
+                    initAutoUpdate(true);
+                    initLanguage("zh-cn");
+
+                    //default settings
+                    initFontSize("16");
+                    initTextAlign("justify");
+                    initLineHeight("24");
+                    initLetterSpacing("0.06");
+                    initDateDisplay("all");
+                    initTimeDisplay("all");
+
+                    initWidgetOpacity(95);
+                    initWidgetDefaultForceTop(false);
+
+                    current_i18n = "zh-cn";
+                    $.getScript("static/i18n/zh-cn.js");
+                } else {
+                    //read success
+                    //init close option
+                    if (typeof settings.closeOption != "undefined") {
+                        initCloseOption(settings.closeOption);
+                    } else {
+                        initCloseOption("tray");
+                    }
+                    //init language
+                    if (typeof settings.language != "undefined") {
+                        if (settings.language != "zh-cn") {
+                            $(document).ready(function() {
+                                applyLanguage(settings.language);
+                            });
+                        } else {
+                            $.getScript("static/i18n/zh-cn.js");
+                        }
+                        initLanguage(settings.language);
+                        current_i18n = settings.language;
+                    } else {
+                        current_i18n = "zh-cn";
+                        $.getScript("static/i18n/zh-cn.js");
+                    }
+                    //init themes
+                    if (typeof settings.theme != "undefined") {
+                        initTheme(settings.theme);
+                        $("#main-style").attr("href", "static/main." + settings.theme + ".css");
+                    } else {
+                        initTheme("default");
+                        $("#main-style").attr("href", "static/main.default.css");
+                    }
+
+                    //init font family
+                    if (typeof settings.fontfamily != "undefined") {
+                        initFont(settings.fontfamily);
+                    } else {
+                        initFont("Source Han Sans CN");
+                    }
+                    //init auto update
+                    if (typeof settings.autoUpdateStatus != "undefined") {
+                        if (settings.autoUpdateStatus) {
+                            initAutoUpdate(true);
+                        } else {
+                            initAutoUpdate(false);
+                        }
+                    } else {
+                        initAutoUpdate(true); //default true
+                    }
+                    //init auto update channel
+                    if (typeof settings.autoUpdateChannel != "undefined") {
+                        initAutoUpdateChannel(settings.autoUpdateChannel);
+                    }
+
+                    if (typeof settings.fontsize != "undefined") {
+                        initFontSize(settings.fontsize);
+                    } else {
+                        initFontSize("16");
+                    }
+                    if (typeof settings.textalign != "undefined") {
+                        initTextAlign(settings.textalign);
+                    } else {
+                        initTextAlign("justify");
+                    }
+                    if (typeof settings.lineheight != "undefined") {
+                        initLineHeight(settings.lineheight);
+                    } else {
+                        initLineHeight("24");
+                    }
+                    if (typeof settings.letterspacing != "undefined") {
+                        initLetterSpacing(settings.letterspacing);
+                    } else {
+                        initLetterSpacing("0.06");
+                    }
+                    if (typeof settings.datedisplay != "undefined") {
+                        initDateDisplay(settings.datedisplay);
+                    } else {
+                        initDateDisplay("all");
+                    }
+                    if (typeof settings.timedisplay != "undefined") {
+                        initTimeDisplay(settings.timedisplay);
+                    } else {
+                        initTimeDisplay("all");
+                    }
+                    //init lockscreen
+                    if (typeof settings.lockpassword != "undefined") {
+                        initLockScreen("enabled");
+                    } else {
+                        initLockScreen("disabled");
+                    }
+                    //init widget
+                    if (typeof settings.widget_opacity != "undefined") {
+                        initWidgetOpacity(settings.widget_opacity);
+                    } else {
+                        initWidgetOpacity(95);
+                    }
+                    if (typeof settings.widget_defaultforcetop != "undefined") {
+                        initWidgetDefaultForceTop(settings.widget_defaultforcetop);
+                    } else {
+                        initWidgetDefaultForceTop(false);
+                    }
+                }
+            }
+
+            //初始化页面字体
+            function initFont(font) {
+                var cssText = "body {font-family:" + font + " !important;}";
+                var modStyle = document.querySelector("#modCSS");
+                if (modStyle === null) {
+                    modStyle = document.createElement("style");
+                    modStyle.id = "modCSS";
+                    document.body.appendChild(modStyle);
+                }
+                modStyle.innerHTML = cssText;
+
+                //init settings ui
+                initFontFamilySetting(font);
+
+                if (font == "Source Han Sans CN") {
+                    loadWebfont(font);
+                }
+            }
+
+            //加载webfont
+            function loadWebfont(font) {
+                WebFont.load({
+                    custom: {
+                        families: [font]
+                    }
                 });
             }
-        }
-    </script>
-</head>
 
-<body class="settings-body">
-    <!-- titlebar -->
-    <div class="container-titlebar col-lg-12 drag">
-        <div class="title" id="app-title" data-lang="settings">设置</div>
-        <div id="electron-titlebar" class="titlebar drag" style="position: fixed !important;z-index: 10;"></div>
-    </div>
-    <script>
-        require('electron-titlebar');
-    </script>
-    <div class="container-settings">
-        <div class="settings-titles">
-            <div class="settings-titles-block settings-titles-general settings-titles-clicked" data-target="settings-general">
-                <i class="fa fa-cog fa-fw settings-titles-icon" aria-hidden="true"></i>
-                <span class="settings-titles-span" data-lang="general">通用</span>
-            </div>
-            <div class="settings-titles-block settings-titles-notes" data-target="settings-notes">
-                <i class="fa fa-sticky-note-o fa-fw settings-titles-icon" aria-hidden="true"></i>
-                <span class="settings-titles-span" data-lang="note">便签</span>
-            </div>
-            <div class="settings-titles-block settings-titles-widget" data-target="settings-widget">
-                <i class="fa fa-object-ungroup fa-fw settings-titles-icon" aria-hidden="true"></i>
-                <span class="settings-titles-span" data-lang="settings_widget">桌面组件</span>
-            </div>
-            <div class="settings-titles-block settings-titles-display" data-target="settings-display">
-                <i class="fa fa-paint-brush fa-fw settings-titles-icon" aria-hidden="true"></i>
-                <span class="settings-titles-span" data-lang="display">显示</span>
-            </div>
+            //初始化自动更新相关设置
+            //status -> bool
+            function initAutoUpdate(status) {
+                $(document).ready(function() {
+                    if (status) {
+                        $("#cb-autoUpdateEnabled").attr("checked", "true");
+                        document.getElementById("select-updateChannel").disabled = false;
+                    } else {
+                        document.getElementById("select-updateChannel").disabled = true;
+                    }
+                });
+            }
+
+            function initAutoUpdateChannel(channel) {
+                $(document).ready(function() {
+                    $("#select-updateChannel").val(channel);
+                });
+            }
+
+            //初始化Notesid
+            function initNotesId(id) {
+                if (typeof id == "undefined") {
+                    id = 0;
+                }
+                $(document).ready(function() {
+                    id = id - 1; //存储的id是当前最后一个id+1
+                    if (typeof id == "number" && id >= 0) {
+                        $("#span-notesId").html(id);
+                    } else {
+                        $("#span-notesId").html("0");
+                    }
+                });
+            }
+
+            //初始化通用设置
+            function initTheme(theme) {
+                $(document).ready(function() {
+                    $("#select-themes").val(theme);
+                });
+            }
+
+            function initLanguage(language) {
+                $(document).ready(function() {
+                    $("#select-language").val(language);
+                });
+            }
+
+            function initCloseOption(closeOption) {
+                $(document).ready(function() {
+                    $("#select-closeOption").val(closeOption);
+                });
+            }
+
+            function initLockScreen(status) {
+                switch (status) {
+                    case "enabled":
+                        $("#settings-item-lockscreen-enabled").css("display", "flex");
+                        $("#settings-item-lockscreen-default").css("display", "none");
+                        if (typeof settings.locktype != "undefined") {
+                            $("#select-locktype").val(settings.locktype);
+                        } else {
+                            $("#select-locktype").val("manual");
+                        }
+                        break;
+                    case "disabled":
+                        $("#settings-item-lockscreen-enabled").css("display", "none");
+                        $("#settings-item-lockscreen-default").css("display", "flex");
+                        break;
+                }
+            }
+
+            //初始化widget
+            function initWidgetOpacity(opacity) {
+                $("#range-widget-opacity").val(opacity);
+                $("#range-widget-opacity-label").text(opacity / 100);
+            }
+
+            function initWidgetDefaultForceTop(forceTop) {
+                $(document).ready(function() {
+                    if (forceTop) {
+                        $("#cb-widget-defaultForceTop").attr("checked", "true");
+                    }
+                });
+            }
+
+            //初始化显示设置选项
+            function initFontFamilySetting(font) {
+                $(document).ready(function() {
+                    $("#select-fontfamily").val(font);
+                });
+            }
+
+            function initFontSize(fontsize) {
+                $(document).ready(function() {
+                    $("#select-fontsize").val(fontsize);
+                });
+            }
+
+            function initTextAlign(align) {
+                $(document).ready(function() {
+                    $("#select-textalign").val(align);
+                });
+            }
+
+            function initLineHeight(lineheight) {
+                $(document).ready(function() {
+                    $("#select-lineheight").val(lineheight);
+                });
+            }
+
+            function initLetterSpacing(letterspacing) {
+                $(document).ready(function() {
+                    $("#select-letterspacing").val(letterspacing);
+                });
+            }
+
+            function initDateDisplay(datedisplay) {
+                $(document).ready(function() {
+                    $("#select-datedisplay").val(datedisplay);
+                });
+            }
+
+            function initTimeDisplay(timedisplay) {
+                $(document).ready(function() {
+                    $("#select-timedisplay").val(timedisplay);
+                });
+            }
+
+            function initLastBackupTime(lasttime) {
+                if (typeof lasttime == "string") {
+                    $(document).ready(function() {
+                        $("#btn-backupNotes").html("备份（最近一次: " + lasttime + "）");
+                    });
+                }
+            }
+        </script>
+    </head>
+
+    <body class="settings-body">
+        <!-- titlebar -->
+        <div class="container-titlebar col-lg-12 drag">
+            <div class="title" id="app-title" data-lang="settings">设置</div>
+            <div id="electron-titlebar" class="titlebar drag" style="position: fixed !important;z-index: 10;"></div>
         </div>
         <script>
-            var settings_window_height = {
-                general: 530,
-                notes: 380,
-                widget: 290,
-                display: 530,
-            }; //general notes display
-            //绑定点击事件
-            $('.settings-titles-block').click(function() {
-                $('.settings-titles-block').removeClass('settings-titles-clicked');
-                $(this).addClass('settings-titles-clicked');
-                $('.settings-sections').addClass('settings-sections-hidden');
-                $('.' + $(this).attr('data-target')).removeClass('settings-sections-hidden');
-            });
-            $('.settings-titles-general').click(function() {
-                ipcRenderer.send("settings-window-heightChange", settings_window_height.general);
-            })
-            $('.settings-titles-notes').click(function() {
-                ipcRenderer.send("settings-window-heightChange", settings_window_height.notes);
-            });
-            $('.settings-titles-widget').click(function() {
-                ipcRenderer.send("settings-window-heightChange", settings_window_height.widget);
-            });
-            $('.settings-titles-display').click(function() {
-                ipcRenderer.send("settings-window-heightChange", settings_window_height.display);
-            });
+            require("electron-titlebar");
         </script>
-        <!-- sections -->
-        <div class="settings-sections settings-general">
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="enable_autoupdate">启用自动更新</span>
+        <div class="container-settings">
+            <div class="settings-titles">
+                <div class="settings-titles-block settings-titles-general settings-titles-clicked" data-target="settings-general">
+                    <i class="fa fa-cog fa-fw settings-titles-icon" aria-hidden="true"></i>
+                    <span class="settings-titles-span" data-lang="general">通用</span>
                 </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <div class="abc-checkbox abc-checkbox-primary settings-control-checkbox">
-                        <input type="checkbox" id="cb-autoUpdateEnabled" onclick="updateEnabledChanged(this);">
-                        <label for="cb-autoUpdateEnabled" data-lang="enable">
-                            启用
-                        </label>
+                <div class="settings-titles-block settings-titles-notes" data-target="settings-notes">
+                    <i class="fa fa-sticky-note-o fa-fw settings-titles-icon" aria-hidden="true"></i>
+                    <span class="settings-titles-span" data-lang="note">便签</span>
+                </div>
+                <div class="settings-titles-block settings-titles-widget" data-target="settings-widget">
+                    <i class="fa fa-object-ungroup fa-fw settings-titles-icon" aria-hidden="true"></i>
+                    <span class="settings-titles-span" data-lang="settings_widget">桌面组件</span>
+                </div>
+                <div class="settings-titles-block settings-titles-display" data-target="settings-display">
+                    <i class="fa fa-paint-brush fa-fw settings-titles-icon" aria-hidden="true"></i>
+                    <span class="settings-titles-span" data-lang="display">显示</span>
+                </div>
+            </div>
+            <script>
+                var settings_window_height = {
+                    general: 536,
+                    notes: 386,
+                    widget: 296,
+                    display: 536
+                }; //general notes display
+                //绑定点击事件
+                $(".settings-titles-block").click(function() {
+                    $(".settings-titles-block").removeClass("settings-titles-clicked");
+                    $(this).addClass("settings-titles-clicked");
+                    $(".settings-sections").addClass("settings-sections-hidden");
+                    $("." + $(this).attr("data-target")).removeClass("settings-sections-hidden");
+                });
+                $(".settings-titles-general").click(function() {
+                    ipcRenderer.send("settings-window-heightChange", settings_window_height.general);
+                });
+                $(".settings-titles-notes").click(function() {
+                    ipcRenderer.send("settings-window-heightChange", settings_window_height.notes);
+                });
+                $(".settings-titles-widget").click(function() {
+                    ipcRenderer.send("settings-window-heightChange", settings_window_height.widget);
+                });
+                $(".settings-titles-display").click(function() {
+                    ipcRenderer.send("settings-window-heightChange", settings_window_height.display);
+                });
+            </script>
+            <!-- sections -->
+            <div class="settings-sections settings-general">
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="enable_autoupdate">启用自动更新</span>
                     </div>
-                    <script>
-                        function updateEnabledChanged(checkbox) {
-                            if (checkbox.checked) {
-                                document.getElementById('select-updateChannel').disabled = false;
-                            } else {
-                                document.getElementById('select-updateChannel').disabled = true;
-                            }
-                        }
-                    </script>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="update_channel">自动更新通道</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select" id="select-updateChannel">
-                        <option value="0">Alpha</option>
-                        <option value="100">Pre-Release-Test</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="theme">主题</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select" id="select-themes">
-                        <option value="blackwhite" data-lang="theme_blackwhite">黑白（默认）</option>
-                        <option value="default" data-lang="theme_bluewhite">蓝白</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="language">语言</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select" id="select-language">
-                        <option value="zh-cn">简体中文</option>
-                        <option value="en-us">English</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="close_option">关闭选项</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select" id="select-closeOption">
-                        <option value="tray" data-lang="close_minimize_to_tray">最小化到托盘</option>
-                        <option value="close" data-lang="close_just_close">关闭</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="lockscreen">锁屏</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control" id="settings-item-lockscreen-default">
-                    <div style="display: flex;">
-                        <div class="br-col-9" id="settings-item-lockscreen-input">
-                            <input type="password" class="form-control" placeholder="(锁屏密码)" id="input-lockscreen-password">
-                        </div>
-                        <div class="br-col-3" id="settings-item-lockscreen-default-enable">
-                            <button class="btn btn-primary brbtn-primary" id="btn-enableLockScreen" onclick="submitLockScreen();" style="width:84px;margin-left:7px;" data-lang="enable">启用</button>
-                        </div>
-                        <div id="settings-item-lockscreen-default-reset">
-                            <div class="br-col-3" style="display:flex;">
-                                <button class="btn btn-primary brbtn-primary settings-button-lockscreen-icon" onclick="submitLockScreen();">
-                                    <i class="fa fa-check" aria-hidden="true"></i>
-                                </button>
-                                <button class="btn btn-primary brbtn-primary settings-button-lockscreen-icon" onclick="resetLockScreenCancel();">
-                                    <i class="fa fa-times" aria-hidden="true"></i>
-                                </button>
-                            </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <div class="abc-checkbox abc-checkbox-primary settings-control-checkbox">
+                            <input type="checkbox" id="cb-autoUpdateEnabled" onclick="updateEnabledChanged(this);" />
+                            <label for="cb-autoUpdateEnabled" data-lang="enable">
+                                启用
+                            </label>
                         </div>
                         <script>
-                            function resetLockScreen() {
-                                $('#settings-item-lockscreen-enabled').css('display', 'none');
-                                $('#settings-item-lockscreen-default').css('display', 'block');
-                                $('#settings-item-lockscreen-input').removeAttr('class');
-                                $('#settings-item-lockscreen-input').addClass('br-col-9');
-                                $('#settings-item-lockscreen-default-enable').css('display', 'none');
-                                $('#settings-item-lockscreen-default-reset').css('display', 'block');
-                                $('#input-lockscreen-password').val('');
-                            }
-
-                            function resetLockScreenCancel() {
-                                $('#settings-item-lockscreen-default').css('display', 'none');
-                                $('#settings-item-lockscreen-enabled').css('display', 'block');
+                            function updateEnabledChanged(checkbox) {
+                                if (checkbox.checked) {
+                                    document.getElementById("select-updateChannel").disabled = false;
+                                } else {
+                                    document.getElementById("select-updateChannel").disabled = true;
+                                }
                             }
                         </script>
                     </div>
                 </div>
-                <div class="settings-item-child settings-item-control" id="settings-item-lockscreen-enabled">
-                    <div style="display:flex;">
-                        <div style="flex: 0 0 30%">
-                            <button class="btn btn-danger brbtn-danger" id="btn-resetLockScreen" onclick="resetLockScreen();" data-lang="reset_password">重置密码</button>
-                        </div>
-                        <div style="flex: 0 0 3%"></div>
-                        <div style="flex: 0 0 30%">
-                            <button class="btn btn-danger brbtn-danger" id="btn-disableLockScreen" onclick="disableLockScreen();" data-lang="disable">禁用</button>
-                        </div>
-                        <div style="flex: 0 0 3%"></div>
-                        <div style="flex: 0 0 34%">
-                            <select class="form-control settings-select" id="select-locktype">
-                                <option value="manual" data-lang="lockscreen_manual">仅手动锁屏</option>
-                                <option value="minimize" data-lang="lockscreen_minimize">最小化时</option>
-                                <option value="blur" data-lang="lockscreen_blur">失去焦点时</option>
-                            </select>
-                        </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="update_channel">自动更新通道</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-updateChannel">
+                            <option value="0">Alpha</option>
+                            <option value="100">Pre-Release-Test</option>
+                        </select>
                     </div>
                 </div>
-                <script>
-                    function submitLockScreen() {
-                        var lockpassword = $('#input-lockscreen-password').val().trim();
-                        if (lockpassword.length < 1) {
-                            //输入不对
-                            $('#input-lockscreen-password').addClass('is-invalid');
-                        } else {
-                            settings.lockpassword = crypto.createHmac('sha256', 'fastnote').update(lockpassword).digest('hex');
-                            storage.set('settings', settings, function(error) {
-                                if (error) {
-                                    dialog.showMessageBox({
-                                        type: 'error',
-                                        title: '错误',
-                                        message: '启用锁屏时发生错误。',
-                                        detail: error
-                                    });
-                                } else {
-                                    $('#input-lockscreen-password').removeClass('is-invalid');
-                                    //设置界面为已开启锁屏后的样式
-                                    $('#settings-item-lockscreen-default').css('display', 'none');
-                                    $('#settings-item-lockscreen-enabled').css('display', 'block');
-                                    //设置locktype
-                                    if (typeof settings.locktype != 'undefined') {
-                                        $('#select-locktype').val(settings.locktype);
-                                    } else {
-                                        $('#select-locktype').val('manual');
-                                    }
-                                }
-                            });
-                        }
-                    }
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="theme">主题</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-themes">
+                            <option value="default" data-lang="theme_bluewhite">科技蓝（默认）</option>
+                            <option value="green" data-lang="theme_green">静野绿</option>
+                            <option value="blackwhite" data-lang="theme_blackwhite">暗色</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="language">语言</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-language">
+                            <option value="zh-cn">简体中文</option>
+                            <option value="en-us">English</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="close_option">关闭选项</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-closeOption">
+                            <option value="tray" data-lang="close_minimize_to_tray">最小化到托盘</option>
+                            <option value="close" data-lang="close_just_close">关闭</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="lockscreen">锁屏</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control" id="settings-item-lockscreen-default">
+                        <div id="settings-item-lockscreen-input">
+                            <input type="password" class="form-control" placeholder="(锁屏密码)" id="input-lockscreen-password" />
+                        </div>
+                        <div id="settings-item-lockscreen-default-enable">
+                            <button class="btn btn-primary brbtn-primary" id="btn-enableLockScreen" onclick="submitLockScreen();" data-lang="enable">启用</button>
+                        </div>
+                        <div id="settings-item-lockscreen-default-reset">
+                            <button class="btn btn-primary brbtn-primary settings-button-lockscreen-icon" onclick="submitLockScreen();">
+                                <i class="fa fa-check" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn btn-primary brbtn-primary settings-button-lockscreen-icon" onclick="resetLockScreenCancel();">
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <script>
+                            function resetLockScreen() {
+                                $("#settings-item-lockscreen-enabled").css("display", "none");
+                                $("#settings-item-lockscreen-default").css("display", "flex");
+                                $("#settings-item-lockscreen-default-enable").css("display", "none");
+                                $("#settings-item-lockscreen-default-reset").css("display", "flex");
+                                $("#input-lockscreen-password").val("");
+                            }
 
-                    function disableLockScreen() {
-                        dialog.showMessageBox({
-                            type: "warning",
-                            buttons: ['取消', '确认'],
-                            defaultId: 0,
-                            title: '确认操作',
-                            message: '确定要取消锁屏密码吗？',
-                            detail: '这会使你保存的便签变得不安全。'
-                        }, function(res) {
-                            if (res == 1) {
-                                settings.lockpassword = undefined;
-                                storage.set('settings', settings, function(error) {
+                            function resetLockScreenCancel() {
+                                $("#settings-item-lockscreen-default").css("display", "none");
+                                $("#settings-item-lockscreen-enabled").css("display", "flex");
+                            }
+                        </script>
+                    </div>
+                    <div class="settings-item-child settings-item-control" id="settings-item-lockscreen-enabled">
+                        <button class="btn btn-danger brbtn-danger" id="btn-resetLockScreen" onclick="resetLockScreen();" data-lang="reset_password">重置密码</button>
+                        <button class="btn btn-danger brbtn-danger" id="btn-disableLockScreen" onclick="disableLockScreen();" data-lang="disable">禁用</button>
+                        <select class="form-control settings-select" id="select-locktype">
+                            <option value="manual" data-lang="lockscreen_manual">仅手动锁屏</option>
+                            <option value="minimize" data-lang="lockscreen_minimize">最小化时</option>
+                            <option value="blur" data-lang="lockscreen_blur">失去焦点时</option>
+                        </select>
+                    </div>
+                    <script>
+                        function submitLockScreen() {
+                            var lockpassword = $("#input-lockscreen-password")
+                                .val()
+                                .trim();
+                            if (lockpassword.length < 1) {
+                                //输入不对
+                                $("#input-lockscreen-password").addClass("is-invalid");
+                            } else {
+                                settings.lockpassword = crypto
+                                    .createHmac("sha256", "fastnote")
+                                    .update(lockpassword)
+                                    .digest("hex");
+                                storage.set("settings", settings, function(error) {
                                     if (error) {
                                         dialog.showMessageBox({
-                                            type: 'error',
-                                            title: '错误',
-                                            message: '禁用锁屏时发生错误。',
+                                            type: "error",
+                                            title: "错误",
+                                            message: "启用锁屏时发生错误。",
                                             detail: error
                                         });
                                     } else {
-                                        $('#settings-item-lockscreen-enabled').css('display', 'none');
-                                        $('#settings-item-lockscreen-default').css('display', 'block');
-                                        $('#settings-item-lockscreen-input').removeAttr('class');
-                                        $('#settings-item-lockscreen-input').addClass('br-col-10');
-                                        $('#input-lockscreen-password').val('');
-                                        $('#settings-item-lockscreen-default-reset').css('display', 'none');
-                                        $('#settings-item-lockscreen-default-enable').css('display', 'block');
+                                        $("#input-lockscreen-password").removeClass("is-invalid");
+                                        //设置界面为已开启锁屏后的样式
+                                        $("#settings-item-lockscreen-default").css("display", "none");
+                                        $("#settings-item-lockscreen-enabled").css("display", "flex");
+                                        //设置locktype
+                                        if (typeof settings.locktype != "undefined") {
+                                            $("#select-locktype").val(settings.locktype);
+                                        } else {
+                                            $("#select-locktype").val("manual");
+                                        }
                                     }
                                 });
                             }
-                        });
-                    }
-                </script>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="reset_settings">重置设置</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <button class="btn btn-danger brbtn-danger" id="btn-resetSettings" onclick="resetSettings();" data-lang="reset">重置</button>
-                </div>
-            </div>
-        </div>
-        <div class="settings-sections settings-notes settings-sections-hidden">
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="current_noteid">当前便签序号：</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <span id="span-notesId"></span>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="reset_notes">重置便签</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <button class="btn btn-danger brbtn-danger" id="btn-resetNotes" data-lang="reset">重置</button>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="backup_recover_notes">备份/恢复便签</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <button class="btn btn-primary brbtn-primary" id="btn-backupNotes" onclick="backupNotes();" style="margin-bottom: 12px;" data-lang="backup">备份</button>
-                    <button class="btn btn-primary brbtn-primary" id="btn-importNotes" onclick="importNotes();" data-lang="import">导入</button>
-                </div>
-            </div>
-        </div>
-        <script>
-            var isBackupDialogOpened = false;
+                        }
 
-            function backupNotes() {
-                if (!isBackupDialogOpened) {
-                    isBackupDialogOpened = true;
-                    dialog.showSaveDialog({
-                        title: "备份便签",
-                        defaultPath: "fastnote-backup-" + moment().format('YYYYMMDDHHmmss') + ".fnbak",
-                        buttonlabel: "保存备份",
-                        filters: [{
-                            name: 'Fastnote 备份',
-                            extensions: ['fnbak']
-                        }]
-                    }, function(filename) {
-                        isBackupDialogOpened = false;
-                        if (typeof filename == "string" && filename.length > 0) {
-                            //保存备份
-                            try {
-                                let t = _backupNotes(filename);
-                                if (typeof t == 'string') {
-                                    //备份失败
-                                    backupNotesErrorBox(t);
-                                } else if (typeof t == 'boolean') {
-                                    //备份成功
-                                    dialog.showMessageBox({
-                                        type: 'info',
-                                        title: '备份成功',
-                                        message: '便签已经备份成功，请妥善保管好您的备份文件。',
-                                        buttons: ['好的']
-                                    });
-                                    setLastBackupTime();
-                                } else if (typeof t == 'object') {
-                                    var failed = "";
-                                    t.failedNotes.forEach(function(filename) {
-                                        failed = failed + filename + "\n";
-                                    })
-                                    dialog.showMessageBox({
-                                        type: 'info',
-                                        title: '备份成功',
-                                        message: "便签部分备份成功，" + t.failedNotes.length + "个便签在备份时出现错误。",
-                                        detail: "以下是出错的文件：\n" + failed,
-                                        buttons: ['确认']
-                                    });
-                                    setLastBackupTime();
+                        function disableLockScreen() {
+                            dialog
+                                .showMessageBox({
+                                    type: "warning",
+                                    buttons: ["取消", "确认"],
+                                    defaultId: 0,
+                                    title: "确认操作",
+                                    message: "确定要取消锁屏密码吗？",
+                                    detail: "这会使你保存的便签变得不安全。"
+                                })
+                                .then(res => {
+                                    if (res.response == 1) {
+                                        settings.lockpassword = undefined;
+                                        storage.set("settings", settings, function(error) {
+                                            if (error) {
+                                                dialog.showMessageBox({
+                                                    type: "error",
+                                                    title: "错误",
+                                                    message: "禁用锁屏时发生错误。",
+                                                    detail: error
+                                                });
+                                            } else {
+                                                $("#settings-item-lockscreen-enabled").css("display", "none");
+                                                $("#settings-item-lockscreen-default").css("display", "flex");
+                                                $("#input-lockscreen-password").val("");
+                                                $("#settings-item-lockscreen-default-reset").css("display", "none");
+                                                $("#settings-item-lockscreen-default-enable").css("display", "flex");
+                                            }
+                                        });
+                                    }
+                                });
+                        }
+                    </script>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="reset_settings">重置设置</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <button class="btn btn-danger brbtn-danger" id="btn-resetSettings" onclick="resetSettings();" data-lang="reset">重置</button>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-sections settings-notes settings-sections-hidden">
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="current_noteid">当前便签序号：</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <span id="span-notesId"></span>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="reset_notes">重置便签</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <button class="btn btn-danger brbtn-danger" id="btn-resetNotes" data-lang="reset">重置</button>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="backup_recover_notes">备份/恢复便签</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <button class="btn btn-primary brbtn-primary" id="btn-backupNotes" onclick="backupNotes();" style="margin-bottom: 12px;" data-lang="backup">备份</button>
+                        <button class="btn btn-primary brbtn-primary" id="btn-importNotes" onclick="importNotes();" data-lang="import">导入</button>
+                    </div>
+                </div>
+            </div>
+            <script>
+                var isBackupDialogOpened = false;
+
+                function backupNotes() {
+                    if (!isBackupDialogOpened) {
+                        isBackupDialogOpened = true;
+                        dialog.showSaveDialog(
+                            {
+                                title: "备份便签",
+                                defaultPath: "fastnote-backup-" + moment().format("YYYYMMDDHHmmss") + ".fnbak",
+                                buttonlabel: "保存备份",
+                                filters: [
+                                    {
+                                        name: "Fastnote 备份",
+                                        extensions: ["fnbak"]
+                                    }
+                                ]
+                            },
+                            function(filename) {
+                                isBackupDialogOpened = false;
+                                if (typeof filename == "string" && filename.length > 0) {
+                                    //保存备份
+                                    try {
+                                        let t = _backupNotes(filename);
+                                        if (typeof t == "string") {
+                                            //备份失败
+                                            backupNotesErrorBox(t);
+                                        } else if (typeof t == "boolean") {
+                                            //备份成功
+                                            dialog.showMessageBox({
+                                                type: "info",
+                                                title: "备份成功",
+                                                message: "便签已经备份成功，请妥善保管好您的备份文件。",
+                                                buttons: ["好的"]
+                                            });
+                                            setLastBackupTime();
+                                        } else if (typeof t == "object") {
+                                            var failed = "";
+                                            t.failedNotes.forEach(function(filename) {
+                                                failed = failed + filename + "\n";
+                                            });
+                                            dialog.showMessageBox({
+                                                type: "info",
+                                                title: "备份成功",
+                                                message: "便签部分备份成功，" + t.failedNotes.length + "个便签在备份时出现错误。",
+                                                detail: "以下是出错的文件：\n" + failed,
+                                                buttons: ["确认"]
+                                            });
+                                            setLastBackupTime();
+                                        }
+                                    } catch (err) {
+                                        backupNotesErrorBox(err);
+                                    }
                                 }
-                            } catch (err) {
-                                backupNotesErrorBox(err);
                             }
-                        }
-                    });
-                }
-            }
-
-            //设置最后一次备份的时间
-            function setLastBackupTime() {
-                var lasttime = {
-                    lasttime: time.getCurrentTime()
-                };
-                storage.set('lastBackupTime', lasttime);
-            }
-
-            //执行备份
-            function _backupNotes(backup_filename) {
-                var notes_backup = [];
-                var notes_backup_failed = []; //备份失败的notes
-                if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/')) {
-                    try {
-                        var files = fs.readdirSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/');
-                    } catch {
-                        return '目录读取错误。';
+                        );
                     }
-                    //当前Note的数目
-                    var notes_count = 0;
-                    files.forEach(function(file) {
+                }
+
+                //设置最后一次备份的时间
+                function setLastBackupTime() {
+                    var lasttime = {
+                        lasttime: time.getCurrentTime()
+                    };
+                    storage.set("lastBackupTime", lasttime);
+                }
+
+                //执行备份
+                function _backupNotes(backup_filename) {
+                    var notes_backup = [];
+                    var notes_backup_failed = []; //备份失败的notes
+                    if (fs.existsSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/")) {
                         try {
-                            var file_stat = fs.statSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + file);
-                        } catch (err) {
-                            return;
+                            var files = fs.readdirSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/");
+                        } catch {
+                            return "目录读取错误。";
                         }
-                        if (!file_stat.isDirectory()) {
-                            notes_count++; //计数
+                        //当前Note的数目
+                        var notes_count = 0;
+                        files.forEach(function(file) {
                             try {
-                                var data = fs.readFileSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + file, 'utf-8');
+                                var file_stat = fs.statSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + file);
                             } catch (err) {
-                                notes_backup_failed.push(file);
                                 return;
                             }
-                            //解析读取到的内容
-                            var note = JSON.parse(data);
-                            //构造备份便签对向并推入内容到数组
-                            notes_backup.push({
-                                filename: file,
-                                content: data,
-                                updatetime: typeof note.updaterawtime != 'undefined' ? note.updaterawtime : note.rawtime,
-                                check: sha256(file + data, 'fastnote') //计算校验哈希
-                            });
-                        }
-                    });
-                    if (notes_count < 1) {
-                        return '没有可以备份的便签。';
-                    } else {
-                        //写入备份到文件
-                        var backup_string = Buffer.from(JSON.stringify(notes_backup)).toString('base64');
-                        try {
-                            fs.writeFileSync(backup_filename, backup_string, 'utf8');
-                        } catch (err) {
-                            return '写入备份文件时发生错误。';
-                        }
-                        //判断是不是没有出错
-                        if (notes_backup_failed.length < 1) {
-                            return true;
+                            if (!file_stat.isDirectory()) {
+                                notes_count++; //计数
+                                try {
+                                    var data = fs.readFileSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + file, "utf-8");
+                                } catch (err) {
+                                    notes_backup_failed.push(file);
+                                    return;
+                                }
+                                //解析读取到的内容
+                                var note = JSON.parse(data);
+                                //构造备份便签对向并推入内容到数组
+                                notes_backup.push({
+                                    filename: file,
+                                    content: data,
+                                    updatetime: typeof note.updaterawtime != "undefined" ? note.updaterawtime : note.rawtime,
+                                    check: sha256(file + data, "fastnote") //计算校验哈希
+                                });
+                            }
+                        });
+                        if (notes_count < 1) {
+                            return "没有可以备份的便签。";
                         } else {
-                            return notes_backup_failed;
+                            //写入备份到文件
+                            var backup_string = Buffer.from(JSON.stringify(notes_backup)).toString("base64");
+                            try {
+                                fs.writeFileSync(backup_filename, backup_string, "utf8");
+                            } catch (err) {
+                                return "写入备份文件时发生错误。";
+                            }
+                            //判断是不是没有出错
+                            if (notes_backup_failed.length < 1) {
+                                return true;
+                            } else {
+                                return notes_backup_failed;
+                            }
                         }
+                    } else {
+                        return "便签目录不存在。";
                     }
-                } else {
-                    return '便签目录不存在。';
                 }
-            }
 
-            function backupNotesErrorBox(err) {
-                if (typeof err == 'string') {
-                    dialog.showMessageBox({
-                        title: '备份错误',
-                        type: 'error',
-                        message: '在保存便签时出现错误。',
-                        detail: err
-                    });
-                } else {
-                    dialog.showMessageBox({
-                        title: '备份错误',
-                        type: 'error',
-                        message: '在保存便签时出现未知错误。'
-                    });
+                function backupNotesErrorBox(err) {
+                    if (typeof err == "string") {
+                        dialog.showMessageBox({
+                            title: "备份错误",
+                            type: "error",
+                            message: "在保存便签时出现错误。",
+                            detail: err
+                        });
+                    } else {
+                        dialog.showMessageBox({
+                            title: "备份错误",
+                            type: "error",
+                            message: "在保存便签时出现未知错误。"
+                        });
+                    }
                 }
-            }
 
-            var isImportDialogOpened = false;
+                var isImportDialogOpened = false;
 
-            function importNotes() {
-                if (!isImportDialogOpened) {
-                    isImportDialogOpened = true;
-                    dialog.showOpenDialog({
-                        title: '导入便签备份',
-                        buttonlabel: '导入',
-                        filters: [{
-                            name: 'Fastnote 备份',
-                            extensions: ['fnbak']
-                        }, {
-                            name: '所有文件',
-                            extensions: ['*']
-                        }],
-                        properties: ["openFile"]
-                    }, function(filePath) {
-                        isImportDialogOpened = false;
-                        if (filePath.length > 0) {
-                            filePath = filePath[0];
-                            dialog.showMessageBox({
-                                title: '恢复备份',
-                                type: 'warning',
-                                buttons: ['确定', '取消'],
-                                title: '确认',
-                                message: '确定要导入这个备份吗？',
-                                detail: '备份文件路径: ' + filePath
-                            }, function(res) {
-                                if (res == 0) {
-                                    //确认导入
-                                    fs.readFile(filePath, (err, data) => {
-                                        if (err) {
-                                            importNotesErrorBox("读取备份文件时出现错误");
-                                            return;
-                                        }
-                                        if (data != undefined) {
-                                            //检测便签目录是否是存在的
-                                            if (!fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/')) {
-                                                try {
-                                                    fs.mkdirSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/');
-                                                } catch (err) {
-                                                    importNotesErrorBox('创建便签目录时出现错误');
-                                                    return;
-                                                }
-                                            }
-                                            //读取备份文件
-                                            var encoded_data = data.toString();
-                                            var buffer = Buffer.from(encoded_data, 'base64');
-                                            backups = JSON.parse(buffer.toString('utf8'));
-                                            //计数变量
-                                            var recover_count = 0;
-                                            var recover_failed_count = 0;
-                                            var recover_failed_files = [];
-                                            var all_recover = false;
-                                            //执行恢复备份
-                                            backups.forEach(backup => {
-                                                //文件校验
-                                                var check = sha256(backup.filename + backup.content, 'fastnote');
-                                                if (check != backup.check) {
-                                                    recover_count++;
-                                                    recover_failed_count++;
-                                                    recover_failed_files.push({
-                                                        filename: backup.filename,
-                                                        err: 0
-                                                    });
-                                                    recoverBackupCompleted(recover_count, backups.length, recover_failed_count, recover_failed_files);
-                                                    return;
-                                                }
-                                                //先判断文件是否存在
-                                                if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + "/notes/" + backup.filename)) {
-                                                    //获取修改时间
-                                                    try {
-                                                        var note_data = fs.readFileSync(storagePath + (global.indebug ? '/devTemp' : '') + "/notes/" + backup.filename);
-                                                    } catch {
-                                                        recover_count++;
-                                                        recover_failed_count++;
-                                                        recover_failed_files.push({
-                                                            filename: backup.filename,
-                                                            err: 1
-                                                        });
-                                                        recoverBackupCompleted(recover_count, backups.length, recover_failed_count, recover_failed_files);
+                function importNotes() {
+                    if (!isImportDialogOpened) {
+                        isImportDialogOpened = true;
+                        dialog.showOpenDialog(
+                            {
+                                title: "导入便签备份",
+                                buttonlabel: "导入",
+                                filters: [
+                                    {
+                                        name: "Fastnote 备份",
+                                        extensions: ["fnbak"]
+                                    },
+                                    {
+                                        name: "所有文件",
+                                        extensions: ["*"]
+                                    }
+                                ],
+                                properties: ["openFile"]
+                            },
+                            function(filePath) {
+                                isImportDialogOpened = false;
+                                if (filePath.length > 0) {
+                                    filePath = filePath[0];
+                                    dialog.showMessageBox(
+                                        {
+                                            title: "恢复备份",
+                                            type: "warning",
+                                            buttons: ["确定", "取消"],
+                                            title: "确认",
+                                            message: "确定要导入这个备份吗？",
+                                            detail: "备份文件路径: " + filePath
+                                        },
+                                        function(res) {
+                                            if (res == 0) {
+                                                //确认导入
+                                                fs.readFile(filePath, (err, data) => {
+                                                    if (err) {
+                                                        importNotesErrorBox("读取备份文件时出现错误");
                                                         return;
                                                     }
-                                                    var note = JSON.parse(note_data);
-                                                    var mtime = typeof note.updaterawtime != 'undefined' ? note.updaterawtime : note.rawtime;
-                                                    //检查修改时间
-                                                    if (backup.updateTime > mtime) {
-                                                        //备份文件较新，直接覆盖
-                                                        fs.writeFile(storagePath + (global.indebug ? '/devTemp' : '') + "/notes/" + backup.filename, backup.content, (err) => {
-                                                            recover_count++;
-                                                            if (err) {
+                                                    if (data != undefined) {
+                                                        //检测便签目录是否是存在的
+                                                        if (!fs.existsSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/")) {
+                                                            try {
+                                                                fs.mkdirSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/");
+                                                            } catch (err) {
+                                                                importNotesErrorBox("创建便签目录时出现错误");
+                                                                return;
+                                                            }
+                                                        }
+                                                        //读取备份文件
+                                                        var encoded_data = data.toString();
+                                                        var buffer = Buffer.from(encoded_data, "base64");
+                                                        backups = JSON.parse(buffer.toString("utf8"));
+                                                        //计数变量
+                                                        var recover_count = 0;
+                                                        var recover_failed_count = 0;
+                                                        var recover_failed_files = [];
+                                                        var all_recover = false;
+                                                        //执行恢复备份
+                                                        backups.forEach(backup => {
+                                                            //文件校验
+                                                            var check = sha256(backup.filename + backup.content, "fastnote");
+                                                            if (check != backup.check) {
+                                                                recover_count++;
                                                                 recover_failed_count++;
                                                                 recover_failed_files.push({
                                                                     filename: backup.filename,
-                                                                    err: 2
+                                                                    err: 0
                                                                 });
+                                                                recoverBackupCompleted(recover_count, backups.length, recover_failed_count, recover_failed_files);
+                                                                return;
                                                             }
-                                                            recoverBackupCompleted(recover_count, backups.length, recover_failed_count, recover_failed_files);
-                                                        });
-                                                    } else {
-                                                        //备份文件较旧，询问
-                                                        dialog.showMessageBox({
-                                                            title: '恢复备份',
-                                                            type: 'warning',
-                                                            message: '检测到已经存在的更新的便签文件，是否覆盖？',
-                                                            detail: '当前文件：' + backup.filename + "\n便签创建时间:" + note.time + (typeof note.updatetime != 'undefined' ? "\n便签更新时间：" + note.updatetime : "") +
-                                                                "\n便签内容: " + (note.text.length > 20 ? note.text.substring(0, 20) + "..." : note.text),
-                                                            defaultId: 1,
-                                                            buttons: ['覆盖', '跳过']
-                                                        }, function(res) {
-                                                            switch (res) {
-                                                                case 0:
-                                                                    fs.writeFile(storagePath + (global.indebug ? '/devTemp' : '') + "/notes/" + backup.filename, backup.content, (err) => {
+                                                            //先判断文件是否存在
+                                                            if (fs.existsSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename)) {
+                                                                //获取修改时间
+                                                                try {
+                                                                    var note_data = fs.readFileSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename);
+                                                                } catch {
+                                                                    recover_count++;
+                                                                    recover_failed_count++;
+                                                                    recover_failed_files.push({
+                                                                        filename: backup.filename,
+                                                                        err: 1
+                                                                    });
+                                                                    recoverBackupCompleted(recover_count, backups.length, recover_failed_count, recover_failed_files);
+                                                                    return;
+                                                                }
+                                                                var note = JSON.parse(note_data);
+                                                                var mtime = typeof note.updaterawtime != "undefined" ? note.updaterawtime : note.rawtime;
+                                                                //检查修改时间
+                                                                if (backup.updateTime > mtime) {
+                                                                    //备份文件较新，直接覆盖
+                                                                    fs.writeFile(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename, backup.content, err => {
                                                                         recover_count++;
                                                                         if (err) {
                                                                             recover_failed_count++;
@@ -973,380 +947,409 @@
                                                                         }
                                                                         recoverBackupCompleted(recover_count, backups.length, recover_failed_count, recover_failed_files);
                                                                     });
-                                                                    break;
-                                                                case 1:
+                                                                } else {
+                                                                    //备份文件较旧，询问
+                                                                    dialog.showMessageBox(
+                                                                        {
+                                                                            title: "恢复备份",
+                                                                            type: "warning",
+                                                                            message: "检测到已经存在的更新的便签文件，是否覆盖？",
+                                                                            detail: "当前文件：" + backup.filename + "\n便签创建时间:" + note.time + (typeof note.updatetime != "undefined" ? "\n便签更新时间：" + note.updatetime : "") + "\n便签内容: " + (note.text.length > 20 ? note.text.substring(0, 20) + "..." : note.text),
+                                                                            defaultId: 1,
+                                                                            buttons: ["覆盖", "跳过"]
+                                                                        },
+                                                                        function(res) {
+                                                                            switch (res) {
+                                                                                case 0:
+                                                                                    fs.writeFile(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename, backup.content, err => {
+                                                                                        recover_count++;
+                                                                                        if (err) {
+                                                                                            recover_failed_count++;
+                                                                                            recover_failed_files.push({
+                                                                                                filename: backup.filename,
+                                                                                                err: 2
+                                                                                            });
+                                                                                        }
+                                                                                        recoverBackupCompleted(recover_count, backups.length, recover_failed_count, recover_failed_files);
+                                                                                    });
+                                                                                    break;
+                                                                                case 1:
+                                                                                    recover_count++;
+                                                                                    return;
+                                                                            }
+                                                                        }
+                                                                    );
+                                                                }
+                                                            } else {
+                                                                //便签文件不存在，直接写入
+                                                                fs.writeFile(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename, backup.content, err => {
                                                                     recover_count++;
-                                                                    return;
+                                                                    if (err) {
+                                                                        recover_failed_count++;
+                                                                        recover_failed_files.push({
+                                                                            filename: backup.filename,
+                                                                            err: 2
+                                                                        });
+                                                                    }
+                                                                    recoverBackupCompleted(recover_count, backups.length, recover_failed_count, recover_failed_files);
+                                                                });
                                                             }
                                                         });
                                                     }
-                                                } else {
-                                                    //便签文件不存在，直接写入
-                                                    fs.writeFile(storagePath + (global.indebug ? '/devTemp' : '') + "/notes/" + backup.filename, backup.content, (err) => {
-                                                        recover_count++;
-                                                        if (err) {
-                                                            recover_failed_count++;
-                                                            recover_failed_files.push({
-                                                                filename: backup.filename,
-                                                                err: 2
-                                                            });
-                                                        }
-                                                        recoverBackupCompleted(recover_count, backups.length, recover_failed_count, recover_failed_files);
-                                                    });
-                                                }
-                                            });
+                                                });
+                                            }
                                         }
-                                    });
+                                    );
                                 }
-                            });
-                        }
-                    });
+                            }
+                        );
+                    }
                 }
-            }
 
-            function recoverBackupCompleted(recover_count, backups_length, recover_failed_count, recover_failed_files) {
-                if (recover_count < backups_length) {
-                    return;
+                function recoverBackupCompleted(recover_count, backups_length, recover_failed_count, recover_failed_files) {
+                    if (recover_count < backups_length) {
+                        return;
+                    }
+                    //备份恢复执行结束
+                    ipcRenderer.send("backup-recover-completed");
+                    //判断是否存在失败的恢复
+                    if (recover_failed_count > 0) {
+                        //构造错误信息
+                        var detail = "";
+                        recover_failed_files.forEach(fail => {
+                            detail = detail + filename + ": ";
+                            switch (err) {
+                                case 0:
+                                    detail = detail + "校验错误";
+                                    break;
+                                case 1:
+                                    detail = detail + "读取已存在的便签时发生错误";
+                                    break;
+                                case 2:
+                                    detail = detail + "写入出错";
+                                    break;
+                            }
+                            detail = detail + "\n";
+                        });
+                        dialog.showMessageBox({
+                            title: "备份恢复完成",
+                            type: "info",
+                            message: "备份恢复完成，部分便签恢复失败。",
+                            buttons: ["确认"],
+                            detail: detail
+                        });
+                    } else {
+                        dialog.showMessageBox({
+                            title: "备份恢复完成",
+                            type: "info",
+                            message: "备份已全部恢复完成。",
+                            buttons: ["确认"]
+                        });
+                    }
                 }
-                //备份恢复执行结束
-                ipcRenderer.send('backup-recover-completed');
-                //判断是否存在失败的恢复
-                if (recover_failed_count > 0) {
-                    //构造错误信息
-                    var detail = "";
-                    recover_failed_files.forEach(fail => {
-                        detail = detail + filename + ": ";
-                        switch (err) {
-                            case 0:
-                                detail = detail + "校验错误";
-                                break;
-                            case 1:
-                                detail = detail + "读取已存在的便签时发生错误";
-                                break;
-                            case 2:
-                                detail = detail + "写入出错";
-                                break;
-                        }
-                        detail = detail + "\n";
-                    });
-                    dialog.showMessageBox({
-                        title: '备份恢复完成',
-                        type: 'info',
-                        message: '备份恢复完成，部分便签恢复失败。',
-                        buttons: ['确认'],
-                        detail: detail
-                    });
-                } else {
-                    dialog.showMessageBox({
-                        title: '备份恢复完成',
-                        type: 'info',
-                        message: '备份已全部恢复完成。',
-                        buttons: ['确认'],
-                    });
-                }
-            }
 
-            function importNotesErrorBox(err) {
-                if (typeof err == 'string') {
-                    dialog.showMessageBox({
-                        title: '备份恢复错误',
-                        type: 'error',
-                        title: 'Fastnote 运行时出现错误',
-                        message: '在导入便签时出现错误。',
-                        buttons: '确定',
-                        detail: err
-                    });
-                } else {
-                    dialog.showMessageBox({
-                        title: '备份恢复错误',
-                        type: 'error',
-                        title: 'Fastnote 运行时出现错误',
-                        message: '在保存便签时出现未知错误。',
-                        buttons: '确定'
-                    });
+                function importNotesErrorBox(err) {
+                    if (typeof err == "string") {
+                        dialog.showMessageBox({
+                            title: "备份恢复错误",
+                            type: "error",
+                            title: "Fastnote 运行时出现错误",
+                            message: "在导入便签时出现错误。",
+                            buttons: "确定",
+                            detail: err
+                        });
+                    } else {
+                        dialog.showMessageBox({
+                            title: "备份恢复错误",
+                            type: "error",
+                            title: "Fastnote 运行时出现错误",
+                            message: "在保存便签时出现未知错误。",
+                            buttons: "确定"
+                        });
+                    }
                 }
-            }
-        </script>
-        <div class="settings-sections settings-widget settings-sections-hidden">
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="opacity">透明度</span>
+            </script>
+            <div class="settings-sections settings-widget settings-sections-hidden">
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="opacity">透明度</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control settings-control-range">
+                        <input class="brcontrol-range" id="range-widget-opacity" type="range" min="0" max="100" value="95" />
+                        <span class="brcontrol-range-label" id="range-widget-opacity-label">0.95</span>
+                    </div>
+                    <script>
+                        $("#range-widget-opacity").on("input propertychange", function() {
+                            $("#range-widget-opacity-label").text($("#range-widget-opacity").val() / 100);
+                        });
+                    </script>
                 </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <input class="brcontrol-range" id="range-widget-opacity" type="range" min="0" max="100" value="95" />
-                    <span class="brcontrol-range-label" id="range-widget-opacity-label">0.95</span>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="default_forcetop">默认置顶</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <div class="abc-checkbox abc-checkbox-primary settings-control-checkbox">
+                            <input type="checkbox" id="cb-widget-defaultForceTop" />
+                            <label for="cb-widget-defaultForceTop" data-lang="enable">
+                                启用
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <script>
-                    $('#range-widget-opacity').on('input propertychange', function() {
-                        $('#range-widget-opacity-label').text($('#range-widget-opacity').val() / 100);
-                    });
-                </script>
             </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="default_forcetop">默认置顶</span>
+            <div class="settings-sections settings-display settings-sections-hidden">
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="font">字体</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-fontfamily">
+                            <option style="font-family: Source Han Sans CN Arial !important;" value="Source Han Sans CN" data-lang="source_han_sans">思源黑体</option>
+                            <option style="font-family: Microsoft Yahei !important;" value="Microsoft Yahei" data-lang="microsoft_yahei">微软雅黑</option>
+                            <option style="font-family: DengXian !important;" value="DengXian" data-lang="dengxian">等线 </option>
+                            <option style="font-family: DengXian !important;" value="方正兰亭黑Pro" data-lang="fangzhenglanting_pro">方正兰亭黑 Pro</option>
+                            <option style="font-family: Arial !important;" value="Arial">Arial</option>
+                        </select>
+                    </div>
                 </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <div class="abc-checkbox abc-checkbox-primary settings-control-checkbox">
-                        <input type="checkbox" id="cb-widget-defaultForceTop">
-                        <label for="cb-widget-defaultForceTop" data-lang="enable">
-                            启用
-                        </label>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="font_size">便签字号</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-fontsize">
+                            <option style="font-size: 16px !important;" value="16">16px</option>
+                            <option style="font-size: 15px !important;" value="15">15px</option>
+                            <option style="font-size: 14px !important;" value="14">14px</option>
+                            <option style="font-size: 13px !important;" value="13">13px</option>
+                            <option style="font-size: 12px !important;" value="12">12px</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="content_align">内容对齐</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-textalign">
+                            <option value="left" data-lang="align_left">左对齐</option>
+                            <option value="justify" data-lang="align_justify">两端对齐</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="lineheight">便签行高</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-lineheight">
+                            <option value="26">26px</option>
+                            <option value="24">24px</option>
+                            <option value="22">22px</option>
+                            <option value="20">20px</option>
+                            <option value="18">18px</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="letter_spacing">便签字间距</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-letterspacing">
+                            <option value="0.08">0.08em</option>
+                            <option value="0.06">0.06em</option>
+                            <option value="0.04">0.04em</option>
+                            <option value="0.02">0.02em</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="date_display">日期显示</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-datedisplay">
+                            <option value="all" data-lang="display_all">显示所有</option>
+                            <option value="createonly" data-lang="display_createonly">仅显示创建日期</option>
+                            <option value="updateonly" data-lang="display_updateonly">仅显示更新日期</option>
+                            <option value="none" data-lang="display_noshow">不显示</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="time_display">时间显示</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-timedisplay">
+                            <option value="all" data-lang="time_all">YYYY年MM月DD日 HH:mm:ss</option>
+                            <option value="noyear" data-lang="time_noyear">MM月DD日 HH:mm:ss</option>
+                            <option value="notime" data-lang="time_notime">YYYY年MM月DD日</option>
+                            <option value="noyearandtime" data-lang="time_noyearandtime">MM月DD日</option>
+                        </select>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="settings-sections settings-display settings-sections-hidden">
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="font">字体</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select" id="select-fontfamily">
-                        <option style="font-family: Source Han Sans CN Arial !important;" value="Source Han Sans CN" data-lang="source_han_sans">思源黑体</option>
-                        <option style="font-family: Microsoft Yahei !important;" value="Microsoft Yahei" data-lang="microsoft_yahei">微软雅黑</option>
-                        <option style="font-family: DengXian !important;" value="DengXian" data-lang="dengxian">等线</option>
-                        <option style="font-family: DengXian !important;" value="方正兰亭黑Pro" data-lang="fangzhenglanting_pro">方正兰亭黑 Pro</option>
-                        <option style="font-family: Arial !important;" value="Arial">Arial</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="font_size">便签字号</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select" id="select-fontsize">
-                        <option style="font-size: 16px !important;" value="16">16px</option>
-                        <option style="font-size: 15px !important;" value="15">15px</option>
-                        <option style="font-size: 14px !important;" value="14">14px</option>
-                        <option style="font-size: 13px !important;" value="13">13px</option>
-                        <option style="font-size: 12px !important;" value="12">12px</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="content_align">内容对齐</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select" id="select-textalign">
-                        <option value="left" data-lang="align_left">左对齐</option>
-                        <option value="justify" data-lang="align_justify">两端对齐</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="lineheight">便签行高</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select" id="select-lineheight">
-                        <option value="26">26px</option>
-                        <option value="24">24px</option>
-                        <option value="22">22px</option>
-                        <option value="20">20px</option>
-                        <option value="18">18px</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="letter_spacing">便签字间距</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select" id="select-letterspacing">
-                        <option value="0.08">0.08em</option>
-                        <option value="0.06">0.06em</option>
-                        <option value="0.04">0.04em</option>
-                        <option value="0.02">0.02em</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="date_display">日期显示</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select" id="select-datedisplay">
-                        <option value="all" data-lang="display_all">显示所有</option>
-                        <option value="createonly" data-lang="display_createonly">仅显示创建日期</option>
-                        <option value="updateonly" data-lang="display_updateonly">仅显示更新日期</option>
-                        <option value="none" data-lang="display_noshow">不显示</option>
-                    </select>
-                </div>
-            </div>
-            <div class="settings-item">
-                <div class="settings-item-child settings-item-title">
-                    <span data-lang="time_display">时间显示</span>
-                </div>
-                <div></div>
-                <div class="settings-item-child settings-item-control">
-                    <select class="form-control settings-select" id="select-timedisplay">
-                        <option value="all" data-lang="time_all">YYYY年MM月DD日 HH:mm:ss</option>
-                        <option value="noyear" data-lang="time_noyear">MM月DD日 HH:mm:ss</option>
-                        <option value="notime" data-lang="time_notime">YYYY年MM月DD日</option>
-                        <option value="noyearandtime" data-lang="time_noyearandtime">MM月DD日</option>
-                    </select>
-                </div>
-            </div>
+
+        <div class="setting-buttons">
+            <button class="btn btn-danger brbtn-danger" onclick="window.close();" data-lang="cancel">取消</button>
+            <button class="btn btn-primary brbtn-primary" onclick="saveSettings();" data-lang="save">保存</button>
         </div>
-    </div>
 
-    <div class="setting-buttons">
-        <button class="btn btn-danger brbtn-danger" onclick='window.close();' data-lang="cancel">取消</button>
-        <button class="btn btn-primary brbtn-primary" onclick="saveSettings();" data-lang="save">保存</button>
-    </div>
+        <script>
+            function saveSettings() {
+                //获取通用设置
+                var autoUpdateStatus = document.getElementById("cb-autoUpdateEnabled").checked;
+                var autoUpdateChannel = $("#select-updateChannel").val();
+                var theme = $("#select-themes").val();
+                var language = $("#select-language").val();
+                var closeOption = $("#select-closeOption").val();
 
-    <script>
-        function saveSettings() {
-            //获取通用设置
-            var autoUpdateStatus = document.getElementById('cb-autoUpdateEnabled').checked;
-            var autoUpdateChannel = $('#select-updateChannel').val();
-            var theme = $("#select-themes").val();
-            var language = $('#select-language').val();
-            var closeOption = $('#select-closeOption').val();
+                //获取显示设置
+                var fontfamily = $("#select-fontfamily").val();
+                var fontsize = $("#select-fontsize").val();
+                var textalign = $("#select-textalign").val();
+                var lineheight = $("#select-lineheight").val();
+                var letterspacing = $("#select-letterspacing").val();
+                var datedisplay = $("#select-datedisplay").val();
+                var timedisplay = $("#select-timedisplay").val();
+                var locktype = $("#select-locktype").val();
 
-            //获取显示设置
-            var fontfamily = $('#select-fontfamily').val();
-            var fontsize = $('#select-fontsize').val();
-            var textalign = $('#select-textalign').val();
-            var lineheight = $('#select-lineheight').val();
-            var letterspacing = $('#select-letterspacing').val();
-            var datedisplay = $('#select-datedisplay').val();
-            var timedisplay = $('#select-timedisplay').val();
-            var locktype = $('#select-locktype').val();
+                //获取桌面组件设置
+                var widget_opacity = $("#range-widget-opacity").val();
+                var widget_defaultforcetop = document.getElementById("cb-widget-defaultForceTop").checked;
 
-            //获取桌面组件设置
-            var widget_opacity = $('#range-widget-opacity').val();
-            var widget_defaultforcetop = document.getElementById('cb-widget-defaultForceTop').checked;
+                //构造设置obj
+                settings.autoUpdateStatus = autoUpdateStatus;
+                settings.autoUpdateChannel = autoUpdateChannel;
+                settings.theme = theme;
+                settings.language = language;
+                settings.closeOption = closeOption;
+                settings.widget_opacity = widget_opacity;
+                settings.widget_defaultforcetop = widget_defaultforcetop;
+                settings.fontfamily = fontfamily;
+                settings.fontsize = fontsize;
+                settings.textalign = textalign;
+                settings.lineheight = lineheight;
+                settings.letterspacing = letterspacing;
+                settings.datedisplay = datedisplay;
+                settings.timedisplay = timedisplay;
+                settings.locktype = locktype;
 
-            //构造设置obj
-            settings.autoUpdateStatus = autoUpdateStatus;
-            settings.autoUpdateChannel = autoUpdateChannel;
-            settings.theme = theme;
-            settings.language = language;
-            settings.closeOption = closeOption;
-            settings.widget_opacity = widget_opacity;
-            settings.widget_defaultforcetop = widget_defaultforcetop;
-            settings.fontfamily = fontfamily;
-            settings.fontsize = fontsize;
-            settings.textalign = textalign;
-            settings.lineheight = lineheight;
-            settings.letterspacing = letterspacing;
-            settings.datedisplay = datedisplay;
-            settings.timedisplay = timedisplay;
-            settings.locktype = locktype;
+                //保存设置
+                storage.set("settings", settings, function(error) {
+                    if (error) {
+                        dialog.showMessageBox({
+                            type: "error",
+                            title: "错误",
+                            message: "保存设置时发生错误。",
+                            detail: error
+                        });
+                    } else {
+                        //通知窗体刷新
+                        ipcRenderer.send("reloadMainWindow");
+                        ipcRenderer.send("reloadRecycleWindow");
+                        ipcRenderer.send("reloadAllEditWindow");
+                        ipcRenderer.send("reloadAboutWindow");
+                        //关闭窗体
+                        window.close();
+                    }
+                });
+            }
+        </script>
 
-            //保存设置
-            storage.set('settings', settings, function(error) {
-                if (error) {
-                    dialog.showMessageBox({
-                        type: 'error',
-                        title: '错误',
-                        message: '保存设置时发生错误。',
-                        detail: error
-                    });
-                } else {
-                    //通知窗体刷新
-                    ipcRenderer.send('reloadMainWindow');
-                    ipcRenderer.send('reloadRecycleWindow');
-                    ipcRenderer.send('reloadAllEditWindow');
-                    ipcRenderer.send('reloadAboutWindow');
-                    //关闭窗体
-                    window.close();
-                }
-            });
-        }
-    </script>
+        <script>
+            $.getScript("../app/notes_reset.js");
 
-    <script>
-        $.getScript('../app/notes_reset.js');
+            function reloadNotesId() {
+                storage.get("notesid" + (global.indebug ? "_dev" : ""), function(error, data) {
+                    if (error) {
+                        console.error(error);
+                        initNotesId(null);
+                        return;
+                    } else {
+                        //获取callback回传的json
+                        var notesid = data;
+                        initNotesId(notesid.id);
+                    }
+                });
+            }
 
-        function reloadNotesId() {
-            storage.get('notesid' + (global.indebug ? '_dev' : ''), function(error, data) {
-                if (error) {
-                    console.error(error);
-                    initNotesId(null);
-                    return;
-                } else {
-                    //获取callback回传的json
-                    var notesid = data;
-                    initNotesId(notesid.id);
-                }
-            });
-        }
-
-        function resetSettings() {
-            dialog.showMessageBox({
-                type: "warning",
-                buttons: ['取消', '确认'],
-                defaultId: 0,
-                title: '确认操作',
-                message: '确定要重置设置吗？该操作将不可撤回。',
-                detail: '所有已保存的设置都讲还原为默认值。'
-            }, function(response) {
-                if (response == 1) {
-                    storage.remove('settings', function(error) {
-                        if (error) {
-                            console.error(error);
-                            dialog.showMessageBox({
-                                type: "error",
-                                title: '错误',
-                                message: '重置设置时遇到了错误。',
-                                detail: error
+            function resetSettings() {
+                dialog
+                    .showMessageBox({
+                        type: "warning",
+                        buttons: ["取消", "确认"],
+                        defaultId: 0,
+                        title: "确认操作",
+                        message: "确定要重置设置吗？该操作将不可撤回。",
+                        detail: "所有已保存的设置都讲还原为默认值。"
+                    })
+                    .then(res => {
+                        if (res.response == 1) {
+                            storage.remove("settings", function(error) {
+                                if (error) {
+                                    console.error(error);
+                                    dialog.showMessageBox({
+                                        type: "error",
+                                        title: "错误",
+                                        message: "重置设置时遇到了错误。",
+                                        detail: error
+                                    });
+                                } else {
+                                    //通知其他窗体重新载入
+                                    ipcRenderer.send("reloadMainWindow");
+                                    ipcRenderer.send("reloadRecycleWindow");
+                                    ipcRenderer.send("closeAllEditWindow");
+                                    dialog.showMessageBox({
+                                        type: "info",
+                                        title: "完成",
+                                        message: "设置已重置。"
+                                    });
+                                    ipcRenderer.send("reloadSettingsWindow");
+                                }
                             });
-                        } else {
-                            //通知其他窗体重新载入
-                            ipcRenderer.send('reloadMainWindow');
-                            ipcRenderer.send('reloadRecycleWindow');
-                            ipcRenderer.send('closeAllEditWindow');
-                            dialog.showMessageBox({
-                                type: "info",
-                                title: '完成',
-                                message: '设置已重置。'
-                            });
-                            ipcRenderer.send('reloadSettingsWindow');
                         }
                     });
-                }
-            });
-        }
+            }
 
-        if (!global.indebug) {
-            Mousetrap.bind('ctrl+shift+i', (e) => {
+            if (!global.indebug) {
+                Mousetrap.bind("ctrl+shift+i", e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+                $(document).on("keydown", 'input[type="password"]', e => {
+                    var ctrlKey = e.ctrlKey || e.metaKey;
+                    if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+                $(document).on("keydown", 'input[type="text"]', e => {
+                    var ctrlKey = e.ctrlKey || e.metaKey;
+                    if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+            }
+            // 屏蔽F11
+            Mousetrap.bind("f11", e => {
                 e.preventDefault();
                 e.stopPropagation();
             });
-            $(document).on('keydown', 'input[type="password"]', (e) => {
-                var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-            $(document).on('keydown', 'input[type="text"]', (e) => {
-                var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-        }
-        // 屏蔽F11
-        Mousetrap.bind('f11', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        });
-    </script>
-</body>
-
+        </script>
+    </body>
 </html>
