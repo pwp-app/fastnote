@@ -324,10 +324,15 @@ function createTray() {
     let trayIco = path.resolve(__dirname, './public/static/images/tray.ico');
     tray = new Tray(trayIco);
     tray.setToolTip('Fastnote');
+    let contextMenu = createContextMenu('created');
+    tray.setContextMenu(contextMenu);
     tray.on('double-click', () => {
         if (win == null) {
             createWindow();
         } else {
+            if (win.isMinimized()){
+                win.restore();
+            }
             win.focus();
         }
     });
