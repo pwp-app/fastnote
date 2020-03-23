@@ -111,6 +111,10 @@ function initialRender() {
     noteList.normal.append(html.join(''));
     // 绑定Note的点击事件
     bindNoteClickEvent();
+    // 绑定双击事件
+    for (let i = 0;i < notes.length; i++) {
+        bindNoteFoldDBL(notes[i].id);
+    }
     if (typeof inRecyclebin == 'undefined') { //回收站内不进行分类渲染
         renderNotesOfCategory(current_category);
     }
