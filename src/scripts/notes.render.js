@@ -235,7 +235,7 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
 
 //在顶部渲染Note
 function renderNoteAtTop(note) {
-    renderNote(note, immediate = false, isPrepend = true, animate = true);
+    renderNote(note, immediate = true, isPrepend = true, animate = true);
 }
 
 function rerenderEditedNote(data, rawtext) {
