@@ -128,32 +128,38 @@
 .category-icon-add{
     text-align: center;
 }
+#category-add:hover {
+    cursor: pointer;
+}
 #category-add-inside{
     display: none;
 }
 .category-add-input{
     display: inline-block;
-    width: @category-width - 90px;
+    width: @category-width - 108px;
     margin-left: 18px;
 }
 .category-add-btn{
     float: right;
     margin-right: 16px;
-    cursor: pointer;
+    transition: 0.1s;
 }
 .category-item-delbtn{
     display: none;
     float: right;
-    cursor: pointer;
     margin-right: 16px;
+    transition: 0.1s;
 }
 .category-item-delbtn:hover{
-    color: @color-trigger-hover-primary;
+    color: lighten(@color-category-text, 5%);
+    cursor: pointer;
 }
 .category-add-btn:hover{
-    color: @color-trigger-hover-primary;
+    color: lighten(@color-category-text, 5%);
+    cursor: pointer;
 }
 .category-add-input input{
+    width: 100%;
     line-height: @category-item-height - 12px;
     border: none;
     color: @color-category-text;
