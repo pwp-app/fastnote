@@ -183,7 +183,6 @@ function createWindow() {
 
     // 分类已恢复
     ipc.on('backup-recover-categories', (sender, data) => {
-        console.log(99)
         win.webContents.send('backup-recover-categories', data);
     });
 
