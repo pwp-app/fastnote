@@ -1,58 +1,58 @@
 @mainmenu-width: 236px;
 
-.container-mainmenu{
+.container-mainmenu {
     display: none;
     position: absolute;
     width: @mainmenu-width;
     height: 100%;
-    top:0;
-    bottom:0;
-    left:0;
+    top: 0;
+    bottom: 0;
+    left: 0;
     z-index: 2;
     .no-drag();
     /*animate*/
     .duration(0.75s);
 }
-.mainmenu-background{
+.mainmenu-background {
     display: none;
     background-color: @color-deepgray;
     position: absolute;
     width: 100%;
     height: 100%;
-    top:0;
-    bottom:0;
-    right:0;
+    top: 0;
+    bottom: 0;
+    right: 0;
     z-index: 1;
     /*animate*/
     .duration(0.75s);
 }
-.mainmenu-panel{
+.mainmenu-panel {
     width: @mainmenu-width;
     height: 100%;
-    left:0;
+    left: 0;
     background: @color-mainmenu-background;
     z-index: 1;
     box-shadow: 0px 0px 18px 8px @color-boxshadow;
 }
-.mainmenu-logo{
+.mainmenu-logo {
     text-align: center;
     padding-top: 24px;
     padding-bottom: 16px;
-    span{
+    span {
         color: @color-mainmenu-primary;
         font-size: 14px;
         font-weight: lighter;
         letter-spacing: 0.1em;
         .no-select-and-drag();
     }
-    img{
+    img {
         width: 96px;
         height: 96px;
         margin: 0 auto;
         .no-select-and-drag();
     }
-    h1{
-        padding-top:12px;
+    h1 {
+        padding-top: 12px;
         color: @color-mainmenu-primary;
         font-size: 24px;
         font-weight: lighter;
@@ -61,36 +61,36 @@
         -webkit-user-select: none;
     }
 }
-.mainmenu-split{
+.mainmenu-split {
     width: 100%;
-    height:1px;
-    margin-top:15px;
-    margin-bottom:15px;
+    height: 1px;
+    margin-top: 15px;
+    margin-bottom: 15px;
     background: @color-mainmenu-split;
     .no-select-and-drag();
 }
-.mainmenu-menu{
+.mainmenu-menu {
     width: 100%;
-}
-.mainmenu-menu ul{
-    width: 100%;
-    margin:0;
-    padding:0;
-    .no-select-and-drag();
-}
-.mainmenu-menu li{
-    width: 100%;
-    height:50px;
-    list-style-type: none;
-    color:@color-mainmenu-primary;
-    letter-spacing: 0.05em;
-    font-size: 16px;
-    line-height: 50px;
-}
-.mainmenu-menu li span{
-    padding-left:35px;
-    pointer-events: none;
-}
-.mainmenu-menu li:hover{
-    background-color:@color-mainmenu-hover;
+    ul {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        .no-select-and-drag();
+        li {
+            width: 100%;
+            height: 50px;
+            list-style-type: none;
+            color: @color-mainmenu-primary;
+            letter-spacing: 0.05em;
+            font-size: 16px;
+            line-height: 50px;
+            span {
+                padding-left: 32px;
+                pointer-events: none;
+            }
+        }
+        li:hover {
+            background-color: @color-mainmenu-hover;
+        }
+    }
 }
