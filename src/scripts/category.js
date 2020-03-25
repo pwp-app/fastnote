@@ -10,13 +10,24 @@ var notalloc_count = 0;
 
 global.indebug = remote.getGlobal('indebug');
 
+// ** 类 **
+class Category {
+    constructor(name, count) {
+        this.name = name;
+        this.count = count;
+    }
+}
+
+// ** 立即执行 **
+
 readCategoriesFile();
 readCurrentCategory();
 
 //读取
 function readCurrentCategory() {
-    if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/current_category.json')) {
-        fs.readFile(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/current_category.json', 'utf-8', function(err, data) {
+    const current_category_file = storagePath + (global.indebug ? '/devTemp' : '') + '/storage/current_category.json';
+    if (current_category_file) {
+        fs.readFile(current_category_file, 'utf-8', function(err, data) {
             if (err) {
                 console.error(err);
                 return;
@@ -51,8 +62,9 @@ function saveCurrentCategory() {
 }
 
 function readCategoriesFile() {
-    if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json')) {
-        fs.readFile(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json', 'utf-8', function(err, data) {
+    const categories_file = storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json';
+    if (fs.existsSync(categories_file)) {
+        fs.readFile(categories_file, 'utf-8', function(err, data) {
             if (err) {
                 console.error(err);
                 return;
@@ -80,10 +92,10 @@ function checkCategoryCount() {
     }
 }
 
-//重新计算note的数量
-function recountNotes() {
+// 重新计算note的数量
+function recountNotes(retry = false) {
     let count_obj = {};
-    //清点notes
+    // 清点notes
     for (let i = 0; i < notes.length; i++) {
         if (typeof notes[i].category != 'undefined') {
             if (notes[i].category != 'notalloc') {
@@ -96,13 +108,13 @@ function recountNotes() {
             }
         }
     }
-    //覆盖categories的设置
+    // 覆盖categories的设置
     for (let i = 0; i < categories.length; i++) {
         if (typeof count_obj[categories[i].name] != 'undefined') {
             categories[i].count = count_obj[categories[i].name].count;
         }
     }
-    //重新校验正确性
+    // 重新校验正确性
     let custom_total = 0;
     for (let i = 0; i < categories.length; i++) {
         custom_total += categories[i].count;
@@ -114,20 +126,56 @@ function recountNotes() {
         renderSystemCategoryCount();
         renderCustomCategoryCount();
     } else {
-        console.error('Category count error, cannot auto fix.');
+        console.error('Category count error, try to fix missing categories.');
+        // 尝试扫描便签修复分类文件
+        if (!retry) {
+            fixMissingCategories().then((res) => {
+                // 修复成功后重新渲染一次
+                if (res) {
+                    renderCategoryList();
+                    renderCategorySelect();
+                    recountNotes(retry = true);
+                }
+            });
+        }
     }
 }
 
-function Category(name, count) {
-    var category = {};
-    category.name = name;
-    category.count = count;
-    return category;
+// 尝试修复缺失的分类
+function fixMissingCategories() {
+    return new Promise((resolve, reject) => {
+        let flag_changed = false;
+        let founded_missing = [];
+        // 普通便利的性能更高
+        for (let i = 0; i < notes.length; i++) {
+            if (notes[i].category) {
+                // 如果已经修复过了就没必要再处理
+                if (founded_missing.includes(notes[i].category)) {
+                    continue;
+                }
+                let flag_found = false;
+                for (let j = 0; i < categories.length; j++) {
+                    if (categories[i].name == notes[i].category) {
+                        flag_found = true;
+                        break;
+                    }
+                }
+                if (!flag_found) {
+                    // 未找到说明是缺失的分类
+                    putCategoryToArr(notes[i].category, 0);
+                    founded_missing.push(notes[i].category);
+                    flag_changed = true;
+                }
+            }
+        }
+        // 分类内容改变了即存在缺失并已修复
+        resolve(flag_changed);
+    });
 }
 
 //放置新的Category到数组
 function putCategoryToArr(name, count = 0) {
-    categories.push(Category(name, count));
+    categories.push(new Category(name, count));
 }
 
 function existCategory(name) {

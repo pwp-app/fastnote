@@ -239,7 +239,7 @@
                     if (typeof settings.widget_opacity != "undefined") {
                         initWidgetOpacity(settings.widget_opacity);
                     } else {
-                        initWidgetOpacity(95);
+                        initWidgetOpacity(8);
                     }
                     if (typeof settings.widget_defaultforcetop != "undefined") {
                         initWidgetDefaultForceTop(settings.widget_defaultforcetop);
@@ -446,7 +446,7 @@
             <script>
                 var settings_window_height = {
                     general: 542,
-                    notes: 392,
+                    notes: 396,
                     widget: 302,
                     display: 542
                 }; //general notes display
@@ -626,36 +626,34 @@
                         }
 
                         function disableLockScreen() {
-                            dialog
-                                .showMessageBox({
-                                    type: "warning",
-                                    buttons: ["取消", "确认"],
-                                    defaultId: 0,
-                                    title: "确认操作",
-                                    message: "确定要取消锁屏密码吗？",
-                                    detail: "这会使你保存的便签变得不安全。"
-                                })
-                                .then(res => {
-                                    if (res.response == 1) {
-                                        settings.lockpassword = undefined;
-                                        storage.set("settings", settings, function(error) {
-                                            if (error) {
-                                                dialog.showMessageBoxSync({
-                                                    type: "error",
-                                                    title: "错误",
-                                                    message: "禁用锁屏时发生错误。",
-                                                    detail: error
-                                                });
-                                            } else {
-                                                $("#settings-item-lockscreen-enabled").css("display", "none");
-                                                $("#settings-item-lockscreen-default").css("display", "flex");
-                                                $("#input-lockscreen-password").val("");
-                                                $("#settings-item-lockscreen-default-reset").css("display", "none");
-                                                $("#settings-item-lockscreen-default-enable").css("display", "flex");
-                                            }
+                            let ret = dialog.showMessageBoxSync({
+                                type: "warning",
+                                buttons: ["取消", "确认"],
+                                defaultId: 0,
+                                cancelId: 0,
+                                title: "确认操作",
+                                message: "确定要取消锁屏密码吗？",
+                                detail: "这会使你保存的便签变得不安全。"
+                            });
+                            if (ret == 1) {
+                                settings.lockpassword = undefined;
+                                storage.set("settings", settings, function(error) {
+                                    if (error) {
+                                        dialog.showMessageBoxSync({
+                                            type: "error",
+                                            title: "错误",
+                                            message: "禁用锁屏时发生错误。",
+                                            detail: error
                                         });
+                                    } else {
+                                        $("#settings-item-lockscreen-enabled").css("display", "none");
+                                        $("#settings-item-lockscreen-default").css("display", "flex");
+                                        $("#input-lockscreen-password").val("");
+                                        $("#settings-item-lockscreen-default-reset").css("display", "none");
+                                        $("#settings-item-lockscreen-default-enable").css("display", "flex");
                                     }
                                 });
+                            }
                         }
                     </script>
                 </div>
@@ -690,11 +688,19 @@
                 </div>
                 <div class="settings-item">
                     <div class="settings-item-child settings-item-title">
-                        <span data-lang="backup_recover_notes">备份/恢复便签</span>
+                        <span data-lang="backup_notes">备份</span>
                     </div>
                     <div></div>
                     <div class="settings-item-child settings-item-control">
-                        <button class="btn btn-primary brbtn-primary" id="btn-backupNotes" onclick="backupNotes();" style="margin-bottom: 12px;" data-lang="backup">备份</button>
+                        <button class="btn btn-primary brbtn-primary" id="btn-backupNotes" onclick="backupNotes();" data-lang="backup">备份</button>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="backup_recover">导入备份</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
                         <button class="btn btn-primary brbtn-primary" id="btn-importNotes" onclick="importNotes();" data-lang="import">导入</button>
                     </div>
                 </div>
@@ -918,41 +924,39 @@
             }
 
             function resetSettings() {
-                dialog
-                    .showMessageBox({
-                        type: "warning",
-                        buttons: ["取消", "确认"],
-                        defaultId: 0,
-                        title: "确认操作",
-                        message: "确定要重置设置吗？该操作将不可撤回。",
-                        detail: "所有已保存的设置都讲还原为默认值。"
-                    })
-                    .then(res => {
-                        if (res.response == 1) {
-                            storage.remove("settings", function(error) {
-                                if (error) {
-                                    console.error(error);
-                                    dialog.showMessageBoxSync({
-                                        type: "error",
-                                        title: "错误",
-                                        message: "重置设置时遇到了错误。",
-                                        detail: error
-                                    });
-                                } else {
-                                    //通知其他窗体重新载入
-                                    ipcRenderer.send("reloadMainWindow");
-                                    ipcRenderer.send("reloadRecycleWindow");
-                                    ipcRenderer.send("closeAllEditWindow");
-                                    dialog.showMessageBoxSync({
-                                        type: "info",
-                                        title: "完成",
-                                        message: "设置已重置。"
-                                    });
-                                    ipcRenderer.send("reloadSettingsWindow");
-                                }
+                let ret = dialog.showMessageBoxSync({
+                    type: "warning",
+                    buttons: ["取消", "确认"],
+                    defaultId: 0,
+                    cancelId: 0,
+                    title: "确认操作",
+                    message: "确定要重置设置吗？该操作将不可撤回。",
+                    detail: "所有已保存的设置都讲还原为默认值。"
+                });
+                if (ret == 1) {
+                    storage.remove("settings", function(error) {
+                        if (error) {
+                            console.error(error);
+                            dialog.showMessageBoxSync({
+                                type: "error",
+                                title: "错误",
+                                message: "重置设置时遇到了错误。",
+                                detail: error
                             });
+                        } else {
+                            //通知其他窗体重新载入
+                            ipcRenderer.send("reloadMainWindow");
+                            ipcRenderer.send("reloadRecycleWindow");
+                            ipcRenderer.send("closeAllEditWindow");
+                            dialog.showMessageBoxSync({
+                                type: "info",
+                                title: "完成",
+                                message: "设置已重置。"
+                            });
+                            ipcRenderer.send("reloadSettingsWindow");
                         }
                     });
+                }
             }
 
             if (!global.indebug) {

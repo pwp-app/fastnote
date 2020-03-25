@@ -1451,6 +1451,7 @@
                 type: "warning",
                 buttons: [i18n[current_i18n].button_cancel, i18n[current_i18n].button_delete, i18n[current_i18n].delete_category_and_note],
                 defaultId: 0,
+                cancelId: 0,
                 title: i18n[current_i18n].confirm_operation,
                 message: i18n[current_i18n].confirm_delete_category_left + name + i18n[current_i18n].confirm_delete_category_right,
                 detail: i18n[current_i18n].delete_category_and_note_detail
@@ -1772,7 +1773,9 @@
                     title: i18n[current_i18n].notes_conflict,
                     message: i18n[current_i18n].notes_conflict_message,
                     detail: detail,
-                    buttons: [i18n[current_i18n].button_dealwithconflict, i18n[current_i18n].button_delete]
+                    buttons: [i18n[current_i18n].button_dealwithconflict, i18n[current_i18n].button_delete],
+                    defaultId: 0,
+                    cancelId: 0
                 });
                 if (ret == 0) {
                     //处理冲突
@@ -1789,7 +1792,9 @@
                         type: 'warning',
                         message: i18n[current_i18n].delete_conflict_notes,
                         detail: detail,
-                        buttons: [i18n[current_i18n].button_yes, i18n[current_i18n].button_no]
+                        buttons: [i18n[current_i18n].button_no, i18n[current_i18n].button_yes],
+                        defaultId: 0,
+                        cancelId: 0
                     });
                     if (ret == 0) {
                         conflictNotes.forEach(note => {
@@ -1802,6 +1807,47 @@
                 }
             }
             saveNotesId();
+        });
+
+        // 便签分类恢复
+        ipcRenderer.on('backup-recover-categories', (sender, content) => {
+            if (categories.length > 0) {
+                // 已经存在分类
+                let ret = dialog.showMessageBoxSync({
+                    title: "请选择操作",
+                    type: "warning",
+                    message: "检测到当前已存在便签分类，请选择你的操作：",
+                    buttons: ["放弃导入", "合并", "覆盖"],
+                    defaultId: 0,
+                    cancelId: 0
+                });
+                if (ret == 0) {
+                    return;
+                } else if (ret == 1) {
+                    // 合并到同一个数组里
+                    for (let t of content) {
+                        let existed = false;
+                        for (let category of categories) {
+                            if (category.name == t.name) {
+                                existed = true;
+                                break;
+                            }
+                        }
+                        if (existed) {
+                            continue;
+                        }
+                        // 不存在相同的，添加到categories
+                        categories.push(t);
+                    }
+                } else if (ret == 2) {
+                    // 直接覆盖
+                    categories = content;
+                }
+            } else {
+                // 原本没有分类，直接覆盖
+                categories = content;
+            }
+            saveCategories();
         });
     </script>
 
@@ -1858,7 +1904,8 @@
                         title: i18n[current_i18n].close_mainwindow_title,
                         buttons: [i18n[current_i18n].close_minimize_to_tray, i18n[current_i18n].close_just_close],
                         message: i18n[current_i18n].close_mainwindow_msg,
-                        defaultId: 0
+                        defaultId: 0,
+                        cancelId: 0
                     }).then(res => {
                         switch (res.response) {
                             case 0:

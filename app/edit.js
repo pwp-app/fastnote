@@ -79,7 +79,7 @@ var editWindow = {
     getWins: function () {
         return win_edits;
     },
-    showWindow: function (data) {
+    show: function (data) {
         let index = edit_noteid.indexOf(data.id);
         if (index != -1) {
             if (win_edits[index] == null) {

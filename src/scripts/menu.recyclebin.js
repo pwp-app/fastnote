@@ -54,6 +54,7 @@ function popup_menu_recyclebin() {
                 type: "warning",
                 buttons: [i18n[current_i18n].button_no, i18n[current_i18n].button_yes],
                 defaultId: 0,
+                cancelId: 0,
                 title: i18n[current_i18n].confirm_operation,
                 message: i18n[current_i18n].empty_recyclebin_message,
                 detail: i18n[current_i18n].empty_recyclebin_detail

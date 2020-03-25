@@ -6,7 +6,8 @@ $('#btn-resetNotes').click(function(){
     let ret = dialog.showMessageBoxSync({
         type:"warning",
         buttons:['取消','确认'],
-        defaultId:0,
+        defaultId: 0,
+        cancelId: 0,
         title:'确认操作',
         message:'确定要重置便签吗？该操作将不可撤回。',
         detail:'所有已保存的便签、回收站内的便签将全部清除，重置后便签序号从0开始重新计算。'
@@ -22,8 +23,11 @@ $('#btn-resetNotes').click(function(){
                     detail:error
                 });
             } else {
+                // 删除便签文件
                 deleteall(storagePath  + (global.indebug?'/devTemp':'')+ '/notes');
-                //通知其他窗体重新载入
+                // 删除分类
+                deleteCategoriesFile();
+                // 通知其他窗体重新载入
                 ipcRenderer.send('reloadMainWindow');
                 ipcRenderer.send('reloadRecycleWindow');
                 ipcRenderer.send('closeAllEditWindow');
@@ -38,7 +42,20 @@ $('#btn-resetNotes').click(function(){
     }
 });
 
-//删除目录、子目录、目录下的所有文件
+// 删除分类相关的文件
+function deleteCategoriesFile() {
+    // 删除分类主文件
+    const category_file = storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json';
+    const current_category_file = fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/current_category.json');
+    if (fs.existsSync(category_file)) {
+        fs.unlinkSync(category_file);
+    }
+    if (fs.existsSync(current_category_file)) {
+        fs.unlinkSync(current_category_file);
+    }
+}
+
+// 删除目录、子目录、目录下的所有文件
 function deleteall(path) {
 	var files = [];
 	if(fs.existsSync(path)) {
