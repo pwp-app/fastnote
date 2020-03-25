@@ -48,19 +48,24 @@ function createSettingsWindow() {
     });
 }
 
-function showSettingsWindow() {
-    if (win_settings != null) {
-        if (win_settings.isMinimized()) {
-            win_settings.restore();
-        }
-        win_settings.focus();
-    } else {
-        createSettingsWindow();
-    }
-}
-
 ipc.on('reloadSettingsWindow',function(sender, data){
     win_settings.reload();
 });
 
-module.exports = showSettingsWindow;
+const settingsWindow = {
+    show: () => {
+        if (win_settings != null) {
+            if (win_settings.isMinimized()) {
+                win_settings.restore();
+            }
+            win_settings.focus();
+        } else {
+            createSettingsWindow();
+        }
+    },
+    get: () => {
+        return win_settings;
+    }
+};
+
+module.exports = settingsWindow;

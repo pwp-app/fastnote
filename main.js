@@ -123,11 +123,11 @@ function createWindow() {
     });
     //open edit window
     ipc.on('openEditWindow', (sender, data) => {
-        editWindow.showWindow(data);
+        editWindow.show(data);
     });
     //open settings window
     ipc.on('openSettingsWindow', () => {
-        settingsWindow();
+        settingsWindow.show();
     });
     //open newnote window
     ipc.on('openNewnoteWindow', (sender, data) => {
@@ -173,11 +173,21 @@ function createWindow() {
         }
     });
 
-    //backup recovered
+    // *** 备份相关 ***
+
+    // 便签已恢复
     ipc.on('backup-recover-completed', function() {
         //转送消息给主窗口
         win.webContents.send('backup-recover-completed');
     });
+
+    // 分类已恢复
+    ipc.on('backup-recover-categories', (sender, data) => {
+        console.log(99)
+        win.webContents.send('backup-recover-categories', data);
+    });
+
+    // ****************
 
     //分类有修改
     ipc.on('category_added', (sender, data) => {
@@ -260,7 +270,15 @@ function createWindow() {
         app.exit();
     });
 
-    // 当 window 被关闭，这个事件会被触发。
+    // *** 窗体关闭 ***
+
+    win.on('close', (e) => {
+        // 设置窗口打开的时候不允许关闭主窗口
+        if (settingsWindow.get()) {
+            e.preventDefault();
+        }
+    });
+
     win.on('closed', () => {
         win = null;
         // 更换托盘菜单
@@ -269,6 +287,8 @@ function createWindow() {
             tray.setContextMenu(contextMenu);
         }
     });
+
+    // ****************
 
     //getfocus
     win.on('ready-to-show', () => {
