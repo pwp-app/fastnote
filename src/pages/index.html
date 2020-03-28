@@ -1739,115 +1739,76 @@
         //backup recovered
         ipcRenderer.on('backup-recover-completed', function() {
             console.log('backup recovered');
-            //刷新便签列表
-            readNoteFiles();
-            //获取最大的便签id，刷新为新的便签id
-            var maxNoteId = 0;
-            //检测NoteID冲突
-            var existedNoteId = [];
-            var conflictNotes = [];
-            //遍历现有的便签
-            notes.forEach(note => {
-                if (note.id > maxNoteId) {
-                    maxNoteId = note.id;
+            // 刷新便签列表
+            readNoteFiles(() => {
+                console.log('recoverd notes rendered.');
+                // 获取最大的便签id，刷新为新的便签id
+                var maxNoteId = 0;
+                // 检测NoteID冲突
+                var existedNoteId = [];
+                var conflictNotes = [];
+                // 遍历现有的便签
+                for (let i = 0; i < notes.length; i++) {
+                    if (parseInt(notes[i].id) > maxNoteId) {
+                        maxNoteId = notes[i].id;
+                    }
+                    // 检测noteid是否有冲突，用户在本地的noteid应尽可能保持唯一。
+                    if (existedNoteId.indexOf(notes[i].id) == -1) {
+                        existedNoteId.push(notes[i].id);
+                    } else {
+                        // 存在冲突
+                        conflictNotes.push(notes[i]);
+                    }
                 }
-                //检测noteid是否有冲突，用户在本地的noteid应尽可能保持唯一。
-                if (existedNoteId.indexOf(note.id) != -1) {
-                    existedNoteId.push(note.id);
-                } else {
-                    //存在冲突
-                    conflictNotes.push(note);
-                }
-            });
-            //重新设置noteid
-            notesid = maxNoteId + 1;
-            //检测是否存在冲突的便签
-            if (conflictNotes.length > 0) {
-                //构造细节
-                var detail = i18n[current_i18n].note_conflict_detail;
-                conflictNotes.forEach(note => {
-                    detail += "ID: " + note.id + i18n[current_i18n].note_conflict_detail_content + (note.text.length > 20 ? note.text.substring(
-                        0, 20) + "..." : note.text) + "\n";
-                });
-                let ret = dialog.showMessageBoxSync({
-                    title: i18n[current_i18n].notes_conflict,
-                    message: i18n[current_i18n].notes_conflict_message,
-                    detail: detail,
-                    buttons: [i18n[current_i18n].button_dealwithconflict, i18n[current_i18n].button_delete],
-                    defaultId: 0,
-                    cancelId: 0
-                });
-                if (ret == 0) {
-                    //处理冲突
+                // 重新设置noteid
+                notesid = maxNoteId + 1;
+                // 检测是否存在冲突的便签
+                if (conflictNotes.length > 0) {
+                    // 构造细节
+                    var detail = i18n[current_i18n].note_conflict_detail;
                     conflictNotes.forEach(note => {
-                        note.id = notesid;
-                        saveNoteByObj(note);
-                        notesid++;
+                        detail += "ID: " + note.id + i18n[current_i18n].note_conflict_detail_content + (note.text.length > 20 ? note.text.substring(
+                            0, 20) + "..." : note.text) + "\n";
                     });
-                    //冲突处理完毕
-                    readNoteFiles();
-                    saveNotesId();
-                } else if (ret == 1) {
                     let ret = dialog.showMessageBoxSync({
-                        type: 'warning',
-                        message: i18n[current_i18n].delete_conflict_notes,
+                        title: i18n[current_i18n].notes_conflict,
+                        message: i18n[current_i18n].notes_conflict_message,
                         detail: detail,
-                        buttons: [i18n[current_i18n].button_no, i18n[current_i18n].button_yes],
+                        buttons: [i18n[current_i18n].button_dealwithconflict, i18n[current_i18n].button_delete],
                         defaultId: 0,
                         cancelId: 0
                     });
                     if (ret == 0) {
+                        // 处理冲突
                         conflictNotes.forEach(note => {
-                            deleteNoteByObj(note);
+                            note.id = notesid;
+                            saveNoteByObj(note);
+                            notesid++;
                         });
-                        //删除完毕
+                        // 冲突处理完毕
                         readNoteFiles();
-                        saveNotesId();
+                    } else if (ret == 1) {
+                        let ret = dialog.showMessageBoxSync({
+                            type: 'warning',
+                            message: i18n[current_i18n].delete_conflict_notes,
+                            detail: detail,
+                            buttons: [i18n[current_i18n].button_no, i18n[current_i18n].button_yes],
+                            defaultId: 0,
+                            cancelId: 0
+                        });
+                        if (ret == 0) {
+                            conflictNotes.forEach(note => {
+                                deleteNoteByObj(note);
+                            });
+                            // 删除完毕
+                            readNoteFiles();
+                        }
                     }
                 }
-            }
-            saveNotesId();
-        });
-
-        // 便签分类恢复
-        ipcRenderer.on('backup-recover-categories', (sender, content) => {
-            if (categories.length > 0) {
-                // 已经存在分类
-                let ret = dialog.showMessageBoxSync({
-                    title: "请选择操作",
-                    type: "warning",
-                    message: "检测到当前已存在便签分类，请选择你的操作：",
-                    buttons: ["放弃导入", "合并", "覆盖"],
-                    defaultId: 0,
-                    cancelId: 0
-                });
-                if (ret == 0) {
-                    return;
-                } else if (ret == 1) {
-                    // 合并到同一个数组里
-                    for (let t of content) {
-                        let existed = false;
-                        for (let category of categories) {
-                            if (category.name == t.name) {
-                                existed = true;
-                                break;
-                            }
-                        }
-                        if (existed) {
-                            continue;
-                        }
-                        // 不存在相同的，添加到categories
-                        categories.push(t);
-                    }
-                } else if (ret == 2) {
-                    // 直接覆盖
-                    categories = content;
-                }
-            } else {
-                // 原本没有分类，直接覆盖
-                categories = content;
-            }
-            saveCategories();
+                saveNotesId();
+                // 通知主进程已经处理完了导入
+                ipcRenderer.send('backup-process-completed', notesid);
+            });
         });
     </script>
 

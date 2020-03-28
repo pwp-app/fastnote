@@ -149,9 +149,26 @@ function createWindow() {
     ipc.on('createDesktopWidget', (sender, data) => {
         desktopWidget.create(data);
     });
-    ipc.on('reloadMainWindow', (sender, data) => {
+    ipc.on('reloadMainWindow', () => {
         win.webContents.send('before-reload');
         win.reload();
+        checkForUpdates();
+    });
+    ipc.on('reloadWindowAfterReset', () => {
+        // 完全重置
+        // 尝试重载主窗体
+        if (win) {
+            win.webContents.send('before-reload');
+            win.reload();
+        }
+        // 尝试重载回收站
+        recycleWindow.reload();
+        // 关闭所有编辑的窗体
+        editWindow.closeAll();
+        // 设置窗体重新获取焦点
+        if (settingsWindow.get()) {
+            settingsWindow.getFocus();
+        }
         checkForUpdates();
     });
     //when recycle close edit
@@ -179,11 +196,6 @@ function createWindow() {
     ipc.on('backup-recover-completed', function() {
         //转送消息给主窗口
         win.webContents.send('backup-recover-completed');
-    });
-
-    // 分类已恢复
-    ipc.on('backup-recover-categories', (sender, data) => {
-        win.webContents.send('backup-recover-categories', data);
     });
 
     // ****************

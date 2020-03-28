@@ -28,9 +28,7 @@ $('#btn-resetNotes').click(function(){
                 // 删除分类
                 deleteCategoriesFile();
                 // 通知其他窗体重新载入
-                ipcRenderer.send('reloadMainWindow');
-                ipcRenderer.send('reloadRecycleWindow');
-                ipcRenderer.send('closeAllEditWindow');
+                ipcRenderer.send('reloadWindowAfterReset');
                 reloadNotesId();
                 dialog.showMessageBoxSync({
                     type:"info",

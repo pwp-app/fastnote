@@ -11,6 +11,7 @@ const ipc = require('electron').ipcMain;
 
 const app = require('electron').app;
 const path = require('path');
+
 function createEditWindow(data) {
     let win_edit = null;
     var conf = {
@@ -65,6 +66,7 @@ function createEditWindow(data) {
             windows[i].webContents.send('enable-lockscreen-minimize');
         }
     });
+
     win_edit.on('blur', () => {
         var windows = BrowserWindow.getAllWindows();
         if (BrowserWindow.getFocusedWindow() == null) {
@@ -75,7 +77,7 @@ function createEditWindow(data) {
     });
 }
 
-var editWindow = {
+const editWindow = {
     getWins: function () {
         return win_edits;
     },
@@ -98,31 +100,39 @@ var editWindow = {
                 callback(data);
             }
         });
+    },
+    closeAll: () => {
+        for (let i = 0; i < win_edits.length; i++) {
+            if (win_edits[i] != null) {
+                win_edits[i].close();
+                win_edits[i] = null;
+                edit_noteid[i] = null;
+            }
+        }
+        win_edits = [];
+        edit_noteid = [];
+    },
+    reloadAll: () => {
+        for (let i = 0; i < win_edits.length; i++) {
+            if (win_edits[i] != null) {
+                win_edits[i].webContents.send('readyToReload');
+            }
+        }
     }
 };
 
-ipc.on('closeAllEditWindow', function (event, data) {
-    for (var i = 0; i < win_edits.length; i++) {
-        if (win_edits[i] != null) {
-            win_edits[i].close();
-            win_edits[i] = null;
-            edit_noteid[i] = null;
-        }
-    }
-    win_edits = [];
-    edit_noteid = [];
+ipc.on('closeAllEditWindow', () => {
+    editWindow.closeAll();
 });
-ipc.on('reloadAllEditWindow', function (event, data) {
-    for (var i = 0; i < win_edits.length; i++) {
-        if (win_edits[i] != null) {
-            win_edits[i].webContents.send('readyToReload');
-        }
-    }
+
+ipc.on('reloadAllEditWindow',() => {
+    editWindow.reloadAll();
 });
+
 ipc.on('readyToReloadEditWindow', function (event, data) {
     event.sender.reload();
     event.sender.once('did-finish-load', () => {
-        var type = 'init';
+        let type = 'init';
         event.sender.send('message', {
             type,
             data

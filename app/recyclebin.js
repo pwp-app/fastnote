@@ -1,19 +1,18 @@
 let win_recycle = null;
 
-//const import
+// const import
 const {
     BrowserWindow
 } = require('electron');
 
-//ipc主进程
+// ipc主进程
 const ipc = require('electron').ipcMain;
 
 const app = require('electron').app;
 const path = require('path');
 
-
-var RecycleWindow = {
-    create: function () {
+const RecycleWindow = {
+    create: () => {
         var conf = {
             width: 1200,
             height: 720,
@@ -23,7 +22,7 @@ var RecycleWindow = {
                 nodeIntegration: true
             }
         };
-        //标题栏的选用
+        // 标题栏的选用
         if (process.platform == 'darwin')
             conf.titleBarStyle = 'hiddenInset';
         else
@@ -42,26 +41,31 @@ var RecycleWindow = {
             win_recycle = null;
         });
 
-        //锁屏
+        // 锁屏
         win_recycle.on('minimize', () => {
             var windows = BrowserWindow.getAllWindows();
-            for (var i = 0; i < windows.length; i++) {
+            for (let i = 0; i < windows.length; i++) {
                 if (!windows[i].isMinimized()) {
                     return;
                 }
             }
-            for (var i = 0; i < windows.length; i++) {
+            for (let i = 0; i < windows.length; i++) {
                 windows[i].webContents.send('enable-lockscreen-minimize');
             }
         });
         win_recycle.on('blur', () => {
             var windows = BrowserWindow.getAllWindows();
             if (BrowserWindow.getFocusedWindow() == null) {
-                for (var i = 0; i < windows.length; i++) {
+                for (let i = 0; i < windows.length; i++) {
                     windows[i].webContents.send('enable-lockscreen-blur');
                 }
             }
         });
+    },
+    reload: () => {
+        if (win_recycle) {
+            win_recycle.reload();
+        }
     }
 };
 

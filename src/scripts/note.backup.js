@@ -16,7 +16,6 @@ function backupNotes() {
         });
         // 拒绝空值
         if (!filePath || filePath.length < 0) {
-            backupNotesErrorBox("请选择保存路径");
             return;
         }
         isBackupDialogOpened = false;
@@ -119,20 +118,9 @@ function _backupNotes(backup_filename) {
     if (notes_count < 1) {
         return "没有可以备份的便签。";
     }
-    // 检测分类文件是否存在
-    let categories = '';
-    if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json')) {
-        try {
-            categories = fs.readFileSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json');
-        } catch {}
-    }
     // 写入备份到文件
     let backup = {
-        notes: notes_backup,
-        categories: {
-            content: categories,
-            check: sha256(JSON.stringify(categories), "fastnote")
-        }
+        notes: notes_backup
     };
     const backup_string = b64.encode(JSON.stringify(backup));
     try {
@@ -207,7 +195,7 @@ function importNotes() {
         });
         if (ret == 0) {
             // 确认导入
-            let data = fs.readFileSync(openPath);
+            let data = fs.readFileSync(openPath, 'utf8');
             if (!data || data.length < 1) {
                 importNotesErrorBox("读取备份文件失败");
             }
@@ -222,8 +210,7 @@ function importNotes() {
                 }
             }
             // 读取备份文件
-            var encoded_data = data.toString();
-            backup = JSON.parse(b64.decode(encoded_data));
+            backup = JSON.parse(b64.decode(data));
             // 执行恢复备份
             recoverNotes(backup.notes);
             // 分类备份有意义时执行恢复
@@ -235,12 +222,18 @@ function importNotes() {
 }
 
 function recoverNotes(notes) {
-    //计数变量
-    var recover_count = 0;
-    var recover_failed_count = 0;
-    var recover_failed_files = [];
+    // 计数变量
+    let recover_count = 0;
+    let recover_failed_count = 0;
+    let recover_failed_files = [];
+    // Flags
+    let flag_allcover = false;
+    let flag_allskip = false;
 
-    notes.forEach(backup => {
+    for (let i = 0; i < notes.length; i++) {
+
+        let backup = notes[i];
+
         // 文件校验
         var check = sha256(backup.filename + backup.content, "fastnote");
         if (check != backup.check) {
@@ -251,26 +244,28 @@ function recoverNotes(notes) {
                 err: 0
             });
             recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
-            return;
+            continue;
         }
+
+        // 定义flag
+        let flag_cover = false;
+        let flag_skip = false;
+
         // 先判断文件是否存在
         if (fs.existsSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename)) {
             // 获取修改时间
             let note_data;
+            let flag_null = false;
             try {
                 note_data = fs.readFileSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename);
             } catch {
-                recover_count++;
-                recover_failed_count++;
-                recover_failed_files.push({
-                    filename: backup.filename,
-                    err: 1
-                });
-                recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
-                return;
+                flag_null = true;
             }
             // 拒绝空值
             if (!note_data) {
+                flag_null = true;
+            }
+            if (flag_null) {
                 recover_count++;
                 recover_failed_count++;
                 recover_failed_files.push({
@@ -278,98 +273,88 @@ function recoverNotes(notes) {
                     err: 1
                 });
                 recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
-                return;
+                continue;
             }
-            var note = JSON.parse(note_data);
-            var mtime = typeof note.updaterawtime != "undefined" ? note.updaterawtime : note.rawtime;
+            // 对便签本身进行处理
+            let note = JSON.parse(note_data);
+            let mtime = typeof note.updaterawtime != "undefined" ? note.updaterawtime : note.rawtime;
             // 检查修改时间
             if (backup.updateTime > mtime) {
                 // 备份文件较新，直接覆盖
-                fs.writeFile(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename, backup.content, err => {
-                    recover_count++;
-                    if (err) {
-                        recover_failed_count++;
-                        recover_failed_files.push({
-                            filename: backup.filename,
-                            err: 2
-                        });
-                    }
-                    recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
-                });
+                flag_cover = true;
             } else {
                 // 备份文件较旧，询问
-                let ret = dialog.showMessageBoxSync({
-                    title: "恢复备份",
-                    type: "warning",
-                    message: "检测到已经存在的更新的便签文件，是否覆盖？",
-                    detail: "当前文件：" + backup.filename + "\n便签创建时间:" + note.time + (typeof note.updatetime != "undefined" ? "\n便签更新时间：" + note.updatetime : "") + "\n便签内容: " + (note.text.length > 20 ? note.text.substring(0, 20) + "..." : note.text),
-                    defaultId: 1,
-                    cancelId: 1,
-                    buttons: ["覆盖", "跳过"]
-                });
-                switch (ret) {
-                    case 0:
-                        fs.writeFile(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename, backup.content, err => {
-                            recover_count++;
-                            if (err) {
-                                recover_failed_count++;
-                                recover_failed_files.push({
-                                    filename: backup.filename,
-                                    err: 2
-                                });
-                            }
-                            recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
-                        });
-                        break;
-                    case 1:
-                        recover_count++;
-                        return;
+                if (flag_allcover) {
+                    // flag被设置，直接执行覆盖
+                    flag_cover = true;
+                }
+                if (flag_allskip) {
+                    // flag被设置，直接跳过
+                    flag_skip = true;
+                }
+                // 未设置flag，询问
+                if (!flag_allcover && !flag_allskip) {
+                    let ret = dialog.showMessageBoxSync({
+                        title: "恢复备份",
+                        type: "warning",
+                        message: "检测到已经存在的更新的便签文件，是否覆盖？",
+                        detail: "当前文件：" + backup.filename + "\n便签创建时间:" + note.time + (typeof note.updatetime != "undefined" ? "\n便签更新时间：" + note.updatetime : "") + "\n便签内容: " + (note.text.length > 20 ? note.text.substring(0, 20) + "..." : note.text),
+                        defaultId: 1,
+                        cancelId: 1,
+                        buttons: ["覆盖", "跳过", "全部覆盖", "全部跳过"]
+                    });
+                    switch (ret) {
+                        case 0:
+                            flag_cover = true;
+                            break;
+                        case 1:
+                            flag_skip = true;
+                            break;
+                        case 2:
+                            flag_cover = true;
+                            flag_allcover = true;
+                            break;
+                        case 3:
+                            flag_skip = true;
+                            flag_allskip = true;
+                            break;
+                    }
                 }
             }
         } else {
-            // 便签文件不存在，直接写入
-            fs.writeFile(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename, backup.content, err => {
-                recover_count++;
-                if (err) {
-                    recover_failed_count++;
-                    recover_failed_files.push({
-                        filename: backup.filename,
-                        err: 2
-                    });
-                }
-                recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
-            });
+            flag_cover = true;
         }
-    });
-}
-
-function recoverCategories(data) {
-    if (sha256(JSON.stringify(data), 'fastnote') != data.check) {
-        dialog.showMessageBoxSync({
-            title: "恢复错误",
-            type: "warning",
-            message: "便签分类内容未通过安全校验，请在便签备份结束后手动重置分类。",
-            buttons: ["确认"]
-        });
-        return;
+        if (flag_cover) {
+            try {
+                fs.writeFileSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename, backup.content, 'utf-8');
+                recover_count++;
+            } catch(err) {
+                recover_failed_count++;
+                recover_failed_files.push({
+                    filename: backup.filename,
+                    err: 2
+                });
+            }
+            recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
+        }
+        if (flag_skip) {
+            recover_count++;
+            recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
+        }
     }
-    // 通过校验，发送给主窗体
-    ipcRenderer.send('backup-recover-categories', data.content);
 }
 
 function recoverBackupCompleted(recover_count, backups_length, recover_failed_count, recover_failed_files) {
-    if (recover_count < backups_length) {
+    if (recover_count + recover_failed_count < backups_length) {
         return;
     }
-    //备份恢复执行结束
-    ipcRenderer.send("backup-recover-completed");
     //判断是否存在失败的恢复
     if (recover_failed_count > 0) {
         //构造错误信息
-        var detail = "";
-        recover_failed_files.forEach(fail => {
-            detail = detail + filename + ": ";
-            switch (err) {
+        let detail = "";
+        for (let fail of recover_failed_files) {
+            detail = detail + fail.filename + ": ";
+            switch (fail.err) {
                 case 0:
                     detail = detail + "校验错误";
                     break;
@@ -381,16 +366,19 @@ function recoverBackupCompleted(recover_count, backups_length, recover_failed_co
                     break;
             }
             detail = detail + "\n";
-        });
-        dialog.showMessageBoxSync({
-            title: "备份恢复完成",
-            type: "info",
-            message: "备份恢复完成，部分便签恢复失败。",
+        }
+        dialog.showMessageBox({
+            title: "备份恢复失败",
+            type: "error",
+            message: "存在部分便签恢复失败。",
             buttons: ["确认"],
             detail: detail
         });
     } else {
-        dialog.showMessageBoxSync({
+        // 备份恢复执行结束
+        ipcRenderer.send("backup-recover-completed");
+        // 显示对话框
+        dialog.showMessageBox({
             title: "备份恢复完成",
             type: "info",
             message: "备份已全部恢复完成。",

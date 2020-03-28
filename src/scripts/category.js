@@ -126,9 +126,9 @@ function recountNotes(retry = false) {
         renderSystemCategoryCount();
         renderCustomCategoryCount();
     } else {
-        console.error('Category count error, try to fix missing categories.');
         // 尝试扫描便签修复分类文件
         if (!retry) {
+            console.error('Category count error, try to fix missing categories.');
             fixMissingCategories().then((res) => {
                 // 修复成功后重新渲染一次
                 if (res) {
@@ -137,6 +137,8 @@ function recountNotes(retry = false) {
                     recountNotes(retry = true);
                 }
             });
+        } else {
+            console.error('Category count error, cannot fix after missing categories check.');
         }
     }
 }
@@ -155,7 +157,7 @@ function fixMissingCategories() {
                 }
                 let flag_found = false;
                 for (let j = 0; i < categories.length; j++) {
-                    if (categories[i].name == notes[i].category) {
+                    if (categories[j].name == notes[i].category) {
                         flag_found = true;
                         break;
                     }
@@ -259,7 +261,7 @@ function saveCategories() {
 function renderCategoryToList(index, name, count, animate = false) {
     var html = '<li data-name="' + name + '" draggable="true"><div id="category-custom-' + name + '"><div class="category-item-name"><span>' + name + '</span><input class="category-edit-input" type="text" value="' + name + '" data-index="' + index + '"></div><div class="category-item-count"><span>' + count + '</span></div><div class="category-item-delbtn"><i class="fa fa-minus-circle" aria-hidden="true"></i></div></div></li>';
     $('.category-menu-custom').append(html);
-    //如果是编辑模式下添加的，样式和编辑模式统一
+    // 如果是编辑模式下添加的，样式和编辑模式统一
     if (categoryEditMode) {
         $('#category-custom-' + name + ' .category-item-count').hide();
         $('#category-custom-' + name + ' .category-item-delbtn').show();
@@ -272,20 +274,20 @@ function renderCategoryToList(index, name, count, animate = false) {
 }
 
 function renderCategoryToSelect(name) {
-    var html = '<option value="' + name + '">' + name + '</option>';
+    let html = '<option value="' + name + '">' + name + '</option>';
     $('#select-note-category').append(html);
 }
 
 function renderCategoryList() {
     $('.category-menu-custom').html(''); //先清空
-    for (var i = 0; i < categories.length; i++) {
+    for (let i = 0; i < categories.length; i++) {
         renderCategoryToList(i, categories[i].name, categories[i].count);
     }
 }
 
 function renderCategorySelect() {
     $('#select-note-category').html('<option value="notalloc" data-lang="notalloc">未分类</option>');
-    for (var i = 0; i < categories.length; i++) {
+    for (let i = 0; i < categories.length; i++) {
         renderCategoryToSelect(categories[i].name);
     }
 }
@@ -378,7 +380,7 @@ function renderSystemCategoryCount() {
 }
 
 function renderCustomCategoryCount() {
-    for (var i = 0; i < categories.length; i++) {
+    for (let i = 0; i < categories.length; i++) {
         $('#category-custom-' + categories[i].name + ' .category-item-count span').html(categories[i].count);
     }
 }

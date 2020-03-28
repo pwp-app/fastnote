@@ -179,11 +179,11 @@ function putNotesToRecyclebin(notes, callback) {
     }
 }
 
-//封装在函数中
-function readNoteFiles() {
-    //重新读取需要清空notes Array
+// 封装在函数中
+function readNoteFiles(success_callback) {
+    // 重新读取需要清空notes Array
     clearNoteArray();
-    //判断是否存在notes文件夹，不存在代表没有笔记
+    // 判断是否存在notes文件夹，不存在代表没有笔记
     if (!fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/')) {
         showNoteEmpty();
         isNotesEmpty = true;
@@ -198,40 +198,50 @@ function readNoteFiles() {
                 isNotesEmpty = true;
                 return;
             }
-            //执行初始化
+            // 执行初始化
             let countOffset = 0;
-            fileArr.forEach(element => {
-                if (!fs.statSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + element).isDirectory()) {
-                    fs.readFile(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + element, 'utf-8', function (err, data) {
-                        if (err) {
-                            countOffset++;
-                            console.error(err);
-                        }
-                        var note_json = data;
-                        if (typeof (note_json) != 'undefined' && note_json != null) {
-                            note_json = JSON.parse(note_json);
-                            addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.title, note_json.category, note_json.password, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop, note_json.markdown);
-                            if (notes.length + countOffset == fileArr.length) {
-                                //结束文件遍历，渲染列表
-                                refreshNoteList();
-                                //显示列表
-                                showNoteList();
-                                //渲染便签分类数量
-                                renderSystemCategoryCount();
-                                renderCustomCategoryCount();
-                                //检查便签分类数量的正确性
-                                checkCategoryCount();
-                                if (notes.length == 0) {
-                                    showNoteEmpty();
-                                    isNotesEmpty = true;
-                                }
+            // 读取前检查notalloc的数值，存在则重置
+            if (notalloc_count) {
+                notalloc_count = 0;
+            }
+            // 读取文件
+            for (let i = 0; i < fileArr.length; i++) {
+                if (fs.statSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + fileArr[i]).isDirectory()) {
+                    // 是文件夹
+                    countOffset++;
+                    continue;
+                }
+                fs.readFile(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + fileArr[i], 'utf-8', function (err, data) {
+                    if (err) {
+                        countOffset++;
+                        console.error(err);
+                    }
+                    var note_json = data;
+                    if (typeof (note_json) != 'undefined' && note_json != null) {
+                        note_json = JSON.parse(note_json);
+                        addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.title, note_json.category, note_json.password, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop, note_json.markdown);
+                        if (notes.length + countOffset == fileArr.length) {
+                            // 结束文件遍历，渲染列表
+                            refreshNoteList();
+                            // 显示列表
+                            showNoteList();
+                            // 渲染便签分类数量
+                            renderSystemCategoryCount();
+                            renderCustomCategoryCount();
+                            // 检查便签分类数量的正确性
+                            checkCategoryCount();
+                            if (notes.length == 0) {
+                                showNoteEmpty();
+                                isNotesEmpty = true;
+                            }
+                            // 回调
+                            if (typeof success_callback == 'function') {
+                                success_callback();
                             }
                         }
-                    });
-                } else {
-                    countOffset++;
-                }
-            });
+                    }
+                });
+            }
         });
     }
 }

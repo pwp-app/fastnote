@@ -54,7 +54,7 @@ ipc.on('reloadSettingsWindow',function(sender, data){
 
 const settingsWindow = {
     show: () => {
-        if (win_settings != null) {
+        if (win_settings) {
             if (win_settings.isMinimized()) {
                 win_settings.restore();
             }
@@ -65,6 +65,14 @@ const settingsWindow = {
     },
     get: () => {
         return win_settings;
+    },
+    getFocus: () => {
+        if (win_settings) {
+            if (win_settings.isMinimized()) {
+                win_settings.restore();
+            }
+            win_settings.focus();
+        }
     }
 };
 
