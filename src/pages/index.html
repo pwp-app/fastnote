@@ -287,7 +287,6 @@
                     } else {
                         if (typeof data != 'undefined') {
                             uuid = data.uuid;
-                            installstat(uuid);
                             ipcRenderer.send("set-uuid", uuid);
                         }
                     }
@@ -299,37 +298,9 @@
                 }
                 storage.set('uuid', json);
                 firstStart = true;
-                installstat(uuid);
                 ipcRenderer.send("set-uuid", uuid);
             }
         });
-
-        function installstat(uuid) {
-            //异步调用安装量统计
-            if (!indebug) {
-                var statUrl = 'https://test.backrunner.top/projects/installstat/api/submit.php';
-            } else {
-                var statUrl = 'http://localhost/projects/installstat/api/submit.php';
-            }
-            $.ajax({
-                url: statUrl,
-                type: 'POST',
-                data: 'projectid=1&uuid=' + uuid + '&version=' + version,
-                dataType: 'JSON',
-                success: function(data) {
-                    if (data.status == "success") {
-                        console.log("InstallStat: Success, " + data.msg);
-                    } else {
-                        console.warn("InstallStat: Error, " + data.msg);
-                    }
-                },
-                error: function(data) {
-                    console.error("InstallStat: Error");
-                    console.error(data);
-                },
-                timeout: 5000
-            });
-        }
     </script>
 </head>
 
