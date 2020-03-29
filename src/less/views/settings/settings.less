@@ -1,45 +1,45 @@
 @settings-title-width: 160px;
 
-.settings-body{
+.settings-body {
     background-color: @color-settings-background !important;
 }
-.container-settings{
+.container-settings {
     width: 100%;
     height: 100%;
 }
 /* select bar*/
-.settings-titles{
+.settings-titles {
     width: 100%;
-    height:85px;
+    height: 85px;
     display: grid;
-    grid-template-columns:25% 25% 25% 25%;
-    grid-template-rows:85px;
+    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-rows: 85px;
 }
-.settings-titles-block{
+.settings-titles-block {
     background: @color-primary;
     text-align: center;
     color: @color-text-primary;
     height: auto;
     display: inline-block;
-    width:auto;
-    margin:0;
-    padding:0;
+    width: auto;
+    margin: 0;
+    padding: 0;
 }
-.settings-titles-block:hover{
+.settings-titles-block:hover {
     background: lighten(@color-primary, 3.75%);
     transition: 0.2s;
     cursor: pointer;
 }
-.settings-titles-clicked{
+.settings-titles-clicked {
     background: @color-settings-titles-clicked-bg !important;
     color: @color-settings-titles-clicked;
 }
-.settings-titles-icon{
-    margin:14px auto 7px auto;
+.settings-titles-icon {
+    margin: 14px auto 7px auto;
     display: block;
     font-size: 1.6em !important;
 }
-.settings-titles-span{
+.settings-titles-span {
     display: block;
     font-size: 16px;
     letter-spacing: 0.032em;
@@ -47,18 +47,18 @@
     -webkit-user-select: none;
 }
 /* sections */
-.settings-sections{
+.settings-sections {
     margin: 28px 52px;
 }
-.settings-sections-hidden{
+.settings-sections-hidden {
     display: none;
 }
-.settings-item{
+.settings-item {
     display: flex;
     align-items: center;
     margin-top: 14px;
 }
-.settings-item-title{
+.settings-item-title {
     font-size: 15px;
     text-align: left;
     width: auto;
@@ -72,7 +72,7 @@
     flex: 1 1 auto;
     vertical-align: middle;
     line-height: 32px;
-    input{
+    input {
         height: 34px;
         font-size: 13px;
         color: @color-settings-text;
@@ -81,24 +81,24 @@
         vertical-align: middle;
         padding-left: 16px;
     }
-    input:focus{
+    input:focus {
         color: @color-settings-text;
         background: darken(@color-settings-background, 5%);
         border: 1px solid darken(@color-settings-controlborder, 20%);
         outline: none !important;
         box-shadow: none !important;
     }
-    .brcontrol-range{
+    .brcontrol-range {
         width: 100%;
         background: @color-range-bg;
     }
-    .brcontrol-range-label{
+    .brcontrol-range-label {
         margin-left: 18px;
     }
     input::-webkit-input-placeholder {
         color: @color-control-placeholder;
     }
-    select{
+    select {
         height: 34px;
         font-size: 13px;
         color: @color-settings-text;
@@ -106,55 +106,55 @@
         border: 1px solid @color-settings-controlborder;
         vertical-align: middle;
     }
-    select:disabled{
+    select:disabled {
         cursor: not-allowed;
         background: @color-settings-select-disabled;
     }
-    select:hover:enabled{
+    select:hover:enabled {
         background: darken(@color-settings-background, 5%);
     }
-    select:focus{
+    select:focus {
         color: @color-settings-text;
         background: darken(@color-settings-background, 5%);
         border: 1px solid darken(@color-settings-controlborder, 20%);
         outline: none !important;
         box-shadow: none !important;
     }
-    button{
+    button {
         font-size: 14px;
-        width:100%;
+        width: 100%;
     }
-    span{
+    span {
         line-height: 34px;
         font-size: 14px;
-        width:100%;
+        width: 100%;
         color: @color-settings-text;
         .no-select-and-drag();
     }
 }
 
 // 复选框
-.settings-control-checkbox{
+.settings-control-checkbox {
     transform: translateY(4px);
     .no-select-and-drag();
-    input[type="checkbox"]+label::before{
+    input[type="checkbox"] + label::before {
         background-color: @color-settings-background !important;
         border-color: @color-settings-controlborder !important;
     }
-    input[type="checkbox"]+label{
+    input[type="checkbox"] + label {
         font-size: 14px;
         padding-top: 4px;
         color: @color-settings-text !important;
     }
-    input[type="checkbox"]:checked+label::after {
+    input[type="checkbox"]:checked + label::after {
         color: @color-text-primary !important;
         transform: translateY(-8px);
     }
-    input[type="checkbox"]:focus+label::before {
+    input[type="checkbox"]:focus + label::before {
         border-color: @color-settings-controlborder !important;
         outline: none !important;
     }
-    input[type="checkbox"]:focus+label::after {
+    input[type="checkbox"]:focus + label::after {
         border-color: @color-settings-controlborder !important;
         outline: none !important;
     }
@@ -173,11 +173,11 @@
     }
 }
 
-.setting-buttons{
+.setting-buttons {
     position: absolute;
     right: 52px;
     bottom: 24px;
-    button{
+    button {
         font-size: 13px;
         margin-left: 4px;
         text-align: center;
@@ -201,7 +201,7 @@
     width: 86px;
     margin-left: 8px;
 }
-#settings-item-lockscreen-enabled{
+#settings-item-lockscreen-enabled {
     display: none;
     button {
         margin-right: 8px;
@@ -219,6 +219,6 @@
 .settings-button-lockscreen-icon {
     margin-left: 8px;
 }
-#settings-item-lockscreen-default-reset{
+#settings-item-lockscreen-default-reset {
     display: none;
 }
