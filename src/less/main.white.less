@@ -1,5 +1,12 @@
-//colors
-@import "./colors/color.white.less";
+@import './colors/color.common.less';
 
-@import "./main.common.less";
-@import "./themes/theme.white.less";
+// 使用不显示body来实现纯白效果，缩小中间样式的规模
+
+html {
+    background: @color-white !important;
+}
+
+body {
+    background: @color-white !important;
+    display: none !important;
+}
