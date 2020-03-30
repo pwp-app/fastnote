@@ -797,8 +797,8 @@
                 $('.container-newnote').css('display', 'block');
                 $('.trigger-expandnewnote').css('display', 'none');
                 setTimeout(function() {
-                    $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 207);
-                    $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 207);
+                    $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 206);
+                    $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 206);
                 }, 50);
             } else {
                 if (data.isFolded) {
@@ -808,9 +808,9 @@
                     //late execute
                     setTimeout(function() {
                         $('.note-list').css('height', $(window).height() - $('.container-titlebar')
-                            .height() - 27);
+                            .height() - 26);
                         $('.note-empty').css('height', $(window).height() - $('.container-titlebar')
-                            .height() - 27);
+                            .height() - 26);
                     }, 50);
                 } else {
                     isNoteFolded = false;
@@ -818,9 +818,9 @@
                     $('.trigger-expandnewnote').css('display', 'none');
                     setTimeout(function() {
                         $('.note-list').css('height', $(window).height() - $('.container-titlebar')
-                            .height() - 207);
+                            .height() - 206);
                         $('.note-empty').css('height', $(window).height() - $('.container-titlebar')
-                            .height() - 207);
+                            .height() - 206);
                     }, 50);
                 }
             }
@@ -834,9 +834,9 @@
                 }
                 storage.set('newnoteconfig', config);
                 //set height
-                $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 27) +
+                $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 26) +
                     'px');
-                $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 27) +
+                $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 26) +
                     'px');
                 //animate
                 $('.container-newnote').animateCss('fadeOutDown', function() {
@@ -854,9 +854,9 @@
                 }
                 storage.set('newnoteconfig', config);
                 //set height
-                $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 207) +
+                $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 206) +
                     'px');
-                $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 207) +
+                $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 206) +
                     'px');
                 //animate
                 $('.container-newnote').css('display', 'block').animateCss('fadeInUp');
@@ -1211,11 +1211,11 @@
             //调整list的高度
             var listHeight = 0;
             if ($('.container-newnote').css('display') == 'none') {
-                listHeight = $(window).height() - $('.container-titlebar').height() - 27;
+                listHeight = $(window).height() - $('.container-titlebar').height() - 26;
                 $('.note-list').css('height', listHeight + 'px');
                 $('.note-empty').css('height', listHeight + 'px');
             } else {
-                listHeight = $(window).height() - $('.container-titlebar').height() - 207;
+                listHeight = $(window).height() - $('.container-titlebar').height() - 206;
                 $('.note-list').css('height', listHeight + 'px');
                 $('.note-empty').css('height', listHeight + 'px');
             }
