@@ -21,7 +21,7 @@
     .no-select();
 }
 
-.container-newnote label{
+.container-newnote label {
     display: inline-block;
 }
 
@@ -66,22 +66,22 @@
     outline: 0;
 }
 
-.newnote-fold{
+.newnote-fold {
     float: right;
     display: inline-block;
     width: 32px;
-    height:24px;
+    height: 24px;
     text-align: right;
     right: 0px;
     margin-right: -5px;
     margin-top: -1px;
 }
 
-.newnote-info{
+.newnote-info {
     float: right;
     display: inline-block;
     width: 32px;
-    height:24px;
+    height: 24px;
     text-align: right;
     right: 0px;
     margin-right: -5px;
@@ -95,7 +95,7 @@
     margin-left: 0px;
     margin-right: -8px;
     float: right;
-    button{
+    button {
         padding: 0;
         height: 18px;
         margin-top: -1px;
@@ -111,19 +111,20 @@
             }
         }
     }
-    button:hover > svg > path{
+    button:hover > svg > path {
         fill: @color-trigger-hover-primary;
     }
 }
 
-.newnote-markdown-checked{
+.newnote-markdown-checked {
     background: @color-trigger-bg-checked;
 }
 
-.newnote-trigger{
+.newnote-trigger {
     color: @color-trigger-primary;
+    transition: 0.1s;
 }
-.newnote-trigger:hover{
+.newnote-trigger:hover {
     color: @color-trigger-hover-primary;
 }
 
@@ -141,11 +142,11 @@
     box-shadow: 0px 0px 8px @color-boxshadow-dark;
 }
 
-.newnote-info-item{
-    display:flex;
+.newnote-info-item {
+    display: flex;
 }
 
-.newnote-info-item label{
+.newnote-info-item label {
     color: @color-text-primary;
     font-size: 14px;
     line-height: 28px;
@@ -153,34 +154,34 @@
     .no-select-and-drag();
 }
 
-.newnote-info-item input{
+.newnote-info-item input {
     height: 28px;
     padding: 8px 10px;
     font-size: 13px;
     color: @color-control-text;
     background: @color-textarea-background;
-    border:none;
+    border: none;
 }
 
-.newnote-info-item input:focus{
+.newnote-info-item input:focus {
     font-size: 13px;
     color: @color-control-text;
     background: @color-textarea-background;
-    border:none;
+    border: none;
     box-shadow: none;
 }
 .newnote-info-item input::-webkit-input-placeholder {
     color: @color-control-placeholder;
 }
-.newnote-info-item select{
+.newnote-info-item select {
     height: 28px;
     padding: 0 8px;
     font-size: 13px;
     color: @color-control-text;
     background: @color-textarea-background;
-    border:none;
+    border: none;
 }
-.newnote-info-item select:focus{
+.newnote-info-item select:focus {
     color: @color-control-text;
     background: @color-textarea-background;
     border: none !important;
@@ -188,7 +189,7 @@
     box-shadow: none !important;
 }
 
-.note-text-submittip{
+.note-text-submittip {
     bottom: 10px;
     font-size: 10px;
     right: 20px;
@@ -199,11 +200,11 @@
 }
 
 //styles for English UI
-.newnote-info-item-en-us>.br-col-2{
+.newnote-info-item-en-us > .br-col-2 {
     flex: 0 0 25% !important;
     max-width: 25% !important;
 }
-.newnote-info-item-en-us>.br-col-10{
+.newnote-info-item-en-us > .br-col-10 {
     flex: 0 0 75% !important;
     max-width: 75% !important;
 }
