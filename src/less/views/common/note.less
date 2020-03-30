@@ -5,6 +5,7 @@
     overflow-y: auto;
     pointer-events: auto !important;
     background: @color-notelist-background;
+    scroll-behavior: smooth;
 }
 
 .note-list::-webkit-scrollbar {
@@ -44,7 +45,7 @@
     font-size: 20px;
 }
 
-.note-empty-inner{
+.note-empty-inner {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -85,45 +86,45 @@
     display: inline-flex;
 }
 
-.note-title{
+.note-title {
     font-size: 14px;
     margin-left: 8px;
 }
 
-.note-text hr{
+.note-text hr {
     background-color: @color-text-primary;
-    height:1px;
+    height: 1px;
     border: 0;
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-noteh1{
+noteh1 {
     font-size: 18px;
     font-weight: bold;
     line-height: 36px;
     vertical-align: middle;
 }
 
-noteh2{
+noteh2 {
     font-size: 17px;
     font-weight: bold;
     line-height: 32px;
     vertical-align: middle;
 }
-noteh3{
+noteh3 {
     font-size: 16px;
     font-weight: bold;
     line-height: 32px;
     vertical-align: middle;
 }
-noteh4{
+noteh4 {
     font-size: 15px;
     font-weight: bold;
     line-height: 28px;
     vertical-align: middle;
 }
-noteh5{
+noteh5 {
     font-size: 14px;
     font-weight: bold;
     line-height: 28px;
@@ -131,39 +132,41 @@ noteh5{
 }
 
 //title的自定义标签样式
-titlesusp1, titlesusp2,titlesusp3{
+titlesusp1,
+titlesusp2,
+titlesusp3 {
     display: none;
 }
 
-@media(max-width: 1140px){
-    titlep4{
+@media (max-width: 1140px) {
+    titlep4 {
         display: none;
     }
-    titlesusp3{
+    titlesusp3 {
         display: initial;
     }
 }
 
-@media(max-width: 940px){
-    titlep3{
+@media (max-width: 940px) {
+    titlep3 {
         display: none;
     }
-    titlesusp3{
+    titlesusp3 {
         display: none;
     }
-    titlesusp2{
+    titlesusp2 {
         display: initial;
     }
 }
 
-@media(max-width: 690px){
-    titlep2{
+@media (max-width: 690px) {
+    titlep2 {
         display: none;
     }
-    titlesusp2{
+    titlesusp2 {
         display: none;
     }
-    titlesusp1{
+    titlesusp1 {
         display: initial;
     }
 }
@@ -178,23 +181,23 @@ titlesusp1, titlesusp2,titlesusp3{
     padding-top: 4px;
     .no-drag();
 }
-.note-updatetime{
+.note-updatetime {
     margin-left: 0.5rem;
 }
 
 .note-content {
     width: 100%;
-    margin-top:8px !important;
+    margin-top: 8px !important;
     margin-bottom: 5px !important;
     p {
         font-size: 15px;
         line-height: 24px;
         letter-spacing: 0.06em;
-        padding:0 !important;
-        margin:0 !important;
-        word-break:break-all;
+        padding: 0 !important;
+        margin: 0 !important;
+        word-break: break-all;
         overflow-x: hidden;
-        text-justify:auto;
+        text-justify: auto;
         user-select: text;
         vertical-align: middle;
     }
@@ -203,28 +206,29 @@ titlesusp1, titlesusp2,titlesusp3{
         margin-bottom: 5px;
         color: @color-text-primary;
         font-size: 15px;
-        text-decoration:underline;
+        text-decoration: underline;
         letter-spacing: 0.06em;
     }
-    a:hover{
+    a:hover {
         color: @color-text-primary;
     }
 }
 
-.note-selected{
+.note-selected {
     background: @color-note-selected;
 }
 
-.note-forceTop-icon{
-    float:right;
-    margin-top:4px;
-    margin-left:12px;
+.note-forceTop-icon {
+    float: right;
+    margin-top: 4px;
+    margin-left: 12px;
 }
 
-.note-overheight{
-    height:250px;
-    padding-right:6px;
-    overflow-y:auto;
+.note-overheight {
+    height: 250px;
+    padding-right: 6px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
 }
 
 .note-overheight::-webkit-scrollbar {
@@ -245,10 +249,10 @@ titlesusp1, titlesusp2,titlesusp3{
 }
 
 //加密便签样式
-.note-password span{
+.note-password span {
     font-size: 14px;
 }
-.note-password input{
+.note-password input {
     width: 320px;
     display: inline-block;
     height: 32px;
@@ -259,17 +263,17 @@ titlesusp1, titlesusp2,titlesusp3{
     border: none;
     transition: none !important;
 }
-.note-password input:focus{
+.note-password input:focus {
     font-size: 14px;
     color: @color-control-text;
     background: @color-textarea-background;
-    border:none;
+    border: none;
     box-shadow: none;
 }
 .note-password input::-webkit-input-placeholder {
     color: @color-control-placeholder;
 }
-.note-password-relock{
+.note-password-relock {
     float: right;
     margin-right: 10px;
     font-size: 14px !important;
@@ -277,6 +281,6 @@ titlesusp1, titlesusp2,titlesusp3{
     cursor: pointer;
     display: none !important;
 }
-.note-password-relock:hover{
+.note-password-relock:hover {
     color: @color-trigger-hover-primary;
 }
