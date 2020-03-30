@@ -55,8 +55,9 @@
 
         const WebFont = require('webfontloader');
 
-        var indebug = remote.getGlobal('indebug');
-        if (!indebug){
+        // fetch indebug status
+        global.indebug = remote.getGlobal('indebug');
+        if (!global.indebug){
             Mousetrap.bind('ctrl+shift+i', (e)=>{
                 e.preventDefault();
                 e.stopPropagation();

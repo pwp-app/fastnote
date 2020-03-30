@@ -53,12 +53,14 @@
                 return this;
             },
         });
-        //define const
+        // define const
         const remote = require('electron').remote;
         const app = remote.app;
-        var indebug = remote.getGlobal('indebug');
 
-        //import json storage
+        // fetch indebug status
+        global.indebug = remote.getGlobal('indebug');
+
+        // import json storage
         if (typeof storage != 'undefined') {
             var storage = require('electron-json-storage');
         }
@@ -78,10 +80,10 @@
 
         const WebFont = require('webfontloader');
 
-        //import requirements
+        // import requirements
         $.getScript('../app/infobar.js'); //import by jQuery
 
-        //import menu
+        // import menu
         $.getScript('static/menu.recyclebin.js');
 
         var settings;
@@ -104,19 +106,19 @@
         function settingsInit(settings) {
             var cssText = "";
             var font = "";
-            //build css
+            // build css
             if (settings == null) {
-                //read error
+                // read error
                 $('#main-style').attr('href', 'static/main.default.css');
 
                 cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
                 font = 'Source Han Sans CN';
                 current_i18n = 'zh-cn';
                 $.getScript('static/i18n/zh-cn.js');
-                //read error
+                // read error
                 console.error('A error occured when reading settings.');
             } else {
-                //read success
+                // read success
                 if (typeof settings.language != 'undefined') {
                     if (settings.language != 'zh-cn') {
                         $(document).ready(function() {
@@ -144,7 +146,7 @@
                     font = 'Source Han Sans CN';
                 }
 
-                //笔记显示设置初始化
+                // 笔记显示设置初始化
                 cssText += '.note-content p{';
                 if (typeof settings.fontsize != 'undefined') {
                     cssText += 'font-size:' + settings.fontsize + 'px !important;';
@@ -183,7 +185,7 @@
             }
         }
 
-        //加载webfont
+        // 加载webfont
         function loadWebfont(font) {
             WebFont.load({
                 custom: {
@@ -364,7 +366,7 @@
 
         bindNoteClickEvent();
 
-        if (!indebug) {
+        if (!global.indebug) {
             Mousetrap.bind('ctrl+shift+i', (e) => {
                 e.preventDefault();
                 e.stopPropagation();

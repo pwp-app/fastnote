@@ -29,7 +29,7 @@
     <script src="static/notes.render.js"></script>
     <script src="static/cloud.sync.js"></script>
     <script>
-        //i18n
+        // i18n
         var postprocess_i18n = [{
             selector: '#input-note-title',
             attr: 'placeholder',
@@ -45,16 +45,16 @@
         }];
     </script>
     <script>
-        //define const
+        // define const
         var remote = require('electron').remote;
         var app = remote.app;
 
-        //import json storage
+        // import json storage
         if (typeof storage != 'undefined') {
             var storage = require('electron-json-storage');
         }
 
-        //dialog
+        // dialog
         const {
             dialog
         } = require('electron').remote;
@@ -68,13 +68,15 @@
 
         const notesEdit = require("../app/notes_edit.js");
 
-        //tools
+        // tools
         const UUID = require('../app/tools/uuid.js');
-        const indebug = remote.getGlobal('indebug');
 
-        //初始化Fastnote cloud
+        // debug
+        global.indebug = remote.getGlobal('indebug');
+
+        // 初始化Fastnote cloud
         const cloudConfig = require('../app/cloud/config.js');
-        if (indebug) {
+        if (global.indebug) {
             var cloud_protocol = cloudConfig.dev.protocol;
             var cloud_host = cloudConfig.dev.host;
             var cloud_port = cloudConfig.dev.port;
@@ -2211,7 +2213,7 @@
     <!-- 开发工具屏蔽与控制台 -->
     <script>
         // 屏蔽开发工具
-        if (!indebug) {
+        if (!global.indebug) {
             Mousetrap.bind('ctrl+shift+i', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -2245,7 +2247,7 @@
         });
         // 启用开发控制台，引入控制台js
         var devconsoleOpened = false;
-        if (indebug) {
+        if (global.indebug) {
             Mousetrap.bind('ctrl+shift+1', function() {
                 if (devconsoleOpened) {
                     devconsoleOpened = false;

@@ -56,7 +56,7 @@
 
         const WebFont = require('webfontloader');
 
-        var indebug = remote.getGlobal('indebug');
+        global.indebug = remote.getGlobal('indebug');
 
         var settings;
 
@@ -151,7 +151,7 @@
 
         //初始化Fastnote cloud
         const cloudConfig = require('../../app/cloud/config.js');
-        if (indebug) {
+        if (global.indebug) {
             var cloud_protocol = cloudConfig.dev.protocol;
             var cloud_host = cloudConfig.dev.host;
             var cloud_port = cloudConfig.dev.port;
@@ -393,7 +393,7 @@
         }
     </style>
     <script>
-        if (!indebug) {
+        if (!global.indebug) {
             Mousetrap.bind('ctrl+shift+i', (e) => {
                 e.preventDefault();
                 e.stopPropagation();

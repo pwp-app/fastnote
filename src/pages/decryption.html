@@ -33,7 +33,7 @@
 
         const WebFont = require('webfontloader');
 
-        //获取indebug
+        // 获取indebug
         global.indebug = remote.getGlobal('indebug');
 
         storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {

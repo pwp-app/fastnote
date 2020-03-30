@@ -79,7 +79,7 @@
             global.indebug = remote.getGlobal("indebug");
 
             //读取设置
-            storage.get("settings", function(error, data) {
+            storage.get('settings' + (global.indebug ? '_dev' : '') , function(error, data) {
                 if (error) {
                     console.error(error);
                     settingsInit(null);
@@ -601,7 +601,7 @@
                                     .createHmac("sha256", "fastnote")
                                     .update(lockpassword)
                                     .digest("hex");
-                                storage.set("settings", settings, function(error) {
+                                storage.set("settings"  + (global.indebug ? '_dev' : ''), settings, function(error) {
                                     if (error) {
                                         dialog.showMessageBoxSync({
                                             type: "error",
@@ -637,7 +637,7 @@
                             });
                             if (ret == 1) {
                                 settings.lockpassword = undefined;
-                                storage.set("settings", settings, function(error) {
+                                storage.set("settings"  + (global.indebug ? '_dev' : ''), settings, function(error) {
                                     if (error) {
                                         dialog.showMessageBoxSync({
                                             type: "error",
@@ -885,7 +885,7 @@
                 settings.locktype = locktype;
 
                 //保存设置
-                storage.set("settings", settings, function(error) {
+                storage.set("settings" + (global.indebug ? '_dev' : ''), settings, function(error) {
                     if (error) {
                         dialog.showMessageBoxSync({
                             type: "error",
