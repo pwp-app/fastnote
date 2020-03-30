@@ -13,7 +13,7 @@ const path = require('path');
 function createSettingsWindow() {
     var conf = {
         width: 680,
-        height: 548,
+        height: 550,
         resizable: false,
         maximazable: false,
         useContentSize: true,
