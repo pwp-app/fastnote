@@ -788,9 +788,9 @@
     </div>
 
     <script>
-        //折叠开关
+        // 折叠开关
         var isNoteFolded = false;
-        //init
+        // init
         storage.get('newnoteconfig', function(err, data) {
             if (err || typeof(data) == 'undefined' || data == null || data == "") {
                 isNoteFolded = false;
@@ -803,9 +803,10 @@
             } else {
                 if (data.isFolded) {
                     $('.container-newnote').css('display', 'none');
+                    $('.container-bottombar').addClass('bottombar-topshadow');
                     isNoteFolded = true;
                     $('.trigger-expandnewnote').css('display', 'block');
-                    //late execute
+                    // late execute
                     setTimeout(function() {
                         $('.note-list').css('height', $(window).height() - $('.container-titlebar')
                             .height() - 26);
@@ -825,42 +826,44 @@
                 }
             }
         });
-        //绑定折叠事件
+        // 绑定折叠事件
         $('#btn-newnote-fold').click(function() {
             if (!isNoteFolded) {
-                //set config
+                // set config
                 var config = {
                     isFolded: true
                 }
                 storage.set('newnoteconfig', config);
-                //set height
+                // set height
                 $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 26) +
                     'px');
                 $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 26) +
                     'px');
-                //animate
-                $('.container-newnote').animateCss('fadeOutDown', function() {
+                // animate
+                $('.container-bottombar').addClass('bottombar-topshadow');
+                $('.container-newnote').animateCss('fadeOutDown faster', function() {
                     $('.container-newnote').css('display', 'none');
                     isNoteFolded = true;
                 });
-                $('.trigger-expandnewnote').css('display', 'block').animateCss('fadeIn');
+                $('.trigger-expandnewnote').css('display', 'block').animateCss('fadeIn faster');
             }
         });
         $('#btn-newnote-expand').click(function() {
             if (isNoteFolded) {
-                //set config
+                // set config
                 var config = {
                     isFolded: false
                 }
                 storage.set('newnoteconfig', config);
-                //set height
+                // set height
                 $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 206) +
                     'px');
                 $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 206) +
                     'px');
-                //animate
-                $('.container-newnote').css('display', 'block').animateCss('fadeInUp');
-                $('.trigger-expandnewnote').animateCss('fadeOut', function() {
+                // animate
+                $('.container-newnote').css('display', 'block').animateCss('fadeInUp faster');
+                $('.container-bottombar').removeClass('bottombar-topshadow');
+                $('.trigger-expandnewnote').animateCss('fadeOut faster', function() {
                     $('.trigger-expandnewnote').css('display', 'none');
                     isNoteFolded = false;
                 });
