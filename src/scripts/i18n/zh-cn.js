@@ -148,7 +148,7 @@ i18n['zh-cn']={
     note_conflict_detail_content: '，内容: ',
     desktop_widget: '创建桌面组件',
     settings_widget: '桌面组件',
-    opacity: '透明度',
+    opacity: '不透明度',
     default_forcetop: '默认置顶',
     close_mainwindow_title: '关闭 Fastnote',
     close_minimize_to_tray: '最小化到托盘',
