@@ -36,7 +36,7 @@
         //获取indebug
         global.indebug = remote.getGlobal('indebug');
 
-        storage.get('settings', function(error, data) {
+        storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
             if (error) {
                 console.error(error);
                 settingsInit(null);

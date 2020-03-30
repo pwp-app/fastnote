@@ -41,7 +41,7 @@ storage.get('notesid' + (global.indebug ? '_dev' : ''), function (error, data) {
 
 //execute
 if (typeof settings == "undefined"){
-    storage.get('settings', function (err, data) {
+    storage.get('settings' + (global.indebug ? '_dev' : ''), function (err, data) {
         if (err) {
           //获取callback回传的json
           console.error(err);

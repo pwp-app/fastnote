@@ -65,7 +65,7 @@ function createWindow() {
     win = new BrowserWindow(conf);
 
     var settings;
-    storage.get('settings', function(err, data) {
+    storage.get('settings' + (global.indebug ? '_dev' : ''), function(err, data) {
         if (err) {
             //获取callback回传的json
             console.error(err);

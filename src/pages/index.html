@@ -95,7 +95,7 @@
         //设置项
         var settings;
 
-        storage.get('settings', function(error, data) {
+        storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
             if (error) {
                 console.error(error);
                 settingsInit(null);
@@ -1843,7 +1843,7 @@
                             case 0:
                                 //复写设置
                                 settings.closeOption = 'tray';
-                                storage.set('settings', settings, (err) => {
+                                storage.set('settings'  + (global.indebug ? '_dev' : ''), settings, (err) => {
                                     if (err) {
                                         console.error(err)
                                     }
@@ -1854,7 +1854,7 @@
                                 //复写设置
                                 settings.closeOption = 'close';
                                 //保存设置
-                                storage.set('settings', settings, (err) => {
+                                storage.set('settings' + (global.indebug ? '_dev' : ''), settings, (err) => {
                                     if (err) {
                                         console.error(err)
                                     }
