@@ -51,14 +51,14 @@ $(document).on('click', '.note a', function (e) {
 
 // 绑定时间点击事件
 
-$(document).on('click', '.note-header .note-updatetime', function(e) {
-    let id = $(e.currentTarget).parentsUntil('.note').attr('data-id');
+$(document).on('click', '.note-updatetime', function(e) {
+    let id = $(e.currentTarget).parent().parent().parent().attr('data-id');
     $(`#note_${id} .note-header .note-updatetime`).css('display', 'none');
     $(`#note_${id} .note-header .note-createtime`).css('display', 'initial');
 });
 
-$(document).on('click', '.note-header .note-createtime', function(e) {
-    let id = $(e.currentTarget).parentsUntil('.note').attr('data-id');
+$(document).on('click', '.note-createtime', function(e) {
+    let id = $(e.currentTarget).parent().parent().parent().attr('data-id');
     $(`#note_${id} .note-header .note-updatetime`).css('display', 'initial');
     $(`#note_${id} .note-header .note-createtime`).css('display', 'none');
 });
