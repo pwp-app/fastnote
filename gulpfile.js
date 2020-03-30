@@ -10,14 +10,16 @@ const shell = require("gulp-shell");
 const qn = require("gulp-qiniu-up");
 const fs = require("fs");
 const del = require("del");
+// config file
 const qiniuConfig = require("./qiniu.config");
+const signConfig = require('./sign.config');
 
-//jquery
+// jquery
 gulp.task("jquery", async function() {
     await gulp.src("node_modules/jquery/dist/jquery.min.js").pipe(gulp.dest("public/static"));
 });
 
-//bootstrap
+// bootstrap
 gulp.task("bootstrap", async function() {
     gulp.src("node_modules/bootstrap/dist/js/bootstrap.min.js").pipe(gulp.dest("public/static"));
     gulp.src("node_modules/bootstrap/dist/css/bootstrap.min.css").pipe(gulp.dest("public/static"));
@@ -29,18 +31,18 @@ gulp.task("bootstrap", async function() {
         .pipe(gulp.dest("public/static"));
 });
 
-//fontawesome
+// fontawesome
 gulp.task("fontawesome", async function() {
     gulp.src("node_modules/font-awesome/fonts/**/*").pipe(gulp.dest("public/static/fonts"));
     await gulp.src("node_modules/font-awesome/css/font-awesome.min.css").pipe(gulp.dest("public/static"));
 });
 
-//animate.css
+// animate.css
 gulp.task("animate-css", async function() {
     await gulp.src("node_modules/animate.css/animate.min.css").pipe(gulp.dest("public/static"));
 });
 
-//moment.js
+// moment.js
 gulp.task("momentjs", async function() {
     await gulp
         .src("node_modules/moment/moment.js")
@@ -50,12 +52,12 @@ gulp.task("momentjs", async function() {
         .pipe(gulp.dest("public/static"));
 });
 
-//html5sortable
+// html5sortable
 gulp.task("html5sortable", async function() {
     await gulp.src("node_modules/html5sortable/dist/html5sortable.min.js").pipe(gulp.dest("public/static"));
 });
 
-//3rdparty
+// 3rdparty
 gulp.task("3rdparty", function() {
     return gulp.src("src/scripts/3rdparty/**/*.js").pipe(gulp.dest("public/static"));
 });
@@ -99,7 +101,7 @@ gulp.task("assets", function() {
     return gulp.src("assets/images/**/*").pipe(gulp.dest("public/static/images"));
 });
 
-//watch
+// watch
 gulp.task("watch", function() {
     gulp.watch("src/less/**/*.less", gulp.series("less"));
     gulp.watch("node_modules/**/*", gulp.series("requirements"));
@@ -115,7 +117,7 @@ gulp.task("clean", function() {
 gulp.task("build", gulp.series(["requirements", "less", "scripts", "i18n", "pages", "assets"]));
 gulp.task("clean build", gulp.series(["clean", "build"]));
 
-//build
+// build
 gulp.task("win32", function() {
     return gulp
         .src("main.js")
@@ -137,7 +139,13 @@ gulp.task("debug", function() {
         .pipe(gulp.dest("./"));
 });
 
-//pack
+// sign
+gulp.task("sign", function() {
+    return gulp.src("dist/*.exe")
+        .pipe(shell([`signtool sign /v /f ${signConfig.cert} /p ${signConfig.password} /tr http://timestamp.digicert.com "<%= file.path %>"`]));
+});
+
+// pack
 gulp.task("move old", function() {
     return gulp.src("dist/*.exe").pipe(gulp.dest("old_version"));
 });
@@ -149,10 +157,10 @@ gulp.task("clean dist", function() {
 });
 gulp.task("build win32", shell.task("npm run build32"));
 gulp.task("build win64", shell.task("npm run build"));
-gulp.task("pack win32", gulp.series(["clean", "build", "clean dist", "win32", "build win32"]));
-gulp.task("pack win64", gulp.series(["clean", "build", "clean dist", "win64", "build win64"]));
+gulp.task("pack win32", gulp.series(["clean", "build", "clean dist", "win32", "build win32", "sign"]));
+gulp.task("pack win64", gulp.series(["clean", "build", "clean dist", "win64", "build win64", "sign"]));
 
-//publish
+// publish
 gulp.task("upload win32", function() {
     var version = fs.readFileSync("dist/ver.json");
     version = JSON.parse(version);

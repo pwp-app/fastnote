@@ -34,7 +34,6 @@ node_modules
 public
 old_version
 
-qiniu.config.js
-config.js
+*config.js
 
 *.bat
