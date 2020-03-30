@@ -4,7 +4,7 @@ var reg = require('./static/note.render.reg');
 // prototype
 String.prototype.startWith = function(compareStr){
     return this.indexOf(compareStr) == 0;
-}
+};
 
 // *** 变量 ***
 
@@ -22,12 +22,12 @@ var sort_mode = null;
 
 // *** jQuery缓存 ***
 
-var noteList = {}
+var noteList = {};
 var filterX;
 
 $(document).ready(() => {
-    noteList['normal'] = $('#note-list-normal');
-    noteList['forceTop'] = $('#note-list-forceTop');
+    noteList.normal = $('#note-list-normal');
+    noteList.forceTop = $('#note-list-forceTop');
     filterX = $('#filter-x');
 });
 
@@ -622,7 +622,7 @@ function renderNotesOfCategory(name) {
     if (name == 'all') {
         $('.note').parent().show();
     } else if (name == 'notalloc') {
-        for (var i = 0; i < notes.length; i++) {
+        for (let i = 0; i < notes.length; i++) {
             if (typeof notes[i].category != 'undefined') {
                 $('#note_' + notes[i].id).parent().hide();
             } else {
@@ -630,7 +630,7 @@ function renderNotesOfCategory(name) {
             }
         }
     } else {
-        for (var i = 0; i < notes.length; i++) {
+        for (let i = 0; i < notes.length; i++) {
             if (typeof notes[i].category == 'undefined' || notes[i].category != name) {
                 $('#note_' + notes[i].id).parent().hide();
             } else {
