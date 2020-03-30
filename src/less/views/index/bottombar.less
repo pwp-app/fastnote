@@ -46,6 +46,7 @@
 .bottombar-trigger {
     color: @color-trigger-primary;
     margin-top: 1px;
+    transition: 0.1s;
 }
 
 .bottombar-trigger:hover {
@@ -59,6 +60,12 @@
     line-height: @bottombar-height;
     font-size: 14px;
     z-index: 2;
+}
+
+#btn-newnote-expand {
+    i {
+        transform: translateY(-1px);
+    }
 }
 
 .bottom-bar-statusbar {
