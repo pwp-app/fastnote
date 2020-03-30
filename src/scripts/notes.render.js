@@ -244,7 +244,7 @@ function rerenderEditedNote(data, rawtext) {
         //便签编辑后已经不属于当前分类，从画面中移出并隐藏
         if (data.category != current_category) {
             $('#note_' + data.id).parent().animateCss('fadeOutLeft faster', function () {
-                $('#note_' + data.id).hide();
+                $('#note_' + data.id).parent().hide();
                 //当前分类是否为空
                 if (getCountOfCategory(current_category) < 1) {
                     $('#note-empty-category').show();
