@@ -41,6 +41,7 @@ i18n['zh-cn']={
     theme_blackwhite: '暗色',
     theme_bluewhite: '科技蓝（默认）',
     theme_green: '静野绿',
+    theme_classic: '清新青',
     language: '语言',
     lockscreen: '锁屏',
     reset_password: '重置密码',
