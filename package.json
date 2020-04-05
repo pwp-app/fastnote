@@ -46,7 +46,11 @@
   "author": "BackRunner",
   "repository": {
     "type": "git",
-    "url": "https://github.com/backrunner/Fastnote.git"
+    "url": "https://github.com/pwp-app/Fastnote.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pwp-app/Fastnote/issues",
+    "email": "dev@backrunner.top"
   },
   "license": "GPLv3",
   "build": {
@@ -56,12 +60,12 @@
       "!**/gulpfile*.js",
       "!start.bat",
       "!old_version/**/*",
-      "!icon.ico"
+      "!icon.ico",
+      "!assets/**/*",
+      "!bug.md",
+      "!qiniu.config.js",
+      "!sign.config.js"
     ],
-    "bugs": {
-      "url": "",
-      "email": "dev@backrunner.top"
-    },
     "appId": "app.pwp.fastnote",
     "compression": "maximum",
     "productName": "Fastnote",
