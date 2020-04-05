@@ -153,29 +153,11 @@
         <div class="about-title">
             <h1>Fastnote</h1>
             <span id="about-version"></span>
-            <script>
-                var version = app.getVersion();
-                $(document).ready(function () {
-                    $('#about-version').text(version);
-                });
-            </script>
         </div>
         <div class="about-footer">
             <div class="about-uuid">
                 <span id="about-uuid-text"></span>
             </div>
-            <script>
-                ipcRenderer.on('set-uuid', (event, data) => {
-                    if (typeof (data) != 'undefined' && data != "" && data != null) {
-                        $('#about-uuid-text').text('UUID：' + data);
-                    }
-                });
-                ipcRenderer.on('os-status', (event,data)=>{
-                    if (data){
-                        $('#about-version').text($('#about-version').text() + ' (x64)');
-                    }
-                });
-            </script>
             <div class="about-author">
                 <span>Copyright &copy; 2020 BackRunner. All Rights Reserved.</span>
             </div>
@@ -183,7 +165,21 @@
     </div>
 
     <script>
-        //绑定Github图标的事件
+        // 获取文本
+        var version = app.getVersion();
+        var isOS64 = remote.getGlobal('isOS64');
+        var uuid = remote.getGlobal('uuid');
+        $(document).ready(function () {
+            $('#about-version').text(version);
+            if (uuid) {
+                $('#about-uuid-text').text('UUID：' + uuid);
+            }
+            if (isOS64) {
+                $('#about-version').text($('#about-version').text() + ' (x64)');
+            }
+        });
+
+        // 绑定Github图标的事件
         $("#btn-github").click(function (e) {
             ipcRenderer.send('openExternalURL', 'https://github.com/backrunner/Fastnote');
             e.preventDefault();
