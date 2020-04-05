@@ -243,6 +243,7 @@
 
         //获取版本
         var version = app.getVersion();
+        var isOS64 = remote.getGlobal('isOS64');
 
         //load Animate CSS
         $.fn.extend({
@@ -290,6 +291,9 @@
                         if (typeof data != 'undefined') {
                             uuid = data.uuid;
                             ipcRenderer.send("set-uuid", uuid);
+                            if (typeof installstat == 'function') {
+                                installstat(uuid);
+                            }
                         }
                     }
                 });
@@ -301,6 +305,9 @@
                 storage.set('uuid', json);
                 firstStart = true;
                 ipcRenderer.send("set-uuid", uuid);
+                if (typeof installstat == 'function') {
+                    installstat(uuid);
+                }
             }
         });
     </script>
