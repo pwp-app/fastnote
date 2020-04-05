@@ -16,7 +16,7 @@
     width: 500px;
     height: 600px;
     background-color: @color-notelist-background;
-    border: solid 1px @color-primary;
+    box-shadow: 0 0 32px rgba(0, 0, 0, .25);
     border-radius: 12px;
     display: block;
     position: absolute;
@@ -33,7 +33,8 @@
     background-color: @color-primary;
     text-align: center;
     color: @color-text-primary;
-    font-size: 16px;
+    font-size: 15px;
+    letter-spacing: 0.05em;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     .no-select-and-drag();
@@ -47,12 +48,14 @@
     width: 100%;
     height: 520px;
     padding: 15px 15px;
+    display: none;
     overflow-y: auto;
     -webkit-user-select: none;
 }
 
 .update-contents h1 {
     padding: 6px 0px;
+    margin-bottom: 0.625rem;
     font-size: 21px;
     color: @color-updater-text;
     font-weight: bold;
@@ -98,7 +101,7 @@
 }
 
 .update-contents::-webkit-scrollbar {
-    width: 3px;
+    width: 8px;
 }
 
 .update-contents::-webkit-scrollbar-track-piece {
@@ -106,13 +109,14 @@
 }
 
 .update-contents::-webkit-scrollbar-thumb {
-    border-radius: 9px;
+    border-radius: 8px;
     background-color: @color-primary;
 }
 
 .update-contents::-webkit-scrollbar-button {
     display: none;
 }
+
 .update-contents-showfull{
     width: 100%;
     height:36px;
@@ -147,6 +151,11 @@
 //按钮
 .update-btn{
     display: none;
+    transition: all 0.2s;
+    font-size: 15px;
+}
+.update-btn:hover {
+    color: darken(@color-white, 5%);
 }
 
 //ver.json
