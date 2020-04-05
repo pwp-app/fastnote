@@ -941,6 +941,7 @@
                     <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-close" data-lang="close">关闭</button>
                     <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-cancel" data-lang="cancel">取消</button>
                     <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-confirm" data-lang="download">下载</button>
+                    <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-manual" data-lang="download_installer">下载安装包</button>
                 </div>
             </div>
         </div>
@@ -1016,7 +1017,17 @@
                                             document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">' + i18n[current_i18n].detail_updatelog + '</button>'
                                         }
                                         // 强制更新
-                                        if (typeof result.forceupdate != 'undefined' && result.forceupdate) {
+                                        if (result.manual && result.manual.includes(version)) {
+                                            // 手动更新
+                                            $('#btn-update-confirm').hide();
+                                            $('#btn-update-cancel').hide();
+                                            if (result.forceupdate) {
+                                                $('#btn-update-close').hide();
+                                            } else {
+                                                $('#btn-update-close').show();
+                                            }
+                                            $('#btn-update-manual').show();
+                                        } else if (result.forceupdate) {
                                             $('#btn-update-confirm').show();
                                         } else {
                                             $('#btn-update-confirm').show();
@@ -1086,7 +1097,14 @@
             $('.container-updater').animateCss('fadeOut', function() {
                 $('.container-updater').removeAttr('style');
             });
-        })
+        });
+        $('#btn-update-manual').on('click', function () {
+            ipcRenderer.send('openExternalURL', `http://update.backrunner.top/fastnote/${process.platform}/Fastnote Setup ${version_new}.exe`);
+            $('.container-updater').animateCss('fadeOut', function() {
+                $('.container-updater').removeAttr('style');
+            });
+            ipcRenderer.send('updateCancelled');
+        });
     </script>
 
     <!-- 主菜单 -->
