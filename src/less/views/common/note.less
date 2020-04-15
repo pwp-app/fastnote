@@ -9,17 +9,17 @@
 }
 
 .note-list::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
     z-index: 10;
 }
 
 .note-list::-webkit-scrollbar-track-piece {
-    background: @color-notelist-background;
+    background: @color-notelist-scrollbar-bg;
 }
 
 .note-list::-webkit-scrollbar-thumb {
     border-radius: 9px;
-    background-color: @color-primary;
+    background-color: @color-notelist-scrollbar-thumb;
 }
 
 .note-list::-webkit-scrollbar-button {
@@ -236,7 +236,8 @@ titlesusp3 {
 }
 
 .note-overheight::-webkit-scrollbar-track-piece {
-    background-color: @color-primary;
+    background-color: @color-note-scrollbar-bg;
+    border-radius: 8px;
 }
 
 .note-overheight::-webkit-scrollbar-thumb {
