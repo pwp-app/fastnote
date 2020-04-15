@@ -313,7 +313,7 @@ function renderCurrentCategory() {
 }
 
 function addCategoryCount(name, render = false, save = false) {
-    if (typeof name == 'undefined' || name == 'notalloc') {
+    if (typeof name === 'undefined' || name == null || name === 'notalloc') {
         notalloc_count++;
         renderSystemCategoryCount();
         return;
@@ -334,7 +334,7 @@ function addCategoryCount(name, render = false, save = false) {
 }
 
 function minorCategoryCount(name, checkEmpty = true, render = false, save = false) {
-    if (typeof name == 'undefined' || name == 'notalloc') {
+    if (typeof name === 'undefined' || name == null || name === 'notalloc') {
         notalloc_count--;
         renderSystemCategoryCount();
         if (checkEmpty) {

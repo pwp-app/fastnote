@@ -6,9 +6,9 @@ const {
     Tray,
     shell
 } = require('electron');
-//ipc主进程
+// ipc主进程
 const ipc = require('electron').ipcMain;
-//set storage
+// set storage
 const storage = require('electron-json-storage');
 const path = require('path');
 
@@ -17,19 +17,19 @@ if (!singleInstanceLock){
     app.exit();
 }
 
-//global settings
+// global settings
 global.indebug = true; //debug trigger
 global.isOS64 = true; //OS flag
 global.firstStart = false; //first start flag
 global.uuid = ""; //uuid storage
 
-//auto-update
+// auto-update
 const {
     autoUpdater
 } = require('electron-updater');
 let feedUrl = ``;
 
-//import other window
+// import other window
 const aboutWindow = require('./app/about');
 const editWindow = require('./app/edit');
 const recycleWindow = require('./app/recyclebin');
@@ -39,10 +39,16 @@ const decryptionWindow = require('./app/decryption');
 const desktopWidget = require('./app/widget');
 const loginWindow = require('./app/cloud/windows/loginWindow');
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
+// global variables
 let win;
 let tray;
+
+// path
+const userDataPath = app.getPath('userData');
+
+// hotfix
+//const hotfix = require('./utils/hotfix');
+//hotfix.init(global.indebug, userDataPath);
 
 function createWindow() {
     // 创建浏览器窗口。
@@ -71,7 +77,7 @@ function createWindow() {
             console.error(err);
         }
         settings = data;
-        if (typeof settings != 'undefined') {
+        if (settings) {
             switch (settings.autoUpdateChannel) {
                 case "0":
                     if (isOS64) {
@@ -102,15 +108,15 @@ function createWindow() {
         win.loadFile(viewpath);
     });
 
-    //uuid recevier
+    // uuid recevier
     ipc.on('set-uuid', function(sender, data) {
         global.uuid = data;
     });
     ipc.on('main-window-ready', function(sender, data) {
-        //show main window
+        // show main window
         win.show();
     });
-    //bind restore note event
+    // bind restore note event
     ipc.on('restore-note', function(sender, data) {
         win.webContents.send('restore-note', data);
     });
