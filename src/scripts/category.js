@@ -148,7 +148,7 @@ function fixMissingCategories() {
     return new Promise((resolve, reject) => {
         let flag_changed = false;
         let founded_missing = [];
-        // 普通便利的性能更高
+        // 普通遍历的性能更高
         for (let i = 0; i < notes.length; i++) {
             if (notes[i].category) {
                 // 如果已经修复过了就没必要再处理
@@ -318,7 +318,7 @@ function addCategoryCount(name, render = false, save = false) {
         renderSystemCategoryCount();
         return;
     }
-    for (var i = 0; i < categories.length; i++) {
+    for (let i = 0; i < categories.length; i++) {
         if (categories[i].name == name) {
             categories[i].count = categories[i].count + 1;
             if (render) {
@@ -344,7 +344,7 @@ function minorCategoryCount(name, checkEmpty = true, render = false, save = fals
         }
         return;
     }
-    for (var i = 0; i < categories.length; i++) {
+    for (let i = 0; i < categories.length; i++) {
         if (categories[i].name == name) {
             categories[i].count = categories[i].count - 1;
             if (render) {

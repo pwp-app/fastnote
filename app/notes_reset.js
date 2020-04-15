@@ -1,4 +1,4 @@
-let fs = require('fs');
+var fs = require('fs');
 
 var storagePath = app.getPath('userData');
 

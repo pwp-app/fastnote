@@ -213,7 +213,7 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
         click: function () {
             $('.note-wrapper').addClass('note-selected');
             notes_selected = [];
-            for (var i=0;i<notes.length;i++){
+            for (let i=0; i < notes.length; i++){
                 notes_selected.push(notes[i].id);
             }
         }

@@ -120,7 +120,7 @@ ipc.on('widget-lock', (sender, data)=>{
 });
 
 ipc.on('reloadAllWidgets', ()=>{
-    for (var i=0;i<widgets.length;i++){
+    for (let i=0; i<widgets.length; i++){
         if (typeof widgets[i] != 'undefined' && widgets[i] != null) {
             widgets[i].webContents.send('readyToReload');
         }

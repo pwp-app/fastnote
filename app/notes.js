@@ -1,13 +1,13 @@
-let textarea = $('#note-text');
+var textarea = $('#note-text');
 var fs = require('fs');
 
 var storagePath = app.getPath('userData');
 
 // 预设notesid
-let notesid = 0;
+var notesid = 0;
 
 // 标记
-let isNotesEmpty;
+var isNotesEmpty;
 
 // 从主线程获取global
 global.indebug = remote.getGlobal('indebug');

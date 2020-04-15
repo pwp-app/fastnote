@@ -95,8 +95,8 @@ const editWindow = {
         }
     },
     bindEditEvent: function (callback) {
-        ipc.on('update-edit-note', function (sys, data) {
-            if (typeof (callback) != 'undefined') {
+        ipc.on('update-edit-note', function (sender, data) {
+            if (typeof (callback) !== 'undefined') {
                 callback(data);
             }
         });
