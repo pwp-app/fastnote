@@ -1,4 +1,4 @@
-@infobar-width: 450px;
+@infobar-width: 460px;
 @infobar-height: 35px;
 
 .infobar {
@@ -9,17 +9,18 @@
     top: 0;
     left: calc(50% - @infobar-width / 2);
     font-size: 14px;
-    padding: 6px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: @color-secondary;
     z-index: 20;
     pointer-events: all !important;
-    margin: 0 auto;
     /* animate */
     .mid-duration();
 }
 
-.infobar i{
-    margin-right: 15px;
+.infobar-icon{
+    margin-right: 12px;
 }
 
 .infobar-success {
@@ -46,10 +47,11 @@
     background: @color-updateprogress-value;
 }
 
-.infobar-dismiss{
+.infobar-dismiss {
     -webkit-app-region: no-drag !important;
-    float: right;
-    margin-top: 3px;
+    position: absolute;
+    right: 24px;
+    font-size: 16px !important;
     color: @color-secondary;
     cursor: pointer;
 }

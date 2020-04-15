@@ -12,7 +12,7 @@ function displayInfobar(type, text, timeout = 3000, dismiss = true) {
     var html = "";
     switch (type) {
         case 'success':
-            html += '<div class="infobar infobar-success" id="infobar_' + infobar_id + '"><i class="fa fa-check"></i><span>';
+            html += '<div class="infobar infobar-success" id="infobar_' + infobar_id + '"><i class="fa fa-check infobar-icon"></i><span>';
             html += text;
             html += '</span>';
             if (dismiss){
@@ -21,7 +21,7 @@ function displayInfobar(type, text, timeout = 3000, dismiss = true) {
             html += '</div>';
             break;
         case 'warning':
-            html += '<div class="infobar infobar-warning" id="infobar_' + infobar_id + '"><i class="fa fa-warning"></i><span>';
+            html += '<div class="infobar infobar-warning" id="infobar_' + infobar_id + '"><i class="fa fa-warning infobar-icon"></i><span>';
             html += text;
             if (dismiss){
                 html += '<i class="fa fa-times infobar-dismiss" onclick="closeInfobar('+infobar_id+');"></i>';
@@ -29,7 +29,7 @@ function displayInfobar(type, text, timeout = 3000, dismiss = true) {
             html += '</div>';
             break;
         case 'error':
-            html += '<div class="infobar infobar-error" id="infobar_' + infobar_id + '"><i class="fa fa-warning"></i><span>';
+            html += '<div class="infobar infobar-error" id="infobar_' + infobar_id + '"><i class="fa fa-warning infobar-icon"></i><span>';
             html += text;
             if (dismiss){
                 html += '<i class="fa fa-times infobar-dismiss" onclick="closeInfobar('+infobar_id+');"></i>';
@@ -38,12 +38,12 @@ function displayInfobar(type, text, timeout = 3000, dismiss = true) {
             break;
         case 'update':
             timeout = 0; //禁用自动关闭
-            html += '<div class="infobar infobar-info" id="infobar_update"><i class="fa fa-spinner icon-spin"></i><span id="infobar-update-text">' + text + '</span><progress class="update-progress" id="update-progress" value="0" max="100"></progress>';
+            html += '<div class="infobar infobar-info" id="infobar_update"><i class="fa fa-spinner icon-spin infobar-icon"></i><span id="infobar-update-text">' + text + '</span><progress class="update-progress" id="update-progress" value="0" max="100"></progress>';
             html += '</div>';
             break;
         case 'info':
         default:
-            html += '<div class="infobar infobar-info" id="infobar_' + infobar_id + '"><i class="fa fa-info-circle"></i><span>';
+            html += '<div class="infobar infobar-info" id="infobar_' + infobar_id + '"><i class="fa fa-info-circle infobar-icon"></i><span>';
             html += text;
             if (dismiss){
                 html += '<i class="fa fa-times infobar-dismiss" onclick="closeInfobar('+infobar_id+');"></i>';
@@ -57,26 +57,26 @@ function displayInfobar(type, text, timeout = 3000, dismiss = true) {
     if (timeout > 0) {
         //用t中转
         var t = infobar_id;
-        $('#infobar_' + t).animateCss('fadeInDown', function () {
+        $('#infobar_' + t).animateCss('fadeInDown faster', function () {
             infobar_timeout.infobar_id = setTimeout(function () {
-                $('#infobar_' + t).animateCss('fadeOutUp', function () {
+                $('#infobar_' + t).animateCss('fadeOutUp faster', function () {
                     $('#infobar_' + t).remove();
                 });
             }, timeout);
         });
     } else {
-        $('#infobar_' + infobar_id).animateCss('fadeInDown');
+        $('#infobar_' + infobar_id).animateCss('fadeInDown faster');
     }
     //更新infobar
     if (type=="update"){
-        $('#infobar_update').animateCss('fadeInDown');
+        $('#infobar_update').animateCss('fadeInDown faster');
     }
     infobar_id++;
 }
 
 function closeInfobar(id){
     clearTimeout(infobar_timeout.id);
-    $('#infobar_' + id).animateCss('fadeOutUp', function () {
+    $('#infobar_' + id).animateCss('fadeOutUp faster', function () {
         $('#infobar_' + id).remove();
     });
 }
