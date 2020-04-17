@@ -10,7 +10,12 @@ const shell = require("gulp-shell");
 const qn = require("gulp-qiniu-up");
 const fs = require("fs");
 const del = require("del");
+const asar = require('asar');
+const crypto = require('crypto');
+const fileValidation = require('./utils/fileValidation');
+
 // config file
+const package = require('./package.json');
 const qiniuConfig = require("./qiniu.config");
 const signConfig = require('./sign.config');
 
@@ -160,11 +165,40 @@ gulp.task("build win64", shell.task("npm run build"));
 gulp.task("pack win32", gulp.series(["clean", "build", "clean dist", "win32", "build win32", "sign"]));
 gulp.task("pack win64", gulp.series(["clean", "build", "clean dist", "win64", "build win64", "sign"]));
 
+// pack hotfix
+gulp.task("pack hotfix", async function() {
+    // 读取热更新的配置缓存
+    let log;
+    if (fs.existsSync('./hotfix.log.json')) {
+        log = require('./hotfix.log.json');
+    }
+    if (log) {
+        if (log.version !== package.version) {
+            log = null;
+        }
+    }
+    if (fs.existsSync('./hotfix')) {
+        gulp.src(['hotfix/*.json', 'hotfix/*.asar'])
+            .pipe(gulp.dest(`hotfix/history/${package.version}/${log ? log.hash : new Date().getTime().toString()}/`));
+    }
+    let md5 = crypto.createHash('md5');
+    md5.update(new Date().getTime().toString());
+    let resource = `hotfix.${md5.digest('hex')}.asar`;
+    await asar.createPackage('./public/', `./hotfix/${resource}`);
+    // 生成manifest文件
+    const manifest = {
+        version: package.version,
+        resource: resource,
+        build: log ? log.build + 1 : 1,
+        check: await fileValidation.sha256(resource)
+    };
+    fs.writeFileSync('./hotfix.log.json', JSON.stringify(manifest));
+    return fs.writeFileSync('./hotfix/manifest.json', JSON.stringify(manifest));
+});
+
 // publish
 gulp.task("upload win32", function() {
-    var version = fs.readFileSync("dist/ver.json");
-    version = JSON.parse(version);
-    return gulp.src(["dist/Fastnote Setup " + version.ver + ".exe", "dist/*.yml", "dist/ver.json"]).pipe(
+    return gulp.src(["dist/Fastnote Setup " + package.version + ".exe", "dist/*.yml", "dist/ver.json"]).pipe(
         qn({
             qiniu: qiniuConfig,
             prefix: "fastnote/win32/",
@@ -176,7 +210,7 @@ gulp.task("upload win32", function() {
 gulp.task("upload win64", function() {
     var version = fs.readFileSync("dist/ver.json");
     version = JSON.parse(version);
-    return gulp.src(["dist/Fastnote Setup " + version.ver + ".exe", "dist/*.yml", "dist/ver.json"]).pipe(
+    return gulp.src(["dist/Fastnote Setup " + package.version + ".exe", "dist/*.yml", "dist/ver.json"]).pipe(
         qn({
             qiniu: qiniuConfig,
             prefix: "fastnote/win32/x64/",
@@ -205,8 +239,21 @@ gulp.task("upload ver win64", function() {
     );
 });
 
+gulp.task("upload hotfix", function() {
+    return gulp.src(['hotfix/manifest.json', 'hotfix/*.asar'])
+        .pipe(
+            qn({
+                qiniu: qiniuConfig,
+                prefix: `fastnote/${package.version}/`,
+                forceUpload: true
+            })
+        );
+});
+
 gulp.task("upload-ver", gulp.series(["upload ver win32", "upload ver win64"]));
 
 gulp.task("publish", gulp.series(["move old", "pack win32", "upload win32"]));
 gulp.task("publish64", gulp.series(["move old x86", "pack win64", "upload win64"]));
 gulp.task("publish", gulp.series(["publish", "publish64", "debug"]));
+
+gulp.task("publish-hotfix", gulp.series(["clean build", "pack hotfix", "upload hotfix"]));

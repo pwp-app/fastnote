@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "animate.css": "^3.7.2",
+    "asar": "^3.0.3",
     "awesome-bootstrap-checkbox": "^1.0.1",
     "bootstrap": "^4.4.1",
     "del": "^5.1.0",
@@ -64,7 +65,11 @@
       "!assets/**/*",
       "!bug.md",
       "!qiniu.config.js",
-      "!sign.config.js"
+      "!sign.config.js",
+      "!hotfix.log.json",
+      "!gulpfile.js",
+      "!.gitignore",
+      "!hotfix/**/*"
     ],
     "appId": "app.pwp.fastnote",
     "compression": "maximum",

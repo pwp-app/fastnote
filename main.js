@@ -47,8 +47,8 @@ let tray;
 const userDataPath = app.getPath('userData');
 
 // hotfix
-//const hotfix = require('./utils/hotfix');
-//hotfix.init(global.indebug, userDataPath);
+const hotfix = require('./utils/hotfix');
+hotfix.init(global.indebug, userDataPath);
 
 function createWindow() {
     // 创建浏览器窗口。
