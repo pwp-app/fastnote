@@ -67,16 +67,16 @@
             ipcRenderer
         } = require('electron');
 
-        const notesEdit = require("../app/notes_edit.js");
+        const notesEdit = require("./static/notes.edit.js");
 
         // tools
-        const UUID = require('../app/tools/uuid.js');
+        const UUID = require('./static/tools/uuid.js');
 
         // debug
         global.indebug = remote.getGlobal('indebug');
 
         // 初始化Fastnote cloud
-        const cloudConfig = require('../app/cloud/config.js');
+        const cloudConfig = require('./static/config/cloud.config.js');
         if (global.indebug) {
             var cloud_protocol = cloudConfig.dev.protocol;
             var cloud_host = cloudConfig.dev.host;
@@ -949,7 +949,7 @@
 
     <!-- 自动更新 -->
     <script>
-        var time = require('../app/tools/time.js');
+        var time = require('./static/tools/time.js');
         var version_new;
         ipcRenderer.on('update-message', (event, {
             message,
@@ -2238,8 +2238,8 @@
 
     <script>
         // import requirements
-        $.getScript('../app/infobar.js'); // import by jQuery
-        $.getScript('../app/notes.js');
+        $.getScript('static/infobar.js'); // import by jQuery
+        $.getScript('static/notes.js');
     </script>
 
     <!-- 开发工具屏蔽与控制台 -->

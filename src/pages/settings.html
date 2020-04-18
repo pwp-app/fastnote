@@ -18,7 +18,7 @@
         <link rel="stylesheet" href="static/awesome-bootstrap-checkbox.min.css" />
         <script src="static/encryption.js"></script>
         <script src="static/i18n.js"></script>
-        <script src="static/note.backup.js"></script>
+        <script src="static/notes.backup.js"></script>
         <script src="static/bootstrap.min.js"></script>
         <script src="static/mousetrap.min.js"></script>
         <script>
@@ -67,7 +67,7 @@
 
             const { ipcRenderer } = require("electron");
 
-            let time = require("../app/tools/time.js");
+            let time = require("./static/tools/time.js");
 
             const WebFont = require("webfontloader");
 
@@ -908,7 +908,7 @@
         </script>
 
         <script>
-            $.getScript("../app/notes_reset.js");
+            $.getScript("static/notes.reset.js");
 
             function reloadNotesId() {
                 storage.get("notesid" + (global.indebug ? "_dev" : ""), function(error, data) {

@@ -104,7 +104,7 @@ ipc.on('reloadLoginWindow', () => {
     }
 });
 
-const loginWindow = {
+const cloudWindow = {
     createLoginWindow: () => {
         if (win_login != null) {
             if (win_login.isMinimized()) {
@@ -163,4 +163,4 @@ const loginWindow = {
     }
 };
 
-module.exports = loginWindow;
+module.exports = cloudWindow;

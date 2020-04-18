@@ -37,18 +37,15 @@ const settingsWindow = require('./app/settings');
 const newnoteWindow = require('./app/newnote');
 const decryptionWindow = require('./app/decryption');
 const desktopWidget = require('./app/widget');
-const loginWindow = require('./app/cloud/windows/loginWindow');
+const cloudWindow = require('./app/cloud/cloudWindow');
 
 // global variables
 let win;
 let tray;
 
-// path
-const userDataPath = app.getPath('userData');
-
 // hotfix
 const hotfix = require('./utils/hotfix');
-hotfix.init(global.indebug, userDataPath);
+hotfix.init(global.indebug);
 
 function createWindow() {
     // 创建浏览器窗口。
@@ -145,11 +142,11 @@ function createWindow() {
     });
     //open login window
     ipc.on('openLoginWindow', ()=>{
-        loginWindow.createLoginWindow();
+        cloudWindow.createLoginWindow();
     });
     //open register window
     ipc.on('openRegisterWindow', ()=>{
-        loginWindow.createRegisterWindow();
+        cloudWindow.createRegisterWindow();
     });
     //create desktop widget
     ipc.on('createDesktopWidget', (sender, data) => {
@@ -310,6 +307,7 @@ function createWindow() {
     //getfocus
     win.on('ready-to-show', () => {
         checkForUpdates();
+        win.show();
         // 更换托盘菜单
         if (tray) {
             let contextMenu = createContextMenu('created');

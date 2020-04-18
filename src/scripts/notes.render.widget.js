@@ -1,4 +1,4 @@
-var reg = require('./static/note.render.reg');
+var reg = require('./static/notes.render.reg');
 
 function renderNoteForWidget(note){
     let html = '<div class="note-text"><p>';

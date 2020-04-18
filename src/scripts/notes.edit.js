@@ -1,5 +1,5 @@
 var fs = require('fs');
-var time = require('../app/tools/time.js');
+var time = require('./tools/time.js');
 
 //import storage location
 const remote = require('electron').remote;

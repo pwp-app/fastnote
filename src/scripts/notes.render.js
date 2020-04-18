@@ -1,5 +1,5 @@
 var storage = require('electron-json-storage');
-var reg = require('./static/note.render.reg');
+var reg = require('./static/notes.render.reg');
 
 // prototype
 String.prototype.startWith = function(compareStr){

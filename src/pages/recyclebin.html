@@ -64,7 +64,7 @@
         if (typeof storage != 'undefined') {
             var storage = require('electron-json-storage');
         }
-        let time = require('../app/tools/time.js');
+        let time = require('./static/tools/time.js');
 
         const Menu = remote.Menu;
         const MenuItem = remote.MenuItem;
@@ -81,7 +81,7 @@
         const WebFont = require('webfontloader');
 
         // import requirements
-        $.getScript('../app/infobar.js'); //import by jQuery
+        $.getScript('static/infobar.js'); //import by jQuery
 
         // import menu
         $.getScript('static/menu.recyclebin.js');
@@ -394,6 +394,6 @@
     </script>
 
     <script>
-        $.getScript('../app/notes_recycle.js');
+        $.getScript('static/notes.recycle.js');
     </script>
 </body>
