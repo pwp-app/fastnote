@@ -54,7 +54,7 @@
     "url": "https://github.com/pwp-app/Fastnote/issues",
     "email": "dev@backrunner.top"
   },
-  "license": "GPLv3",
+  "license": "GPL-3.0-or-later",
   "build": {
     "files": [
       "!.vscode/**/*",
