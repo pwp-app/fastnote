@@ -9,6 +9,10 @@
     <!--import requirements-->
     <script>
         window.$ = window.jQuery = require('./static/jquery.min.js');
+
+        const remote = require('electron').remote;
+        const app = remote.app;
+        const pathPrefix = remote.getGlobal('pathPrefix');
     </script>
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
     <link rel="stylesheet" href="static/font-awesome.min.css">
@@ -53,16 +57,13 @@
                 return this;
             },
         });
-        // define const
-        const remote = require('electron').remote;
-        const app = remote.app;
 
         // fetch indebug status
         global.indebug = remote.getGlobal('indebug');
 
         // import json storage
         if (typeof storage != 'undefined') {
-            var storage = require('electron-json-storage');
+            var storage = require(pathPrefix + 'electron-json-storage');
         }
         let time = require('./static/tools/time.js');
 
@@ -78,7 +79,7 @@
             ipcRenderer
         } = require('electron');
 
-        const WebFont = require('webfontloader');
+        const WebFont = require(pathPrefix + 'webfontloader');
 
         // import requirements
         $.getScript('static/infobar.js'); //import by jQuery
@@ -203,7 +204,7 @@
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
     </div>
     <script>
-        require('electron-titlebar');
+        require(pathPrefix + 'electron-titlebar');
     </script>
     <div class="container-lockscreen">
         <div class="lockscreen">

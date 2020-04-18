@@ -167,6 +167,11 @@ gulp.task("build win64", shell.task("npm run build"));
 gulp.task("pack win32", gulp.series(["clean", "build", "clean dist", "win32", "build win32", "sign"]));
 gulp.task("pack win64", gulp.series(["clean", "build", "clean dist", "win64", "build win64", "sign"]));
 
+gulp.task('move old hotfix', () => {
+    return gulp.src(['hotfix/*.json', 'hotfix/*.asar'])
+        .pipe(gulp.dest(`old_version/hotfix/${package.version}/${new Date().getTime().toString()}/`));
+});
+
 // pack hotfix
 gulp.task("pack hotfix", async function() {
     // 读取热更新的配置缓存
@@ -178,11 +183,6 @@ gulp.task("pack hotfix", async function() {
         if (log.version !== package.version) {
             log = null;
         }
-    }
-    if (fs.existsSync('./hotfix')) {
-        gulp.src(['hotfix/*.json', 'hotfix/*.asar'])
-            .pipe(gulp.dest(`hotfix/history/${package.version}/${log ? log.hash : new Date().getTime().toString()}/`))
-            .pipe(del(['hotfix/*.json', 'hotfix/*.asar']));
     }
     let md5 = crypto.createHash('md5');
     md5.update(new Date().getTime().toString());
@@ -198,10 +198,11 @@ gulp.task("pack hotfix", async function() {
         revoke: false
     };
     fs.writeFileSync('./hotfix.log.json', JSON.stringify(manifest));
-    return fs.writeFileSync('./hotfix/manifest.json', JSON.stringify(manifest));
+    fs.writeFileSync('./hotfix/manifest.json', JSON.stringify(manifest));
+    return true;
 });
 
-gulp.task('revoke manifest', () => {
+gulp.task('revoke manifest', async () => {
     let log;
     if (fs.existsSync('./hotfix.log.json')) {
         log = require('./hotfix.log.json');
@@ -211,11 +212,6 @@ gulp.task('revoke manifest', () => {
             log = null;
         }
     }
-    if (fs.existsSync('./hotfix')) {
-        gulp.src(['hotfix/*.json', 'hotfix/*.asar'])
-            .pipe(gulp.dest(`hotfix/history/${package.version}/${log ? log.hash : new Date().getTime().toString()}/`))
-            .pipe(del(['hotfix/*.json', 'hotfix/*.asar']));
-    }
     const manifest = {
         version: package.version,
         resource: null,
@@ -223,7 +219,9 @@ gulp.task('revoke manifest', () => {
         check: null,
         revoke: true
     };
-    return fs.writeFileSync('./hotfix/manifest.json', JSON.stringify(manifest));
+    fs.writeFileSync('./hotfix.log.json', JSON.stringify(manifest));
+    fs.writeFileSync('./hotfix/manifest.json', JSON.stringify(manifest));
+    return true;
 });
 
 // publish
@@ -298,7 +296,7 @@ gulp.task("publish64", gulp.series(["move old x86", "pack win64", "upload win64"
 gulp.task("publish", gulp.series(["publish", "publish64", "debug"]));
 
 gulp.task('clean hotfix', function() {
-    return del(['hotfix/*.json', 'hotfix/*.asar', 'hotfix.log.json']);
+    return del(['hotfix/*.json', 'hotfix/*.asar']);
 });
-gulp.task("publish-hotfix", gulp.series(["clean build", "pack hotfix", "upload hotfix"]));
-gulp.task("revoke-hotfix", gulp.series(["clean build", "revoke manifest", "upload manifest"]));
+gulp.task("publish-hotfix", gulp.series(["move old hotfix", "clean hotfix", "clean build", "pack hotfix", "upload hotfix"]));
+gulp.task("revoke-hotfix", gulp.series(["move old hotfix", "clean hotfix", "clean build", "revoke manifest", "upload manifest"]));

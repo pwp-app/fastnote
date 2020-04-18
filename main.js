@@ -46,6 +46,7 @@ let tray;
 // hotfix
 global.hotfix = require('./utils/hotfix');
 global.hotfix.init(global.indebug);
+global.pathPrefix = `${app.getAppPath()}/node_modules/`;
 
 function createWindow() {
     // 创建浏览器窗口。
@@ -307,7 +308,6 @@ function createWindow() {
     //getfocus
     win.on('ready-to-show', () => {
         checkForUpdates();
-        win.show();
         // 更换托盘菜单
         if (tray) {
             let contextMenu = createContextMenu('created');

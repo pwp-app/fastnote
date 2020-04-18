@@ -9,6 +9,10 @@
     <!--import requirements-->
     <script>
         window.$ = window.jQuery = require('../static/jquery.min.js');
+
+        const remote = require('electron').remote;
+        const app = remote.app;
+        const pathPrefix = remote.getGlobal('pathPrefix');
     </script>
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="../static/main.white.css" />
     <link rel="stylesheet" href="../static/font-awesome.min.css">
@@ -44,17 +48,14 @@
                 return this;
             },
         });
-        //define const
-        const remote = require('electron').remote;
-        const app = remote.app;
         //import json storage
-        const storage = require('electron-json-storage');
+        const storage = require(pathPrefix + 'electron-json-storage');
 
         const {
             ipcRenderer
         } = require('electron');
 
-        const WebFont = require('webfontloader');
+        const WebFont = require(pathPrefix + 'webfontloader');
 
         global.indebug = remote.getGlobal('indebug');
 
@@ -171,7 +172,7 @@
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 999;"></div>
     </div>
     <script>
-        require('electron-titlebar');
+        require(pathPrefix + 'electron-titlebar');
     </script>
     <div class="container-login">
         <div class="login-header">

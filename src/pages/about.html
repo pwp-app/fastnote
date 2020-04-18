@@ -10,6 +10,10 @@
     <!--import requirements-->
     <script>
         window.$ = window.jQuery = require('./static/jquery.min.js');
+
+        var remote = require('electron').remote;
+        var app = remote.app;
+        var pathPrefix = remote.getGlobal('pathPrefix');
     </script>
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
     <link rel="stylesheet" href="static/font-awesome.min.css">
@@ -43,17 +47,15 @@
                 return this;
             },
         });
-        //define const
-        const remote = require('electron').remote;
-        const app = remote.app;
-        //import json storage
-        const storage = require('electron-json-storage');
+
+        // import json storage
+        const storage = require(pathPrefix + 'electron-json-storage');
 
         const {
             ipcRenderer
         } = require('electron');
 
-        const WebFont = require('webfontloader');
+        const WebFont = require(pathPrefix + 'webfontloader');
 
         // fetch indebug status
         global.indebug = remote.getGlobal('indebug');
@@ -143,7 +145,7 @@
         <div id="electron-titlebar" class="titlebar drag" style="position: fixed !important;z-index: 10;"></div>
     </div>
     <script>
-        require('electron-titlebar');
+        require(pathPrefix + 'electron-titlebar');
     </script>
     <div class="container-about">
         <div class="about-logo">
@@ -152,7 +154,7 @@
         </div>
         <div class="about-title">
             <h1>Fastnote</h1>
-            <span id="about-version"></span>
+            <span id="about-version"></span><br/>
         </div>
         <div class="about-footer">
             <div class="about-uuid">
@@ -169,6 +171,10 @@
         var version = app.getVersion();
         var isOS64 = remote.getGlobal('isOS64');
         var uuid = remote.getGlobal('uuid');
+        var hotfix = remote.getGlobal('hotfix');
+        if (hotfix.hotfixBuild) {
+            version += ` hotfix ${hotfix.hotfixBuild}`;
+        }
         $(document).ready(function () {
             $('#about-version').text(version);
             if (uuid) {

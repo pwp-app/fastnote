@@ -9,6 +9,10 @@
     <!--import requirements-->
     <script>
         window.$ = window.jQuery = require('./static/jquery.min.js');
+
+        const remote = require('electron').remote;
+        const app = remote.app;
+        const pathPrefix = remote.getGlobal('pathPrefix');
     </script>
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
     <link rel="stylesheet" href="static/font-awesome.min.css">
@@ -17,12 +21,9 @@
     <script src="static/encryption.js"></script>
     <script src="static/i18n.js"></script>
     <script>
-        //define const
-        const remote = require('electron').remote;
-        const app = remote.app;
         var fs = require('fs');
         //import json storage
-        const storage = require('electron-json-storage');
+        const storage = require(pathPrefix + 'electron-json-storage');
         //get storagePath
         var storagePath = app.getPath('userData');
 
@@ -31,7 +32,7 @@
             ipcRenderer
         } = require('electron');
 
-        const WebFont = require('webfontloader');
+        const WebFont = require(pathPrefix + 'webfontloader');
 
         // 获取indebug
         global.indebug = remote.getGlobal('indebug');
@@ -121,7 +122,7 @@
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 999;"></div>
     </div>
     <script>
-        require('electron-titlebar');
+        require(pathPrefix + 'electron-titlebar');
     </script>
     <div class="container-decryption">
         <div class="container-decryption-control">

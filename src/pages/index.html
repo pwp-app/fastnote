@@ -9,7 +9,12 @@
 
     <!--import requirements-->
     <script>
+        // define electron app
         window.$ = window.jQuery = require('./static/jquery.min.js');
+
+        var remote = require('electron').remote;
+        var app = remote.app;
+        var pathPrefix = remote.getGlobal('pathPrefix');
     </script>
 
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css">
@@ -46,13 +51,9 @@
         }];
     </script>
     <script>
-        // define const
-        var remote = require('electron').remote;
-        var app = remote.app;
-
         // import json storage
-        if (typeof storage != 'undefined') {
-            var storage = require('electron-json-storage');
+        if (typeof storage === 'undefined') {
+            var storage = require(pathPrefix + 'electron-json-storage');
         }
 
         // dialog
@@ -89,7 +90,7 @@
             var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + ':' + cloudConfig.release.port
         }
 
-        const WebFont = require('webfontloader');
+        const WebFont = require(pathPrefix + 'webfontloader');
 
         //import menu
         $.getScript('static/menu.note.js');
@@ -321,7 +322,7 @@
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
     </div>
     <script>
-        require('electron-titlebar');
+        require(pathPrefix + 'electron-titlebar');
     </script>
     <!-- lockscreen -->
     <div class="container-lockscreen">

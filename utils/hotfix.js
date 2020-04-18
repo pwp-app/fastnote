@@ -12,9 +12,9 @@ let userDataPath = app.getPath('userData');
 let dirPath;
 let manifestPath;
 let asarPath;
-let hotfixBuild;
 
 const hotfix = {
+    hotfixBuild: null,
     init(indebug) {
         feed = `http://hotfix.backrunner.top/fastnote/${appVersion}`;
         dirPath = `${userDataPath}/hotfix${indebug ? '_dev': ''}`;
@@ -48,29 +48,25 @@ const hotfix = {
             return false;
         }
         manifest = JSON.parse(manifest);
-        hotfixBuild = manifest.build;
+        this.hotfixBuild = manifest.build;
         // 比较应用版本
-        if (manifest.version != appVersion) {
+        if (manifest.version !== appVersion) {
             // 热更版本和应用不符
             if (this.deletePatch()) {
                 this.onlineCheck();
             }
             return false;
         }
+        if (manifest.revoke) {
+            asarPath = null;
+            this.onlineCheck();
+            return;
+        }
         // 应用版本符合，抽出resource名称
         asarPath = `${dirPath}/${manifest.resource}`;
         // 检查asar是否存在
         if (!fs.existsSync(asarPath)) {
             // 不存在，视为热更新损坏，需要删除之后重新检测
-            if (this.deletePatch()) {
-                this.onlineCheck();
-            }
-            return;
-        }
-        // 存在，校验hash
-        let hash = await FileValidation.sha256(asarPath);
-        if (hash != manifest.check) {
-            // 校验不正确，视为已经损坏了，删除后重新检测热更新
             if (this.deletePatch()) {
                 this.onlineCheck();
             }
@@ -88,13 +84,15 @@ const hotfix = {
         if (manifest.version !== appVersion) {
             return false;
         }
-        if (manifest.build <= hotfixBuild) {
+        if (manifest.build <= this.hotfixBuild) {
             return false;
         }
         // 撤包
         if (manifest.revoke) {
             // 删除现有的内容防止被加载
             this.deletePatch();
+            fs.writeFileSync(manifestPath, JSON.stringify(manifest));
+            asarPath = null;
             return false;
         }
         // 下载asar资源
@@ -107,7 +105,7 @@ const hotfix = {
         let resourcePath = `${dirPath}/${manifest.resource}`;
         let cachePath = resourcePath.replace('.asar', '.download');
         // 下载完成但没有下载到东西也会返回true，要再对文件做检测，不存在则跳出这一次任务
-        if (fs.existsSync(cachePath)) {
+        if (!fs.existsSync(cachePath)) {
             return false;
         }
         let hash = await FileValidation.sha256(cachePath);
@@ -120,7 +118,7 @@ const hotfix = {
         }
         // 文件检查无误，写入新的manifest，更新全局asarPath
         fs.renameSync(cachePath, resourcePath);
-        fs.writeFileSync(manifestPath);
+        fs.writeFileSync(manifestPath, JSON.stringify(manifest));
         asarPath = `${dirPath}/${manifest.resource}`;
         return true;
     },
@@ -142,10 +140,11 @@ const hotfix = {
                     console.error('Hotfix resource download failed.');
                     resolve(false);
                 })
-                .pipe(fs.createWriteStream(`${dirPath}/${manifest.resource.replace('.asar', '.download')}`))
-                .end(() => {
+                .on('close', () => {
+                    console.info('Hotfix download completed');
                     resolve(true);
-                });
+                })
+                .pipe(fs.createWriteStream(`${dirPath}/${manifest.resource.replace('.asar', '.download')}`));
         });
     },
     deleteAsar() {
@@ -158,11 +157,13 @@ const hotfix = {
     },
     deletePatch() {
         if (manifestPath && fs.existsSync(manifestPath)) {
+            console.info('Start deleting hotfix manifest file.');
             if (!fs.unlinkSync(manifestPath)){
                 return false;
             }
         }
         if (asarPath && fs.existsSync(asarPath)) {
+            console.info('Start deleting hotfix resource file.');
             if (!fs.unlinkSync(asarPath)) {
                 return false;
             }

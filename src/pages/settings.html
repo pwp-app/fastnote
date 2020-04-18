@@ -8,7 +8,12 @@
         <!--import requirements-->
         <script>
             window.$ = window.jQuery = require("./static/jquery.min.js");
-            //requirements
+
+            const remote = require("electron").remote;
+            const app = remote.app;
+            const pathPrefix = remote.getGlobal('pathPrefix');
+
+            // requirements
             var moment = require("./static/moment.min.js");
         </script>
         <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
@@ -57,11 +62,8 @@
                     return this;
                 }
             });
-            //define const
-            const remote = require("electron").remote;
-            const app = remote.app;
             //import json storage
-            const storage = require("electron-json-storage");
+            const storage = require(pathPrefix + "electron-json-storage");
 
             const { dialog } = require("electron").remote;
 
@@ -69,7 +71,7 @@
 
             let time = require("./static/tools/time.js");
 
-            const WebFont = require("webfontloader");
+            const WebFont = require(pathPrefix + "webfontloader");
 
             var storagePath = app.getPath("userData");
 
@@ -422,7 +424,7 @@
             <div id="electron-titlebar" class="titlebar drag" style="position: fixed !important;z-index: 10;"></div>
         </div>
         <script>
-            require("electron-titlebar");
+            require(pathPrefix + "electron-titlebar");
         </script>
         <div class="container-settings">
             <div class="settings-titles">

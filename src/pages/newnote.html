@@ -10,6 +10,10 @@
     <!--import requirements-->
     <script>
         window.$ = window.jQuery = require('./static/jquery.min.js');
+
+        const remote = require('electron').remote;
+        const app = remote.app;
+        const pathPrefix = remote.getGlobal('pathPrefix');
     </script>
 
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css">
@@ -43,12 +47,9 @@
         }];
     </script>
     <script>
-        // define const
-        const remote = require('electron').remote;
-        const app = remote.app;
         var fs = require('fs');
         // import json storage
-        const storage = require('electron-json-storage');
+        const storage = require(pathPrefix + 'electron-json-storage');
         // get storagePath
         var storagePath = app.getPath('userData');
 
@@ -60,7 +61,7 @@
         // 获取indebug
         global.indebug = remote.getGlobal('indebug');
 
-        const WebFont = require('webfontloader');
+        const WebFont = require(pathPrefix + 'webfontloader');
 
         storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
             if (error) {
@@ -156,7 +157,7 @@
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
     </div>
     <script>
-        require('electron-titlebar');
+        require(pathPrefix + 'electron-titlebar');
     </script>
     <div class="container-lockscreen">
         <div class="lockscreen">
