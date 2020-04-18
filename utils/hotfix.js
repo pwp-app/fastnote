@@ -1,33 +1,35 @@
-const { app, net } = require('electron');
+const { app } = require('electron');
 const appVersion = app.getVersion();
 
 const fs = require('fs');
+const path = require('path');
+const request = require('request');
 const FileValidation = require('./fileValidation');
 
 // path
 let feed;
+let userDataPath = app.getPath('userData');
 let dirPath;
 let manifestPath;
 let asarPath;
 let hotfixBuild;
 
 const hotfix = {
-    init(indebug, userDataPath) {
-        if (!userDataPath) {
-            return false;
-        }
+    init(indebug) {
         feed = `http://hotfix.backrunner.top/fastnote/${appVersion}`;
-        dirPath = `${userDataPath}/hotfix${indebug ? '_dev': ''}/`;
+        dirPath = `${userDataPath}/hotfix${indebug ? '_dev': ''}`;
         // 检查dirpath是否存在
         if (!fs.existsSync(dirPath)) {
             fs.mkdirSync(dirPath);
         }
-        manifestPath = `${userDataPath}/hotfix${indebug ? '_dev': ''}/manifest.json`;
+        manifestPath = `${dirPath}/manifest.json`;
         return this.loadCheck();
     },
     async loadCheck() {
         // 检查热更新manifest是否存在
         if (!fs.existsSync(manifestPath)) {
+            console.info('Hotfix manifest does not existed.');
+            this.onlineCheck();
             return false;
         }
         // 存在，则读入
@@ -38,8 +40,11 @@ const hotfix = {
             manifest = null;
             console.error('Hotfix manifest read error.');
         }
-        // 读入失败，返回
+        // 读入失败，视为热更新损坏，重新检查
         if (!manifest) {
+            if (this.deletePatch()) {
+                this.onlineCheck();
+            }
             return false;
         }
         manifest = JSON.parse(manifest);
@@ -53,7 +58,7 @@ const hotfix = {
             return false;
         }
         // 应用版本符合，抽出resource名称
-        asarPath = `${userDataPath}/hotfix${indebug ? '_dev': ''}/${manifest.resource}`;
+        asarPath = `${dirPath}/${manifest.resource}`;
         // 检查asar是否存在
         if (!fs.existsSync(asarPath)) {
             // 不存在，视为热更新损坏，需要删除之后重新检测
@@ -79,21 +84,68 @@ const hotfix = {
         if (!manifest) {
             return false;
         }
+        // 线上hotfix版本不一致或build不一致，忽略
+        if (manifest.version !== appVersion) {
+            return false;
+        }
+        if (manifest.build <= hotfixBuild) {
+            return false;
+        }
+        // 撤包
+        if (manifest.revoke) {
+            // 删除现有的内容防止被加载
+            this.deletePatch();
+            return false;
+        }
+        // 下载asar资源
+        let resourceRet = await this.downloadResource(manifest);
+        if (!resourceRet) {
+            // 发生下载错误，忽略
+            return false;
+        }
+        // 下载事件完成
+        let resourcePath = `${dirPath}/${manifest.resource}`;
+        let cachePath = resourcePath.replace('.asar', '.download');
+        // 下载完成但没有下载到东西也会返回true，要再对文件做检测，不存在则跳出这一次任务
+        if (fs.existsSync(cachePath)) {
+            return false;
+        }
+        let hash = await FileValidation.sha256(cachePath);
+        if (hash !== manifest.check) {
+            // 文件校验失败，视为下载失败，删除文件并忽略
+            if (fs.existsSync(cachePath)) {
+                fs.unlinkSync(cachePath);
+            }
+            return false;
+        }
+        // 文件检查无误，写入新的manifest，更新全局asarPath
+        fs.renameSync(cachePath, resourcePath);
+        fs.writeFileSync(manifestPath);
+        asarPath = `${dirPath}/${manifest.resource}`;
+        return true;
     },
     downloadManifest() {
         return new Promise((resolve, reject) => {
-            const request = net.request(`${feed}/manifest.json`);
-            request.on('response', (response) => {
-                if (response.statusCode != 200) {
+            request.get(`${feed}/manifest.json`, (err, res, body) => {
+                if (err || res.statusCode != 200) {
+                    console.error('Cannot download manifest file.');
                     return resolve(null);
                 }
-                response.on('data', (chunk) => {
-                    console.log('chunk');
-                });
-                response.on('end', () => {
-                    console.log('end');
-                });
+                resolve(JSON.parse(body));
             });
+        });
+    },
+    downloadResource(manifest) {
+        return new Promise((resolve, reject) => {
+            request.get(`${feed}/${manifest.resource}`)
+                .on('error', () => {
+                    console.error('Hotfix resource download failed.');
+                    resolve(false);
+                })
+                .pipe(fs.createWriteStream(`${dirPath}/${manifest.resource.replace('.asar', '.download')}`))
+                .end(() => {
+                    resolve(true);
+                });
         });
     },
     deleteAsar() {
@@ -116,6 +168,9 @@ const hotfix = {
             }
         }
         return true;
+    },
+    buildPath(page) {
+        return asarPath ? path.resolve(asarPath, page) : path.resolve(__dirname, `../public/${page}`);
     }
 };
 

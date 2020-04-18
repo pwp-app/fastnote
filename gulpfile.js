@@ -297,7 +297,7 @@ gulp.task("publish", gulp.series(["move old", "pack win32", "upload win32"]));
 gulp.task("publish64", gulp.series(["move old x86", "pack win64", "upload win64"]));
 gulp.task("publish", gulp.series(["publish", "publish64", "debug"]));
 
-gulp.task('clean-hotfix', function() {
+gulp.task('clean hotfix', function() {
     return del(['hotfix/*.json', 'hotfix/*.asar', 'hotfix.log.json']);
 });
 gulp.task("publish-hotfix", gulp.series(["clean build", "pack hotfix", "upload hotfix"]));

@@ -44,7 +44,8 @@ function createWidget(data) {
     widgets.push(_widget);
     widgets_noteid.push(data.note.id);
 
-    _widget.loadFile(path.resolve(__dirname, '../public/desktopWidget.html'));
+    let viewPath = global.hotfix.buildPath('widget.html');
+    _widget.loadFile(viewPath);
 
     _widget.on('close', ()=>{
         let widget_x = _widget.getPosition()[0];

@@ -34,7 +34,7 @@ function createLoginWindow() {
 
     win_login = new BrowserWindow(conf);
 
-    let viewpath = path.resolve(__dirname, '../../../public/cloud/login.html');
+    let viewpath = global.hotfix.buildPath('cloud/login.html');
     win_login.loadFile(viewpath);
 
     win_login.on('closed', () => {
@@ -67,7 +67,7 @@ function createRegisterWindow() {
 
     win_login = new BrowserWindow(conf);
 
-    let viewpath = path.resolve(__dirname, '../../../public/cloud/register.html');
+    let viewpath = global.hotfix.buildPath('cloud/register.html');
     win_login.loadFile(viewpath);
 
     win_login.on('closed', () => {
@@ -112,7 +112,7 @@ const cloudWindow = {
             }
             win_login.focus();
             if (status != 'login') {
-                let viewpath = path.resolve(__dirname, '../../../public/cloud/login.html');
+                let viewpath = global.hotfix.buildPath('cloud/login.html');
                 win_login.loadFile(viewpath);
                 win_login.setSize(win_login.getSize()[0], loginWindowHeight);
             }
@@ -128,7 +128,7 @@ const cloudWindow = {
             }
             win_login.focus();
             if (status != 'register') {
-                let viewpath = path.resolve(__dirname, '../../../public/cloud/register.html');
+                let viewpath = global.hotfix.buildPath('cloud/register.html');
                 win_login.loadFile(viewpath);
                 win_login.setSize(win_login.getSize()[0], registerWindowHeight);
             }
@@ -139,7 +139,7 @@ const cloudWindow = {
     },
     switchToLogin: ()=>{
         if (status == 'register') {
-            let viewpath = path.resolve(__dirname, '../../../public/cloud/register.html');
+            let viewpath = global.hotfix.buildPath('cloud/register.html');
             win_login.loadFile(viewpath);
             win_login.setSize(win_login.getSize()[0], loginWindowHeight);
         } else {

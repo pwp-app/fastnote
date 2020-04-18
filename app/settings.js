@@ -30,7 +30,7 @@ function createSettingsWindow() {
 
     win_settings = new BrowserWindow(conf);
 
-    var viewpath = path.resolve(__dirname, '../public/settings.html');
+    let viewpath = global.hotfix.buildPath('settings.html');
     win_settings.loadFile(viewpath);
 
     ipc.on('settings-window-heightChange', function(sender, height){

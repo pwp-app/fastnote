@@ -30,7 +30,7 @@ const RecycleWindow = {
 
         win_recycle = new BrowserWindow(conf);
 
-        var viewpath = path.resolve(__dirname, '../public/recyclebin.html');
+        let viewpath = global.hotfix.buildPath('recyclebin.html');
         win_recycle.loadFile(viewpath);
 
         ipc.on('recyclebin-window-ready', function (sender, e) {

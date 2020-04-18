@@ -35,7 +35,7 @@ function createEditWindow(data) {
     //save ids
     edit_noteid.push(data.id);
 
-    var viewpath = path.resolve(__dirname, '../public/edit.html');
+    let viewpath = global.hotfix.buildPath('edit.html');
     win_edit.loadFile(viewpath);
 
     win_edit.on('closed', () => {

@@ -27,7 +27,7 @@ function createAboutWindow() {
 
     win_about = new BrowserWindow(conf);
 
-    var viewpath = path.resolve(__dirname, '../public/about.html');
+    let  viewpath = global.hotfix.buildPath('about.html');
     win_about.loadFile(viewpath);
 
     win_about.on('closed', () => {

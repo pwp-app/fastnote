@@ -44,8 +44,8 @@ let win;
 let tray;
 
 // hotfix
-const hotfix = require('./utils/hotfix');
-hotfix.init(global.indebug);
+global.hotfix = require('./utils/hotfix');
+global.hotfix.init(global.indebug);
 
 function createWindow() {
     // 创建浏览器窗口。
@@ -101,7 +101,7 @@ function createWindow() {
         } else {
             feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
         }
-        let viewpath = path.resolve(__dirname, './public/index.html');
+        let viewpath = global.hotfix.buildPath('index.html');
         win.loadFile(viewpath);
     });
 
