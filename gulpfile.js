@@ -236,8 +236,6 @@ gulp.task("upload win32", function() {
 });
 
 gulp.task("upload win64", function() {
-    var version = fs.readFileSync("dist/ver.json");
-    version = JSON.parse(version);
     return gulp.src(["dist/Fastnote Setup " + package.version + ".exe", "dist/*.yml", "dist/ver.json"]).pipe(
         qn({
             qiniu: qiniuConfig,
