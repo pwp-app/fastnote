@@ -37,7 +37,7 @@
     "popper.js": "^1.16.1"
   },
   "name": "fastnote",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "homepage": "https://note.pwp.app",
   "main": "main.js",
   "scripts": {
@@ -76,6 +76,7 @@
     "appId": "app.pwp.fastnote",
     "compression": "maximum",
     "productName": "Fastnote",
+    "forceCodeSigning": true,
     "publish": [
       {
         "provider": "generic",
@@ -86,7 +87,9 @@
       "target": {
         "target": "nsis"
       },
-      "icon": "icon.ico"
+      "icon": "icon.ico",
+      "signingHashAlgorithms": ["sha256"],
+      "publisherName": "pwp.app"
     },
     "nsis": {
       "oneClick": false,
