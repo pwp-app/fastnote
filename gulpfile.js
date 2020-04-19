@@ -225,6 +225,59 @@ gulp.task('revoke manifest', async () => {
 });
 
 // publish
+gulp.task("gen ver file", function() {
+    let ver;
+    if (fs.existsSync('./dist/ver.json')) {
+        let ret = fs.readFileSync('./dist/ver.json');
+        if (ret) {
+            ver = JSON.parse(ret);
+        }
+    }
+    if (!ver) {
+        ver = {
+            showfull: false,
+            forceupdate: false,
+            manual: false
+        };
+    }
+    let current_version = package.version.split('.');
+    let last_version = ver.ver.split('.');
+    // if flag_newtext is true, gulp will do replace rather than append
+    let flag_newtext = false;
+    if (parseInt(current_version[0]) > parseInt(last_version[0]) || parseInt(current_version[1]) > parseInt(last_version[1])) {
+        flag_newtext = true;
+    }
+    ver.ver = package.version;
+    if (!fs.existsSync('./update.log')) {
+        throw 'Runtime error: update log is missing';
+    }
+    let log = fs.readFileSync('./update.log', 'utf-8');
+    if (!log) {
+        throw 'Runtime error: read update log failed';
+    }
+    log = log.split('\r\n');
+    let content = '';
+    for (let item of log) {
+        item = item.replace(/(\*\*)(.*)(\*\*)/gi, '<strong>$1</strong>');
+        content += `<p>${item}</p>`;
+    }
+    content = `<div data-ver="${package.version}"><h2>${package.version} 更新内容</h2>${content}</div>`;
+    if (ver.text && ver.text.length > 0 && !flag_newtext) {
+        if (ver.text.indexOf(package.version) != -1) {
+            ver.text = content;
+        } else {
+            ver.text = `${content}${ver.text}`;
+        }
+    } else {
+        ver.text = content;
+    }
+    if (fs.writeFileSync('./dist/ver.json', JSON.stringify(ver))) {
+        return true;
+    } else {
+        throw 'Runtime error: ver json gen failed';
+    }
+});
+
 gulp.task("upload win32", function() {
     return gulp.src(["dist/Fastnote Setup " + package.version + ".exe", "dist/*.yml", "dist/ver.json"]).pipe(
         qn({
@@ -291,7 +344,7 @@ gulp.task("upload-ver", gulp.series(["upload ver win32", "upload ver win64"]));
 
 gulp.task("publish", gulp.series(["move old", "pack win32", "upload win32"]));
 gulp.task("publish64", gulp.series(["move old x86", "pack win64", "upload win64"]));
-gulp.task("publish", gulp.series(["publish", "publish64", "debug"]));
+gulp.task("publish", gulp.series(["gen ver file", "publish", "publish64", "debug"]));
 
 gulp.task('clean hotfix', function() {
     return del(['hotfix/*.json', 'hotfix/*.asar']);
