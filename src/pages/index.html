@@ -971,16 +971,16 @@
                     }
                     $('.container-updater').css('display', 'block').animateCss('fadeIn faster', function() {
                         var path_verfile = ``;
-                        const default_ver_path = `http://update.backrunner.top/fastnote/${process.platform}${isOS64? 'x64/' : ''}/ver.json?time=`;
+                        const default_ver_path = `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/ver.json?time=`;
                         if (typeof settings != 'undefined') {
                             switch (settings.autoUpdateChannel) {
                                 case "0":
                                     path_verfile =
-                                        `http://update.backrunner.top/fastnote/${process.platform}${isOS64? 'x64/' : ''}/ver.json?time=`;
+                                        `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/ver.json?time=`;
                                     break;
                                 case "100":
                                     path_verfile =
-                                        `http://update.backrunner.top/fastnote/pre-release/${process.platform}${isOS64? 'x64/' : ''}/ver.json?time=`;
+                                        `http://update.backrunner.top/fastnote/pre-release/${process.platform}${isOS64? '/x64/' : ''}/ver.json?time=`;
                                     break;
                                 default:
                                     path_verfile = default_ver_path;
@@ -1107,7 +1107,7 @@
             });
         });
         $('#btn-update-manual').on('click', function () {
-            ipcRenderer.send('openExternalURL', `http://update.backrunner.top/fastnote/${process.platform}${isOS64? 'x64/' : ''}/Fastnote Setup ${version_new}.exe`);
+            ipcRenderer.send('openExternalURL', `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/Fastnote Setup ${version_new}.exe`);
             $('.container-updater').animateCss('fadeOut faster', function() {
                 $('.container-updater').removeAttr('style');
             });
