@@ -9,7 +9,7 @@
         <img src="https://img.shields.io/github/last-commit/backrunner/Fastnote?style=flat-square"></img>
     </a>
     <a href="https://github.com/backrunner/Fastnote/commits/master">
-        <img src="https://img.shields.io/github/commits-since/backrunner/Fastnote/0.2.15?style=flat-square"></img>
+        <img src="https://img.shields.io/github/commits-since/backrunner/Fastnote/0.3.1?style=flat-square"></img>
     </a>
     <a href="https://github.com/backrunner/Fastnote/blob/master/LICENSE">
         <img src="https://img.shields.io/github/license/backrunner/Fastnote?style=flat-square"></img>

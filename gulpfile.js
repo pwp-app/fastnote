@@ -276,8 +276,7 @@ gulp.task("shields replace", function() {
         .src("Readme.md")
         .pipe(replace(/(https:\/\/img\.shields\.io\/github\/commits-since\/backrunner\/Fastnote\/)([0-9]+\.[0-9]+\.[0-9]+)/, `$1${package.version}`))
         .pipe(gulp.dest("./"))
-        .pipe(git.commit('minor: Replace shields version'))
-        .pipe(git.push('Github.com', 'master'));
+        .pipe(git.commit('minor: Replace shields version'));
 });
 
 gulp.task("upload win32", function() {
