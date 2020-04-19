@@ -1069,7 +1069,10 @@
                     //向状态栏添加图标
                     appendUpdateIconToStautsbar();
                 case 'error':
-                    console.error(data);
+                    $('#infobar_update').animateCss('fadeOutUp', function() {
+                        $('#infobar_update').remove();
+                    });
+                    displayInfobar('error', i18n[current_i18n].update_download_failed, 3000);
                     break;
             }
         });

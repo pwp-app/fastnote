@@ -166,6 +166,7 @@ i18n['en-us']={
     register_success: 'Fastnote Cloud account has been registered successfully.',
     update_now: 'Update now',
     update_error: 'Fetch version file failed',
+    update_download_failed: 'Download update package failed.',
     updateready_text: 'Update will start automatically after app closed.',
     logout_failed: 'Logout failed.',
     logout_success: 'Logout success.',
