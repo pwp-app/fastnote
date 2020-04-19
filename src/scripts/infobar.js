@@ -23,6 +23,7 @@ function displayInfobar(type, text, timeout = 3000, dismiss = true) {
         case 'warning':
             html += '<div class="infobar infobar-warning" id="infobar_' + infobar_id + '"><i class="fa fa-warning infobar-icon"></i><span>';
             html += text;
+            html += '</span>';
             if (dismiss){
                 html += '<i class="fa fa-times infobar-dismiss" onclick="closeInfobar('+infobar_id+');"></i>';
             }
@@ -31,6 +32,7 @@ function displayInfobar(type, text, timeout = 3000, dismiss = true) {
         case 'error':
             html += '<div class="infobar infobar-error" id="infobar_' + infobar_id + '"><i class="fa fa-warning infobar-icon"></i><span>';
             html += text;
+            html += '</span>';
             if (dismiss){
                 html += '<i class="fa fa-times infobar-dismiss" onclick="closeInfobar('+infobar_id+');"></i>';
             }
@@ -45,6 +47,7 @@ function displayInfobar(type, text, timeout = 3000, dismiss = true) {
         default:
             html += '<div class="infobar infobar-info" id="infobar_' + infobar_id + '"><i class="fa fa-info-circle infobar-icon"></i><span>';
             html += text;
+            html += '</span>';
             if (dismiss){
                 html += '<i class="fa fa-times infobar-dismiss" onclick="closeInfobar('+infobar_id+');"></i>';
             }
