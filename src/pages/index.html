@@ -969,29 +969,30 @@
                     } else {
                         return; //设置没有载入的情况下不触发更新
                     }
-                    $('.container-updater').css('display', 'block').animateCss('fadeIn', function() {
+                    $('.container-updater').css('display', 'block').animateCss('fadeIn faster', function() {
                         var path_verfile = ``;
+                        const default_ver_path = `http://update.backrunner.top/fastnote/${process.platform}${isOS64? 'x64/' : ''}/ver.json?time=`;
                         if (typeof settings != 'undefined') {
                             switch (settings.autoUpdateChannel) {
                                 case "0":
                                     path_verfile =
-                                        `http://update.backrunner.top/fastnote/${process.platform}/ver.json?time=`;
+                                        `http://update.backrunner.top/fastnote/${process.platform}${isOS64? 'x64/' : ''}/ver.json?time=`;
                                     break;
                                 case "100":
                                     path_verfile =
-                                        `http://update.backrunner.top/fastnote/pre-release/${process.platform}/ver.json?time=`;
+                                        `http://update.backrunner.top/fastnote/pre-release/${process.platform}${isOS64? 'x64/' : ''}/ver.json?time=`;
                                     break;
                                 default:
-                                    path_verfile =
-                                        `http://update.backrunner.top/fastnote/${process.platform}/ver.json?time=`;
+                                    path_verfile = default_ver_path;
                                     break;
                             }
                         } else {
-                            path_verfile =
-                                `http://update.backrunner.top/fastnote/${process.platform}/ver.json?time=`;
+                            path_verfile = default_ver_path;
                         }
-                        $.getJSON(path_verfile + time.getRawCurrentMillTime(), //时间戳避免缓存
-                            function(result) {
+                        $.ajax({
+                            url: path_verfile + time.getRawCurrentMillTime(),
+                            dataType: 'json',
+                            success: result => {
                                 if (result != null && result != "" && typeof(result) != 'undefined') {
                                     //成功获取ver.json
                                     version_new = result.ver;
@@ -1040,17 +1041,17 @@
                                         $('.update-contents').animateCss('fadeIn morefaster');
                                     } catch (err) {
                                         // 获取失败
-                                        $('#btn-update-close').show();
-                                        console.error(err);
-                                        $('#update-loading-span').innerHTML = i18n[current_i18n].loading_updatelog_failed;
+                                        showVerFileFailed();
                                     }
                                 } else {
                                     // 获取失败
-                                    $('#btn-update-close').show();
-                                    $('#update-loading-span').innerHTML = i18n[current_i18n].loading_updatelog_failed;
+                                    showVerFileFailed()
                                 }
+                            },
+                            error: err => {
+                                showVerFileFailed();
                             }
-                        );
+                        });
                     });
                     break;
                 case 'downloadProgress':
@@ -1059,12 +1060,12 @@
                         1) + " %)......";
                     break;
                 case 'update-downloaded':
-                    console.log('update-downloaded');
+                    console.log('Update file downloaded');
                     //收起上方的通知
                     $('#infobar_update').animateCss('fadeOutUp', function() {
                         $('#infobar_update').remove();
                     });
-                    displayInfobar('success', i18n[current_i18n].update_download_success, 5000);
+                    displayInfobar('success', i18n[current_i18n].update_download_success, 3000);
                     //向状态栏添加图标
                     appendUpdateIconToStautsbar();
                 case 'error':
@@ -1072,6 +1073,12 @@
                     break;
             }
         });
+
+        function showVerFileFailed() {
+            $('#btn-update-close').show();
+            $('#update-title-span').text(i18n[current_i18n].update_error);
+            $('#update-loading-span').text(i18n[current_i18n].loading_updatelog_failed);
+        }
 
         function appendUpdateIconToStautsbar() {
             $('#statusbar').append(
@@ -1081,13 +1088,13 @@
 
         //绑定按钮事件
         $('#btn-update-cancel').on('click', function() {
-            $('.container-updater').animateCss('fadeOut', function() {
+            $('.container-updater').animateCss('fadeOut faster', function() {
                 $('.container-updater').removeAttr('style');
             });
             ipcRenderer.send('updateCancelled');
         });
         $('#btn-update-close').on('click', function() {
-            $('.container-updater').animateCss('fadeOut', function() {
+            $('.container-updater').animateCss('fadeOut faster', function() {
                 $('.container-updater').removeAttr('style');
             });
             ipcRenderer.send('updateCancelled');
@@ -1095,13 +1102,13 @@
         $('#btn-update-confirm').on('click', function() {
             ipcRenderer.send('downloadNow');
             displayInfobar('update', i18n[current_i18n].update_downloading + '......');
-            $('.container-updater').animateCss('fadeOut', function() {
+            $('.container-updater').animateCss('fadeOut faster', function() {
                 $('.container-updater').removeAttr('style');
             });
         });
         $('#btn-update-manual').on('click', function () {
-            ipcRenderer.send('openExternalURL', `http://update.backrunner.top/fastnote/${process.platform}/Fastnote Setup ${version_new}.exe`);
-            $('.container-updater').animateCss('fadeOut', function() {
+            ipcRenderer.send('openExternalURL', `http://update.backrunner.top/fastnote/${process.platform}${isOS64? 'x64/' : ''}/Fastnote Setup ${version_new}.exe`);
+            $('.container-updater').animateCss('fadeOut faster', function() {
                 $('.container-updater').removeAttr('style');
             });
             ipcRenderer.send('updateCancelled');

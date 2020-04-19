@@ -165,6 +165,7 @@ i18n['zh-cn']={
     register_tryLoginFailed: '尝试登录失败，请手动登录',
     register_success: 'Fastnote Cloud 用户注册成功',
     update_now: '立即更新',
+    update_error: '检查更新时出现错误',
     updateready_text: '更新下载完成，应用会在关闭后自动更新。',
     logout_failed: '登出失败。',
     logout_success: '登出成功。',
