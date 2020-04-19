@@ -18,7 +18,6 @@ const fileValidation = require('./utils/fileValidation');
 // config file
 const package = require('./package.json');
 const qiniuConfig = require("./qiniu.config");
-const signConfig = require('./sign.config');
 
 // jquery
 gulp.task("jquery", async function() {
@@ -147,12 +146,6 @@ gulp.task("debug", function() {
         .pipe(gulp.dest("./"));
 });
 
-// sign
-gulp.task("sign", function() {
-    return gulp.src("dist/*.exe")
-        .pipe(shell([`signtool sign /v /f ${signConfig.cert} /p ${signConfig.password} /tr http://timestamp.digicert.com "<%= file.path %>"`]));
-});
-
 // pack
 gulp.task("move old", function() {
     return gulp.src("dist/*.exe").pipe(gulp.dest("old_version"));
@@ -165,8 +158,8 @@ gulp.task("clean dist", function() {
 });
 gulp.task("build win32", shell.task("npm run build32"));
 gulp.task("build win64", shell.task("npm run build"));
-gulp.task("pack win32", gulp.series(["clean", "build", "clean dist", "win32", "build win32", "sign"]));
-gulp.task("pack win64", gulp.series(["clean", "build", "clean dist", "win64", "build win64", "sign"]));
+gulp.task("pack win32", gulp.series(["clean", "build", "clean dist", "win32", "build win32"]));
+gulp.task("pack win64", gulp.series(["clean", "build", "clean dist", "win64", "build win64"]));
 
 gulp.task('move old hotfix', () => {
     return gulp.src(['hotfix/*.json', 'hotfix/*.asar'])
