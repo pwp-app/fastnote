@@ -459,7 +459,7 @@
                                 hasNotesNotForceTop = true;
                             }
                             //多选模式下，单击，如果选中则取消，未选中则选中
-                            var index = notes_selected.indexOf(noteid_clicked);
+                            let index = notes_selected.indexOf(noteid_clicked);
                             if (index != -1) {
                                 $('#note_' + noteid_clicked).parent().removeClass('note-selected');
                                 //非加密便签才进行操作
