@@ -12,6 +12,7 @@ const fs = require("fs");
 const del = require("del");
 const asar = require('asar');
 const crypto = require('crypto');
+const git = require('gulp-git');
 const fileValidation = require('./utils/fileValidation');
 
 // config file
@@ -225,7 +226,7 @@ gulp.task('revoke manifest', async () => {
 });
 
 // publish
-gulp.task("gen ver file", function() {
+gulp.task("gen ver file", async function() {
     let ver;
     if (fs.existsSync('./dist/ver.json')) {
         let ret = fs.readFileSync('./dist/ver.json');
@@ -240,13 +241,6 @@ gulp.task("gen ver file", function() {
             manual: false
         };
     }
-    let current_version = package.version.split('.');
-    let last_version = ver.ver.split('.');
-    // if flag_newtext is true, gulp will do replace rather than append
-    let flag_newtext = false;
-    if (parseInt(current_version[0]) > parseInt(last_version[0]) || parseInt(current_version[1]) > parseInt(last_version[1])) {
-        flag_newtext = true;
-    }
     ver.ver = package.version;
     if (!fs.existsSync('./update.log')) {
         throw 'Runtime error: update log is missing';
@@ -257,31 +251,46 @@ gulp.task("gen ver file", function() {
     }
     log = log.split('\r\n');
     let content = '';
+    let part = '';
+    let process_ver;
     for (let item of log) {
-        item = item.replace(/(\*\*)(.*)(\*\*)/gi, '<strong>$1</strong>');
-        content += `<p>${item}</p>`;
-    }
-    content = `<div data-ver="${package.version}"><h2>${package.version} 更新内容</h2>${content}</div>`;
-    if (ver.text && ver.text.length > 0 && !flag_newtext) {
-        if (ver.text.indexOf(package.version) != -1) {
-            ver.text = content;
-        } else {
-            ver.text = `${content}${ver.text}`;
+        if (/[0-9]+\.[0-9]+\.[0-9]+:/.test(item)){
+            process_ver = item.replace(':', '');
+            continue;
         }
-    } else {
-        ver.text = content;
+        if (item.trim().length < 1) {
+            content += `<div data-ver="${process_ver}"><h2>${process_ver} 更新说明</h2>${part}</div>`;
+            part = '';
+            continue;
+        }
+        item = item.replace(/(\*\*)(.*)(\*\*)/gi, '<strong>$2</strong>');
+        part += `<p>${item}</p>`;
     }
-    if (fs.writeFileSync('./dist/ver.json', JSON.stringify(ver))) {
-        return true;
-    } else {
-        throw 'Runtime error: ver json gen failed';
+    if (part.length > 0) {
+        content += `<div data-ver="${process_ver}"><h2>${process_ver} 更新说明</h2>${part}</div>`;
     }
+    ver.text = content;
+    try {
+        fs.writeFileSync('./dist/ver.json', JSON.stringify(ver));
+    } catch (e) {
+        throw 'Runtime error: write ver.json failed';
+    }
+    return true;
+});
+
+gulp.task("shields replace", function() {
+    return gulp
+        .src("Readme.md")
+        .pipe(replace(/(https:\/\/img\.shields\.io\/github\/commits-since\/backrunner\/Fastnote\/)([0-9]+\.[0-9]+\.[0-9]+)/, `$1${package.version}`))
+        .pipe(gulp.dest("./"))
+        .pipe(git.commit('minor: Replace shields version'))
+        .pipe(git.push('Github.com', 'master'));
 });
 
 gulp.task("upload win32", function() {
     return gulp.src(["dist/Fastnote Setup " + package.version + ".exe", "dist/*.yml", "dist/ver.json"]).pipe(
         qn({
-            qiniu: qiniuConfig,
+            qiniu: qiniuConfig.update,
             prefix: "fastnote/win32/",
             forceUpload: true
         })
@@ -291,8 +300,18 @@ gulp.task("upload win32", function() {
 gulp.task("upload win64", function() {
     return gulp.src(["dist/Fastnote Setup " + package.version + ".exe", "dist/*.yml", "dist/ver.json"]).pipe(
         qn({
-            qiniu: qiniuConfig,
+            qiniu: qiniuConfig.update,
             prefix: "fastnote/win32/x64/",
+            forceUpload: true
+        })
+    );
+});
+
+gulp.task("upload pre-release win64", function (){
+    return gulp.src(["dist/Fastnote Setup " + package.version + ".exe", "dist/*.yml", "dist/ver.json"]).pipe(
+        qn({
+            qiniu: qiniuConfig.update,
+            prefix: "fastnote/pre-release/win32/x64/",
             forceUpload: true
         })
     );
@@ -342,9 +361,11 @@ gulp.task("upload manifest", function() {
 
 gulp.task("upload-ver", gulp.series(["upload ver win32", "upload ver win64"]));
 
-gulp.task("publish", gulp.series(["move old", "pack win32", "upload win32"]));
+gulp.task("publish32", gulp.series(["move old", "pack win32", "upload win32"]));
 gulp.task("publish64", gulp.series(["move old x86", "pack win64", "upload win64"]));
-gulp.task("publish", gulp.series(["gen ver file", "publish", "publish64", "debug"]));
+gulp.task("publish", gulp.series(["shields replace", "gen ver file", "publish32", "publish64", "debug"]));
+gulp.task("publish pre-release", gulp.series(["move old", "pack win64", "upload pre-release win64"]));
+gulp.task("pre-release", gulp.series(["gen ver file", "publish pre-release", "debug"]));
 
 gulp.task('clean hotfix', function() {
     return del(['hotfix/*.json', 'hotfix/*.asar']);
