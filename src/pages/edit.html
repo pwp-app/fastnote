@@ -242,18 +242,18 @@
                     <input class="form-control" type="text" id="input-title" maxlength="64" placeholder="(无标题)">
                 </div>
             </div>
-            <div style="margin-top: 8px;">
-                <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
+            <div class="edit-info-group">
+                <div class="edit-info-item">
                     <label data-lang="category">分类</label>
-                    <div class="edit-item-control-half-left">
+                    <div class="edit-item-control">
                         <select class="form-control" id="select-category">
                             <option value="notalloc" data-lang="notalloc">未分类</option>
                         </select>
                     </div>
                 </div>
-                <div class="edit-info-item edit-info-item-half edit-info-inlineitem">
+                <div class="edit-info-item">
                     <label data-lang="password">密码</label>
-                    <div class="edit-item-control-half-right">
+                    <div class="edit-item-control">
                         <input class="form-control" type="password" id="input-password" type="password">
                     </div>
                 </div>
@@ -476,10 +476,6 @@
         });
 
         function resizeContent() {
-            //设置控件的宽度
-            $('.edit-item-control').css('width', $(window).width() - 70 + (current_i18n == 'en-us' ? 2.5 : 0));
-            $('.edit-item-control-half-left').css('width', ($(window).width() - 32) / 2 - 59 - (current_i18n == 'en-us' ? 24 : 0));
-            $('.edit-item-control-half-right').css('width', ($(window).width() - 32) / 2 - 41 - (current_i18n == 'en-us' ? 27 : 0));
             //调整文本域大小
             var h_container = $(window).height() - $('.container-titlebar').height() - 48;
             $('.container-edit').css('height', h_container);
