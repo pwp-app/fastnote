@@ -1068,6 +1068,7 @@
                     displayInfobar('success', i18n[current_i18n].update_download_success, 3000);
                     //向状态栏添加图标
                     appendUpdateIconToStautsbar();
+                    break;
                 case 'error':
                     $('#infobar_update').animateCss('fadeOutUp', function() {
                         $('#infobar_update').remove();
@@ -1089,7 +1090,8 @@
             );
         }
 
-        //绑定按钮事件
+        // 绑定按钮事件
+        let startDownloadLock = false;
         $('#btn-update-cancel').on('click', function() {
             $('.container-updater').animateCss('fadeOut faster', function() {
                 $('.container-updater').removeAttr('style');
@@ -1103,11 +1105,17 @@
             ipcRenderer.send('updateCancelled');
         });
         $('#btn-update-confirm').on('click', function() {
-            ipcRenderer.send('downloadNow');
-            displayInfobar('update', i18n[current_i18n].update_downloading + '......');
-            $('.container-updater').animateCss('fadeOut faster', function() {
-                $('.container-updater').removeAttr('style');
-            });
+            if (!startDownloadLock) {
+                startDownloadLock = true;
+                ipcRenderer.send('downloadNow');
+                displayInfobar('update', i18n[current_i18n].update_downloading + '......');
+                $('.container-updater').animateCss('fadeOut faster', function() {
+                    $('.container-updater').removeAttr('style');
+                });
+                setTimeout(() => {
+                    startDownloadLock = false;
+                }, 500);
+            }
         });
         $('#btn-update-manual').on('click', function () {
             ipcRenderer.send('openExternalURL', `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/Fastnote Setup ${version_new}.exe`);
