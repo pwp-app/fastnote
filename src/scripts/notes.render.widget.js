@@ -44,7 +44,7 @@ function renderNoteForWidget(note) {
                 ipcRenderer.send('widget-heightChange', 300);
             }
             ipcRenderer.send('widget-setMaxHeight', height);
-            $('.widget-note-content').css('height', 'calc(100vh - 61px)');
+            $('.widget-note-content').css('height', 'calc(100vh - 59px)');
         }, 50);
     });
 }
