@@ -31,9 +31,10 @@
     <script src="static/mousetrap.min.js"></script>
     <script src="static/moment.min.js"></script>
     <script src="static/html5sortable.min.js"></script>
+    <script src="static/marked.js"></script>
     <script src="static/notes.render.js"></script>
     <script src="static/cloud.sync.js"></script>
-    <script src="static/stat.js"></script>
+    <script src="static/stat.js" async></script>
     <script>
         // i18n
         var postprocess_i18n = [{
@@ -65,7 +66,8 @@
         const MenuItem = remote.MenuItem;
 
         const {
-            ipcRenderer
+            ipcRenderer,
+            clipboard
         } = require('electron');
 
         const notesEdit = require("./static/notes.edit.js");
@@ -880,10 +882,6 @@
             }
         });
     </script>
-
-    <!-- import clipboard operation-->
-    <script src='static/clipboard.copy.js'></script>
-
     <script>
         var noteid_clicked = -1;
 

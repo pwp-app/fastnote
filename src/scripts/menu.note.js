@@ -39,16 +39,10 @@ function popup_menu_note(isForceTop, hasPassword) {
         menu_note.append(new MenuItem({
             label: i18n[current_i18n].copy,
             click: function () {
-                for (var i = 0; i < notes.length; i++) {
+                for (let i = 0; i < notes.length; i++) {
                     if (notes[i].id == noteid_clicked) {
-                        copyToClipboard(notes[i].text.replace(/(\r\n)|(\n)/g,"\r"), {
-                            success: function () {
-                                displayInfobar('success', i18n[current_i18n].copyto_clipboard_success);
-                            },
-                            error: function () {
-                                displayInfobar('success', i18n[current_i18n].copyto_clipboard_error);
-                            }
-                        });
+                        clipboard.writeText(notes[i].text.replace(/(\r\n)|(\n)/g,"\r"));
+                        displayInfobar('success', i18n[current_i18n].copyto_clipboard_success);
                         return;
                     }
                 }
@@ -58,9 +52,9 @@ function popup_menu_note(isForceTop, hasPassword) {
         menu_note.append(new MenuItem({
             label: i18n[current_i18n].edit,
             click: function () {
-                for (var i = 0; i < notes.length; i++) {
+                for (let i = 0; i < notes.length; i++) {
                     if (notes[i].id == noteid_clicked) {
-                        var rawtext;
+                        let rawtext;
                         if ($('#note_'+noteid_clicked+' .note-content .note-password').length>0){
                             rawtext = $('#note_'+noteid_clicked).attr('data-decrypted');
                         }
