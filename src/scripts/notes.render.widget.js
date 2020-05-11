@@ -1,21 +1,50 @@
 var reg = require('./static/notes.render.reg');
 
-function renderNoteForWidget(note){
-    let html = '<div class="note-text"><p>';
-    let text = $("#filter-x").text(note.text).html().replace(/ /g, '&nbsp;');
-    if (typeof note.markdown != "undefined" && note.markdown){
-        text = text.replace(reg.h5,'<noteh5>$1</noteh5>').replace(reg.h4,'<noteh4>$1</noteh4>').replace(reg.h3,'<noteh3>$1</noteh3>').replace(reg.h2,'<noteh2>$1</noteh2>').replace(reg.h1,'<noteh1>$1</noteh1>').replace(reg.hr,'\n</p><hr><p>')
-            .replace(reg.strong, '<strong>$2</strong>').replace(reg.em, '<em>$2</em>').replace(reg.link, '<a href="$5">$2</a>');
+marked.setOptions({
+    renderer: new marked.Renderer(),
+    headerIds: false,
+    pedantic: false,
+    tables: false,
+    gfm: true,
+    breaks: true,
+    sanitize: true,
+    smartLists: true,
+    smartypants: false,
+    xhtml: false,
+    silent: true,
+});
+
+function renderNoteForWidget(note) {
+    let html = '<div class="widget-note-content note-text">';
+    let text;
+    if (note.markdown) {
+        text = marked(note.text);
+    } else {
+        text = $('#filter-x').text(note.text).html().replace(/ /g, '&nbsp;');
+        text = '<p>' + text.replace(/\n/gi, '<br>');
     }
-    text = text.replace(/\n/gi,'<br>');
     text = insert_spacing(text, 0.15);
-    if (!note.markdown){
+    if (!note.markdown) {
         html += text.replace(reg.url, function (result) {
             return '<a href="' + result + '">' + result + '</a>';
         });
     } else {
-        html += text;
+        html += text + '</p>';
     }
-    html += '</p></div>';
-    $('.widget-note-content').append(html);
+    html += '</div>';
+    $('.widget-note').append(html);
+
+    // do after render
+    $(document).ready(() => {
+        setTimeout(() => {
+            let height = document.body.scrollHeight;
+            if (height < 300) {
+                ipcRenderer.send('widget-heightChange', height);
+            } else {
+                ipcRenderer.send('widget-heightChange', 300);
+            }
+            ipcRenderer.send('widget-setMaxHeight', height);
+            $('.widget-note-content').css('height', 'calc(100vh - 61px)');
+        }, 50);
+    });
 }

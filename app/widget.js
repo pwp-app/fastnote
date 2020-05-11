@@ -1,6 +1,5 @@
 let widgets = [];
 let widgets_noteid = [];
-let widget = null;
 
 const {
     BrowserWindow
@@ -8,20 +7,16 @@ const {
 
 const electron = require('electron');
 const ipc = require('electron').ipcMain;
-const app = require('electron').app;
-const path = require('path');
 
-var targetY = -1;
+let targetY = -1;
 
 function createWidget(data) {
-    let _widget = null;
-    var screenWidth = electron.screen.getPrimaryDisplay().size.width;
-
+    let screenWidth = electron.screen.getPrimaryDisplay().size.width;
     if (targetY < 0){
         targetY = 18;
     }
-    var conf = {
-        x: screenWidth-478,
+    const conf = {
+        x: screenWidth - 478,
         y: targetY,
         width: 460,
         height: 280,
@@ -31,6 +26,7 @@ function createWidget(data) {
         webPreferences: {
             nodeIntegration: true
         },
+        resizable: true,
         transparent: true,
         skipTaskbar: true
     };
@@ -39,27 +35,26 @@ function createWidget(data) {
     else
         conf.frame = false;
 
-    _widget = new BrowserWindow(conf);
-    widget = _widget;
-    widgets.push(_widget);
+    let widget = new BrowserWindow(conf);
+    widgets.push(widget);
     widgets_noteid.push(data.note.id);
 
-    let viewPath = global.hotfix.buildPath('widget.html');
-    _widget.loadFile(viewPath);
+    let viewPath = global.hotfix.buildPath('desktopWidget.html');
+    widget.loadFile(viewPath);
 
-    _widget.on('close', ()=>{
-        let widget_x = _widget.getPosition()[0];
-        let widget_y = _widget.getPosition()[1];
+    widget.on('close', ()=>{
+        let widget_x = widget.getPosition()[0];
+        let widget_y = widget.getPosition()[1];
         let screenWidth = electron.screen.getPrimaryDisplay().size.width;
-        if (widget_x == screenWidth-478){
-            if (widget_y < targetY && widget_y>=18){
+        if (widget_x == screenWidth - 478){
+            if (widget_y < targetY && widget_y >= 18){
                 targetY = widget_y;
             }
         }
     });
 
-    _widget.on('closed', () => {
-        let index = widgets.indexOf(_widget);
+    widget.on('closed', () => {
+        let index = widgets.indexOf(widget);
         widgets.splice(index, 1);
         widgets_noteid.splice(index, 1);
         if (widgets.length < 1){
@@ -67,26 +62,22 @@ function createWidget(data) {
         }
     });
 
-    _widget.on('ready-to-show', ()=>{
+    widget.on('ready-to-show', ()=>{
         ipc.once('widget-window-ready',()=>{
             widget.show();
         });
         ipc.once('widget-heightChange', (sender, height)=>{
             widget.setSize(widget.getSize()[0], height);
             targetY = targetY + height + 8;
-            //锁定最大高度
-            if (height < 400){
-                widget.setMaximumSize(electron.screen.getPrimaryDisplay().size.width, height);
-            }
         });
         ipc.once('widget-setMaxHeight', (sender, height)=>{
-            widget.setMaximumSize(electron.screen.getPrimaryDisplay().size.width, height);
+            widget.setMaximumSize(screenWidth, height);
         });
-        _widget.webContents.send('init', data.note);
+        widget.webContents.send('init', data.note);
     });
 
-    _widget.once('will-move', ()=>{
-        let index = widgets.indexOf(_widget);
+    widget.once('will-move', ()=>{
+        let index = widgets.indexOf(widget);
         let widget_y = widgets[index].getPosition()[1];
         if (widget_y < targetY){
             targetY = widget_y;

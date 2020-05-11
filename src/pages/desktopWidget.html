@@ -5,7 +5,6 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>Fastnote</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-
         <!--import requirements-->
         <script>
             window.$ = window.jQuery = require("./static/jquery.min.js");
@@ -18,6 +17,7 @@
         <link rel="stylesheet" href="static/font-awesome.min.css" />
         <link rel="stylesheet" href="static/bootstrap.min.css" />
         <link rel="stylesheet" href="static/animate.min.css" />
+        <script src="static/marked.js"></script>
         <script src="static/notes.render.widget.js"></script>
         <script src="static/han.simple.js"></script>
         <script src="static/mousetrap.min.js"></script>
@@ -115,12 +115,10 @@
                     }
 
                     if (typeof settings.widget_opacity != "undefined") {
-                        $(document).ready(function() {
-                            let bgcolor = $(".container-widget").css("background-color");
-                            let reg_alpha = /(rgba\([0-9]{1,3},\s+[0-9]{1,3},\s+[0-9]{1,3},\s+)([0-9.]+)(\))/i;
-                            bgcolor = bgcolor.replace(reg_alpha, "$1" + settings.widget_opacity / 100 + "$3");
-                            $(".container-widget").css("background-color", bgcolor);
-                        });
+                        let bgcolor = $(".container-widget").css("background-color");
+                        let reg_alpha = /(rgba\([0-9]{1,3},\s+[0-9]{1,3},\s+[0-9]{1,3},\s+)([0-9.]+)(\))/i;
+                        bgcolor = bgcolor.replace(reg_alpha, "$1" + settings.widget_opacity / 100 + "$3");
+                        $(".container-widget").css("background-color", bgcolor);
                     }
 
                     if (typeof settings.widget_defaultforcetop != "undefined") {
@@ -168,111 +166,84 @@
             </div>
             <div class="widget-split"></div>
             <div class="widget-body">
-                <div class="widget-note">
-                    <div class="widget-note-content"></div>
-                </div>
+                <div class="widget-note"></div>
             </div>
         </div>
-        <script>
-            var note;
-            //ipc events
-            ipcRenderer.on("init", (sender, data) => {
-                note = data;
-                //init text
-                renderNoteForWidget(data);
-                //init title
+        <span id="filter-x" style="display:none"></span>
+    </body>
+    <script>
+        let note;
+        //ipc events
+        ipcRenderer.on("init", (sender, data) => {
+            note = data;
+            // init text
+            renderNoteForWidget(data);
+            // init title
+            if (typeof data.title == "undefined") {
+                $(".widget-title-text").html("#" + data.id);
+            } else {
+                $(".widget-title-text").html(data.title);
+            }
+        });
+        ipcRenderer.on("setAlwaysOnTop", (sender, data) => {
+            if (data) {
+                $(".widget-controls").append('<div class="widget-icon widget-icon-forcetop"><i class="fa fa-caret-up"></i></div>');
+            } else {
+                $(".widget-icon-forcetop").remove();
+            }
+        });
+        ipcRenderer.on("setLock", (sender, data) => {
+            if (data) {
+                $(".widget-controls").append('<div class="widget-icon widget-icon-lock"><i class="fa fa-lock"></i></div>');
+                $(".container-widget").addClass("app-nodrag");
+            } else {
+                $(".widget-icon-lock").remove();
+                $(".container-widget").removeClass("app-nodrag");
+            }
+        });
+        ipcRenderer.on("note-recycled", (sender, data) => {
+            window.close();
+        });
+        ipcRenderer.on("update-edit-note", (sender, data) => {
+            if (data) {
+                // clear text in widget
+                $(".widget-note-content").html("");
+                // rerender title
                 if (typeof data.title == "undefined") {
                     $(".widget-title-text").html("#" + data.id);
                 } else {
                     $(".widget-title-text").html(data.title);
                 }
-                //init window
-                setTimeout(() => {
-                    if (document.body.scrollHeight < 400) {
-                        ipcRenderer.send("widget-heightChange", document.body.scrollHeight + 4);
-                        ipcRenderer.send("widget-setMaxHeight", document.body.scrollHeight + 4);
-                    } else {
-                        ipcRenderer.send("widget-heightChange", 400);
-                        ipcRenderer.send("widget-setMaxHeight", document.body.scrollHeight + 4);
-                        $(".widget-note-content").css("height", 329);
-                    }
-                    $(window).resize(function() {
-                        //resize content
-                        $(".widget-note-content").css("height", $(window).height() - 61);
-                        $(".widget-title").css("width", $(window).width() - 160);
-                    });
-                }, 0);
-            });
-            ipcRenderer.on("setAlwaysOnTop", (sender, data) => {
-                if (data) {
-                    $(".widget-controls").append('<div class="widget-icon widget-icon-forcetop"><i class="fa fa-caret-up"></i></div>');
-                } else {
-                    $(".widget-icon-forcetop").remove();
-                }
-            });
-            ipcRenderer.on("setLock", (sender, data) => {
-                if (data) {
-                    $(".widget-controls").append('<div class="widget-icon widget-icon-lock"><i class="fa fa-lock"></i></div>');
-                    $(".container-widget").addClass("app-nodrag");
-                } else {
-                    $(".widget-icon-lock").remove();
-                    $(".container-widget").removeClass("app-nodrag");
-                }
-            });
-            ipcRenderer.on("note-recycled", (sender, data) => {
-                window.close();
-            });
-            ipcRenderer.on("update-edit-note", (sender, data) => {
-                if (data) {
-                    flag_resize = true;
-                    //clear text in widget
-                    $(".widget-note-content").html("");
-                    renderNoteForWidget(data);
-                    //rerender title
-                    if (typeof data.title == "undefined") {
-                        $(".widget-title-text").html("#" + data.id);
-                    } else {
-                        $(".widget-title-text").html(data.title);
-                    }
-                    setTimeout(() => {
-                        if (document.body.scrollHeight < 400) {
-                            ipcRenderer.send("widget-heightChange", document.body.scrollHeight);
-                        } else {
-                            ipcRenderer.send("widget-heightChange", 400);
-                            ipcRenderer.send("widget-setMaxHeight", document.body.scrollHeight + 4);
-                            $(".widget-note-content").css("height", 339);
-                        }
-                    }, 0);
-                }
-            });
+                // rerender text
+                renderNoteForWidget(data);
+            }
+        });
 
-            ipcRenderer.on("readyToReload", () => {
-                ipcRenderer.send("widget-reload-ready", note);
-            });
+        ipcRenderer.on("readyToReload", () => {
+            ipcRenderer.send("widget-reload-ready", note);
+        });
 
-            //bind events
-            $(".widget-control-close").click(() => {
-                window.close();
-            });
+        //bind events
+        $(".widget-control-close").click(() => {
+            window.close();
+        });
 
-            Mousetrap.bind("ctrl+t", function() {
-                ipcRenderer.send("widget-alwaysontop", note.id);
-                return false;
-            });
-            Mousetrap.bind("ctrl+l", function() {
-                ipcRenderer.send("widget-lock", note.id);
-                return false;
-            });
-            Mousetrap.bind("ctrl+q", function() {
-                window.close();
-                return false;
-            });
+        Mousetrap.bind("ctrl+t", function() {
+            ipcRenderer.send("widget-alwaysontop", note.id);
+            return false;
+        });
+        Mousetrap.bind("ctrl+l", function() {
+            ipcRenderer.send("widget-lock", note.id);
+            return false;
+        });
+        Mousetrap.bind("ctrl+q", function() {
+            window.close();
+            return false;
+        });
 
-            $(document).on("click", ".note-text a", function(e) {
-                ipcRenderer.send("openExternalURL", $(this).attr("href"));
-                e.preventDefault();
-            });
-        </script>
-        <span id="filter-x" style="display:none"></span>
-    </body>
+        $(document).on("click", ".note-text a", function(e) {
+            ipcRenderer.send("openExternalURL", $(this).attr("href"));
+            e.preventDefault();
+        });
+    </script>
 </html>
