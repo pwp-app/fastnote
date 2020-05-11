@@ -44,7 +44,7 @@ gulp.task("fontawesome", async function() {
 
 // animate.css
 gulp.task("animate-css", async function() {
-    await gulp.src("node_modules/animate.css/animate.min.css").pipe(gulp.dest("public/static"));
+    await gulp.src("node_modules/animate.css/animate.compat.css").pipe(gulp.dest("public/static"));
 });
 
 // moment.js
