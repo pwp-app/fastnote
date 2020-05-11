@@ -44,7 +44,9 @@ gulp.task("fontawesome", async function() {
 
 // animate.css
 gulp.task("animate-css", async function() {
-    await gulp.src("node_modules/animate.css/animate.min.css").pipe(gulp.dest("public/static"));
+    await gulp.src("node_modules/animate.css/animate.compat.css")
+        .pipe(rename('animate.min.css'))
+        .pipe(gulp.dest("public/static"));
 });
 
 // moment.js
@@ -363,4 +365,4 @@ gulp.task('clean hotfix', function() {
     return del(['hotfix/*.json', 'hotfix/*.asar']);
 });
 gulp.task("publish-hotfix", gulp.series(["move old hotfix", "clean hotfix", "clean build", "pack hotfix", "upload hotfix"]));
-gulp.task("revoke-hotfix", gulp.series(["move old hotfix", "clean hotfix", "clean build", "revoke manifest", "upload manifest"]));
+gulp.task("revoke-hotfix", gulp.series(["revoke manifest", "upload manifest"]));
