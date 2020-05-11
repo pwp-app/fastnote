@@ -173,7 +173,7 @@
         var uuid = remote.getGlobal('uuid');
         var hotfix = remote.getGlobal('hotfix');
         if (hotfix.hotfixBuild) {
-            version += ` hotfix ${hotfix.hotfixBuild}`;
+            version += ` hotfix build ${hotfix.hotfixBuild}`;
         }
         $(document).ready(function () {
             $('#about-version').text(version);

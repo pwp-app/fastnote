@@ -55,6 +55,7 @@ const hotfix = {
             if (this.deletePatch()) {
                 this.onlineCheck();
             }
+            this.hotfixBuild = false;
             return false;
         }
         if (manifest.revoke) {
