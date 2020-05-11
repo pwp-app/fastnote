@@ -62,12 +62,18 @@ gulp.task("html5sortable", async function() {
     await gulp.src("node_modules/html5sortable/dist/html5sortable.min.js").pipe(gulp.dest("public/static"));
 });
 
+// marked
+gulp.task("marked", async function() {
+    return await gulp.src('node_modules/marked/lib/marked.js')
+        .pipe(gulp.dest('public/static'));
+});
+
 // 3rdparty
 gulp.task("3rdparty", function() {
     return gulp.src("src/scripts/3rdparty/**/*.js").pipe(gulp.dest("public/static"));
 });
 
-gulp.task("requirements", gulp.parallel(["jquery", "bootstrap", "fontawesome", "animate-css", "momentjs", "html5sortable", "3rdparty"]));
+gulp.task("requirements", gulp.parallel(["jquery", "bootstrap", "fontawesome", "animate-css", "momentjs", "html5sortable", "marked", "3rdparty"]));
 
 gulp.task("less", function() {
     return gulp

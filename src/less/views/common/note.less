@@ -71,10 +71,9 @@
     border-bottom: solid @color-text-primary 1px;
     height: 32px;
     .no-select();
-}
-
-.note-header p {
-    display: inline-flex;
+    p {
+        display: inline-flex;
+    }
 }
 
 .note-title {
@@ -82,44 +81,44 @@
     margin-left: 8px;
 }
 
-.note-text hr {
-    background-color: @color-text-primary;
-    height: 1px;
-    border: 0;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-noteh1 {
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 36px;
-    vertical-align: middle;
-}
-
-noteh2 {
-    font-size: 17px;
-    font-weight: bold;
-    line-height: 32px;
-    vertical-align: middle;
-}
-noteh3 {
-    font-size: 16px;
-    font-weight: bold;
-    line-height: 32px;
-    vertical-align: middle;
-}
-noteh4 {
-    font-size: 15px;
-    font-weight: bold;
-    line-height: 28px;
-    vertical-align: middle;
-}
-noteh5 {
-    font-size: 14px;
-    font-weight: bold;
-    line-height: 28px;
-    vertical-align: middle;
+.note-text {
+    h1 {
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 36px;
+        vertical-align: middle;
+    }
+    h2 {
+        font-size: 17px;
+        font-weight: bold;
+        line-height: 32px;
+        vertical-align: middle;
+    }
+    h3 {
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 32px;
+        vertical-align: middle;
+    }
+    h4 {
+        font-size: 15px;
+        font-weight: bold;
+        line-height: 28px;
+        vertical-align: middle;
+    }
+    h5 {
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 28px;
+        vertical-align: middle;
+    }
+    hr {
+        background-color: @color-text-primary;
+        height: 1px;
+        border: 0;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
 }
 
 //title的自定义标签样式

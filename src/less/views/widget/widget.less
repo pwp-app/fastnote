@@ -21,7 +21,7 @@
 }
 .widget-title {
     float: left;
-    width: 300px;
+    width: max-content;
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -56,8 +56,30 @@
     color: @color-trigger-hover-primary;
 }
 .widget-note-content {
-    overflow-y: auto;
+    color: @color-text-primary;
+    overflow: auto;
     -webkit-app-region: no-drag;
+    p {
+        font-size: 14px;
+        line-height: 24px;
+        letter-spacing: 0.06em;
+        padding: 0 !important;
+        margin: 0 !important;
+        word-break: break-all;
+        overflow-x: hidden;
+        user-select: text;
+    }
+    a {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        color: @color-text-primary;
+        font-size: 14px;
+        text-decoration: underline;
+        letter-spacing: 0.06em;
+    }
+    a:hover {
+        color: @color-text-primary;
+    }
 }
 .widget-note-content::-webkit-scrollbar {
     width: 4px;
@@ -73,31 +95,6 @@
 }
 .widget-note-content::-webkit-scrollbar-track-piece {
     background-color: fade(@color-widget-bg, @transparent-percent);
-}
-.widget-note-content > .note-text {
-    color: @color-text-primary;
-}
-.widget-note-content > .note-text p {
-    font-size: 14px;
-    line-height: 24px;
-    letter-spacing: 0.06em;
-    padding: 0 !important;
-    margin: 0 !important;
-    word-break: break-all;
-    overflow-x: hidden;
-    text-justify: auto;
-    user-select: text;
-}
-.widget-note-content > .note-text a {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    color: @color-text-primary;
-    font-size: 14px;
-    text-decoration: underline;
-    letter-spacing: 0.06em;
-}
-.widget-note-content > .note-text a:hover {
-    color: @color-text-primary;
 }
 .widget-split {
     height: 1px;
