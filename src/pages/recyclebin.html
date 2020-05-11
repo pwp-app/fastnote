@@ -257,30 +257,37 @@
     <span id="filter-x" style="display:none"></span>
 
     <script>
-        var noteid_clicked = -1;
+        let noteid_clicked = -1;
 
-        //bind resize
-        $(window).resize(function() { //当浏览器大小变化时
-            //调整note的高度
+        // bind resize
+        $(window).resize(function() { // 当浏览器大小变化时
+            // 调整note的高度
             $('.note-content').each(function() {
-                if ($(this).attr('class').indexOf('note-overheight') == -1) {
+                if ($(this).attr('class').indexOf('note-overheight') === -1) {
                     $(this).css('height', 'auto');
                 }
             });
         });
 
         function bindNoteClickEvent() {
+            // 滚动条不响应选择事件
+            $('.note-content').off('mousedown').on('mousedown', function(e) {
+                if (e.offsetX >= $(this).width()) {
+                    e.stopPropagation();
+                }
+            });
+
             $('.note-wrapper').off('mousedown').on('mousedown', function(e) {
-                //提取点击的id
+                // 提取点击的id
                 noteid_clicked = parseInt($(this).children('.note').attr("data-id"));
                 if (e.which == 1) {
                     if (selectModeEnabled) {
-                        //多选模式下，单击，如果选中则取消，未选中则选中
-                        var index = notes_selected.indexOf(noteid_clicked);
+                        // 多选模式下，单击，如果选中则取消，未选中则选中
+                        let index = notes_selected.indexOf(noteid_clicked);
                         if (index != -1) {
                             $('#note_' + noteid_clicked).parent().removeClass('note-selected');
                             notes_selected.removeAt(index);
-                            //如果没有选中则退出
+                            // 如果没有选中则退出
                             if (notes_selected.length <= 0) {
                                 selectModeEnabled = false;
                                 $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
@@ -306,6 +313,10 @@
                             $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                             $('.toast-multiselected').animateCss('fadeInRight faster');
                         }, 1000);
+                        // 如果移动了鼠标则取消长按计时
+                        $('body').one('mousemove', function(e) {
+                            clearTimeout(noteLongClickTimeout);
+                        });
                     }
                 }
                 if (e.which == 3) {
@@ -329,7 +340,7 @@
                         popup_menu_recyclebin();
                     }
                 }
-                //阻止事件冒泡到父元素
+                // 阻止事件冒泡到父元素
                 e.stopPropagation();
             });
             $('.note-wrapper').off('mouseup').on('mouseup', function(e) {

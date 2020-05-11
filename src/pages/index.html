@@ -450,26 +450,26 @@
                 });
 
                 $('.note-wrapper').off('mousedown').on('mousedown', function(e) {
-                    //提取点击的id
+                    // 提取点击的id
                     noteid_clicked = parseInt($(this).children('.note').attr("data-id"));
                     if (e.which == 1) {
                         if (selectModeEnabled) {
-                            //判断是否为置顶
+                            // 判断是否为置顶
                             if ($(this).children('.note').hasClass('note-forceTop')) {
                                 hasNotesForceTop = true;
                             } else {
                                 hasNotesNotForceTop = true;
                             }
-                            //多选模式下，单击，如果选中则取消，未选中则选中
+                            // 多选模式下，单击，如果选中则取消，未选中则选中
                             let index = notes_selected.indexOf(noteid_clicked);
                             if (index != -1) {
                                 $('#note_' + noteid_clicked).parent().removeClass('note-selected');
-                                //非加密便签才进行操作
+                                // 非加密便签才进行操作
                                 if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
                                     notes_selected.removeAt(index);
                                 }
                                 notes_selected_withencrypted.removeAt(index);
-                                //如果没有选中则退出
+                                // 如果没有选中则退出
                                 if (notes_selected_withencrypted.length <= 0) {
                                     selectModeEnabled = false;
                                     $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
@@ -480,55 +480,59 @@
                                 }
                             } else {
                                 $('#note_' + noteid_clicked).parent().addClass('note-selected');
-                                //判断是否为加密便签，是则不操作
+                                // 判断是否为加密便签，是则不操作
                                 if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
                                     notes_selected.push(noteid_clicked);
                                 }
                                 notes_selected_withencrypted.push(noteid_clicked);
-                                //set up toast
+                                // set up toast
                                 $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                             }
                         } else {
                             noteLongClickTimeout = setTimeout(function() {
-                                //初始化值
+                                // 初始化值
                                 selectModeEnabled = true;
                                 notes_selected = [];
                                 notes_selected_withencrypted = [];
                                 hasNotesForceTop = false;
                                 hasNotesNotForceTop = false;
-                                //对当前所选进行对应处理
+                                // 对当前所选进行对应处理
                                 $('#note_' + noteid_clicked).parent().addClass('note-selected');
                                 if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
                                     notes_selected.push(noteid_clicked);
                                 }
                                 notes_selected_withencrypted.push(noteid_clicked);
-                                //判断是否为置顶
+                                // 判断是否为置顶
                                 if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
                                     hasNotesForceTop = true;
                                 } else {
                                     hasNotesNotForceTop = true;
                                 }
-                                //set up toast
+                                // set up toast
                                 $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                                 $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                                 window.getSelection().removeAllRanges();
                             }, 1000);
+                            // 如果移动了鼠标则取消长按计时
+                            $('body').one('mousemove', function(e) {
+                                clearTimeout(noteLongClickTimeout);
+                            });
                         }
                     } else if (e.which == 3) {
                         if (selectModeEnabled) {
-                            //如果是选中的，弹出菜单，如果不是选中的，取消
+                            // 如果是选中的，弹出菜单，如果不是选中的，取消
                             if ($('#note_' + noteid_clicked).parent().hasClass('note-selected')) {
-                                //弹出多选下的右键菜单
+                                // 弹出多选下的右键菜单
                                 popup_menu_note_multiSelected(hasNotesForceTop, hasNotesNotForceTop);
                             } else {
                                 selectModeEnabled = false;
                                 $('.note-wrapper').removeClass('note-selected');
                                 $(this).addClass('note-selected');
                                 if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
-                                    //是置顶便签
+                                    // 是置顶便签
                                     popup_menu_note(true, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
                                 } else {
-                                    //不是置顶便签
+                                    // 不是置顶便签
                                     popup_menu_note(false, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
                                 }
                                 $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
@@ -539,18 +543,18 @@
                             $('.note-wrapper').removeClass('note-selected');
                             $(this).addClass('note-selected');
                             if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
-                                //是置顶便签
+                                // 是置顶便签
                                 popup_menu_note(true, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
                             } else {
-                                //不是置顶便签
+                                // 不是置顶便签
                                 popup_menu_note(false, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
                             }
                         }
                     }
-                    //阻止事件冒泡到父元素
+                    // 阻止事件冒泡到父元素
                     e.stopPropagation();
                 });
-                //取消长按的计时器
+                // 取消长按的计时器
                 $('.note-wrapper').off('mouseup').on('mouseup', function(e) {
                     if (e.which == 1) {
                         clearTimeout(noteLongClickTimeout);
@@ -558,13 +562,8 @@
                 });
             }
 
-            //如果移动了鼠标则取消长按计时
-            $('body').on('mousemove', function(e) {
-                clearTimeout(noteLongClickTimeout);
-            });
-
             $(document).ready(function() {
-                //绑定note-list的鼠标点击
+                // 绑定note-list的鼠标点击
                 $('#note-list').mousedown(function(e) {
                     if (selectModeEnabled) {
                         selectModeEnabled = false;
@@ -573,7 +572,7 @@
                             $('.toast-multiselected').removeClass('toast-active');
                         });
                     }
-                    //搜索框内没有输入内容时点击列表自动关闭
+                    // 搜索框内没有输入内容时点击列表自动关闭
                     if (searchOpened) {
                         if ($('#input-search').val().length < 1) {
                             closeSearchToast();
@@ -582,7 +581,7 @@
                 });
             });
 
-            //绑定全选快捷键
+            // 绑定全选快捷键
             Mousetrap.bind('ctrl+a', function() {
                 selectModeEnabled = true;
                 notes_selected = [];
