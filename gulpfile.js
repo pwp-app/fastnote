@@ -335,6 +335,16 @@ gulp.task("upload ver win64", function() {
     );
 });
 
+gulp.task("upload ver prerelease", function() {
+    return gulp.src("dist/ver.json").pipe(
+        qn({
+            qiniu: qiniuConfig.update,
+            prefix: "fastnote/pre-release/win32/x64/",
+            forceUpload: true
+        })
+    );
+});
+
 gulp.task("upload hotfix", function() {
     return gulp.src(['hotfix/manifest.json', 'hotfix/*.asar'])
         .pipe(
