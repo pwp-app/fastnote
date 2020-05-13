@@ -15,6 +15,7 @@
         var remote = require('electron').remote;
         var app = remote.app;
         var pathPrefix = remote.getGlobal('pathPrefix');
+        var hotfix = remote.getGlobal('hotfix');
     </script>
 
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css">
@@ -932,11 +933,6 @@
                 <div class="update-contents-details">
                 </div>
             </div>
-
-            <div class="update-contents update-contents-loading">
-                <span id="update-loading-span" data-lang="loading">载入中……</span>
-            </div>
-
             <div class="update-footer">
                 <div class="control-group" style="-webkit-user-select: none">
                     <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-close" data-lang="close">关闭</button>
@@ -958,100 +954,113 @@
         }) => {
             switch (message) {
                 case 'checking-for-update':
-                    console.log('checking for update...');
+                    console.log('Checking for update...');
                     break;
                 case 'update-available':
-                    console.log("update-avaliable...");
-                    if (typeof settings != 'undefined') {
+                    console.log("Update is avaliable...");
+                    if (settings) {
                         if (!settings.autoUpdateStatus) { //自动更新未启用
+                            console.warn('Auto update is not enable, break auto update.');
                             return;
                         }
                     } else {
+                        console.error('Settings is not loaded, break auto update.');
                         return; //设置没有载入的情况下不触发更新
                     }
-                    $('.container-updater').css('display', 'block').animateCss('fadeIn faster', function() {
-                        var path_verfile = ``;
-                        const default_ver_path = `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/ver.json?time=`;
-                        if (typeof settings != 'undefined') {
-                            switch (settings.autoUpdateChannel) {
-                                case "0":
-                                    path_verfile =
-                                        `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/ver.json?time=`;
-                                    break;
-                                case "100":
-                                    path_verfile =
-                                        `http://update.backrunner.top/fastnote/pre-release/${process.platform}${isOS64? '/x64/' : ''}/ver.json?time=`;
-                                    break;
-                                default:
-                                    path_verfile = default_ver_path;
-                                    break;
-                            }
-                        } else {
+                    let path_verfile = '';
+                    const default_ver_path = `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/ver.json`;
+                    if (settings) {
+                        switch (settings.autoUpdateChannel) {
+                            case "0":
+                            path_verfile =
+                            `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/ver.json`;
+                            break;
+                            case "100":
+                            path_verfile =
+                            `http://update.backrunner.top/fastnote/pre-release/${process.platform}${isOS64? '/x64/' : ''}/ver.json`;
+                            break;
+                            default:
                             path_verfile = default_ver_path;
+                            break;
                         }
-                        $.ajax({
-                            url: path_verfile + time.getRawCurrentMillTime(),
-                            dataType: 'json',
-                            success: result => {
-                                if (result != null && result != "" && typeof(result) != 'undefined') {
-                                    //成功获取ver.json
-                                    version_new = result.ver;
-                                    try {
-                                        $('#update-title-span').text(i18n[current_i18n].newversion_detected + result.ver);
-                                        document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
-                                        // 选择性显示更新日志，不同版本显示不同内容
-                                        var version_number = version.split('.').map(Number); // 获取现有的版本号
-                                        var update_logs = document.getElementsByClassName('update-contents-details')[0].children; //获取更新日志板块的版本号
-                                        // 使用try防止ver文件出错导致自动更新不能用
-                                        try {
-                                            for (var i = 0; i < update_logs.length; i++) {
-                                                var log_version = $(update_logs[i]).attr('data-ver').split('.').map(Number);
-                                                // 判断现有版本是否已经大于更新日志的版本
-                                                if (version_number[0] >= log_version[0] && version_number[1] >= log_version[1] && version_number[2] >= log_version[2]) {
-                                                    $(update_logs[i]).hide(); // 如果有就把这一部分隐藏掉
-                                                }
-                                            }
-                                        } catch (err) {
-                                            console.error(err);
+                    } else {
+                        path_verfile = default_ver_path;
+                    }
+                    $.ajax({
+                        url: `${path_verfile}?t=${new Date().getTime()}`,
+                        dataType: 'json',
+                        success: result => {
+                            console.log(result);
+                            if (result) {
+                                // 成功获取ver.json
+                                version_new = result.ver;
+                                // 选择性显示更新日志，不同版本显示不同内容
+                                let version_number = version.split('.').map(Number); // 获取现有的版本号
+                                let update_logs = document.getElementsByClassName('update-contents-details')[0].children; //获取更新日志板块的版本号
+                                // 自动更新窗口文本
+                                $('#update-title-span').text(i18n[current_i18n].newversion_detected + result.ver);
+                                document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
+                                // 使用try防止ver文件出错导致自动更新不能用
+                                let flag_ver_error = false;
+                                try {
+                                    for (let i = 0; i < update_logs.length; i++) {
+                                        let log_version = $(update_logs[i]).attr('data-ver').split('.').map(Number);
+                                        // 判断现有版本是否已经大于更新日志的版本
+                                        if (version_number[0] >= log_version[0] && version_number[1] >= log_version[1] && version_number[2] >= log_version[2]) {
+                                            $(update_logs[i]).hide(); // 如果有就把这一部分隐藏掉
                                         }
-                                        // check show full
-                                        if (result.showfull) {
-                                            document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">' + i18n[current_i18n].detail_updatelog + '</button>'
-                                        }
-                                        // 强制更新
-                                        if (result.manual && result.manual.includes(version)) {
-                                            // 手动更新
-                                            $('#btn-update-confirm').hide();
-                                            $('#btn-update-cancel').hide();
-                                            if (result.forceupdate) {
-                                                $('#btn-update-close').hide();
-                                            } else {
-                                                $('#btn-update-close').show();
-                                            }
-                                            $('#btn-update-manual').show();
-                                        } else if (result.forceupdate) {
-                                            $('#btn-update-confirm').show();
-                                        } else {
-                                            $('#btn-update-confirm').show();
-                                            $('#btn-update-cancel').show();
-                                        }
-                                        $('.update-contents-loading').css('display', 'none');
-                                        $('.update-contents').show();
-                                        // animate
-                                        $('.update-contents').animateCss('fadeIn morefaster');
-                                    } catch (err) {
-                                        // 获取失败
-                                        showVerFileFailed();
                                     }
-                                } else {
-                                    // 获取失败
-                                    showVerFileFailed()
+                                } catch (err) {
+                                    console.error('Update error: ');
+                                    console.error(err);
+                                    flag_ver_error = true;
                                 }
-                            },
-                            error: err => {
-                                showVerFileFailed();
+                                if (flag_ver_error) {
+                                    return;
+                                }
+                                // 检查热更新版本限制
+                                if (result.hotfixBuildLimit) {
+                                    if (hotfix && hotfix.hotfixBuild) {
+                                        if (hotfix.hotfixBuild < result.hotfixBuildLimit) {
+                                            // 未达到主更新要求的热更版本，不允许进行主更新
+                                            console.error('Hotfix build is not suitable, break auto update.');
+                                            return;
+                                        }
+                                    } else {
+                                        // 未检测到需要的热更新，不允许更新
+                                        console.error('No suitable hotfix, break auto update.');
+                                        return;
+                                    }
+                                }
+                                // check show full
+                                if (result.showfull) {
+                                    document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">' + i18n[current_i18n].detail_updatelog + '</button>'
+                                }
+                                // 强制更新
+                                if (result.manual && result.manual.includes(version)) {
+                                    // 手动更新
+                                    $('#btn-update-confirm').hide();
+                                    $('#btn-update-cancel').hide();
+                                    if (result.forceupdate) {
+                                        $('#btn-update-close').hide();
+                                    } else {
+                                        $('#btn-update-close').show();
+                                    }
+                                    $('#btn-update-manual').show();
+                                } else if (result.forceupdate) {
+                                    $('#btn-update-confirm').show();
+                                } else {
+                                    $('#btn-update-confirm').show();
+                                    $('#btn-update-cancel').show();
+                                }
+                                // 显示更新窗口
+                                $('.container-updater').css('display', 'block').animateCss('fadeIn faster');
                             }
-                        });
+                        },
+                        error: err => {
+                            console.error('Update ver.json fetch error.');
+                            console.error(err);
+                        }
                     });
                     break;
                 case 'downloadProgress':
@@ -1070,6 +1079,8 @@
                     appendUpdateIconToStautsbar();
                     break;
                 case 'error':
+                    console.error('Update error: ');
+                    console.error(data);
                     $('#infobar_update').animateCss('fadeOutUp', function() {
                         $('#infobar_update').remove();
                     });
@@ -1077,12 +1088,6 @@
                     break;
             }
         });
-
-        function showVerFileFailed() {
-            $('#btn-update-close').show();
-            $('#update-title-span').text(i18n[current_i18n].update_error);
-            $('#update-loading-span').text(i18n[current_i18n].loading_updatelog_failed);
-        }
 
         function appendUpdateIconToStautsbar() {
             $('#statusbar').append(
