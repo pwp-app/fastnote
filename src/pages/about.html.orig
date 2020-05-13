@@ -168,11 +168,19 @@
 
     <script>
         // 获取文本
+<<<<<<< HEAD
+        var version = app.getVersion();
+        var isOS64 = remote.getGlobal('isOS64');
+        var uuid = remote.getGlobal('uuid');
+        var hotfix = remote.getGlobal('hotfix');
+        if (hotfix.hotfixBuild) {
+=======
         let version = app.getVersion();
         const isOS64 = remote.getGlobal('isOS64');
         const uuid = remote.getGlobal('uuid');
         const hotfix = remote.getGlobal('hotfix');
         if (hotfix.hotfixBuild && !hotfix.isRevoke) {
+>>>>>>> 0.3.1-patch
             version += ` hotfix build ${hotfix.hotfixBuild}`;
         }
         $(document).ready(function () {

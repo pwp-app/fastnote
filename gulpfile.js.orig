@@ -1,4 +1,4 @@
-﻿const gulp = require("gulp");
+const gulp = require("gulp");
 const less = require("gulp-less");
 const cssmin = require("gulp-clean-css");
 const concat = require("gulp-concat");
@@ -344,7 +344,11 @@ gulp.task("upload ver win64", function() {
     );
 });
 
+<<<<<<< HEAD
+gulp.task("upload ver prerelease", function() {
+=======
 gulp.task("upload ver pre-release", function() {
+>>>>>>> 0.3.1-patch
     return gulp.src("dist/ver.json").pipe(
         qn({
             qiniu: qiniuConfig.update,
