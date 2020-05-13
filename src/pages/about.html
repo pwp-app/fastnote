@@ -172,7 +172,7 @@
         const isOS64 = remote.getGlobal('isOS64');
         const uuid = remote.getGlobal('uuid');
         const hotfix = remote.getGlobal('hotfix');
-        if (hotfix.hotfixBuild && !hotfix.isRevoke) {
+        if (hotfix.hotfixBuild && !hotfix.isRevoke && !hotfix.isOutdated) {
             version += ` hotfix build ${hotfix.hotfixBuild}`;
         }
         $(document).ready(function () {
