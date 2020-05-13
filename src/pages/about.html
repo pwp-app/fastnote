@@ -168,12 +168,12 @@
 
     <script>
         // 获取文本
-        var version = app.getVersion();
-        var isOS64 = remote.getGlobal('isOS64');
-        var uuid = remote.getGlobal('uuid');
-        var hotfix = remote.getGlobal('hotfix');
-        if (hotfix.hotfixBuild) {
-            version += ` hotfix ${hotfix.hotfixBuild}`;
+        let version = app.getVersion();
+        const isOS64 = remote.getGlobal('isOS64');
+        const uuid = remote.getGlobal('uuid');
+        const hotfix = remote.getGlobal('hotfix');
+        if (hotfix.hotfixBuild && !hotfix.isRevoke) {
+            version += ` hotfix build ${hotfix.hotfixBuild}`;
         }
         $(document).ready(function () {
             $('#about-version').text(version);

@@ -15,6 +15,7 @@ let asarPath;
 
 const hotfix = {
     hotfixBuild: null,
+    isRevoke: false,
     init(indebug) {
         feed = `http://hotfix.backrunner.top/fastnote/${appVersion}`;
         dirPath = `${userDataPath}/hotfix${indebug ? '_dev': ''}`;
@@ -49,6 +50,7 @@ const hotfix = {
         }
         manifest = JSON.parse(manifest);
         this.hotfixBuild = manifest.build;
+        this.isRevoke = manifest.revoke;
         // 比较应用版本
         if (manifest.version !== appVersion) {
             // 热更版本和应用不符
