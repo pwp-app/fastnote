@@ -1078,10 +1078,15 @@
                 case 'error':
                     console.error('Update error: ');
                     console.error(data);
-                    $('#infobar_update').animateCss('fadeOutUp', function() {
-                        $('#infobar_update').remove();
-                    });
-                    displayInfobar('error', i18n[current_i18n].update_download_failed, 3000);
+                    if (!data.message.includes('404 Not Found')) {
+                        let update_infobar = $('#infobar_update');
+                        if (update_infobar.length) {
+                            update_infobar.animateCss('fadeOutUp', function() {
+                                update_infobar.remove();
+                            });
+                        }
+                        displayInfobar('error', i18n[current_i18n].update_download_failed, 3000);
+                    }
                     break;
             }
         });
