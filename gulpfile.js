@@ -237,6 +237,13 @@ gulp.task("gen ver file", async function() {
         };
     }
     ver.ver = package.version;
+    let hotfix_log;
+    if (fs.existsSync('./hotfix.log.json')) {
+        hotfix_log = require('./hotfix.log.json');
+    }
+    if (hotfix_log) {
+        ver.hotfixBuildLimit = hotfix_log.build;
+    }
     if (!fs.existsSync('./update.log')) {
         throw 'Runtime error: update log is missing';
     }
@@ -326,6 +333,16 @@ gulp.task("upload ver win64", function() {
         qn({
             qiniu: qiniuConfig.update,
             prefix: "fastnote/win32/x64/",
+            forceUpload: true
+        })
+    );
+});
+
+gulp.task("upload ver pre-release", function() {
+    return gulp.src("dist/ver.json").pipe(
+        qn({
+            qiniu: qiniuConfig.update,
+            prefix: "fastnote/pre-release/win32/x64/",
             forceUpload: true
         })
     );
