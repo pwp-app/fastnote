@@ -32,9 +32,10 @@
     <script src="static/mousetrap.min.js"></script>
     <script src="static/moment.min.js"></script>
     <script src="static/html5sortable.min.js"></script>
+    <script src="static/marked.js"></script>
     <script src="static/notes.render.js"></script>
     <script src="static/cloud.sync.js"></script>
-    <script src="static/stat.js"></script>
+    <script src="static/stat.js" async defer></script>
     <script>
         // i18n
         var postprocess_i18n = [{
@@ -66,7 +67,8 @@
         const MenuItem = remote.MenuItem;
 
         const {
-            ipcRenderer
+            ipcRenderer,
+            clipboard
         } = require('electron');
 
         const notesEdit = require("./static/notes.edit.js");
@@ -436,12 +438,12 @@
                 $('#note_' + data.id).animateCss('fadeInLeft faster');
             });
 
-            //记录是否有置顶便签
+            // 记录是否有置顶便签
             var hasNotesForceTop = false;
             var hasNotesNotForceTop = false;
-            //笔记鼠标点击事件绑定
+            // 笔记鼠标点击事件绑定
             function bindNoteClickEvent() {
-                //滚动条不响应选择事件
+                // 滚动条不响应选择事件
                 $('.note-content').off('mousedown').on('mousedown', function(e) {
                     if (e.offsetX >= $(this).width()) {
                         e.stopPropagation();
@@ -449,26 +451,26 @@
                 });
 
                 $('.note-wrapper').off('mousedown').on('mousedown', function(e) {
-                    //提取点击的id
+                    // 提取点击的id
                     noteid_clicked = parseInt($(this).children('.note').attr("data-id"));
                     if (e.which == 1) {
                         if (selectModeEnabled) {
-                            //判断是否为置顶
+                            // 判断是否为置顶
                             if ($(this).children('.note').hasClass('note-forceTop')) {
                                 hasNotesForceTop = true;
                             } else {
                                 hasNotesNotForceTop = true;
                             }
-                            //多选模式下，单击，如果选中则取消，未选中则选中
+                            // 多选模式下，单击，如果选中则取消，未选中则选中
                             let index = notes_selected.indexOf(noteid_clicked);
                             if (index != -1) {
                                 $('#note_' + noteid_clicked).parent().removeClass('note-selected');
-                                //非加密便签才进行操作
+                                // 非加密便签才进行操作
                                 if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
                                     notes_selected.removeAt(index);
                                 }
                                 notes_selected_withencrypted.removeAt(index);
-                                //如果没有选中则退出
+                                // 如果没有选中则退出
                                 if (notes_selected_withencrypted.length <= 0) {
                                     selectModeEnabled = false;
                                     $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
@@ -479,55 +481,59 @@
                                 }
                             } else {
                                 $('#note_' + noteid_clicked).parent().addClass('note-selected');
-                                //判断是否为加密便签，是则不操作
+                                // 判断是否为加密便签，是则不操作
                                 if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
                                     notes_selected.push(noteid_clicked);
                                 }
                                 notes_selected_withencrypted.push(noteid_clicked);
-                                //set up toast
+                                // set up toast
                                 $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                             }
                         } else {
                             noteLongClickTimeout = setTimeout(function() {
-                                //初始化值
+                                // 初始化值
                                 selectModeEnabled = true;
                                 notes_selected = [];
                                 notes_selected_withencrypted = [];
                                 hasNotesForceTop = false;
                                 hasNotesNotForceTop = false;
-                                //对当前所选进行对应处理
+                                // 对当前所选进行对应处理
                                 $('#note_' + noteid_clicked).parent().addClass('note-selected');
                                 if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
                                     notes_selected.push(noteid_clicked);
                                 }
                                 notes_selected_withencrypted.push(noteid_clicked);
-                                //判断是否为置顶
+                                // 判断是否为置顶
                                 if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
                                     hasNotesForceTop = true;
                                 } else {
                                     hasNotesNotForceTop = true;
                                 }
-                                //set up toast
+                                // set up toast
                                 $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                                 $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
                                 window.getSelection().removeAllRanges();
                             }, 1000);
+                            // 如果移动了鼠标则取消长按计时
+                            $('body').on('mousemove', function(e) {
+                                clearTimeout(noteLongClickTimeout);
+                            });
                         }
                     } else if (e.which == 3) {
                         if (selectModeEnabled) {
-                            //如果是选中的，弹出菜单，如果不是选中的，取消
+                            // 如果是选中的，弹出菜单，如果不是选中的，取消
                             if ($('#note_' + noteid_clicked).parent().hasClass('note-selected')) {
-                                //弹出多选下的右键菜单
+                                // 弹出多选下的右键菜单
                                 popup_menu_note_multiSelected(hasNotesForceTop, hasNotesNotForceTop);
                             } else {
                                 selectModeEnabled = false;
                                 $('.note-wrapper').removeClass('note-selected');
                                 $(this).addClass('note-selected');
                                 if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
-                                    //是置顶便签
+                                    // 是置顶便签
                                     popup_menu_note(true, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
                                 } else {
-                                    //不是置顶便签
+                                    // 不是置顶便签
                                     popup_menu_note(false, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
                                 }
                                 $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
@@ -538,18 +544,18 @@
                             $('.note-wrapper').removeClass('note-selected');
                             $(this).addClass('note-selected');
                             if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
-                                //是置顶便签
+                                // 是置顶便签
                                 popup_menu_note(true, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
                             } else {
-                                //不是置顶便签
+                                // 不是置顶便签
                                 popup_menu_note(false, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
                             }
                         }
                     }
-                    //阻止事件冒泡到父元素
+                    // 阻止事件冒泡到父元素
                     e.stopPropagation();
                 });
-                //取消长按的计时器
+                // 取消长按的计时器
                 $('.note-wrapper').off('mouseup').on('mouseup', function(e) {
                     if (e.which == 1) {
                         clearTimeout(noteLongClickTimeout);
@@ -557,13 +563,8 @@
                 });
             }
 
-            //如果移动了鼠标则取消长按计时
-            $('body').on('mousemove', function(e) {
-                clearTimeout(noteLongClickTimeout);
-            });
-
             $(document).ready(function() {
-                //绑定note-list的鼠标点击
+                // 绑定note-list的鼠标点击
                 $('#note-list').mousedown(function(e) {
                     if (selectModeEnabled) {
                         selectModeEnabled = false;
@@ -572,7 +573,7 @@
                             $('.toast-multiselected').removeClass('toast-active');
                         });
                     }
-                    //搜索框内没有输入内容时点击列表自动关闭
+                    // 搜索框内没有输入内容时点击列表自动关闭
                     if (searchOpened) {
                         if ($('#input-search').val().length < 1) {
                             closeSearchToast();
@@ -581,7 +582,7 @@
                 });
             });
 
-            //绑定全选快捷键
+            // 绑定全选快捷键
             Mousetrap.bind('ctrl+a', function() {
                 selectModeEnabled = true;
                 notes_selected = [];
@@ -665,12 +666,12 @@
                     </button>
                 </div>
                 <div class="newnote-info">
-                    <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-info">
+                    <button class="br-btn btn-noback newnote-trigger" title="编辑便签信息" id="btn-newnote-info">
                         <i class="fa fa-info-circle" aria-hidden="true"></i>
                     </button>
                 </div>
                 <div class="newnote-markdown">
-                    <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-markdown">
+                    <button class="br-btn btn-noback newnote-trigger" title="使用Markdown" id="btn-newnote-markdown">
                         <svg t="1558625704373" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1534" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
                             <path d="M85.333333 682.666667 85.333333 341.333333 170.666667 341.333333 298.666667 469.333333 426.666667 341.333333 512 341.333333 512 682.666667 426.666667 682.666667 426.666667 462.08 298.666667 590.08 170.666667 462.08 170.666667 682.666667 85.333333 682.666667M682.666667 341.333333 810.666667 341.333333 810.666667 512 917.333333 512 746.666667 704 576 512 682.666667 512 682.666667 341.333333Z" p-id="1535" fill="#ffffff"></path>
                         </svg>
@@ -772,12 +773,12 @@
     <!-- 底栏 -->
     <div class="container-bottombar">
         <div class="trigger-mainmenu">
-            <button class="br-btn btn-noback bottombar-trigger" id="btn-mainmenu-trigger">
+            <button class="br-btn btn-noback bottombar-trigger" title="主菜单" id="btn-mainmenu-trigger">
                 <i class="fa fa-bars" aria-hidden="true"></i>
             </button>
         </div>
         <div class="trigger-category">
-            <button class="br-btn btn-noback bottombar-trigger" id="btn-category-trigger">
+            <button class="br-btn btn-noback bottombar-trigger" title="分类" id="btn-category-trigger">
                 <i class="fa fa-book" aria-hidden="true"></i>
                 <span class="bottombar-category-name"></span>
             </button>
@@ -788,7 +789,7 @@
             </button>
         </div>
         <div class="trigger-cloud">
-            <button class="br-btn btn-noback bottombar-trigger" id="btn-cloud-trigger">
+            <button class="br-btn btn-noback bottombar-trigger" title="云服务" id="btn-cloud-trigger">
                 <i class="fa fa-user" aria-hidden="true"></i>
             </button>
         </div>
@@ -881,9 +882,6 @@
             }
         });
     </script>
-
-    <!-- import clipboard operation-->
-    <script src='static/clipboard.copy.js'></script>
 
     <script>
         var noteid_clicked = -1;
