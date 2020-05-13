@@ -990,7 +990,6 @@
                         url: `${path_verfile}?t=${new Date().getTime()}`,
                         dataType: 'json',
                         success: result => {
-                            console.log(result);
                             if (result) {
                                 // 成功获取ver.json
                                 version_new = result.ver;
