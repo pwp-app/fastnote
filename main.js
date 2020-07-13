@@ -43,10 +43,19 @@ const cloudWindow = require('./app/cloud/cloudWindow');
 let win;
 let tray;
 
-// hotfix
-global.hotfix = require('./utils/hotfix');
-global.hotfix.init(global.indebug);
-global.pathPrefix = `${app.getAppPath()}/node_modules/`;
+// timer
+let hotfixTimer;
+
+app.on('ready', async () => {
+    // hotfix
+    global.hotfix = require('./utils/hotfix');
+    // set timer
+    global.hotfix.init(global.indebug);
+    global.pathPrefix = `${app.getAppPath()}/node_modules/`;
+    // do create
+    createTray();
+    createWindow();
+});
 
 function createWindow() {
     // 创建浏览器窗口。
@@ -288,9 +297,9 @@ function createWindow() {
     // *** 窗体关闭 ***
 
     win.on('close', (e) => {
-        // 设置窗口打开的时候不允许关闭主窗口
+        // 设置窗口打开的时候关闭主窗体，则一并关闭设置窗体
         if (settingsWindow.get()) {
-            e.preventDefault();
+            setttingsWindow.close();
         }
     });
 
@@ -471,11 +480,6 @@ app.on('activate', () => {
     if (win === null) {
         createWindow();
     }
-});
-
-app.on('ready', () => {
-    createTray();
-    createWindow();
 });
 
 app.on('second-instance', ()=>{

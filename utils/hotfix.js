@@ -17,7 +17,7 @@ const hotfix = {
     hotfixBuild: null,
     isRevoke: false,
     isOutdated: false,
-    init(indebug) {
+    async init(indebug) {
         feed = `http://hotfix.backrunner.top/fastnote/${appVersion}`;
         dirPath = `${userDataPath}/hotfix${indebug ? '_dev': ''}`;
         // 检查dirpath是否存在
@@ -25,13 +25,13 @@ const hotfix = {
             fs.mkdirSync(dirPath);
         }
         manifestPath = `${dirPath}/manifest.json`;
-        return this.loadCheck();
+        return await this.loadCheck();
     },
     async loadCheck() {
         // 检查热更新manifest是否存在
         if (!fs.existsSync(manifestPath)) {
             console.info('Hotfix manifest does not existed.');
-            this.onlineCheck();
+            await this.onlineCheck();
             return false;
         }
         // 存在，则读入
@@ -45,7 +45,7 @@ const hotfix = {
         // 读入失败，视为热更新损坏，重新检查
         if (!manifest) {
             if (this.deletePatch()) {
-                this.onlineCheck();
+                await this.onlineCheck();
             }
             return false;
         }
@@ -55,7 +55,7 @@ const hotfix = {
         if (manifest.version !== appVersion) {
             // 热更版本和应用不符
             if (this.deletePatch()) {
-                this.onlineCheck();
+                await this.onlineCheck();
             }
             this.isOutdated = true;
             this.hotfixBuild = false;
@@ -64,7 +64,7 @@ const hotfix = {
         if (manifest.revoke) {
             asarPath = null;
             this.isRevoke = true;
-            this.onlineCheck();
+            await this.onlineCheck();
             return;
         }
         // 应用版本符合，抽出resource名称
@@ -73,12 +73,12 @@ const hotfix = {
         if (!fs.existsSync(asarPath)) {
             // 不存在，视为热更新损坏，需要删除之后重新检测
             if (this.deletePatch()) {
-                this.onlineCheck();
+                await this.onlineCheck();
             }
             return;
         }
         // 在线检测，检查是否有更新的、同一版本的热更可以下载
-        this.onlineCheck();
+        await this.onlineCheck();
     },
     async onlineCheck() {
         let manifest = await this.downloadManifest();
@@ -129,7 +129,10 @@ const hotfix = {
     },
     downloadManifest() {
         return new Promise((resolve, reject) => {
-            request.get(`${feed}/manifest.json`, (err, res, body) => {
+            request.get({
+                uri: `${feed}/manifest.json`,
+                timeout: 1000,
+            }, (err, res, body) => {
                 if (err || res.statusCode != 200) {
                     console.error('Cannot download manifest file.');
                     return resolve(null);
@@ -140,16 +143,16 @@ const hotfix = {
     },
     downloadResource(manifest) {
         return new Promise((resolve, reject) => {
-            request.get(`${feed}/${manifest.resource}`)
-                .on('error', () => {
-                    console.error('Hotfix resource download failed.');
-                    resolve(false);
-                })
-                .on('close', () => {
-                    console.info('Hotfix download completed');
-                    resolve(true);
-                })
-                .pipe(fs.createWriteStream(`${dirPath}/${manifest.resource.replace('.asar', '.download')}`));
+            request({
+                uri: `${feed}/${manifest.resource}`,
+                timeout: 1000,
+            }).on('error', () => {
+                console.error('Hotfix resource download failed.');
+                resolve(false);
+            }).on('close', () => {
+                console.info('Hotfix download completed');
+                resolve(true);
+            }).pipe(fs.createWriteStream(`${dirPath}/${manifest.resource.replace('.asar', '.download')}`));
         });
     },
     deleteAsar() {
