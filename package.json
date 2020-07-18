@@ -33,6 +33,7 @@
     "gulp-uglify": "^3.0.2",
     "html5sortable": "^0.9.17",
     "jquery": "^3.5.1",
+    "jquery-lazyload": "^1.9.7",
     "merge": "^1.2.1",
     "moment": "^2.27.0",
     "popper.js": "^1.16.1"
