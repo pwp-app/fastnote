@@ -68,7 +68,6 @@ async function createWindow() {
         conf.frame = false;
 
     win = new BrowserWindow(conf);
-    console.log(win);
 
     var settings;
     storage.get('settings' + (global.indebug ? '_dev' : ''), async function (err, data) {
@@ -380,7 +379,6 @@ ipc.on('newnotewin-save', (sender, data) => {
 
 // get hotfix changed info
 ipc.on('hotfix-changed', (sender, data) => {
-    console.log('hotfix-changed', data);
     global.hotfix.state = data;
     if (data !== 'close') {
         global.pathPrefix = `${app.getAppPath()}/node_modules/`;

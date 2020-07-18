@@ -25,8 +25,8 @@ gulp.task("jquery", async function() {
 });
 
 // jquery lazyload
-gulp.task('jquery-lazyload', async function() {
-    await gulp.src('node_modules/jquery-lazyload/jquery.lazyload.js').pipe(gulp.dest('public/static'));
+gulp.task('lozad', async function() {
+    await gulp.src('node_modules/lozad/dist/lozad.min.js').pipe(gulp.dest('public/static'));
 });
 
 // bootstrap
@@ -80,7 +80,7 @@ gulp.task("3rdparty", function() {
     return gulp.src("src/scripts/3rdparty/**/*.js").pipe(gulp.dest("public/static"));
 });
 
-gulp.task("requirements", gulp.parallel(["jquery", "jquery-lazyload", "bootstrap", "fontawesome", "animate-css", "momentjs", "html5sortable", "marked", "3rdparty"]));
+gulp.task("requirements", gulp.parallel(["jquery", "lozad", "bootstrap", "fontawesome", "animate-css", "momentjs", "html5sortable", "marked", "3rdparty"]));
 
 gulp.task("less", function() {
     return gulp

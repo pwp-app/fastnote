@@ -8,17 +8,21 @@ String.prototype.startWith = function(compareStr){
 
 // *** 变量 ***
 
-//保存所有的notes
+// 保存所有的notes
 var notes = [];
 
 var selectModeEnabled = false;
-//存放长按的setTimeout
+// 存放长按的setTimeout
 var noteLongClickTimeout;
 
 var notes_selected = [];
 var notes_selected_withencrypted = [];
 
 var sort_mode = null;
+
+// lazyload
+
+var lazyloadObserver = null;
 
 // *** jQuery缓存 ***
 
@@ -118,6 +122,9 @@ function initialRender() {
     if (typeof inRecyclebin == 'undefined') { //回收站内不进行分类渲染
         renderNotesOfCategory(current_category);
     }
+    // 图片lazyload
+    lazyloadObserver = window.lozad('.lozad');
+    lazyloadObserver.observe();
 }
 
 // 渲染一条笔记
