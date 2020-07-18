@@ -96,7 +96,8 @@ gulp watch
 打包应用
 
 ```shell
-npm run build
+npm run build:win32
+npm run build:win64
 ```
 
 发布（使用七牛云对象存储，需在gulpfile.js里设置相关变量）
