@@ -39,8 +39,13 @@ function createWidget(data) {
     widgets.push(widget);
     widgets_noteid.push(data.note.id);
 
-    let viewPath = global.hotfix.buildPath('desktopWidget.html');
-    widget.loadFile(viewPath);
+    let viewpath;
+    if (global.hotfix && global.hotfix.state !== 'close') {
+        viewpath = global.hotfix.buildPath('desktopWidget.html');
+    } else {
+        viewpath = path.resolve(__dirname, '../public/desktopWidget.html');
+    }
+    widget.loadFile(viewpath);
 
     widget.on('close', ()=>{
         let widget_x = widget.getPosition()[0];

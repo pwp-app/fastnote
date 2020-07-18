@@ -34,7 +34,12 @@ function createLoginWindow() {
 
     win_login = new BrowserWindow(conf);
 
-    let viewpath = global.hotfix.buildPath('cloud/login.html');
+    let viewpath;
+    if (global.hotfix && global.hotfix.state !== 'close') {
+        viewpath = global.hotfix.buildPath('cloud/login.html');
+    } else {
+        viewpath = path.resolve(__dirname, '../../public/cloud/login.html');
+    }
     win_login.loadFile(viewpath);
 
     win_login.on('closed', () => {

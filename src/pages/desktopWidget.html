@@ -11,7 +11,7 @@
 
             const remote = require("electron").remote;
             const app = remote.app;
-            const pathPrefix = remote.getGlobal('pathPrefix');
+            const pathPrefix = remote.getGlobal('pathPrefix') || '';
         </script>
         <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
         <link rel="stylesheet" href="static/font-awesome.min.css" />

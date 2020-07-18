@@ -14,8 +14,8 @@
 
         var remote = require('electron').remote;
         var app = remote.app;
-        var pathPrefix = remote.getGlobal('pathPrefix');
-        var hotfix = remote.getGlobal('hotfix');
+        const pathPrefix = remote.getGlobal('pathPrefix') || '';
+        const hotfix = remote.getGlobal('hotfix');
     </script>
 
     <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css">
@@ -54,9 +54,7 @@
     </script>
     <script>
         // import json storage
-        if (typeof storage === 'undefined') {
-            var storage = require(pathPrefix + 'electron-json-storage');
-        }
+        var storage = require(pathPrefix + 'electron-json-storage');
 
         // dialog
         const {
@@ -103,6 +101,7 @@
         var settings;
 
         storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
+            console.log('settings-data', data)
             if (error) {
                 console.error(error);
                 settingsInit(null);
@@ -133,6 +132,7 @@
 
                 console.error('A error occured when reading settings.');
             } else {
+                console.log('settings', settings);
                 //初始化语言
                 if (typeof settings.language != 'undefined') {
                     if (settings.language != 'zh-cn') {

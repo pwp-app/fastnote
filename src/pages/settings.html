@@ -11,7 +11,7 @@
 
             const remote = require("electron").remote;
             const app = remote.app;
-            const pathPrefix = remote.getGlobal('pathPrefix');
+            const pathPrefix = remote.getGlobal('pathPrefix') || '';
 
             // requirements
             var moment = require("./static/moment.min.js");
@@ -104,7 +104,7 @@
                     return;
                 } else {
                     //获取callback回传的json
-                    if (typeof data != "undefined") {
+                    if (typeof data !== "undefined") {
                         initNotesId(data.id);
                     }
                 }
@@ -115,7 +115,7 @@
                 if (err) {
                     console.error(err);
                 } else {
-                    if (typeof data != "undefined") {
+                    if (typeof data !== "undefined") {
                         initLastBackupTime(data.lasttime);
                     }
                 }
@@ -151,14 +151,14 @@
                 } else {
                     //read success
                     //init close option
-                    if (typeof settings.closeOption != "undefined") {
+                    if (typeof settings.closeOption !== "undefined") {
                         initCloseOption(settings.closeOption);
                     } else {
                         initCloseOption("tray");
                     }
                     //init language
-                    if (typeof settings.language != "undefined") {
-                        if (settings.language != "zh-cn") {
+                    if (typeof settings.language !== "undefined") {
+                        if (settings.language !== "zh-cn") {
                             $(document).ready(function() {
                                 applyLanguage(settings.language);
                             });
@@ -172,7 +172,7 @@
                         $.getScript("static/i18n/zh-cn.js");
                     }
                     //init themes
-                    if (typeof settings.theme != "undefined") {
+                    if (typeof settings.theme !== "undefined") {
                         initTheme(settings.theme);
                         $("#main-style").attr("href", "static/main." + settings.theme + ".css");
                     } else {
@@ -181,13 +181,13 @@
                     }
 
                     //init font family
-                    if (typeof settings.fontfamily != "undefined") {
+                    if (typeof settings.fontfamily !== "undefined") {
                         initFont(settings.fontfamily);
                     } else {
                         initFont("Source Han Sans CN");
                     }
                     //init auto update
-                    if (typeof settings.autoUpdateStatus != "undefined") {
+                    if (typeof settings.autoUpdateStatus !== "undefined") {
                         if (settings.autoUpdateStatus) {
                             initAutoUpdate(true);
                         } else {
@@ -196,54 +196,59 @@
                     } else {
                         initAutoUpdate(true); //default true
                     }
+                    if (typeof settings.hotfix !== 'undefined') {
+                        initHotfix(settings.hotfix);
+                    } else {
+                        initHotfix('after');
+                    }
                     //init auto update channel
-                    if (typeof settings.autoUpdateChannel != "undefined") {
+                    if (typeof settings.autoUpdateChannel !== "undefined") {
                         initAutoUpdateChannel(settings.autoUpdateChannel);
                     }
 
-                    if (typeof settings.fontsize != "undefined") {
+                    if (typeof settings.fontsize !== "undefined") {
                         initFontSize(settings.fontsize);
                     } else {
                         initFontSize("16");
                     }
-                    if (typeof settings.textalign != "undefined") {
+                    if (typeof settings.textalign !== "undefined") {
                         initTextAlign(settings.textalign);
                     } else {
                         initTextAlign("justify");
                     }
-                    if (typeof settings.lineheight != "undefined") {
+                    if (typeof settings.lineheight !== "undefined") {
                         initLineHeight(settings.lineheight);
                     } else {
                         initLineHeight("24");
                     }
-                    if (typeof settings.letterspacing != "undefined") {
+                    if (typeof settings.letterspacing !== "undefined") {
                         initLetterSpacing(settings.letterspacing);
                     } else {
                         initLetterSpacing("0.06");
                     }
-                    if (typeof settings.datedisplay != "undefined") {
+                    if (typeof settings.datedisplay !== "undefined") {
                         initDateDisplay(settings.datedisplay);
                     } else {
                         initDateDisplay("all");
                     }
-                    if (typeof settings.timedisplay != "undefined") {
+                    if (typeof settings.timedisplay !== "undefined") {
                         initTimeDisplay(settings.timedisplay);
                     } else {
                         initTimeDisplay("all");
                     }
                     //init lockscreen
-                    if (typeof settings.lockpassword != "undefined") {
+                    if (typeof settings.lockpassword !== "undefined") {
                         initLockScreen("enabled");
                     } else {
                         initLockScreen("disabled");
                     }
                     //init widget
-                    if (typeof settings.widget_opacity != "undefined") {
+                    if (typeof settings.widget_opacity !== "undefined") {
                         initWidgetOpacity(settings.widget_opacity);
                     } else {
                         initWidgetOpacity(80);
                     }
-                    if (typeof settings.widget_defaultforcetop != "undefined") {
+                    if (typeof settings.widget_defaultforcetop !== "undefined") {
                         initWidgetDefaultForceTop(settings.widget_defaultforcetop);
                     } else {
                         initWidgetDefaultForceTop(false);
@@ -298,6 +303,12 @@
                 });
             }
 
+            function initHotfix(hotfix) {
+                $(document).ready(function() {
+                    $('#select-hotfix').val(hotfix);
+                });
+            }
+
             //初始化Notesid
             function initNotesId(id) {
                 if (typeof id == "undefined") {
@@ -337,7 +348,7 @@
                     case "enabled":
                         $("#settings-item-lockscreen-enabled").css("display", "flex");
                         $("#settings-item-lockscreen-default").css("display", "none");
-                        if (typeof settings.locktype != "undefined") {
+                        if (typeof settings.locktype !== "undefined") {
                             $("#select-locktype").val(settings.locktype);
                         } else {
                             $("#select-locktype").val("manual");
@@ -447,7 +458,7 @@
             </div>
             <script>
                 var settings_window_height = {
-                    general: 550,
+                    general: 592,
                     notes: 404,
                     widget: 310,
                     display: 550
@@ -506,6 +517,19 @@
                         <select class="form-control settings-select" id="select-updateChannel">
                             <option value="0">Alpha</option>
                             <option value="100">Pre-Release-Test</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-child settings-item-title">
+                        <span data-lang="update_channel">热更新选项</span>
+                    </div>
+                    <div></div>
+                    <div class="settings-item-child settings-item-control">
+                        <select class="form-control settings-select" id="select-hotfix">
+                            <option value="close">关闭</option>
+                            <option value="wait">启动时检测</option>
+                            <option value="after">启动后检测</option>
                         </select>
                     </div>
                 </div>
@@ -618,7 +642,7 @@
                                         $("#settings-item-lockscreen-default").css("display", "none");
                                         $("#settings-item-lockscreen-enabled").css("display", "flex");
                                         //设置locktype
-                                        if (typeof settings.locktype != "undefined") {
+                                        if (typeof settings.locktype !== "undefined") {
                                             $("#select-locktype").val(settings.locktype);
                                         } else {
                                             $("#select-locktype").val("manual");
@@ -850,29 +874,31 @@
         <script>
             function saveSettings() {
                 //获取通用设置
-                var autoUpdateStatus = document.getElementById("cb-autoUpdateEnabled").checked;
-                var autoUpdateChannel = $("#select-updateChannel").val();
-                var theme = $("#select-themes").val();
-                var language = $("#select-language").val();
-                var closeOption = $("#select-closeOption").val();
+                const autoUpdateStatus = document.getElementById("cb-autoUpdateEnabled").checked;
+                const autoUpdateChannel = $("#select-updateChannel").val();
+                const hotfix = $('#select-hotfix').val();
+                const theme = $("#select-themes").val();
+                const language = $("#select-language").val();
+                const closeOption = $("#select-closeOption").val();
 
                 //获取显示设置
-                var fontfamily = $("#select-fontfamily").val();
-                var fontsize = $("#select-fontsize").val();
-                var textalign = $("#select-textalign").val();
-                var lineheight = $("#select-lineheight").val();
-                var letterspacing = $("#select-letterspacing").val();
-                var datedisplay = $("#select-datedisplay").val();
-                var timedisplay = $("#select-timedisplay").val();
-                var locktype = $("#select-locktype").val();
+                const fontfamily = $("#select-fontfamily").val();
+                const fontsize = $("#select-fontsize").val();
+                const textalign = $("#select-textalign").val();
+                const lineheight = $("#select-lineheight").val();
+                const letterspacing = $("#select-letterspacing").val();
+                const datedisplay = $("#select-datedisplay").val();
+                const timedisplay = $("#select-timedisplay").val();
+                const locktype = $("#select-locktype").val();
 
                 //获取桌面组件设置
-                var widget_opacity = $("#range-widget-opacity").val();
-                var widget_defaultforcetop = document.getElementById("cb-widget-defaultForceTop").checked;
+                const widget_opacity = $("#range-widget-opacity").val();
+                const widget_defaultforcetop = document.getElementById("cb-widget-defaultForceTop").checked;
 
                 //构造设置obj
                 settings.autoUpdateStatus = autoUpdateStatus;
                 settings.autoUpdateChannel = autoUpdateChannel;
+                settings.hotfix = hotfix;
                 settings.theme = theme;
                 settings.language = language;
                 settings.closeOption = closeOption;
@@ -896,15 +922,17 @@
                             message: "保存设置时发生错误。",
                             detail: error
                         });
-                    } else {
-                        //通知窗体刷新
-                        ipcRenderer.send("reloadMainWindow");
-                        ipcRenderer.send("reloadRecycleWindow");
-                        ipcRenderer.send("reloadAllEditWindow");
-                        ipcRenderer.send("reloadAboutWindow");
-                        //关闭窗体
-                        window.close();
+                        return;
                     }
+                    // hotfix state changed
+                    ipcRenderer.send('hotfix-changed', settings.hotfix);
+                    // 通知窗体刷新
+                    ipcRenderer.send("reloadMainWindow");
+                    ipcRenderer.send("reloadRecycleWindow");
+                    ipcRenderer.send("reloadAllEditWindow");
+                    ipcRenderer.send("reloadAboutWindow");
+                    // 关闭窗体
+                    window.close();
                 });
             }
         </script>

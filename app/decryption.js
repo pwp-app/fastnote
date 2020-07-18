@@ -32,8 +32,13 @@ function createDecryptionWindow(data){
 
     decryption_noteid.push(data.id);
 
-    let viewPath = global.hotfix.buildPath('decryption.html');
-    win_decryption.loadFile(viewPath);
+    let viewpath;
+    if (global.hotfix && global.hotfix.state !== 'close') {
+        viewpath = global.hotfix.buildPath('decryption.html');
+    } else {
+        viewpath = path.resolve(__dirname, '../public/decryption.html');
+    }
+    win_decryption.loadFile(viewpath);
 
     win_decryption.on('closed', ()=>{
         let index = wins_decryption.indexOf(win_decryption);

@@ -13,7 +13,7 @@ const path = require('path');
 function createSettingsWindow() {
     var conf = {
         width: 680,
-        height: 550,
+        height: 592,
         resizable: false,
         maximazable: false,
         useContentSize: true,
@@ -30,7 +30,12 @@ function createSettingsWindow() {
 
     win_settings = new BrowserWindow(conf);
 
-    let viewpath = global.hotfix.buildPath('settings.html');
+    let viewpath;
+    if (global.hotfix && global.hotfix.state !== 'close') {
+        viewpath = global.hotfix.buildPath('settings.html');
+    } else {
+        viewpath = path.resolve(__dirname, '../public/settings.html');
+    }
     win_settings.loadFile(viewpath);
 
     ipc.on('settings-window-heightChange', function(sender, height){

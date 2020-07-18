@@ -43,21 +43,13 @@ const cloudWindow = require('./app/cloud/cloudWindow');
 let win;
 let tray;
 
-// timer
-let hotfixTimer;
-
 app.on('ready', async () => {
-    // hotfix
-    global.hotfix = require('./utils/hotfix');
-    // set timer
-    global.hotfix.init(global.indebug);
-    global.pathPrefix = `${app.getAppPath()}/node_modules/`;
     // do create
     createTray();
-    createWindow();
+    await createWindow();
 });
 
-function createWindow() {
+async function createWindow() {
     // 创建浏览器窗口。
     let conf = {
         width: 1280,
@@ -76,9 +68,10 @@ function createWindow() {
         conf.frame = false;
 
     win = new BrowserWindow(conf);
+    console.log(win);
 
     var settings;
-    storage.get('settings' + (global.indebug ? '_dev' : ''), function(err, data) {
+    storage.get('settings' + (global.indebug ? '_dev' : ''), async function (err, data) {
         if (err) {
             //获取callback回传的json
             console.error(err);
@@ -108,10 +101,34 @@ function createWindow() {
                     }
                     break;
             }
+            // hotfix
+            global.hotfix = require('./utils/hotfix');
+            global.hotfix.state = settings.hotfix;
+            if (!global.hotfix.state) {
+                // 初始值
+                global.hotfix.state = 'close';
+            }
+            global.hotfix.state = 'close';
+            if (global.hotfix.state !== 'close') {
+                // set timer
+                if (global.hotfix.state === 'wait') {
+                    await global.hotfix.init(global.indebug);
+                } else {
+                    global.hotfix.init(global.indebug);
+                }
+                global.pathPrefix = `${app.getAppPath()}/node_modules/`;
+            }
         } else {
             feedUrl = `http://update.backrunner.top/fastnote/${process.platform}`;
         }
-        let viewpath = global.hotfix.buildPath('index.html');
+
+        let viewpath;
+        if (global.hotfix && global.hotfix.state !== 'close') {
+            viewpath = global.hotfix.buildPath('index.html');
+        } else {
+            viewpath = path.resolve(__dirname, './public/index.html');
+        }
+
         win.loadFile(viewpath);
     });
 
@@ -165,7 +182,6 @@ function createWindow() {
     ipc.on('reloadMainWindow', () => {
         win.webContents.send('before-reload');
         win.reload();
-        checkForUpdates();
     });
     ipc.on('reloadWindowAfterReset', () => {
         // 完全重置
@@ -184,7 +200,7 @@ function createWindow() {
         }
         checkForUpdates();
     });
-    //when recycle close edit
+    // when recycle close edit
     ipc.on('recycle-note', function(sender, data) {
         let editWins = editWindow.getWins();
         for (let i = 0; i < editWins.length; i++) {
@@ -206,7 +222,7 @@ function createWindow() {
     // *** 备份相关 ***
 
     // 便签已恢复
-    ipc.on('backup-recover-completed', function() {
+    ipc.on('backup-recover-completed', () => {
         //转送消息给主窗口
         win.webContents.send('backup-recover-completed');
     });
@@ -304,7 +320,6 @@ function createWindow() {
     });
 
     win.on('closed', () => {
-        win = null;
         // 更换托盘菜单
         if (tray) {
             let contextMenu = createContextMenu('destoryed');
@@ -358,10 +373,32 @@ ipc.on('disable-lockscreen', () => {
     }
 });
 
-//捕捉新建便签窗口的消息
+// 捕捉新建便签窗口的消息
 ipc.on('newnotewin-save', (sender, data) => {
     win.webContents.send('newnotewin-save', data);
 });
+
+// get hotfix changed info
+ipc.on('hotfix-changed', (sender, data) => {
+    console.log('hotfix-changed', data);
+    global.hotfix.state = data;
+    if (data !== 'close') {
+        global.pathPrefix = `${app.getAppPath()}/node_modules/`;
+    } else {
+        global.pathPrefix = null;
+    }
+});
+
+function openWindow() {
+    if (win == null) {
+        createWindow();
+    } else {
+        if (win.isMinimized()){
+            win.restore();
+        }
+        win.focus();
+    }
+}
 
 //创建托盘
 function createTray() {
@@ -371,14 +408,7 @@ function createTray() {
     let contextMenu = createContextMenu('created');
     tray.setContextMenu(contextMenu);
     tray.on('double-click', () => {
-        if (win == null) {
-            createWindow();
-        } else {
-            if (win.isMinimized()){
-                win.restore();
-            }
-            win.focus();
-        }
+        openWindow();
     });
 }
 

@@ -27,7 +27,12 @@ const RecycleWindow = {
 
         win_recycle = new BrowserWindow(conf);
 
-        let viewpath = global.hotfix.buildPath('recyclebin.html');
+        let viewpath;
+        if (global.hotfix && global.hotfix.state !== 'close') {
+            viewpath = global.hotfix.buildPath('recyclebin.html');
+        } else {
+            viewpath = path.resolve(__dirname, '../public/recyclebin.html');
+        }
         win_recycle.loadFile(viewpath);
 
         ipc.on('recyclebin-window-ready', function (sender, e) {

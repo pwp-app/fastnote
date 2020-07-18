@@ -31,7 +31,12 @@ function createNewNoteWindow(data) {
     win_newnote = new BrowserWindow(conf);
     wins_newnote.push(win_newnote);
 
-    let viewpath = global.hotfix.buildPath('newnote.html');
+    let viewpath;
+    if (global.hotfix && global.hotfix.state !== 'close') {
+        viewpath = global.hotfix.buildPath('newnote.html');
+    } else {
+        viewpath = path.resolve(__dirname, '../public/newnote.html');
+    }
     win_newnote.loadFile(viewpath);
 
     win_newnote.on('ready-to-show', () => {
