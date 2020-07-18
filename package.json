@@ -7,7 +7,7 @@
     "electron-updater": "^4.3.1",
     "gulp": "^4.0.2",
     "locate-path": "^5.0.0",
-    "marked": "^1.1.0",
+    "marked": "^1.1.1",
     "request": "^2.88.2",
     "source-map": "^0.7.3",
     "webfontloader": "^1.6.28"
@@ -18,7 +18,7 @@
     "awesome-bootstrap-checkbox": "^1.0.1",
     "bootstrap": "^4.5.0",
     "del": "^5.1.0",
-    "electron": "^9.1.0",
+    "electron": "^8.4.0",
     "electron-builder": "^22.7.0",
     "font-awesome": "^4.7.0",
     "gulp-clean-css": "^4.3.0",
@@ -43,8 +43,10 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --x64",
-    "build32": "electron-builder --ia32",
+    "build": "gulp build",
+    "watch": "gulp watch",
+    "build:win64": "electron-builder --x64",
+    "build:win32": "electron-builder --ia32",
     "test": "electron ."
   },
   "author": "BackRunner",
