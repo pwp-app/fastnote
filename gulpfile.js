@@ -169,8 +169,8 @@ gulp.task("move old x86", function() {
 gulp.task("clean dist", function() {
     return del(["dist/**", "!dist", "!dist/ver.json"]);
 });
-gulp.task("build win32", shell.task("npm run build32"));
-gulp.task("build win64", shell.task("npm run build"));
+gulp.task("build win32", shell.task("npm run build:win32"));
+gulp.task("build win64", shell.task("npm run build:win64"));
 gulp.task("pack win32", gulp.series(["clean", "build", "clean dist", "win32", "build win32"]));
 gulp.task("pack win64", gulp.series(["clean", "build", "clean dist", "win64", "build win64"]));
 
