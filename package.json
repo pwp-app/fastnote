@@ -76,7 +76,7 @@
       "!gulpfile.js",
       "!.gitignore",
       "!hotfix/**/*",
-      "!modules/**/*",
+      "!modules/**/*"
     ],
     "appId": "app.pwp.fastnote",
     "compression": "maximum",
