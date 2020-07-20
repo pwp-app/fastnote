@@ -75,7 +75,8 @@
       "!hotfix.log.json",
       "!gulpfile.js",
       "!.gitignore",
-      "!hotfix/**/*"
+      "!hotfix/**/*",
+      "!modules/**/*",
     ],
     "appId": "app.pwp.fastnote",
     "compression": "maximum",
