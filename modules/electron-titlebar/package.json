@@ -1,0 +1,16 @@
+{
+  "author": {
+    "name": "Menci"
+  },
+  "deprecated": false,
+  "description": "Cool titlebar for electron apps for every system",
+  "homepage": "https://github.com/Menci/electron-titlebar#readme",
+  "license": "LGPL-3.0",
+  "main": "index.js",
+  "name": "electron-titlebar",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Menci/electron-titlebar.git"
+  },
+  "version": "0.0.3"
+}

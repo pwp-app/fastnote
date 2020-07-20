@@ -319,6 +319,8 @@ async function createWindow() {
     });
 
     win.on('closed', () => {
+        // 把win置空
+        win = null;
         // 更换托盘菜单
         if (tray) {
             let contextMenu = createContextMenu('destoryed');
@@ -388,7 +390,7 @@ ipc.on('hotfix-changed', (sender, data) => {
 });
 
 function openWindow() {
-    if (win == null) {
+    if (!win) {
         createWindow();
     } else {
         if (win.isMinimized()){
@@ -442,7 +444,7 @@ function createContextMenu(mode) {
         contextMenu.insert(0, new MenuItem({
             label: '显示',
             click: ()=>{
-                if (win == null) {
+                if (!win) {
                     createWindow();
                 } else {
                     if (win.isMinimized()) {
@@ -505,7 +507,7 @@ ipc.on('openExternalURL', (e, msg) => {
 app.on('activate', () => {
     // 在macOS上，当单击dock图标并且没有其他窗口打开时，
     // 通常在应用程序中重新创建一个窗口。
-    if (win === null) {
+    if (!win) {
         createWindow();
     }
 });

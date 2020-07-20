@@ -76,11 +76,19 @@ gulp.task("marked", async function() {
 });
 
 // 3rdparty
-gulp.task("3rdparty", function() {
+gulp.task("modules", function() {
+    return gulp.src("modules/**/*").pipe(gulp.dest('public/modules'));
+});
+
+gulp.task("3rdparty scripts", function() {
     return gulp.src("src/scripts/3rdparty/**/*.js").pipe(gulp.dest("public/static"));
 });
 
-gulp.task("requirements", gulp.parallel(["jquery", "lozad", "bootstrap", "fontawesome", "animate-css", "momentjs", "html5sortable", "marked", "3rdparty"]));
+gulp.task("static dependencies", function () {
+    return gulp.src("src/static/**/*").pipe(gulp.dest('public/static'));
+})
+
+gulp.task("requirements", gulp.parallel(["jquery", "lozad", "bootstrap", "fontawesome", "animate-css", "momentjs", "html5sortable", "marked", "modules", "3rdparty scripts", "static dependencies"]));
 
 gulp.task("less", function() {
     return gulp
