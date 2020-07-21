@@ -7,6 +7,7 @@ const {
 
 // ipc主进程
 const ipc = require('electron').ipcMain;
+const path = require('path');
 
 const RecycleWindow = {
     create: () => {

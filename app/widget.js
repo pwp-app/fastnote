@@ -7,6 +7,7 @@ const {
 
 const electron = require('electron');
 const ipc = require('electron').ipcMain;
+const path = require('path');
 
 let targetY = -1;
 
