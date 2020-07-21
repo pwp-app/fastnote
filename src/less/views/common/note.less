@@ -129,6 +129,23 @@
         padding: 4px 12px;
         color: @color-text-primary !important;
     }
+    pre::-webkit-scrollbar {
+        height: 5px;
+    }
+
+    pre::-webkit-scrollbar-track-piece {
+        background-color: @color-note-scrollbar-bg;
+        border-radius: 8px;
+    }
+
+    pre::-webkit-scrollbar-thumb {
+        border-radius: 9px;
+        background-color: @color-secondary;
+    }
+    pre::-webkit-scrollbar-button {
+        display: none;
+    }
+
     img {
         margin: 12px 0;
         max-width: 80vh;
@@ -230,7 +247,7 @@ titlesusp3 {
 
 .note-overheight {
     height: 250px;
-    padding-right: 6px;
+    padding-right: 12px;
     overflow-y: auto;
     scroll-behavior: smooth;
 }
