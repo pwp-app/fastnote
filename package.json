@@ -38,7 +38,7 @@
     "popper.js": "^1.16.1"
   },
   "name": "fastnote",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "homepage": "https://note.pwp.app",
   "main": "main.js",
   "scripts": {
@@ -46,6 +46,7 @@
     "build": "gulp build",
     "watch": "gulp watch",
     "publish": "gulp publish",
+    "publish:hotfix": "gulp publish-hotfix",
     "build:win64": "electron-builder --x64",
     "build:win32": "electron-builder --ia32",
     "test": "electron ."
