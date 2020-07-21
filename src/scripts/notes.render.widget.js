@@ -15,6 +15,7 @@ marked.setOptions({
 });
 
 function renderNoteForWidget(note) {
+    $('.widget-note-content').remove();
     let html = '<div class="widget-note-content note-text">';
     let text;
     if (note.markdown) {
@@ -40,8 +41,10 @@ function renderNoteForWidget(note) {
             let height = document.body.scrollHeight;
             if (height < 300) {
                 ipcRenderer.send('widget-heightChange', height);
+                $('.widget-note-content').removeClass('widget-overheight');
             } else {
                 ipcRenderer.send('widget-heightChange', 300);
+                $('.widget-note-content').addClass('widget-overheight');
             }
             ipcRenderer.send('widget-setMaxHeight', height);
             $('.widget-note-content').css('height', 'calc(100vh - 59px)');
