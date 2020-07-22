@@ -12,6 +12,8 @@
             const remote = require("electron").remote;
             const app = remote.app;
             const pathPrefix = remote.getGlobal('pathPrefix') || '';
+
+            const this_window = remote.getCurrentWindow()
         </script>
         <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
         <link rel="stylesheet" href="static/font-awesome.min.css" />
@@ -175,6 +177,8 @@
     </body>
     <script>
         let note;
+        let locked = false;
+        let is_top = false;
         //ipc events
         ipcRenderer.on("init", (sender, data) => {
             note = data;
@@ -185,22 +189,6 @@
                 $(".widget-title-text").html("#" + data.id);
             } else {
                 $(".widget-title-text").html(data.title);
-            }
-        });
-        ipcRenderer.on("setAlwaysOnTop", (sender, data) => {
-            if (data) {
-                $(".widget-controls").append('<div class="widget-icon widget-icon-forcetop"><i class="fa fa-caret-up"></i></div>');
-            } else {
-                $(".widget-icon-forcetop").remove();
-            }
-        });
-        ipcRenderer.on("setLock", (sender, data) => {
-            if (data) {
-                $(".widget-controls").append('<div class="widget-icon widget-icon-lock"><i class="fa fa-lock"></i></div>');
-                $(".container-widget").addClass("app-nodrag");
-            } else {
-                $(".widget-icon-lock").remove();
-                $(".container-widget").removeClass("app-nodrag");
             }
         });
         ipcRenderer.on("note-recycled", (sender, data) => {
@@ -231,13 +219,42 @@
         });
 
         Mousetrap.bind("ctrl+t", function() {
-            ipcRenderer.send("widget-alwaysontop", note.id);
+            if (!is_top) {
+                $(".widget-controls").append('<div class="widget-icon widget-icon-forcetop"><i class="fa fa-caret-up"></i></div>');
+                this_window.setAlwaysOnTop(true);
+            } else {
+                $(".widget-icon-forcetop").remove();
+                this_window.setAlwaysOnTop(false);
+            }
+            is_top = !is_top;
             return false;
         });
+
         Mousetrap.bind("ctrl+l", function() {
-            ipcRenderer.send("widget-lock", note.id);
+            if (!locked) {
+                $(".widget-controls").append('<div class="widget-icon widget-icon-lock"><i class="fa fa-lock"></i></div>');
+                $(".widget-wrapper").addClass("app-nodrag");
+                $(".widget-controls-container").on('mouseenter', () => {
+                    console.log(1);
+                    this_window.setIgnoreMouseEvents(false);
+                });
+                $(".widget-controls-container").on('mouseleave', () => {
+                    console.log(2);
+                    this_window.setIgnoreMouseEvents(true, { forward: true });
+                });
+                this_window.setResizable(false);
+            } else {
+                $(".widget-icon-lock").remove();
+                $(".widget-wrapper").removeClass("app-nodrag");
+                $(".widget-controls-container").off('mouseenter');
+                $(".widget-controls-container").off('mouseleave');
+                this_window.setResizable(true);
+                this_window.setIgnoreMouseEvents(false);
+            }
+            locked = !locked;
             return false;
         });
+
         Mousetrap.bind("ctrl+q", function() {
             window.close();
             return false;
