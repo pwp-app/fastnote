@@ -24,7 +24,7 @@
     <script src="static/encryption.js"></script>
     <script src="static/han.simple.js" defer></script>
     <script src="static/bootstrap.min.js" defer></script>
-    <script src="static/mousetrap.min.js" defer></script>
+    <script src="static/mousetrap.min.js" async defer></script>
     <script src="static/moment.min.js" defer></script>
     <script src="static/marked.js" defer></script>
     <script src="static/lozad.min.js" defer></script>
@@ -64,10 +64,8 @@
         global.indebug = remote.getGlobal('indebug');
 
         // import json storage
-        if (typeof storage != 'undefined') {
-            var storage = require(pathPrefix + 'electron-json-storage');
-        }
-        let time = require('./static/tools/time.js');
+        var storage = require(pathPrefix + 'electron-json-storage');
+        var time = require('./static/tools/time.js');
 
         const Menu = remote.Menu;
         const MenuItem = remote.MenuItem;
@@ -241,7 +239,7 @@
         </div>
     </div>
     </div>
-    <script>
+    <script defer>
         //event recycle
         ipcRenderer.on('recycle-note', (event, data) => {
             if (notes.length <= 0) {
@@ -258,7 +256,7 @@
 
     <span id="filter-x" style="display:none"></span>
 
-    <script>
+    <script defer>
         let noteid_clicked = -1;
 
         // bind resize
@@ -407,7 +405,7 @@
         });
     </script>
 
-    <script>
+    <script defer>
         $.getScript('static/notes.recycle.js');
     </script>
 </body>
