@@ -130,7 +130,7 @@ function deleteNotes(notes, callback) {
 function restoreNote(id, infoEnabled = true) {
     notes.every(function (note, i) {
         if (note.id == id) {
-            var path;
+            let path;
             //检查offset
             if (note.offset > 0) {
                 path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
@@ -138,11 +138,11 @@ function restoreNote(id, infoEnabled = true) {
                 path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.json';
             }
             if (fs.existsSync(path)) {
-                var newpath = path.replace('recyclebin/', '');
+                let newpath = path.replace('recyclebin/', '');
                 fs.rename(path, newpath, function (err) {
                     if (err) {
                         if (infoEnabled) {
-                            displayInfobar('error', i18n[current_i18n]['restore_error']);
+                            displayInfobar('error', i18n[current_i18n].restore_error);
                         }
                         readNoteFiles();
                         throw (err);
@@ -160,10 +160,10 @@ function restoreNote(id, infoEnabled = true) {
                         }
                         ipcRenderer.send('restore-note', note);
                     }
-                })
+                });
             } else {
                 if (infoEnabled) {
-                    displayInfobar('error', i18n[current_i18n]['restore_cantfindfile']);
+                    displayInfobar('error', i18n[current_i18n].restore_cantfindfile);
                 }
                 readNoteFiles();
             }

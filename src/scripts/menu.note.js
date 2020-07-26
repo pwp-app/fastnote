@@ -11,7 +11,7 @@ function popup_menu_note(isForceTop, hasPassword) {
                     type: 'checkbox',
                     click: function () {
                         sort_mode = 'id';
-                        var sortModeJson = {
+                        let sortModeJson = {
                             mode: sort_mode
                         };
                         storage.set('sortMode', sortModeJson);
@@ -24,7 +24,7 @@ function popup_menu_note(isForceTop, hasPassword) {
                     type: 'checkbox',
                     click: function () {
                         sort_mode = 'updateDate';
-                        var sortModeJson = {
+                        let sortModeJson = {
                             mode: sort_mode
                         };
                         storage.set('sortMode', sortModeJson);

@@ -22,13 +22,13 @@
     <script src="static/i18n/render.js"></script>
     <script src="static/array.js"></script>
     <script src="static/encryption.js"></script>
-    <script src="static/han.simple.js" defer></script>
-    <script src="static/bootstrap.min.js" defer></script>
-    <script src="static/mousetrap.min.js" async defer></script>
-    <script src="static/moment.min.js" defer></script>
-    <script src="static/marked.js" defer></script>
-    <script src="static/lozad.min.js" defer></script>
-    <script src="static/notes.render.js" defer></script>
+    <script src="static/han.simple.js"></script>
+    <script src="static/bootstrap.min.js"></script>
+    <script src="static/mousetrap.min.js"></script>
+    <script src="static/moment.min.js"></script>
+    <script src="static/marked.js"></script>
+    <script src="static/lozad.min.js"></script>
+    <script src="static/notes.render.js"></script>
     <script>
         //recyclebin flag
         var inRecyclebin = true;
@@ -203,7 +203,7 @@
         <div class="title" id="app-title" data-lang="recyclebin">回收站</div>
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
     </div>
-    <script async defer>
+    <script async>
         require('./modules/electron-titlebar');
     </script>
     <div class="container-lockscreen">
@@ -239,14 +239,14 @@
         </div>
     </div>
     </div>
-    <script defer>
+    <script>
         //event recycle
         ipcRenderer.on('recycle-note', (event, data) => {
             if (notes.length <= 0) {
                 showNoteList();
             }
             addNoteObjToArray(data);
-            refreshNoteList(null, function() {
+            refreshNoteList(function() {
                 bindNoteFoldDBL(data.id);
             });
             //animate
@@ -256,7 +256,7 @@
 
     <span id="filter-x" style="display:none"></span>
 
-    <script defer>
+    <script>
         let noteid_clicked = -1;
 
         // bind resize
@@ -405,7 +405,7 @@
         });
     </script>
 
-    <script defer>
+    <script>
         $.getScript('static/notes.recycle.js');
     </script>
 </body>
