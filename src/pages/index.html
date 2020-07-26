@@ -22,22 +22,22 @@
     <link rel="stylesheet" href="static/font-awesome.min.css">
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <link rel="stylesheet" href="static/animate.min.css">
-    <script src="static/array.js" defer></script>
-    <script src="static/i18n.js" defer></script>
-    <script src="static/i18n/render.js" defer></script>
-    <script src="static/encryption.js" defer></script>
-    <script src="static/han.simple.js" defer></script>
-    <script src="static/category.js" defer></script>
-    <script src="static/bootstrap.min.js" defer></script>
-    <script src="static/mousetrap.min.js" async defer></script>
-    <script src="static/moment.min.js" defer></script>
-    <script src="static/html5sortable.min.js" async defer></script>
-    <script src="static/marked.js" defer></script>
-    <script src="static/lozad.min.js" defer></script>
-    <script src="static/notes.render.js" defer></script>
-    <script src="static/cloud.sync.js" async defer></script>
-    <script src="static/stat.js" async defer></script>
-    <script defer>
+    <script src="static/array.js"></script>
+    <script src="static/i18n.js"></script>
+    <script src="static/i18n/render.js"></script>
+    <script src="static/encryption.js"></script>
+    <script src="static/han.simple.js"></script>
+    <script src="static/category.js"></script>
+    <script src="static/bootstrap.min.js"></script>
+    <script src="static/mousetrap.min.js"></script>
+    <script src="static/moment.min.js"></script>
+    <script src="static/html5sortable.min.js"></script>
+    <script src="static/marked.js"></script>
+    <script src="static/lozad.min.js"></script>
+    <script src="static/notes.render.js"></script>
+    <script src="static/cloud.sync.js"></script>
+    <script src="static/stat.js"></script>
+    <script>
         // i18n
         var postprocess_i18n = [{
             selector: '#input-note-title',
@@ -53,7 +53,7 @@
             class: 'newnote-info-item-en-us'
         }];
     </script>
-    <script defer>
+    <script>
         // import json storage
         var storage = require(pathPrefix + 'electron-json-storage');
 
@@ -323,7 +323,7 @@
         <div class="title" id="app-title">Fastnote</div>
         <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
     </div>
-    <script async defer>
+    <script async>
         require('./modules/electron-titlebar');
     </script>
     <!-- lockscreen -->
@@ -387,7 +387,7 @@
             <div class="note-list-forceTop" id="note-list-forceTop"></div>
             <div class="note-list-normal" id="note-list-normal"></div>
         </div>
-        <script defer>
+        <script>
             //编辑笔记
             ipcRenderer.on('update-edit-note', (event, data) => {
                 updateEditNote(data);
@@ -430,7 +430,7 @@
                     showNoteList();
                 }
                 addNoteObjToArray(data);
-                refreshNoteList(null, function() {
+                refreshNoteList(function() {
                     bindNoteFoldDBL(data.id);
                 });
                 //animate
@@ -605,6 +605,23 @@
                 return false;
             });
 
+            // 回收便签后快速撤回
+            Mousetrap.bind('ctrl+z', async function() {
+                if (!recycledNotes) {
+                    return;
+                }
+                const note = recycledNotes.pop();
+                if (!note) {
+                    return;
+                }
+                // 快速回收
+                const res = await quickRestoreNote(note);
+                if (!res) {
+                    // 不成功就把note推回去
+                    recycledNotes.push(note);
+                }
+            });
+
             ipcRenderer.on('win-alwaysontop', function(sender, data) {
                 if (data) {
                     $('#statusbar-item-alwaysontop').css('display', 'inline-block');
@@ -648,7 +665,7 @@
         <div class="newnote-main">
             <div class="lbl">
                 <label id="lbl-newnote" title="双击打开独立新建便签窗口" data-lang='newnote'>新建便签</label>
-                <script defer>
+                <script>
                     $('#lbl-newnote').dblclick(function() {
                         //双击启动新建便签窗口
                         ipcRenderer.send('openNewnoteWindow', current_category); //启动的时候传递当前分类
@@ -683,7 +700,7 @@
             </div>
         </div>
     </div>
-    <script defer>
+    <script>
         var newnote_info_opened = false;
         //绑定btn-newnote-info
         $('#btn-newnote-info').click(function() {
@@ -741,7 +758,7 @@
     </div>
 
     <!-- 更新通知浮窗 -->
-    <script defer>
+    <script>
         $('#updateready-btn-close').click(() => {
             closeUpdateReadyToast();
         });
@@ -797,7 +814,7 @@
         </div>
     </div>
 
-    <script defer>
+    <script>
         // 折叠开关
         var isNoteFolded = false;
         // init
@@ -882,7 +899,7 @@
         });
     </script>
 
-    <script defer>
+    <script>
         var noteid_clicked = -1;
 
         function getSelectText(id) {
@@ -1173,7 +1190,7 @@
     </div>
 
     <!-- 主菜单、快捷键、窗口大小调整相关 -->
-    <script defer>
+    <script>
         //绑定主菜单的动画事件
         let isMainMenuOpen = false;
         $('.mainmenu-background').on('mousedown', function() {
@@ -1346,7 +1363,7 @@
     </div>
 
     <!-- 分类相关 -->
-    <script defer>
+    <script>
         var isCategoryOpen = false;
 
         function openCategory() {
@@ -1704,7 +1721,7 @@
     </div>
 
     <!-- Cloud 菜单相关 -->
-    <script async defer>
+    <script>
         var isCloudOpen = false;
 
         function openCloudPanel() {
@@ -1765,7 +1782,7 @@
     </script>
 
     <!-- 本地备份导入 -->
-    <script defer>
+    <script>
         //backup recovered
         ipcRenderer.on('backup-recover-completed', function() {
             console.log('backup recovered');
@@ -1843,7 +1860,7 @@
     </script>
 
     <!-- 便签加密相关 -->
-    <script defer>
+    <script>
         //取消加密
         ipcRenderer.on('cancel-encryption', function(sender, data) {
             removePassword(data.id, data.rawpassword);
@@ -1868,7 +1885,7 @@
     </script>
 
     <!-- 窗口与托盘相关 -->
-    <script defer>
+    <script>
         // 聚焦到输入文本框
         $(document).ready(function() {
             $('#note-text').focus();
@@ -1953,7 +1970,7 @@
     </script>
 
     <!-- 云服务 -->
-    <script async defer>
+    <script>
         // 服务器状态标识
         var cloud_serveronline = true;
         // 用户token暂存
@@ -2241,7 +2258,7 @@
     </script>
 
     <!-- 云服务相关 - 操作日志 -->
-    <script async defer>
+    <script>
         // 操作日志相关类
         class OperationLog {
             constructor(type, noteid) {
@@ -2261,14 +2278,14 @@
         });
     </script>
 
-    <script defer>
+    <script>
         // import requirements
         $.getScript('static/infobar.js'); // import by jQuery
         $.getScript('static/notes.js');
     </script>
 
     <!-- 开发工具屏蔽与控制台 -->
-    <script defer>
+    <script>
         // 屏蔽开发工具
         if (!global.indebug) {
             Mousetrap.bind('ctrl+shift+i', (e) => {

@@ -9,6 +9,9 @@ var notesid = 0;
 // 标记
 var isNotesEmpty;
 
+// 回收栈
+var recycledNotes = [];
+
 // 从主线程获取global
 global.indebug = remote.getGlobal('indebug');
 
@@ -105,9 +108,9 @@ textarea.keyup(function (e) {
 function putToRecyclebin(id, infoEnabled = true) {
     notes.every(function (note, i) {
         if (note.id == id) {
-            var path;
+            let path;
             // 暂存
-            var note_temp = note;
+            let note_temp = note;
             // 检查offset
             if (note.offset > 0) {
                 path = note.rawtime + '.' + note.offset + '.json';
@@ -128,6 +131,8 @@ function putToRecyclebin(id, infoEnabled = true) {
                         readNoteFiles();
                         throw (err);
                     } else {
+                        // 成功回收，推入栈
+                        recycledNotes.push(note_temp);
                         // 从数组里删除
                         deleteNoteFromArr(id);
                         // 动画
@@ -177,6 +182,42 @@ function putNotesToRecyclebin(notes, callback) {
     if (typeof callback == 'function') {
         callback(false);
     }
+}
+
+// 快速还原一个便签
+function quickRestoreNote(note) {
+    return new Promise((resolve) => {
+        let path;
+        if (note.offset > 0) {
+            path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
+        } else {
+            path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.json';
+        }
+        if (!fs.existsSync(path)) {
+            displayInfobar('error', i18n[current_i18n].restore_cantfindfile);
+            resolve(false);
+            return;
+        }
+        let newpath = path.replace('recyclebin/', '');
+        fs.rename(path, newpath, err => {
+            if (err) {
+                if (infoEnabled) {
+                    displayInfobar('error', i18n[current_i18n].restore_error);
+                }
+                console.log(err);
+                resolve(false);
+                return;
+            }
+            addNoteObjToArray(note);
+            refreshNoteList(() => {
+                displayInfobar('success', i18n[current_i18n].restore_success);
+                // animate
+                $('#note_' + note.id).animateCss('fadeInRight faster');
+                bindNoteFoldDBL(note.id);
+            });
+            resolve(true);
+        });
+    });
 }
 
 // 封装在函数中
