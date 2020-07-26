@@ -1,4 +1,19 @@
 {
+  "name": "fastnote",
+  "version": "0.3.7",
+  "homepage": "https://note.pwp.app",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "gulp build",
+    "watch": "gulp watch",
+    "publish": "gulp publish",
+    "publish:hotfix": "gulp publish-hotfix",
+    "build:win64": "electron-builder --x64",
+    "build:win32": "electron-builder --ia32",
+    "test": "electron ."
+  },
+  "author": "BackRunner",
   "dependencies": {
     "ajv": "^6.12.3",
     "buffer-from": "^1.1.1",
@@ -37,21 +52,6 @@
     "moment": "^2.27.0",
     "popper.js": "^1.16.1"
   },
-  "name": "fastnote",
-  "version": "0.3.6",
-  "homepage": "https://note.pwp.app",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron .",
-    "build": "gulp build",
-    "watch": "gulp watch",
-    "publish": "gulp publish",
-    "publish:hotfix": "gulp publish-hotfix",
-    "build:win64": "electron-builder --x64",
-    "build:win32": "electron-builder --ia32",
-    "test": "electron ."
-  },
-  "author": "BackRunner",
   "repository": {
     "type": "git",
     "url": "https://github.com/pwp-app/Fastnote.git"
