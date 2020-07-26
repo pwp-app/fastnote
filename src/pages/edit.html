@@ -354,7 +354,7 @@
                     if (title.length > 0) {
                         note.title = title;
                     } else {
-                        note.title = undefined;
+                        note.title = null;
                     }
                     //修改分类
                     note.category = category;
@@ -501,7 +501,7 @@
         function getSelectText(id) {
             var t = document.getElementById(id);
             if (window.getSelection) {
-                if (t.selectionStart != undefined && t.selectionEnd != undefined) {
+                if (typeof t.selectionStart !== 'undefined' && typeof t.selectionEnd !== 'undefined') {
                     return t.value.substring(t.selectionStart, t.selectionEnd);
                 } else {
                     return "";

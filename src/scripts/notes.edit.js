@@ -25,7 +25,7 @@ var notesEdit = {
         note.updatetime = alltime.currentTime;
         note.updaterawtime = alltime.rawTime;
         if (note.category == 'notalloc'){
-            note.category = undefined;
+            note.category = null;
         }
         //get json
         var json = JSON.stringify(note);

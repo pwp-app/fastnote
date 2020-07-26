@@ -3,7 +3,7 @@ $('.container-lockscreen').mousedown(function (e){
     return false;
 });
 $('#input-lockscreen').keypress(function (e){
-    if (e.which == 13){
+    if (e.which === 13){
         var t = $('#input-lockscreen').val().trim();
         if (t.length > 0){
             var p = sha256(t, 'fastnote');
@@ -22,17 +22,19 @@ $('#input-lockscreen').keypress(function (e){
     }
 });
 ipcRenderer.on('enable-lockscreen-minimize',function(){
-    if (typeof settings != 'undefined'){
-        if (typeof settings.lockpassword != 'undefined' && settings.locktype == 'minimize' && $('.container-lockscreen').css('display') == 'none'){
-            enableLockScreen();
-        }
+    if (!settings){
+        return;
+    }
+    if (typeof settings.lockpassword !== 'undefined' && settings.locktype === 'minimize' && $('.container-lockscreen').css('display') == 'none'){
+        enableLockScreen();
     }
 });
 ipcRenderer.on('enable-lockscreen-blur', function(){
-    if (typeof settings != 'undefined'){
-        if (typeof settings.lockpassword != 'undefined' && settings.locktype == 'blur' && $('.container-lockscreen').css('display') == 'none'){
-            enableLockScreen();
-        }
+    if (!settings){
+        return;
+    }
+    if (typeof settings.lockpassword !== 'undefined' && settings.locktype === 'blur' && $('.container-lockscreen').css('display') == 'none'){
+        enableLockScreen();
     }
 });
 ipcRenderer.on('disable-lockscreen', function(){
@@ -40,7 +42,10 @@ ipcRenderer.on('disable-lockscreen', function(){
 });
 
 function enableLockScreen(){
-    if (typeof isMainMenuOpen != "undefined" && isMainMenuOpen){
+    if (!settings || !settings.lockpassword || !settings.locktype) {
+        return;
+    }
+    if (typeof isMainMenuOpen !== "undefined" && isMainMenuOpen){
         closeMainMenu();
     }
     $('#input-lockscreen').val('');

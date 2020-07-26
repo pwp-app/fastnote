@@ -147,7 +147,7 @@
                     $.getScript('static/i18n/zh-cn.js');
                 }
                 //优先初始化锁屏
-                if (typeof settings.lockpassword != 'undefined') {
+                if (typeof settings.lockpassword !== 'undefined') {
                     $('.container-lockscreen').css('display', 'block');
                     $('#input-lockscreen').focus();
                 }
@@ -905,7 +905,7 @@
         function getSelectText(id) {
             var t = document.getElementById(id);
             if (window.getSelection) {
-                if (t.selectionStart != undefined && t.selectionEnd != undefined) {
+                if (typeof t.selectionStart !== 'undefined' && typeof t.selectionEnd !== 'undefined') {
                     return t.value.substring(t.selectionStart, t.selectionEnd);
                 } else {
                     return "";
@@ -1873,7 +1873,7 @@
         function removePassword(noteid, rawpassword) {
             for (var i = 0; i < notes.length; i++) {
                 if (notes[i].id == noteid) {
-                    notes[i].password = undefined; //取消密码
+                    notes[i].password = null; //取消密码
                     notes[i].text = aes_decrypt(notes[i].text, rawpassword);
                     saveNoteByObj(notes[i]); //保存
                     displayInfobar('success', i18n[current_i18n].note_unencrypted_sharp + noteid + i18n[current_i18n].note_unencrypted_right);

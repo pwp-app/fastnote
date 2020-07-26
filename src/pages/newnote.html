@@ -307,13 +307,13 @@
                 var category = $('#select-category').val();
                 var password = $('#input-password').val().trim();
                 if (title.length < 1) {
-                    title = undefined;
+                    title = null;
                 }
                 if (category == 'notalloc') {
-                    category = undefined;
+                    category = null;
                 }
                 if (password.length < 1) {
-                    password = undefined;
+                    password = null;
                 }
                 var text = $('#text-newnote').val();
                 if (text.length < 1) {

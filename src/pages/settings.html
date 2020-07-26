@@ -617,7 +617,7 @@
                     </div>
                     <script>
                         function submitLockScreen() {
-                            var lockpassword = $("#input-lockscreen-password")
+                            let lockpassword = $("#input-lockscreen-password")
                                 .val()
                                 .trim();
                             if (lockpassword.length < 1) {
@@ -662,8 +662,8 @@
                                 message: "确定要取消锁屏密码吗？",
                                 detail: "这会使你保存的便签变得不安全。"
                             });
-                            if (ret == 1) {
-                                settings.lockpassword = undefined;
+                            if (ret === 1) {
+                                settings.lockpassword = null;
                                 storage.set("settings"  + (global.indebug ? '_dev' : ''), settings, function(error) {
                                     if (error) {
                                         dialog.showMessageBoxSync({

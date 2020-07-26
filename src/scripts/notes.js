@@ -85,7 +85,7 @@ textarea.keydown(function (e) {
         var category = $('#select-note-category').val().trim();
         var password = $('#input-note-password').val().trim();
         if (category == 'notalloc'){
-            category = undefined;
+            category = null;
         }
         if (text != null && text != "") {
             saveNote(text, title, category, password, markdown_enabled);
@@ -311,7 +311,7 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
         // 保存密码的哈希值
         notepassword = sha256(notepassword, 'fastnote');
     } else {
-        notepassword = undefined;
+        notepassword = null;
     }
     // 构造note
     var note = {
@@ -357,7 +357,7 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
 // 基于note obj保存便签
 function saveNoteByObj(note) {
     // 保存路径
-    var path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + note.rawtime + (typeof note.offset != undefined ? note.offset > 0 ? "." + note.offset : "" : "") + '.json';
+    var path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + note.rawtime + (typeof note.offset !== 'undefined' ? note.offset > 0 ? "." + note.offset : "" : "") + '.json';
     // 计算文件的offset
     var json = JSON.stringify(note);
     fs.writeFile(path, json, 'utf-8', function (err, data) {
@@ -369,7 +369,7 @@ function saveNoteByObj(note) {
 
 // 基于obj删除note
 function deleteNoteByObj(note) {
-    var note_path = storagePath + (global.indebug ? '/devTemp' : '') + "/notes/" + note.rawtime + (typeof note.offset != undefined ? note.offset > 0 ? "." + note.offset : "" : "") + ".json";
+    var note_path = storagePath + (global.indebug ? '/devTemp' : '') + "/notes/" + note.rawtime + (typeof note.offset !== 'undefined' ? note.offset > 0 ? "." + note.offset : "" : "") + ".json";
     if (fs.existsSync(note_path)) {
         fs.unlink(note_path, function (err) {
             if (err) {
