@@ -135,13 +135,13 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
     } else {
         current_i18n = settings.language;
     }
-    var html = `<div class="note-wrapper"><div class="note${(typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "")}" id="note_${id}"
+    let html = `<div class="note-wrapper"><div class="note${(typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "")}" id="note_${id}"
          data-id="${id}" data-category="${(typeof category != 'undefined' ? category : 'notalloc')}"
          data-markdown="${(typeof markdown == 'undefined'?'false':markdown)}"><div class="note-header">
          <span class="note-no">#${id}</span>`;
     // 渲染note-title
-    var titletext = "";
-    if (typeof title != 'undefined') {
+    let titletext = "";
+    if (title) {
         if (title.length > 50) {
             titletext = '<titlep1>' + insert_spacing(title.substring(0, 16), 0.12) + '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(title.substring(18, 32), 0.12) + '</titlep2><titlesusp2>...</titlesusp2><titlep3>' + insert_spacing(title.substring(32, 50), 0.12) + '</titlep3><titlesusp3>...</titlesusp3><titlep4>' + insert_spacing(title.substring(50), 0.12) + '</titlep4>';
         } else if (title.length > 32) {
@@ -159,7 +159,7 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
         }
     }
     // 选择性显示时间
-    var m_time = moment(rawtime, 'YYYYMMDDHHmmss');
+    let m_time = moment(rawtime, 'YYYYMMDDHHmmss');
     if (typeof (updaterawtime) != 'undefined') {
         var m_updatetime = moment(updaterawtime, 'YYYYMMDDHHmmss');
         html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
@@ -301,13 +301,13 @@ function rerenderEditedNote(data, rawtext) {
     //reset content of updatetime
     let m_updatetime = moment(data.updaterawtime, 'YYYYMMDDHHmmss');
     let m_time = moment(data.rawtime, 'YYYYMMDDHHmmss');
-    var timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
+    let timeContent = '<p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
         '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>';
     $('#note_' + data.id + ' .note-header time').html(timeContent);
 
     //处理标题
-    if (typeof data.title != 'undefined') {
-        var titletext = "";
+    if (data.title) {
+        let titletext = "";
         if (data.title.length > 50) {
             titletext = '<titlep1>' + insert_spacing(data.title.substring(0, 16), 0.12) +
                 '</titlep1><titlesusp1>...</titlesusp1><titlep2>' + insert_spacing(data.title.substring(
@@ -331,7 +331,7 @@ function rerenderEditedNote(data, rawtext) {
     }
 
     //获取便签编辑后的内容高度
-    var edited_content_height = $('#note_'+data.id+' .note-content .note-text').height();
+    let edited_content_height = $('#note_'+data.id+' .note-content .note-text').height();
     if (edited_content_height <= 250){  //与.note-content高度相等
         //编辑后的内容不超高
         $('#note_'+data.id + ' .note-content').removeClass('note-overheight');
@@ -359,7 +359,7 @@ function rerenderEditedNote(data, rawtext) {
     }
 
     //处理分类
-    var category_name = $('#note_' + data.id).attr('data-category');
+    let category_name = $('#note_' + data.id).attr('data-category');
     //如果分类未改变，到这个地方也会有-1+1的过程，如果-1之后为0再检查分类是否为empty，则会显示category-empty，故执行完-1+1后再检查
     minorCategoryCount(category_name, false, true, true);
     addCategoryCount(data.category, true, true);

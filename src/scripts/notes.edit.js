@@ -9,7 +9,7 @@ var storagePath = app.getPath('userData');
 
 var notesEdit = {
     //保存编辑的Note
-    saveEditNote:function (data,callback){
+    saveEditNote: function (data, callback){
         var note = data.note;
         var alltime = time.getAllTime();
         //保存路径
@@ -36,7 +36,7 @@ var notesEdit = {
             }
         });
         //callback
-        if (typeof(callback)!='undefined'){
+        if (typeof callback === 'function'){
             callback(data);
         }
     }

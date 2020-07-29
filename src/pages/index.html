@@ -390,6 +390,7 @@
         <script>
             //编辑笔记
             ipcRenderer.on('update-edit-note', (event, data) => {
+                console.log(data)
                 updateEditNote(data);
             });
 

@@ -185,7 +185,7 @@
             // init text
             renderNoteForWidget(data);
             // init title
-            if (typeof data.title == "undefined") {
+            if (typeof data.title === "undefined") {
                 $(".widget-title-text").html("#" + data.id);
             } else {
                 $(".widget-title-text").html(data.title);
@@ -199,7 +199,7 @@
                 // clear text in widget
                 $(".widget-note-content").html("");
                 // rerender title
-                if (typeof data.title == "undefined") {
+                if (typeof data.title === "undefined") {
                     $(".widget-title-text").html("#" + data.id);
                 } else {
                     $(".widget-title-text").html(data.title);

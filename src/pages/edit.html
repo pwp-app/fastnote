@@ -390,7 +390,7 @@
                     rawtext = data.rawtext;
                     nowNoteId = note.id;
                     //初始化textarea
-                    if (typeof rawtext == "undefined") {
+                    if (!rawtext) {
                         $("#text-edit").text(note.text);
                     } else {
                         $("#text-edit").text(rawtext);
@@ -398,8 +398,8 @@
                     //初始化title
                     $("#edit-title").append(" #" + note.id);
                     $("title").append(" - #" + note.id);
-                    //初始化title
-                    if (typeof note.title != 'undefined') {
+                    // 初始化title
+                    if (note.title) {
                         if (note.title.length > 20) {
                             var t = note.title.substring(0, 20) + '...';
                             $("#edit-title").append(' ' + t);
@@ -412,22 +412,22 @@
                             $('#input-title').val(note.title);
                         }
                     }
-                    //初始化分类
+                    // 初始化分类
                     $(document).ready(function() {
-                        if (typeof note.category != 'undefined') {
+                        if (note.category) {
                             $('#select-category').val(note.category);
                         } else {
                             $('#select-category').val('notalloc');
                         }
                     });
-                    //初始化密码框
-                    if (typeof note.password == "undefined") {
+                    // 初始化密码框
+                    if (!note.password) {
                         passwordStatus = 'notset';
                     } else {
                         passwordStatus = 'notchange';
                     }
-                    //初始化markdown
-                    if (typeof note.markdown == "undefined") {
+                    // 初始化markdown
+                    if (!note.markdown) {
                         markdown_enabled = false;
                     } else {
                         markdown_enabled = note.markdown;
