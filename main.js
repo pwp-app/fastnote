@@ -105,7 +105,7 @@ async function createWindow() {
             global.hotfix.state = settings.hotfix;
             if (!global.hotfix.state) {
                 // 初始值
-                global.hotfix.state = 'close';
+                global.hotfix.state = 'after';
             }
             global.hotfix.state = 'close';
             if (global.hotfix.state !== 'close') {

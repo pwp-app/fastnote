@@ -305,7 +305,7 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
         }
     }
     // 转换回车
-    if (typeof notepassword != 'undefined' && notepassword.length>0){
+    if (notepassword){
         // 密码不为空，对便签加密
         notetext = aes_encrypt(notetext, notepassword);
         // 保存密码的哈希值
@@ -320,8 +320,8 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
         rawtime: alltime.rawTime,
         timezone: time.getTimeZone(),
         text: notetext,
-        title: (typeof notetitle == 'undefined' ? undefined : notetitle.length > 0 ? notetitle : undefined),
-        category: (typeof notecategory == 'undefined' ? undefined : notecategory.length > 0 ? notecategory : undefined),
+        title: (notetitle ? notetitle : null),
+        category: (notecategory ? notecategory : null),
         password: notepassword,
         offset: offset,
         forceTop: false,

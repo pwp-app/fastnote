@@ -130,14 +130,14 @@ function initialRender() {
 // 渲染一条笔记
 function renderNote(note, immediate = true, isPrepend = false, animate = false) {
     let { id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown } = note;
-    if (typeof settings.language == 'undefined'){
+    if (!settings.language){
         current_i18n = 'zh-cn';
     } else {
         current_i18n = settings.language;
     }
-    let html = `<div class="note-wrapper"><div class="note${(typeof forceTop != 'undefined' ? forceTop ? " note-forceTop" : "" : "")}" id="note_${id}"
-         data-id="${id}" data-category="${(typeof category != 'undefined' ? category : 'notalloc')}"
-         data-markdown="${(typeof markdown == 'undefined'?'false':markdown)}"><div class="note-header">
+    let html = `<div class="note-wrapper"><div class="note${forceTop ? " note-forceTop" : ""}" id="note_${id}"
+         data-id="${id}" data-category="${category ? category : 'notalloc'}"
+         data-markdown="${markdown ? markdown : false}"><div class="note-header">
          <span class="note-no">#${id}</span>`;
     // 渲染note-title
     let titletext = "";
@@ -160,14 +160,14 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
     }
     // 选择性显示时间
     let m_time = moment(rawtime, 'YYYYMMDDHHmmss');
-    if (typeof (updaterawtime) != 'undefined') {
+    if (updaterawtime) {
         var m_updatetime = moment(updaterawtime, 'YYYYMMDDHHmmss');
         html += '<time><p class="note-time note-updatetime"><span class="note-updatetime-label">'+i18n.render[current_i18n].updatetime+'</span>' + m_updatetime.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p>' +
             '<p class="note-time note-createtime" style="display: none;"><span class="note-createtime-label">'+i18n.render[current_i18n].createtime+'</span>' + m_time.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     } else {
         html += '<time><p class="note-time">' + m_time.format('[<timeyear>]YYYY['+i18n.render[current_i18n].year+'</timeyear><timemonth>]MM['+i18n.render[current_i18n].month+'</timemonth><timeday>]DD['+i18n.render[current_i18n].day+'</timeday><timeclock>&nbsp;]HH:mm:ss[</timeclock>]') + '</p></time>';
     }
-    if (typeof password == 'undefined') {
+    if (!password) {
         html += '</div><div class="note-content"><div class="note-text">';
         // process html tag
         if (markdown){
@@ -192,7 +192,7 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
         html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + id + ')"></i>';
         // 密码框
         html += '</div><div class="note-content"><div class="note-password" data-password="' + password + '" data-encrypted="' + text + '">';
-        if (typeof inRecyclebin == 'undefined') {
+        if (!inRecyclebin) {
             html += '<span>'+i18n.render[current_i18n].password+'</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
         } else {
             html += '<p>['+i18n.render[current_i18n].encrypted_info+']</p>';
@@ -203,13 +203,13 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
     // 不即时渲染，返回html
     if (!immediate) {
         return {
-            forceTop: typeof forceTop != 'undefined' && forceTop,
+            forceTop: forceTop ? true : false,
             html: html
         };
     }
 
     // 即时渲染
-    if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
+    if (typeof forceTop !== 'undefined' && typeof inRecyclebin === 'undefined') {
         if (forceTop) {
             if (isPrepend) {
                 noteList.forceTop.prepend($(html));
@@ -378,12 +378,11 @@ function resetEditedNoteText(data, t) {
     text = insert_spacing(text, 0.15);
     let html = '';
     if (!data.markdown){
-        html += text.replace(reg.url, function (result) {
+        text = text.replace(reg.url, function (result) {
             return '<a href="' + result + '">' + result + '</a>';
         });
-    } else {
-        html += '<p>' + text + '</p>';
     }
+    html += '<p>' + text + '</p>';
     //reset note content on page
     $("#note_" + data.id + " .note-content .note-text").html(html);
 }
