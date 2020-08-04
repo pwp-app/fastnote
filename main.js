@@ -107,7 +107,6 @@ async function createWindow() {
                 // 初始值
                 global.hotfix.state = 'after';
             }
-            global.hotfix.state = 'close';
             if (global.hotfix.state !== 'close') {
                 // set timer
                 if (global.hotfix.state === 'wait') {
