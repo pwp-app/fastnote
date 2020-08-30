@@ -105,9 +105,10 @@ function createWidget(data) {
     widget.loadFile(viewpath);
 
     widget.on('closed', () => {
-        let index = widgets.indexOf(widget);
+        const index = widgets.indexOf(widget);
         widgets.splice(index, 1);
         widgets_noteid.splice(index, 1);
+        widget = null;
     });
 
     widget.on('ready-to-show', () => {
@@ -140,7 +141,7 @@ ipc.on('widget-reload-ready', (e, data) => {
 });
 
 ipc.on('closeAllWidgets', () => {
-    for (var i = 0; i < widgets.length; i++) {
+    for (let i = 0; i < widgets.length; i++) {
         if (typeof widgets[i] != 'undefined' && widgets[i] != null) {
             widgets[i].close();
         }
@@ -149,7 +150,7 @@ ipc.on('closeAllWidgets', () => {
     widgets_noteid = [];
 });
 
-var DesktopWidget = {
+const DesktopWidget = {
     getWindows: () => {
         return widgets;
     },

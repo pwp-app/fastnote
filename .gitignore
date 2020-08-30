@@ -20,6 +20,7 @@ coverage
 .grunt
 # vscode
 .vscode
+.history
 
 # node-waf configuration
 .lock-wscript
