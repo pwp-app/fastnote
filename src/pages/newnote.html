@@ -142,7 +142,7 @@
 
         //init category
         ipcRenderer.on('init-category', (sender, data) => {
-            if (data != 'notalloc' && data != 'all') {
+            if (data !== 'notalloc' && data !== 'all') {
                 $(document).ready(function() {
                     $('#select-category').val(data);
                 });
@@ -309,7 +309,7 @@
                 if (title.length < 1) {
                     title = null;
                 }
-                if (category == 'notalloc') {
+                if (category === 'notalloc') {
                     category = null;
                 }
                 if (password.length < 1) {

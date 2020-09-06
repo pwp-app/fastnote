@@ -38,7 +38,7 @@ $(document).ready(() => {
 // *** 即时执行 ***
 
 // 初始化排序模式
-storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
+storage.get('sortMode' + (inRecyclebin ? '_recyclebin' : ''), function (err, data) {
     if (err) {
         console.error(err);
         sort_mode = 'id'; //设置为默认值
@@ -119,7 +119,7 @@ function initialRender() {
     for (let i = 0;i < notes.length; i++) {
         bindNoteFoldDBL(notes[i].id);
     }
-    if (typeof inRecyclebin == 'undefined') { //回收站内不进行分类渲染
+    if (!inRecyclebin) { //回收站内不进行分类渲染
         renderNotesOfCategory(current_category);
     }
     // 图片lazyload
@@ -153,7 +153,7 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
         }
     }
     html += '<span class="note-title">' + titletext + '</span>';
-    if (typeof forceTop != 'undefined' && typeof inRecyclebin == 'undefined') {
+    if (typeof forceTop !== 'undefined' && forceTop !== null) {
         if (forceTop) {
             html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
         }
@@ -209,19 +209,11 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
     }
 
     // 即时渲染
-    if (typeof forceTop !== 'undefined' && typeof inRecyclebin === 'undefined') {
-        if (forceTop) {
-            if (isPrepend) {
-                noteList.forceTop.prepend($(html));
-            } else {
-                noteList.forceTop.append($(html));
-            }
+    if (forceTop) {
+        if (isPrepend) {
+            noteList.forceTop.prepend($(html));
         } else {
-            if (isPrepend) {
-                noteList.normal.prepend($(html));
-            } else {
-                noteList.normal.append($(html));
-            }
+            noteList.forceTop.append($(html));
         }
     } else {
         if (isPrepend) {
@@ -442,7 +434,7 @@ function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, cat
     };
     notes.push(note);
     //分类计数
-    if (typeof category == 'undefined') {
+    if (category) {
         notalloc_count++;
     }
 }
@@ -470,7 +462,7 @@ function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, ti
 function addNoteObjToArray(note) {
     notes.push(note);
     //计数器增加
-    if (typeof inRecyclebin == "undefined"){
+    if (typeof inRecyclebin === "undefined"){
         addCategoryCount(note.category, true, true);
     }
 }
@@ -479,7 +471,7 @@ function addNoteObjToArray(note) {
 function refreshNoteList(callback) {
     clearNoteList(); //先清空
     if (typeof sort_mode != 'string') {
-        storage.get('sortMode' + (typeof inRecyclebin != 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
+        storage.get('sortMode' + (typeof inRecyclebin !== 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
             if (err) {
                 console.error(err);
                 return;
@@ -632,7 +624,7 @@ function renderNotesOfCategory(name) {
         $('.note').parent().show();
     } else if (name == 'notalloc') {
         for (let i = 0; i < notes.length; i++) {
-            if (typeof notes[i].category != 'undefined') {
+            if (notes[i].category) {
                 $('#note_' + notes[i].id).parent().hide();
             } else {
                 $('#note_' + notes[i].id).parent().show();
@@ -640,7 +632,7 @@ function renderNotesOfCategory(name) {
         }
     } else {
         for (let i = 0; i < notes.length; i++) {
-            if (typeof notes[i].category == 'undefined' || notes[i].category != name) {
+            if (!notes[i].category || notes[i].category !== name) {
                 $('#note_' + notes[i].id).parent().hide();
             } else {
                 $('#note_' + notes[i].id).parent().show();
@@ -653,7 +645,7 @@ function renderNotesOfCategory(name) {
 function checkNotePassword(e, noteid) {
     if (e.keyCode == 13) {
         var input_pwd = $('#note_password_' + noteid).val();
-        if (sha256(input_pwd, 'fastnote') == $('#note_password_' + noteid).parent().attr('data-password')) {
+        if (sha256(input_pwd, 'fastnote') === $('#note_password_' + noteid).parent().attr('data-password')) {
             //密码正确
             //生成解密文本
             let text = $('#note_password_' + noteid).parent().attr('data-encrypted');

@@ -43,7 +43,7 @@ function createNewNoteWindow(data) {
         ipc.once('newnote-window-ready', () => {
             win_newnote.show();
         });
-        if (typeof data != 'undefined' && data != null && data != 'notalloc'){
+        if (data && data !== 'notalloc'){
             win_newnote.webContents.send('init-category', data);
         }
     });

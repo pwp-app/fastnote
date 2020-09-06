@@ -1483,7 +1483,7 @@
         });
         $(document).on('dblclick', '#category-menu li:not(#category-add):not(#category-add-inside)', function() {
             let category_clicked = $(this).attr('data-name');
-            if (!categoryEditMode || category_clicked == 'all' || category_clicked == 'notalloc') {
+            if (!categoryEditMode || category_clicked === 'all' || category_clicked === 'notalloc') {
                 return;
             }
             $('#category-custom-' + category_clicked).children('.category-item-name').children('span').hide();

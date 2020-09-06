@@ -36,7 +36,7 @@ function readCurrentCategory() {
             $(document).ready(function() {
                 //渲染一次current_category
                 renderCurrentCategory();
-                if (current_category != 'notalloc' && current_category != 'all') {
+                if (current_category !== 'notalloc' && current_category !== 'all') {
                     $('#select-note-category').val(current_category);
                 }
             });
@@ -85,7 +85,7 @@ function checkCategoryCount() {
     for (var i = 0; i < categories.length; i++) {
         custom_total += categories[i].count;
     }
-    if (notalloc_count + custom_total != notes.length) {
+    if (notalloc_count + custom_total !== notes.length) {
         recountNotes();
     } else {
         console.log('Category count check passed.');
@@ -97,9 +97,9 @@ function recountNotes(retry = false) {
     let count_obj = {};
     // 清点notes
     for (let i = 0; i < notes.length; i++) {
-        if (typeof notes[i].category != 'undefined') {
-            if (notes[i].category != 'notalloc') {
-                if (typeof count_obj[notes[i].category] == 'undefined') {
+        if (notes[i].category) {
+            if (notes[i].category !== 'notalloc') {
+                if (!count_obj[notes[i].category]) {
                     count_obj[notes[i].category] = {};
                     count_obj[notes[i].category].count = 1;
                 } else {
@@ -110,7 +110,7 @@ function recountNotes(retry = false) {
     }
     // 覆盖categories的设置
     for (let i = 0; i < categories.length; i++) {
-        if (typeof count_obj[categories[i].name] != 'undefined') {
+        if (count_obj[categories[i].name]) {
             categories[i].count = count_obj[categories[i].name].count;
         }
     }
@@ -199,13 +199,13 @@ function indexOfCategory(name) {
 }
 
 function getCountOfCategory(name) {
-    if (name == 'notalloc') {
+    if (name === 'notalloc') {
         return notalloc_count;
-    } else if (name == 'all') {
+    } else if (name === 'all') {
         return notes.length;
     } else {
         for (var i = 0; i < categories.length; i++) {
-            if (categories[i].name == name) {
+            if (categories[i].name === name) {
                 return categories[i].count;
             }
         }
@@ -215,7 +215,7 @@ function getCountOfCategory(name) {
 
 function removeCategoryFromArr(name) {
     for (var i = 0; i < categories.length; i++) {
-        if (categories[i].name == name) {
+        if (categories[i].name === name) {
             categories.splice(i, 1);
         }
     }
@@ -223,14 +223,14 @@ function removeCategoryFromArr(name) {
 
 function setNotesCategory(name, category) {
     var index;
-    if (typeof category != "undefined") {
+    if (category) {
         index = indexOfCategory(name);
     }
     for (var i = 0; i < notes.length; i++) {
         if (notes[i].category == name) {
             notes[i].category = category;
             saveNoteByObj(notes[i]);
-            if (typeof category == "undefined") {
+            if (!category) {
                 notalloc_count++;
             } else {
                 if (index) {
@@ -334,18 +334,18 @@ function addCategoryCount(name, render = false, save = false) {
 }
 
 function minorCategoryCount(name, checkEmpty = true, render = false, save = false) {
-    if (typeof name === 'undefined' || name == null || name === 'notalloc') {
+    if (!name || name === 'notalloc') {
         notalloc_count--;
         renderSystemCategoryCount();
         if (checkEmpty) {
-            if (current_category == 'notalloc') {
+            if (current_category === 'notalloc') {
                 checkCategoryEmpty();
             }
         }
         return;
     }
     for (let i = 0; i < categories.length; i++) {
-        if (categories[i].name == name) {
+        if (categories[i].name === name) {
             categories[i].count = categories[i].count - 1;
             if (render) {
                 $('#category-custom-' + categories[i].name + ' .category-item-count span').html(categories[i].count); //渲染到UI上
@@ -363,7 +363,7 @@ function minorCategoryCount(name, checkEmpty = true, render = false, save = fals
 }
 
 function checkCategoryEmpty() {
-    if (current_category == 'all' || notes.length < 1) {
+    if (current_category === 'all' || notes.length < 1) {
         return;
     }
     if (getCountOfCategory(current_category) < 1) {
