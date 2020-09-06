@@ -98,7 +98,7 @@
         "sha256"
       ],
       "publisherName": "pwp.app",
-      "rfc3161TimeStampServer": "http://timestamp.digicert.com"
+      "rfc3161TimeStampServer": "http://timestamp.globalsign.com/?signature=sha2"
     },
     "nsis": {
       "oneClick": false,
