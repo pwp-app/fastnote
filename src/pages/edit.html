@@ -343,34 +343,34 @@
         });
 
         function submitSave() {
-            var text = $("#text-edit").val().trim();
-            var title = $('#input-title').val().trim();
-            var category = $('#select-category').val();
-            var password = $('#input-password').val().trim();
+            let text = $("#text-edit").val().trim();
+            let title = $('#input-title').val().trim();
+            let category = $('#select-category').val();
+            let password = $('#input-password').val().trim();
 
-            if (text != null && text.length > 0) {
-                if (text_edited) {
-                    note.text = text;
-                    if (title.length > 0) {
-                        note.title = title;
-                    } else {
-                        note.title = null;
-                    }
-                    //修改分类
-                    note.category = category;
-                    //密码被修改或被设置
-                    if (password.length > 0) {
-                        //更改相关内容
-                        note.password = sha256(password, 'fastnote');
-                        note.text = aes_encrypt(text, password);
-                    }
-                    //markdown相关
-                    note.markdown = markdown_enabled;
-                    ipcRenderer.send('update-edit-note', {
-                        note: note,
-                        rawtext: text
-                    });
+            if (text && text_edited) {
+                note.text = text;
+                if (title.length > 0) {
+                    note.title = title;
+                } else {
+                    note.title = null;
                 }
+                //修改分类
+                note.category = category;
+                //密码被修改或被设置
+                if (password.length > 0) {
+                    //更改相关内容
+                    note.password = sha256(password, 'fastnote');
+                }
+                if (note.password) {
+                    note.text = aes_encrypt(text, note.password);
+                }
+                //markdown相关
+                note.markdown = markdown_enabled;
+                ipcRenderer.send('update-edit-note', {
+                    note: note,
+                    rawtext: text
+                });
                 window.close();
             } else {
                 //error

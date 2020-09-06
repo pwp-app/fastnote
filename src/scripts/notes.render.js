@@ -189,9 +189,9 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
         html += '</div></div></div></div>';
     } else {
         // 再锁定按钮
-        html += '<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + id + ')"></i>';
+        html += `<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(${id})"></i>`;
         // 密码框
-        html += '</div><div class="note-content"><div class="note-password" data-password="' + password + '" data-encrypted="' + text + '">';
+        html += `</div><div class="note-content"><div class="note-password" data-password="${password}" data-encrypted="${text}">`;
         if (!inRecyclebin) {
             html += '<span>'+i18n.render[current_i18n].password+'</span><input type="password" class="form-control" id="note_password_' + id + '" onkeydown="checkNotePassword(event, ' + id + ');">';
         } else {
@@ -234,37 +234,37 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
     },0);
 }
 
-//在顶部渲染Note
+// 在顶部渲染Note
 function renderNoteAtTop(note) {
     renderNote(note, immediate = true, isPrepend = true, animate = true);
 }
 
 function rerenderEditedNote(data, rawtext) {
-    //分类
+    // 分类
     if (current_category != 'all') {
-        //便签编辑后已经不属于当前分类，从画面中移出并隐藏
+        // 便签编辑后已经不属于当前分类，从画面中移出并隐藏
         if (data.category != current_category) {
             $('#note_' + data.id).parent().animateCss('fadeOutLeft faster', function () {
                 $('#note_' + data.id).parent().hide();
-                //当前分类是否为空
+                // 当前分类是否为空
                 if (getCountOfCategory(current_category) < 1) {
                     $('#note-empty-category').show();
                     $('#note-empty-category').animateCss('fadeIn');
                 }
             });
-            //此处不return，后续更新仍然要处理，只是便签不显示
+            // 此处不return，后续更新仍然要处理，只是便签不显示
         } else {
-            //便签可能是从其他类别改到当前类别的
+            // 便签可能是从其他类别改到当前类别的
             if ($('#note_' + data.id).parent().css('display') == 'none') {
                 $('#note_' + data.id).parent().show();
                 $('#note_' + data.id).parent().animateCss('fadeInLeft faster');
-                //有便签新加入必定不为空
+                // 有便签新加入必定不为空
                 $('#note-empty-category').hide();
             }
         }
     }
 
-    //处理markdown
+    // 处理markdown
     if (data.markdown){
         $('#note_'+data.id).attr('data-markdown', data.markdown);
     } else {
@@ -274,13 +274,13 @@ function rerenderEditedNote(data, rawtext) {
     //处理密码的更改
     if (data.password) {
         resetEditedNoteText(data, rawtext);
-        //便签设置了密码，判断便签之前是否有密码
-        if ($('#note_'+data.id+' .note-content .note-password').length>0){
-            //便签已经有密码
+        // 便签设置了密码，判断便签之前是否有密码
+        if ($('#note_'+data.id+' .note-content .note-password').length > 0){
+            // 便签已经有密码
             $('#note_'+data.id+' .note-content .note-password').attr('data-password',data.password);
             $('#note_'+data.id+' .note-content .note-password').attr('data-encrypted',data.text);
         } else {
-            //便签之前没有设置过密码
+            // 便签之前没有设置过密码
             $('#note_'+data.id+' .note-content').prepend('<div class="note-password" data-password="' + data.password + '" data-encrypted="' + data.text + '" style="display: none;"><span>'+i18n.render[current_i18n].password+'</span><input type="password" class="form-control" id="note_password_' + data.id + '" onkeydown="checkNotePassword(event, ' + data.id + ');"></div>');
             $('#note_'+data.id+' .note-header').append('<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + data.id + ')" style="display: inline-block !important;"></i>');
             $('#note_'+data.id+' .note-header .note-password-relock').animateCss('fadeIn morefaster');
@@ -644,7 +644,7 @@ function renderNotesOfCategory(name) {
 // noteid: string
 function checkNotePassword(e, noteid) {
     if (e.keyCode == 13) {
-        var input_pwd = $('#note_password_' + noteid).val();
+        let input_pwd = $('#note_password_' + noteid).val().toString();
         if (sha256(input_pwd, 'fastnote') === $('#note_password_' + noteid).parent().attr('data-password')) {
             //密码正确
             //生成解密文本
