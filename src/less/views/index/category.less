@@ -9,58 +9,58 @@
 @category-item-height: 40px;
 @category-item-name-width: 160px;
 
-.category-focused{
+.category-focused {
     background: @color-category-hover !important;
 }
-.category-selected{
+.category-selected {
     background: @color-category-selected !important;
-    .category-item-name{
-        .category-edit-input{
+    .category-item-name {
+        .category-edit-input {
             background: @color-category-selected !important;
         }
     }
 }
 
 //classes
-.container-category{
+.container-category {
     display: none;
     position: absolute;
     width: @category-width;
     height: 100%;
-    top:0;
-    bottom:0;
-    left:0;
+    top: 0;
+    bottom: 0;
+    left: 0;
     z-index: 2;
     .no-drag();
     /*animate*/
     .duration(0.75s);
 }
-.category-background{
+.category-background {
     .mainmenu-background();
 }
-.category-panel{
+.category-panel {
     width: 220px;
     height: 100%;
-    left:0;
+    left: 0;
     background: @color-category-background;
     z-index: 1;
     box-shadow: 0px 0px 20px 3px @color-boxshadow;
 }
-.category-split{
+.category-split {
     width: 100%;
-    height:1px;
-    margin-top:14px;
-    margin-bottom:14px;
+    height: 1px;
+    margin-top: 14px;
+    margin-bottom: 14px;
     background: @color-categroy-split;
 }
-.category-header-title{
+.category-header-title {
     display: inline-block;
     p {
         margin-bottom: 0;
         .no-select-and-drag();
     }
 }
-.category-header-button{
+.category-header-button {
     float: right;
     width: 24px;
     text-align: center;
@@ -72,21 +72,21 @@
         line-height: 1.5;
     }
 }
-.category-header-button:hover{
+.category-header-button:hover {
     color: lighten(@color-category-text, 10%);
 }
-#category-header-confirmbtn{
+#category-header-confirmbtn {
     display: none;
 }
 
-.category-body{
-    ul{
+.category-body {
+    ul {
         width: 100%;
-        margin:0;
-        padding:0;
+        margin: 0;
+        padding: 0;
         .no-drag();
     }
-    li{
+    li {
         width: 100%;
         height: @category-item-height;
         list-style-type: none;
@@ -98,15 +98,15 @@
             max-height: @category-item-height;
         }
     }
-    li:hover{
+    li:hover {
         background-color: @color-category-hover;
-        .category-edit-input{
+        .category-edit-input {
             background: @color-category-hover;
         }
     }
 }
 
-.category-header{
+.category-header {
     padding-top: 18px;
     padding-left: 18px;
     p {
@@ -130,7 +130,7 @@
         overflow: hidden;
     }
 }
-.category-item-count{
+.category-item-count {
     float: right;
     margin-right: 18px;
     pointer-events: none;
@@ -138,57 +138,58 @@
         .no-select();
     }
 }
-.category-icon-add{
+.category-icon-add {
     text-align: center;
 }
 #category-add:hover {
     cursor: pointer;
 }
-#category-add-inside{
+#category-add-inside {
     display: none;
 }
-.category-add-input{
+.category-add-input {
     display: inline-block;
     width: @category-width - 108px;
     margin-left: 18px;
 }
-.category-add-btn{
+.category-add-btn {
     float: right;
     margin-right: 16px;
     transition: 0.1s;
 }
-.category-item-delbtn{
+.category-item-delbtn {
     display: none;
     float: right;
     margin-right: 16px;
     transition: 0.1s;
 }
-.category-item-delbtn:hover{
+.category-item-delbtn:hover {
     color: lighten(@color-category-text, 5%);
     cursor: pointer;
 }
-.category-add-btn:hover{
+.category-add-btn:hover {
     color: lighten(@color-category-text, 5%);
     cursor: pointer;
 }
-.category-add-input input{
+.category-add-input input {
     width: 100%;
     line-height: @category-item-height - 12px;
     border: none;
     color: @color-category-text;
     background: @color-category-background;
 }
-.category-add-input input:focus{
+.category-add-input input:focus {
     outline: 0 !important;
 }
-.category-edit-input{
+.category-edit-input {
     display: none;
+    max-width: @category-item-name-width;
     line-height: @category-item-height - 12px;
     border: none;
     color: @color-category-text;
     background: @color-category-background;
     z-index: 99;
 }
-.category-edit-input:focus{
+.category-edit-input:focus {
     outline: 0 !important;
 }
