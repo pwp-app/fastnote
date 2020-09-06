@@ -89,10 +89,10 @@
             });
 
             function settingsInit(settings) {
-                var cssText = "";
-                var font = "";
+                let cssText = '';
+                let font = '';
                 //build css
-                if (settings == null) {
+                if (typeof settings === 'undefined' || settings === null) {
                     //read error
                     $("#main-style").attr("href", "static/main.default.css");
 
@@ -102,13 +102,13 @@
                     console.error("A error occured when reading settings.");
                 } else {
                     //read success
-                    if (typeof settings.theme != "undefined") {
+                    if (settings.theme) {
                         $("#main-style").attr("href", "static/main." + settings.theme + ".css");
                     } else {
                         $("#main-style").attr("href", "static/main.default.css");
                     }
 
-                    if (typeof settings.fontfamily != "undefined") {
+                    if (settings.fontfamily) {
                         cssText += "body {font-family:" + settings.fontfamily + ", Arial !important;}"; //font
                         font = settings.fontfamily;
                     } else {
@@ -116,22 +116,22 @@
                         font = "Source Han Sans CN";
                     }
 
-                    if (typeof settings.widget_opacity != "undefined") {
-                        let bgcolor = $(".container-widget").css("background-color");
-                        let reg_alpha = /(rgba\([0-9]{1,3},\s+[0-9]{1,3},\s+[0-9]{1,3},\s+)([0-9.]+)(\))/i;
-                        bgcolor = bgcolor.replace(reg_alpha, "$1" + settings.widget_opacity / 100 + "$3");
-                        $(".container-widget").css("background-color", bgcolor);
+                    if (typeof settings.widget_opacity !== 'undefined' && settings.widget_opacity !== null) {
+                        $(document).ready(() => {
+                            let bgcolor = $(".container-widget").css("background-color");
+                            let reg_alpha = /(rgba\([0-9]{1,3},\s+[0-9]{1,3},\s+[0-9]{1,3},\s+)([0-9.]+)(\))/i;
+                            bgcolor = bgcolor.replace(reg_alpha, "$1" + settings.widget_opacity / 100 + "$3");
+                            $(".container-widget").css("background-color", bgcolor);
+                        });
                     }
 
-                    if (typeof settings.widget_defaultforcetop != "undefined") {
-                        if (settings.widget_defaultforcetop) {
-                            $(document).ready(function() {
-                                ipcRenderer.send("widget-alwaysontop", note.id);
-                            });
-                        }
+                    if (settings.widget_defaultforcetop) {
+                        $(document).ready(function() {
+                            ipcRenderer.send("widget-alwaysontop", note.id);
+                        });
                     }
                 }
-                var modStyle = document.querySelector("#modCSS");
+                let modStyle = document.querySelector("#modCSS");
                 if (modStyle === null) {
                     modStyle = document.createElement("style");
                     modStyle.id = "modCSS";
@@ -139,7 +139,7 @@
                 }
                 modStyle.innerHTML = cssText;
 
-                if (font == "Source Han Sans CN") {
+                if (font === "Source Han Sans CN") {
                     loadWebfont(font);
                 }
             }
