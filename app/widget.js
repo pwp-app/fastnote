@@ -82,12 +82,13 @@ function createWidget(data) {
         minWidth: 320,
         minHeight: 86,
         show: false,
-        webPreferences: {
-            nodeIntegration: true,
-        },
         resizable: true,
         transparent: true,
         skipTaskbar: true,
+        webPreferences: {
+            enableRemoteModule: true,
+            nodeIntegration: true,
+        },
     };
     if (process.platform == 'darwin') conf.titleBarStyle = 'hiddenInset';
     else conf.frame = false;

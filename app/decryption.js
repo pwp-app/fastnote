@@ -7,18 +7,17 @@ const {
 
 //ipc主进程
 const ipc = require('electron').ipcMain;
-
-const app = require('electron').app;
 const path = require('path');
 
 function createDecryptionWindow(data){
     let win_decryption = null;
-    var conf = {
+    let conf = {
         width: 600,
         height: 160,
         show: false,
         resizable: false,
         webPreferences: {
+            enableRemoteModule: true,
             nodeIntegration: true
         }
     };

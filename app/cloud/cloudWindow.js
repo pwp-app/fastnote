@@ -16,13 +16,14 @@ const loginWindowHeight = 320;
 const registerWindowHeight = 480;
 
 function createLoginWindow() {
-    var conf = {
+    let conf = {
         width: 600,
         height: loginWindowHeight,
         //resizable: false,
         maximazable: false,
         show: false,
         webPreferences: {
+            enableRemoteModule: true,
             nodeIntegration: true
         }
     };
@@ -54,13 +55,14 @@ function createLoginWindow() {
 }
 
 function createRegisterWindow() {
-    var conf = {
+    let conf = {
         width: 600,
         height: registerWindowHeight,
         //resizable: false,
         maximazable: false,
         show: false,
         webPreferences: {
+            enableRemoteModule: true,
             nodeIntegration: true
         }
     };

@@ -8,20 +8,19 @@ const {
 
 //ipc主进程
 const ipc = require('electron').ipcMain;
-
-const app = require('electron').app;
 const path = require('path');
 
 function createEditWindow(data) {
     let win_edit = null;
-    var conf = {
+    let conf = {
         width: 600,
         height: 430,
         minWidth: 460,
         minHeight: 300,
         show: false,
         webPreferences: {
-            nodeIntegration: true
+            enableRemoteModule: true,
+            nodeIntegration: true,
         }
     };
     //标题栏的选用

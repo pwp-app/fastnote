@@ -11,12 +11,13 @@ const path = require('path');
 
 const RecycleWindow = {
     create: () => {
-        var conf = {
+        let conf = {
             width: 1200,
             height: 720,
             minWidth: 480,
             show: false,
             webPreferences: {
+                enableRemoteModule: true,
                 nodeIntegration: true
             }
         };

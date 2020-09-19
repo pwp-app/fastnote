@@ -5,17 +5,17 @@ const {
 } = require('electron');
 
 const ipc = require('electron').ipcMain;
-const app = require('electron').app;
 const path = require('path');
 
 function createAboutWindow() {
-    var conf = {
+    let conf = {
         width: 600,
         height: 320,
         resizable: false,
         maximazable: false,
         show: false,
         webPreferences: {
+            enableRemoteModule: true,
             nodeIntegration: true
         }
     };

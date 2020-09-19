@@ -58,7 +58,9 @@ async function createWindow() {
         minHeight: 600,
         show: false,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
+            enableRemoteModule: true,
+            contextIsolation: false,
         }
     };
     //标题栏的选用
@@ -128,6 +130,7 @@ async function createWindow() {
         }
 
         win.loadFile(viewpath);
+        win.show();
     });
 
     // uuid recevier

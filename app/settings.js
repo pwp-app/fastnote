@@ -6,12 +6,10 @@ const {
 } = require('electron');
 
 const ipc = require('electron').ipcMain;
-
-const app = require('electron').app;
 const path = require('path');
 
 function createSettingsWindow() {
-    var conf = {
+    let conf = {
         width: 680,
         height: 592,
         resizable: false,
@@ -19,6 +17,7 @@ function createSettingsWindow() {
         useContentSize: true,
         show: false,
         webPreferences: {
+            enableRemoteModule: true,
             nodeIntegration: true
         }
     };

@@ -6,19 +6,18 @@ const {
 
 //ipc主进程
 const ipc = require('electron').ipcMain;
-
-const app = require('electron').app;
 const path = require('path');
 
 function createNewNoteWindow(data) {
     let win_newnote = null;
-    var conf = {
+    let conf = {
         width: 620,
         height: 400,
         minWidth: 520,
         minHeight: 300,
         show: false,
         webPreferences: {
+            enableRemoteModule: true,
             nodeIntegration: true
         }
     };
