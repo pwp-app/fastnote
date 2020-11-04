@@ -20,6 +20,7 @@
     "electron-json-storage": "^4.2.0",
     "electron-updater": "^4.3.5",
     "locate-path": "^5.0.0",
+    "pako": "^1.0.11",
     "request": "^2.88.2",
     "source-map": "^0.7.3",
     "webfontloader": "^1.6.28"
