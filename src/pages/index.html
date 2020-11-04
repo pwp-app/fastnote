@@ -86,12 +86,12 @@
             var cloud_protocol = cloudConfig.dev.protocol;
             var cloud_host = cloudConfig.dev.host;
             var cloud_port = cloudConfig.dev.port;
-            var cloud_apibase = cloudConfig.dev.protocol + '://' + cloudConfig.dev.host + ':' + cloudConfig.dev.port
+            var cloud_apibase = cloudConfig.dev.protocol + '://' + cloudConfig.dev.host + (cloudConfig.dev.port ? `:${cloudConfig.dev.port}` : '');
         } else {
             var cloud_protocol = cloudConfig.release.protocol;
             var cloud_host = cloudConfig.release.host;
             var cloud_port = cloudConfig.release.port;
-            var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + ':' + cloudConfig.release.port
+            var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + (cloudConfig.release.port ? `:${cloudConfig.release.port}` : '')
         }
 
         const WebFont = require(pathPrefix + 'webfontloader');
@@ -1976,27 +1976,55 @@
     <script>
         // 服务器状态标识
         var cloud_serveronline = true;
-        // 用户token暂存
+        // token
         var cloud_token;
-        var cloud_token_expires;
-        // 用户信息暂存
-        var cloud_userinfo;
+        var cloud_refresh_token;
+
+        // 获取本地存储的token
+        function getCloudToken() {
+            return new Promise((resolve) => {
+                storage.get('cloud_token', (err, res) => {
+                    if (err) {
+                        console.error('Get local cloud token error.', err);
+                        resolve(false);
+                        return;
+                    }
+                    // 获得本地的token
+                    const { token, refreshToken, saveTime } = res;
+                    if (moment(saveTime, 'YYYYMMDDHHmmss').add(3, 'hours').valueOf() >= moment().valueOf()) {
+                        cloud_token = token;
+                    }
+                    if (moment(saveTime, 'YYYYMMDDHHmmss').add(14, 'days').valueOf() >= moment().valueOf()) {
+                        cloud_refresh_token = refreshToken;
+                    }
+                })
+            });
+        }
+
+        // 存储token
+        function saveCloudToken() {
+            storage.set('cloud_token', {
+                token: cloud_token,
+                refreshToken: cloud_refresh_token,
+                saveTime: moment().format('YYYYMMDDHHmmss'),
+            });
+        }
 
         // 检测服务器状态
         function checkServerStatus(onlineCallback) {
             $.ajax({
-                url: cloud_apibase + '/common/ping',
+                url: `${cloud_apibase}/common/ping`,
                 type: 'GET',
                 dataType: 'json',
                 timeout: 1000,
-                success: () => {
+                success: async () => {
                     if (!cloud_serveronline) {
                         console.log('Fastnote Cloud server is online now, user module enabled.');
                     }
                     cloud_serveronline = true;
                     $('.trigger-cloud').css('display', 'inline-block');
-                    if (typeof onlineCallback == "function") {
-                        onlineCallback();
+                    if (typeof onlineCallback === 'function') {
+                        await onlineCallback();
                     }
                 },
                 error: () => {
@@ -2004,112 +2032,132 @@
                         console.error('Fastnote Cloud server is not online, user module disabled.');
                     }
                     cloud_serveronline = false;
-                    //每5分钟检查一次服务器是否在线
+                    // 每分钟检查一次服务器是否在线
                     setTimeout(() => {
                         checkServerStatus(onlineCallback);
-                    }, 1000 * 60 * 5);
+                    }, 1000 * 60);
                 }
             })
         }
 
-        // 检查用户登录状态
-        // params: success callback, failed callback
-        function checkLogin(success, failed) {
-            $.ajax({
-                url: cloud_apibase + '/common/ping/auth',
-                type: 'GET',
-                dataType: 'json',
-                timeout: 5000,
-                headers: {
-                    Authorization: "Bearer " + cloud_token
-                }
-            }).then((res) => {
-                if (res.code == 200) {
-                    success();
-                } else {
-                    failed();
-                }
-            }, failed);
-        }
-
-        // 刷新本地的token
-        function refreshToken() {
-            checkLogin(() => {
-                // 登录态验证成功
-                // 当前token尚未报废，申请一个新的token，客户端丢弃旧的token
+        // 检查登录态
+        function checkLogin() {
+            return new Promise((resolve) => {
                 $.ajax({
-                    url: cloud_apibase + '/user/refresh',
-                    type: 'GET',
+                    url: `${cloud_apibase}/common/ping/auth`,
+                    type: 'get',
                     headers: {
-                        Authorization: "Bearer " + cloud_token
+                        Authorization: `Bearer ${cloud_token}`,
                     },
-                    success: function(res) {
-                        if (res.code == 200) {
-                            cloud_token = res.data.token;
-                            cloud_token_expires = res.data.expires;
-                            console.log('User token refreshed.');
-                            // 针对新获取到的token启用保鲜
-                            setFutureTokenRefresh();
+                    dataType: 'json',
+                    timeout: 1000,
+                    success: (res) => {
+                        if (!res.data) {
+                            resolve(false);
                         }
+                        resolve(res.data.success);
                     },
-                    error: function() {
-                        console.error('Cannot refresh user token.');
-                    }
-                });
-            }, () => {
-                // 当前token已经报废，需要从登录的关口获取
-                cloudAutoLogin(() => {
-                    console.log('User token refreshed.');
-                }, () => {
-                    // 无法从登录关口获取新的token
-                    displayInfobar('error', i18n[current_i18n].logon_status_lost);
-                    // 切换到未登录状态下的UI
-                    switchCloudPanelToNoLogon();
-                    // 清理token缓存
-                    cloud_token = null;
+                    error: () => {
+                        console.error('Cannot check login status.');
+                        resolve(false);
+                    },
                 });
             });
         }
 
-        // 设置token保鲜，在token过期时间的90%时触发
-        function setFutureTokenRefresh() {
-            setTimeout(function() {
-                refreshToken();
-            }, cloud_token_expires * 1000 * 0.9);
-        }
-
-        // 用暂存的信息自动登录
-        function cloudAutoLogin(success, failed) {
-            storage.get('cloud_userconfig', (err, res) => {
-                if (err) {
-                    failed();
+        // 尝试刷新token
+        function refreshToken() {
+            return new Promise((resolve) => {
+                if (!cloud_refresh_token) {
+                    // token不存在
+                    console.error('Cannot get refresh token when doing refreshing.');
+                    resolve(null);
                     return;
                 }
                 $.ajax({
-                    url: cloud_apibase + '/user/login',
-                    type: 'POST',
-                    timeout: 10000,
+                    url: `${cloud_apibase}/common/user/refreshToken`,
+                    type: 'get',
+                    dataType: 'json',
                     data: {
-                        username: res.username,
-                        password: res.password,
-                        clientType: 'pc',
-                        autologin: true
+                        token: cloud_refresh_token,
                     },
-                    dataType: 'json'
-                }).then((res) => {
-                    if (res.code == 200) {
-                        cloud_token = res.auth.token;
-                        cloud_token_expires = res.auth.expires;
-                        setFutureTokenRefresh();
-                        success();
-                    } else {
-                        failed();
+                    success: (res) => {
+                        resolve(res.data);
+                    },
+                    error: () => {
+                        resolve(null);
                     }
-                }, () => {
-                    failed();
-                });
+                })
             });
         }
+
+        async function doRefreshToken() {
+            const refreshRes = await refreshToken();
+            if (!refreshRes) {
+                console.log('Cannot refresh token after server status check.');
+                return false;
+            }
+            // 用拿到的token覆盖现在的值并存储
+            const { authToken, refreshToken } = refreshRes;
+            cloud_token = authToken;
+            cloud_refresh_token = refreshToken;
+            saveCloudToken();
+            return true;
+        }
+
+        // 登出
+        function cloudUserLogout() {
+            // 显示未登录状态面板
+            $('.cloud-body-nologin').show();
+            $('.cloud-body-user').hide();
+            // 清除
+        }
+
+        // 定时刷新Token
+        function setRefreshCron(retry = 0) {
+            if (retry === 0 || retry > 3) {
+                setTimeout(async () => {
+                    const res = await doRefreshToken();
+                    if (!res) {
+                        setRefreshCron(retry > 3 ? 0 : retry + 1);
+                        return;
+                    }
+                    setRefreshCron();
+                }, 2.5 * 3600 * 1000);
+            } else {
+                const res = await doRefreshToken();
+                if (!res) {
+                    setRefreshCron(retry + 1);
+                    return;
+                }
+                setRefreshCron();
+            }
+        }
+
+        // 执行服务器状态检查，如果服务器在线则检查登录状态
+        checkServerStatus(async () => {
+            // 获取本地的token
+            await getCloudToken();
+            if (!cloud_token) {
+                if (!cloud_refresh_token) {
+                    // 两个token都没有，不执行
+                    return;
+                }
+                // 有refreshToken，尝试refresh
+                const res = await doRefreshToken();
+                if (!res) {
+                    return;
+                }
+            }
+            // 在线，检查登录态
+            const logon = await checkLogin();
+            if (!logon) {
+                // refresh不成功，视为无登录态，不执行后续步骤
+                return;
+            }
+            // 登录态正确
+            setRefreshCron();   // 定时每2.5小时刷新一次token
+        });
 
         // 登录成功后调用
         function afterLoginSuccess() {
@@ -2123,23 +2171,6 @@
             displayInfobar('success', i18n[current_i18n].login_success);
             // token设置
             cloud_token = data.token.token;
-            cloud_token_expires = data.token.expires;
-            // 启用token保鲜
-            setFutureTokenRefresh();
-            // 拉取用户信息
-            afterLoginSuccess();
-            // 获取firstsync状态
-            fetchFirstSyncStatus(function(data){
-                if (data.firstSync){
-                    // 已首次同步
-                    cloud_sync();
-                } else {
-                    // 用户还没有首次同步过
-                    cloud_firstSync();
-                }
-            }, function(data){
-                console.error('Fetch first sync status error.');
-            });
         });
 
         // 注册成功事件
@@ -2147,117 +2178,7 @@
             displayInfobar('success', i18n[current_i18n].register_success);
             // token设置
             cloud_token = data.token.token;
-            cloud_token_expires = data.token.expires;
-            // 启用token保鲜
-            setFutureTokenRefresh();
-            // 拉取用户信息
-            afterLoginSuccess();
-            // 获取firstsync状态
-            fetchFirstSyncStatus(function(data){
-                if (data.firstSync){
-                    firstSync();
-                }
-            }, function(data){
-                console.error('Fetch first sync status error.');
-            });
         });
-
-        // 登出
-        function cloudUserLogout() {
-            // 先进行authping，判断token是否已经失效了，已经失效直接切到登出
-            checkLogin(() => {
-                // token还有效，需要通过API对token进行报废
-                $.ajax({
-                    url: cloud_apibase + '/user/logout',
-                    type: 'GET',
-                    dataType: 'json',
-                    headers: {
-                        Authorization: "Bearer " + cloud_token
-                    },
-                    success: function(res) {
-                        // 切换到未登录状态下的UI
-                        switchCloudPanelToNoLogon();
-                        // 清理token缓存
-                        cloud_token = null;
-                        displayInfobar('success', i18n[current_i18n].logout_success);
-                    },
-                    error: function(err) {
-                        console.error(err.message);
-                        displayInfobar('error', i18n[current_i18n].logout_failed);
-                    }
-                });
-            }, () => {
-                // 切换到未登录状态下的UI
-                switchCloudPanelToNoLogon();
-                // 清理token缓存
-                cloud_token = null;
-                // 清理缓存的cloud_userconfig
-                storage.remove('cloud_userconfig', (err) => {
-                    if (err) {
-                        console.error('Cannot remove stored cloud user config.');
-                    }
-                });
-                displayInfobar('success', i18n[current_i18n].logout_success);
-            })
-        }
-
-        /* 从服务器获取用户信息
-         * param: token - jwttoken
-         */
-        function fetchUserInfo() {
-            $.ajax({
-                url: cloud_apibase + '/user/getInfo',
-                type: 'GET',
-                dataType: 'json',
-                headers: {
-                    Authorization: "Bearer " + cloud_token
-                },
-                success: (res) => {
-                    if (res.code == 200) {
-                        cloud_userinfo = res.data;
-                        //填入username
-                        $('#cloud-user-username').text(res.data.username);
-                    } else {
-                        console.error('error', '获取用户信息失败，请尝试手动登录');
-                    }
-                },
-                error: (res) => {
-                    console.error('error', '获取用户信息失败，请尝试手动登录');
-                }
-            });
-        }
-
-        // 自动登录包装
-        function runCloudAutoLogin() {
-            cloudAutoLogin(() => {
-                afterLoginSuccess();
-            }, () => {
-                console.error('Auto login to Fastnote Cloud failed.');
-            });
-        }
-
-        // 获取用户首次同步的状态
-        function fetchFirstSyncStatus(success, failed) {
-            $.ajax({
-                url: cloud_apibase + '/user/firstsync_status',
-                type: 'GET',
-                dataType: 'json',
-                headers: {
-                    Authorization: "Bearer " + cloud_token
-                }
-            }).then((res) => {
-                if (res.code == 200) {
-                    success(res.data);
-                } else {
-                    failed();
-                }
-            }, failed);
-        }
-
-        // 执行服务器状态检查，如果服务器在线则检查登录状态
-        checkServerStatus();
-        // 执行自动登录
-        runCloudAutoLogin();
     </script>
 
     <!-- 云服务相关 - 操作日志 -->
