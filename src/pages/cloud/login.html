@@ -211,7 +211,7 @@
                     <div class="login-form-control">
                         <input class="form-control brcontrol-input" id="input-captcha" type="text">
                     </div>
-                    <div id="login-end">
+                    <div class="login-end">
                         <img id="login-captcha">
                     </div>
                 </div>
@@ -274,6 +274,7 @@
                     username,
                     password: sha256(password, 'fastnote'),
                     captcha,
+                    captchaId,
                 },
                 success: (res) => {
                     if (!res) {
@@ -284,8 +285,15 @@
                     const { success, data } = res;
                     if (!success) {
                         // 是否需要验证码
+                        if (res.code === 400008) {
+                            getCaptcha();
+                        }
                         if (res.code === 400009) {
                             $('#login-captcha-group').show();
+                            ipcRenderer.send('cloud-login-need-captcha');
+                            if (!captchaId) {
+                                getCaptcha();
+                            }
                         }
                         displayInfobar('error', res.message);
                         $('#btn-submit').removeAttr('disabled');

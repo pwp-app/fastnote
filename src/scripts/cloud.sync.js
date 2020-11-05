@@ -35,7 +35,7 @@ function fetchDiff() {
 
 // 处理diff
 function processDiff() {
-  
+
 }
 
 // 把所有没有更新的便签提交到服务器
@@ -82,4 +82,7 @@ function pushNoSyncNotes() {
   });
 }
 
-// 根据返回处理
+// 根据返回的更新信息处理
+function processUpdate() {
+  
+}

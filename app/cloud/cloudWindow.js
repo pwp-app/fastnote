@@ -109,6 +109,10 @@ ipc.on('switch-to-login', (sender, data) => {
     }
 });
 
+ipc.on('cloud-login-need-captcha', () => {
+    win_login.setSize(loginWindowSize.w, loginWindowSize.h + 52);
+});
+
 ipc.on('reloadLoginWindow', () => {
     if (win_login) {
         win_login.reload();
