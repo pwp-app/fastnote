@@ -1,50 +1,49 @@
-@import "./color.common.less";
+@import './color.common.less';
 
 @color-primary: #1f1f1f;
-@color-secondary: rgb(210,210,210);
+@color-secondary: rgb(210, 210, 210);
 
-//hover
+// hover
 @color-primary-hover: lighten(@color-primary, 10%);
 @color-primary-darkhover: darken(@color-primary, 5%);
 @color-danger-darkhover: darken(@color-danger, 5%);
 
-//shadow
-@color-boxshadow: rgba(0, 0, 0, .15);
+// shadow
+@color-boxshadow: rgba(0, 0, 0, 0.15);
 @color-boxshadow-dark: @color-deepgray;
-@color-border-shadow: rgba(220, 220, 220, .0375);
+@color-border-shadow: rgba(220, 220, 220, 0.0375);
 
-//border
+// border
 @color-border-primary: #2e2e2e;
 
-//text
-@color-text-primary: rgb(213,210,205);
-@color-text-secondary: rgb(150,150,150);
+// text
+@color-text-primary: rgb(213, 210, 205);
+@color-text-secondary: rgb(150, 150, 150);
 @color-control-text: @color-text-primary;
-@color-control-placeholder: darken(@color-control-text,10%);
+@color-control-placeholder: darken(@color-control-text, 10%);
 @color-control-bg: #2f2f2f;
 @color-control-border: rgb(85, 85, 85);
 @color-textarea-color: @color-text-primary;
 @color-textarea-background: @color-notelist-background;
 
-//infobar
+// infobar
 @color-success: #004116;
 @color-warning: #412f00;
 @color-error: #5a0b00;
 @color-info: #2e2e2e;
 @color-danger: #4e4e4e;
 
-
 //updater progressbar
 @color-updateprogress-background: @color-info;
 @color-updateprogress-value: #222222;
 
-//mainmenu
+// mainmenu
 @color-mainmenu-primary: @color-text-primary;
 @color-mainmenu-background: #1f1f1f;
 @color-mainmenu-hover: lighten(#2e2e2e, 5%);
 @color-mainmenu-split: #2e2e2e;
 
-//note
+// note
 @color-note-background: @color-primary;
 @color-note-text: @color-text-primary;
 @color-notelist-background: #2e2e2e;
@@ -56,22 +55,22 @@
 @color-newnote-float-border: 1px solid #4e4e4e;
 @color-newnote-tip: @color-text-primary;
 
-//toast
+// toast
 @color-toast-bg: #2e2e2e;
 @color-toast-text: @color-text-primary;
 @color-toast-border: 1px solid #4e4e4e;
 @color-toast-search-bg: #3e3e3e;
 
-//bottombar
+// bottombar
 @color-trigger-primary: @color-text-primary;
 @color-trigger-hover-primary: lighten(@color-trigger-primary, 15%);
 @color-trigger-bg-checked: #2f2f2f;
 
-//about
+// about
 @color-about-primary: @color-text-primary;
 @color-about-bg: @color-primary;
 
-//settings
+// settings
 @color-settings-text: @color-text-primary;
 @color-settings-background: #2f2f2f;
 @color-settings-select-disabled: lighten(@color-settings-background, 8%);
@@ -81,13 +80,17 @@
 @color-range-bg: lighten(@color-settings-background, 10%) !important;
 @color-range-thumb: lighten(@color-range-bg, 5%);
 
-//updater
+// updater
 @color-updater-text: @color-text-primary;
 @color-updater-text-red: @color-error;
 
-//windowes
+// windowes
 @color-window-top-border: #2f2f2f;
 
-//widget
+// widget
 @color-widget-bg: @color-primary;
 @color-widget-text: @color-text-primary;
+
+// login
+@color-login-bg: @color-primary;
+@color-login-text: @color-secondary;
