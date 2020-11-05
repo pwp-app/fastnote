@@ -7,12 +7,10 @@ const {
 
 // ipc主进程
 const ipc = require('electron').ipcMain;
-
-const app = require('electron').app;
 const path = require('path');
 
 // consts
-const loginWindowHeight = 320;
+const loginWindowHeight = 328;
 const registerWindowHeight = 480;
 
 function createLoginWindow() {
@@ -89,31 +87,31 @@ function createRegisterWindow() {
 }
 
 ipc.on('height-change', (sender, data)=>{
-    if (win_login != null){
+    if (win_login){
         win_login.setSize(win_login.getSize()[0], data);
     }
 });
 
 ipc.on('switch-to-register', (sender, data)=>{
-    loginWindow.switchToRegister();
+    cloudWindow.switchToRegister();
 });
 
-ipc.on('switch-to-login',(sender,data)=>{
-    if (typeof data != 'undefined'){
-        loginWindow.switchToLogin();
+ipc.on('switch-to-login',(sender, data)=>{
+    if (data){
+        cloudWindow.switchToLogin();
         win_login.webContents.send('page-changed', data);
     }
 });
 
 ipc.on('reloadLoginWindow', () => {
-    if (win_login != null) {
+    if (win_login) {
         win_login.reload();
     }
 });
 
 const cloudWindow = {
     createLoginWindow: () => {
-        if (win_login != null) {
+        if (win_login) {
             if (win_login.isMinimized()) {
                 win_login.restore();
             }
@@ -134,7 +132,7 @@ const cloudWindow = {
                 win_login.restore();
             }
             win_login.focus();
-            if (status != 'register') {
+            if (status !== 'register') {
                 let viewpath = global.hotfix.buildPath('cloud/register.html');
                 win_login.loadFile(viewpath);
                 win_login.setSize(win_login.getSize()[0], registerWindowHeight);
@@ -145,8 +143,8 @@ const cloudWindow = {
         }
     },
     switchToLogin: ()=>{
-        if (status == 'register') {
-            let viewpath = global.hotfix.buildPath('cloud/register.html');
+        if (status === 'register') {
+            let viewpath = global.hotfix.buildPath('cloud/login.html');
             win_login.loadFile(viewpath);
             win_login.setSize(win_login.getSize()[0], loginWindowHeight);
         } else {
@@ -157,8 +155,8 @@ const cloudWindow = {
         }
     },
     switchToRegister: () => {
-        if (status == 'login') {
-            let viewpath = path.resolve(__dirname, '../../../public/cloud/register.html');
+        if (status === 'login') {
+            let viewpath = global.hotfix.buildPath('cloud/register.html');
             win_login.loadFile(viewpath);
             win_login.setSize(win_login.getSize()[0], registerWindowHeight);
         } else {
