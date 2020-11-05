@@ -15,7 +15,11 @@ const aes_decrypt = function(data, password){
 };
 
 const sha256 = function(data, hmac){
-    return crypto.createHmac('sha256', hmac).update(data).digest('hex');
+    if (hmac) {
+        return crypto.createHmac('sha256', hmac).update(data).digest('hex');
+    } else {
+        return crypto.createHash('sha256').update(data).digest('hex');
+    }
 };
 
 const b64 = {

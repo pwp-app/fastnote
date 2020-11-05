@@ -2052,10 +2052,10 @@
                     dataType: 'json',
                     timeout: 1000,
                     success: (res) => {
-                        if (!res.data) {
+                        if (!res) {
                             resolve(false);
                         }
-                        resolve(res.data.success);
+                        resolve(res.success);
                     },
                     error: () => {
                         console.error('Cannot check login status.');
@@ -2075,14 +2075,14 @@
                     return;
                 }
                 $.ajax({
-                    url: `${cloud_apibase}/common/user/refreshToken`,
+                    url: `${cloud_apibase}/user/refreshToken`,
                     type: 'get',
                     dataType: 'json',
                     data: {
                         token: cloud_refresh_token,
                     },
                     success: (res) => {
-                        resolve(res.data);
+                        resolve(res || null);
                     },
                     error: () => {
                         resolve(null);
@@ -2114,7 +2114,7 @@
         }
 
         // 定时刷新Token
-        function setRefreshCron(retry = 0) {
+        async function setRefreshCron(retry = 0) {
             if (retry === 0 || retry > 3) {
                 setTimeout(async () => {
                     const res = await doRefreshToken();
@@ -2156,49 +2156,28 @@
                 return;
             }
             // 登录态正确
-            setRefreshCron();   // 定时每2.5小时刷新一次token
+            afterLoginSuccess();
         });
 
         // 登录成功后调用
         function afterLoginSuccess() {
+            // 保存token到本地
+            saveCloudToken();
+            // 定时每2.5小时刷新一次token
+            setRefreshCron();
+            // 切换UI
             $('.cloud-body-nologin').hide();
             $('.cloud-body-user').show();
-            fetchUserInfo(cloud_token);
         }
 
         // 登录成功事件
         ipcRenderer.on('cloud-login-success', (sender, data) => {
             displayInfobar('success', i18n[current_i18n].login_success);
             // token设置
-            cloud_token = data.token.token;
-        });
-
-        // 注册成功事件
-        ipcRenderer.on('cloud-register-success', (sender, data) => {
-            displayInfobar('success', i18n[current_i18n].register_success);
-            // token设置
-            cloud_token = data.token.token;
-        });
-    </script>
-
-    <!-- 云服务相关 - 操作日志 -->
-    <script>
-        // 操作日志相关类
-        class OperationLog {
-            constructor(type, noteid) {
-                this.type = type;
-                this.noteid = noteid;
-            }
-        }
-        // 操作日志的全局变量
-        var note_operation_log = [];
-        // 读取操作日志列表
-        storage.get('note_operation_log', (err, res) => {
-            if (err) {
-                console.info('No stored operation log.');
-                return;
-            }
-            note_operation_log = res;
+            const { authToken, refreshToken } = data;
+            cloud_token = authToken;
+            cloud_refresh_token = refreshToken;
+            afterLoginSuccess();
         });
     </script>
 

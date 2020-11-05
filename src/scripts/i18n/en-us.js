@@ -25,6 +25,7 @@ i18n['en-us']={
     reset: 'Reset',
     email: 'Email',
     captcha: 'Captcha',
+    email_captcha: 'Email Captcha',
     confirm_password: 'Confirm password',
     newnote_tips: 'Using Ctrl+Enter to sumbit notes',
     note_empty: 'You haven\'t created any notes<br>You can quickly create notes below',

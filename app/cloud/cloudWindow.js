@@ -10,14 +10,20 @@ const ipc = require('electron').ipcMain;
 const path = require('path');
 
 // consts
-const loginWindowHeight = 328;
-const registerWindowHeight = 480;
+const loginWindowSize = {
+    w: 600,
+    h: 324,
+}
+const registerWindowSize = {
+    w: 640,
+    h: 526,
+};
 
 function createLoginWindow() {
     let conf = {
-        width: 600,
-        height: loginWindowHeight,
-        //resizable: false,
+        width: loginWindowSize.w,
+        height: loginWindowSize.h,
+        resizable: false,
         maximazable: false,
         show: false,
         webPreferences: {
@@ -54,9 +60,9 @@ function createLoginWindow() {
 
 function createRegisterWindow() {
     let conf = {
-        width: 600,
-        height: registerWindowHeight,
-        //resizable: false,
+        width: registerWindowSize.w,
+        height: registerWindowSize.h,
+        resizable: false,
         maximazable: false,
         show: false,
         webPreferences: {
@@ -92,14 +98,14 @@ ipc.on('height-change', (sender, data)=>{
     }
 });
 
-ipc.on('switch-to-register', (sender, data)=>{
+ipc.on('switch-to-register', (sender, data) => {
     cloudWindow.switchToRegister();
+    win_login.webContents.send('page-changed');
 });
 
-ipc.on('switch-to-login',(sender, data)=>{
+ipc.on('switch-to-login', (sender, data) => {
     if (data){
-        cloudWindow.switchToLogin();
-        win_login.webContents.send('page-changed', data);
+        cloudWindow.switchToLogin(data);
     }
 });
 
@@ -119,7 +125,7 @@ const cloudWindow = {
             if (status != 'login') {
                 let viewpath = global.hotfix.buildPath('cloud/login.html');
                 win_login.loadFile(viewpath);
-                win_login.setSize(win_login.getSize()[0], loginWindowHeight);
+                win_login.setSize(loginWindowSize.w, loginWindowSize.h);
             }
         } else {
             createLoginWindow();
@@ -135,30 +141,35 @@ const cloudWindow = {
             if (status !== 'register') {
                 let viewpath = global.hotfix.buildPath('cloud/register.html');
                 win_login.loadFile(viewpath);
-                win_login.setSize(win_login.getSize()[0], registerWindowHeight);
+                win_login.setSize(registerWindowSize.w, registerWindowSize.h);
             }
         } else {
             createRegisterWindow();
             status = 'register';
         }
     },
-    switchToLogin: ()=>{
+    switchToLogin: (data) => {
         if (status === 'register') {
             let viewpath = global.hotfix.buildPath('cloud/login.html');
             win_login.loadFile(viewpath);
-            win_login.setSize(win_login.getSize()[0], loginWindowHeight);
+            win_login.setSize(loginWindowSize.w, loginWindowSize.h);
         } else {
             if (win_login.isMinimized()) {
                 win_login.restore();
             }
             win_login.focus();
         }
+        if (data) {
+            setTimeout(() => {
+                win_login.webContents.send('page-changed', data);
+            }, 500);
+        }
     },
     switchToRegister: () => {
         if (status === 'login') {
             let viewpath = global.hotfix.buildPath('cloud/register.html');
             win_login.loadFile(viewpath);
-            win_login.setSize(win_login.getSize()[0], registerWindowHeight);
+            win_login.setSize(registerWindowSize.w, registerWindowSize.h);
         } else {
             if (win_login.isMinimized()) {
                 win_login.restore();

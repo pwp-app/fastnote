@@ -25,6 +25,7 @@ i18n['zh-cn']={
     reset: '重置',
     email: '邮箱',
     captcha: '验证码',
+    email_captcha: '邮箱验证码',
     confirm_password: '确认密码',
     newnote_tips: '使用 Ctrl+Enter 提交便签',
     note_empty: '您还没有建立任何的便签<br>在下方你可以快速创建便签',

@@ -298,10 +298,6 @@ async function createWindow() {
         win.webContents.send('cloud-login-success', data);
     });
 
-    ipc.on('cloud-register-success', (sender, data)=>{
-        win.webContents.send('cloud-register-success', data);
-    });
-
     ipc.on('cancel-encryption', function(sender, data) {
         win.webContents.send('cancel-encryption', data);
     });

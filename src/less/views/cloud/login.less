@@ -31,45 +31,57 @@
     letter-spacing: 0.05em;
 }
 .login-body {
-    margin-top: 14px;
+    margin-top: 4px;
 }
 .login-form-group {
-    display: grid;
-    grid-template-columns: 12% 5% 83%;
-    grid-template-rows: 42px;
-    align-items: left;
-    margin-top: 12px;
-}
-#login-captcha-group {
-    grid-template-columns: 12% 5% 63.35% 5% 12% !important;
-}
-.login-form-label {
-    font-size: 14px;
-    color: @color-login-text;
-    margin-top: 6px;
-    margin-left: 7px;
-    .no-select-and-drag();
-}
-.login-form-control {
-    input {
-        height: 34px;
-        font-size: 13px;
+    display: flex;
+    align-items: center;
+    height: 52px;
+    line-height: 52px;
+    .login-form-label {
+        width: 120px;
+        font-size: 14px;
         color: @color-login-text;
-        background: @color-login-bg;
-        border: 1px solid @color-control-border;
-        vertical-align: middle;
-        padding-left: 16px;
+        margin-top: 6px;
+        margin-left: 7px;
+        .no-select-and-drag();
     }
-    input:focus {
-        color: @color-login-text;
-        background: darken(@color-login-bg, 1%);
-        border: 1px solid @color-control-border;
-        outline: none !important;
-        box-shadow: none !important;
+    .login-form-control {
+        flex-grow: 1;
+        input {
+            height: 34px;
+            font-size: 13px;
+            color: @color-login-text;
+            background: @color-login-bg;
+            border: 1px solid @color-control-border;
+            vertical-align: middle;
+            padding-left: 16px;
+        }
+        input:focus {
+            color: @color-login-text;
+            background: darken(@color-login-bg, 1%);
+            border: 1px solid @color-control-border;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    }
+    .login-end {
+        width: 96px;
+        margin-left: 12px;
+        display: flex;
+        align-items: center;
+        justify-items: center;
+        justify-self: flex-end;
+        img, button {
+            width: 96px;
+        }
+        button {
+            font-size: 14px;
+        }
     }
 }
 .login-form-button {
-    margin-top: 12px;
+    margin-top: 16px;
 }
 .login-button {
     width: 68px;
@@ -84,9 +96,4 @@
 }
 .login-button:hover {
     background: lighten(@color-primary, 5%) !important;
-}
-#login-captcha {
-    width: 80px;
-    height: 34px;
-    cursor: pointer;
 }
