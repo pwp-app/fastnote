@@ -108,30 +108,6 @@ textarea.on('keyup', function (e) {
     }
 });
 
-// 添加便签至Array
-function addNoteObjToArray(note, isRecycle = false) {
-    notes.push(note);
-    noteMap[note.id] = note;
-    // 分类计数
-    const { category } = note;
-    if (!category && !isRecycle) {
-        notalloc_count++;
-    }
-}
-
-// 从便签数据中删除一项
-function deleteNoteFromArr(id, isRecycle = false) {
-    if (noteMap[id]) {
-        const { category } = noteMap[id];
-        if (!isRecycle) minorCategoryCount(category, false, true, true);
-        noteMap[id] = null;
-    }
-    const index = notes.findIndex((note) => note.id === id);
-    if (index > -1) {
-        notes.splice(index, 1);
-    }
-}
-
 // 放入回收站
 function putToRecyclebin(id, infoEnabled = true) {
     notes.every(function (note, i) {
@@ -240,7 +216,7 @@ function quickRestoreNote(note) {
             refreshNoteList(() => {
                 displayInfobar('success', i18n[current_i18n].restore_success);
                 // animate
-                $('#note_' + note.id).animateCss('fadeInRight faster');
+                $(`#note_${note.id}`).animateCss('fadeInRight faster');
                 bindNoteFoldDBL(note.id);
             });
             resolve(true);

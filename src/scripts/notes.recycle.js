@@ -2,8 +2,8 @@ var fs = require('fs');
 
 var storagePath = app.getPath('userData');
 
-//execute
-if (typeof settings == "undefined"){
+// execute
+if (!settings){
     storage.get('settings' + (global.indebug ? '_dev' : ''), function (err, data) {
         if (err) {
           //获取callback回传的json
@@ -16,7 +16,31 @@ if (typeof settings == "undefined"){
     readNoteFiles();
 }
 
-//删除note
+// 添加便签至Array
+function addNoteObjToArray(note, isRecycle = false) {
+    notes.push(note);
+    noteMap[note.id] = note;
+    // 分类计数
+    const { category } = note;
+    if (!category && !isRecycle) {
+        notalloc_count++;
+    }
+}
+
+// 从便签数据中删除一项
+function deleteNoteFromArr(id, isRecycle = false) {
+    if (noteMap[id]) {
+        const { category } = noteMap[id];
+        if (!isRecycle) minorCategoryCount(category, false, true, true);
+        noteMap[id] = null;
+    }
+    const index = notes.findIndex((note) => note.id === id);
+    if (index > -1) {
+        notes.splice(index, 1);
+    }
+}
+
+// 删除note
 function deleteNote(id, infoEnabled = true) {
     notes.every(function (note, i) {
         if (note.id == id) {
@@ -39,7 +63,7 @@ function deleteNote(id, infoEnabled = true) {
                         throw (err);
                     } else {
                         //删除成功
-                        deleteNoteFromArr_recycle(id);
+                        deleteNoteFromArr(id, true);
                         //动画
                         $('#note_' + id).animateCss('fadeOutLeft faster', function () {
                             $('#note_' + id).parent().remove(); //动画结束后删除div
@@ -85,7 +109,7 @@ function deleteNoteByObj(note, infoEnabled = true) {
                 throw (err);
             } else {
                 //删除成功
-                deleteNoteFromArr_recycle(note.id);
+                deleteNoteFromArr(note.id, true);
                 //动画
                 $('#note_' + note.id).animateCss('fadeOutLeft faster', function () {
                     $('#note_' + note.id).parent().remove(); //动画结束后删除div
@@ -113,7 +137,7 @@ function deleteNotes(notes, callback) {
                 notes.forEach(noteid => {
                     deleteNote(noteid, false);
                 });
-                if (typeof callback == 'function') {
+                if (typeof callback === 'function') {
                     callback(true);
                     return;
                 }
@@ -122,7 +146,7 @@ function deleteNotes(notes, callback) {
             }
         }
     }
-    if (typeof callback == 'function') {
+    if (typeof callback === 'function') {
         callback(false);
     }
 }
@@ -147,7 +171,7 @@ function restoreNote(id, infoEnabled = true) {
                         readNoteFiles();
                         throw (err);
                     } else {
-                        deleteNoteFromArr_recycle(id);
+                        deleteNoteFromArr(id, true);
                         //动画
                         $('#note_' + id).animateCss('fadeOutLeft faster', function () {
                             $('#note_' + id).parent().remove(); //动画结束后删除div
