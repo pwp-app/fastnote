@@ -277,7 +277,7 @@ function recoverNotes(notes) {
             }
             // 对便签本身进行处理
             let note = JSON.parse(note_data);
-            let mtime = typeof note.updaterawtime != "undefined" ? note.updaterawtime : note.rawtime;
+            let mtime = note.updaterawtime || note.rawtime;
             // 检查修改时间
             if (backup.updateTime > mtime) {
                 // 备份文件较新，直接覆盖
@@ -298,7 +298,7 @@ function recoverNotes(notes) {
                         title: "恢复备份",
                         type: "warning",
                         message: "检测到已经存在的更新的便签文件，是否覆盖？",
-                        detail: "当前文件：" + backup.filename + "\n便签创建时间:" + note.time + (typeof note.updatetime != "undefined" ? "\n便签更新时间：" + note.updatetime : "") + "\n便签内容: " + (note.text.length > 20 ? note.text.substring(0, 20) + "..." : note.text),
+                        detail: "当前文件：" + backup.filename + "\n便签创建时间:" + note.time + (note.updatetime ? "\n便签更新时间：" + note.updatetime : "") + "\n便签内容: " + (note.text.length > 20 ? note.text.substring(0, 20) + "..." : note.text),
                         defaultId: 1,
                         cancelId: 1,
                         buttons: ["覆盖", "跳过", "全部覆盖", "全部跳过"]
@@ -388,7 +388,7 @@ function recoverBackupCompleted(recover_count, backups_length, recover_failed_co
 }
 
 function importNotesErrorBox(err) {
-    if (typeof err == "string") {
+    if (typeof err === "string") {
         dialog.showMessageBoxSync({
             title: "备份恢复错误",
             type: "error",
