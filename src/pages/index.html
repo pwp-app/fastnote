@@ -1975,7 +1975,7 @@
     <!-- 云服务 -->
     <script>
         // 服务器状态标识
-        var cloud_serveronline = true;
+        var cloud_serveronline = false;
         // token
         var cloud_token;
         var cloud_refresh_token;
@@ -1985,7 +1985,7 @@
             return new Promise((resolve) => {
                 storage.get('cloud_token', (err, res) => {
                     if (err) {
-                        console.error('Get local cloud token error.', err);
+                        console.error('[Cloud] Get local cloud token error.', err);
                         resolve(false);
                         return;
                     }
@@ -1997,7 +1997,8 @@
                     if (moment(saveTime, 'YYYYMMDDHHmmss').add(14, 'days').valueOf() >= moment().valueOf()) {
                         cloud_refresh_token = refreshToken;
                     }
-                })
+                    resolve(true);
+                });
             });
         }
 
@@ -2017,19 +2018,19 @@
                 type: 'GET',
                 dataType: 'json',
                 timeout: 1000,
-                success: async () => {
+                success: () => {
                     if (!cloud_serveronline) {
-                        console.log('Fastnote Cloud server is online now, user module enabled.');
+                        console.log('[Cloud] Fastnote Cloud server is online now, user module enabled.');
                     }
                     cloud_serveronline = true;
                     $('.trigger-cloud').css('display', 'inline-block');
                     if (typeof onlineCallback === 'function') {
-                        await onlineCallback();
+                        onlineCallback();
                     }
                 },
                 error: () => {
                     if (cloud_serveronline) {
-                        console.error('Fastnote Cloud server is not online, user module disabled.');
+                        console.error('[Cloud] Fastnote Cloud server is not online, user module disabled.');
                     }
                     cloud_serveronline = false;
                     // 每分钟检查一次服务器是否在线
@@ -2052,13 +2053,14 @@
                     dataType: 'json',
                     timeout: 1000,
                     success: (res) => {
+                        console.log(res);
                         if (!res) {
                             resolve(false);
                         }
                         resolve(res.success);
                     },
                     error: () => {
-                        console.error('Cannot check login status.');
+                        console.error('[Cloud] Cannot check login status.');
                         resolve(false);
                     },
                 });
@@ -2066,11 +2068,11 @@
         }
 
         // 尝试刷新token
-        function refreshToken() {
+        function requestRefreshToken() {
             return new Promise((resolve) => {
                 if (!cloud_refresh_token) {
                     // token不存在
-                    console.error('Cannot get refresh token when doing refreshing.');
+                    console.error('[Cloud] Cannot get refresh token when doing refreshing.');
                     resolve(null);
                     return;
                 }
@@ -2082,7 +2084,10 @@
                         token: cloud_refresh_token,
                     },
                     success: (res) => {
-                        resolve(res || null);
+                        if (!res.success) {
+                            return resolve(null);
+                        }
+                        resolve(res.data || null);
                     },
                     error: () => {
                         resolve(null);
@@ -2092,9 +2097,9 @@
         }
 
         async function doRefreshToken() {
-            const refreshRes = await refreshToken();
+            const refreshRes = await requestRefreshToken();
             if (!refreshRes) {
-                console.log('Cannot refresh token after server status check.');
+                console.log('[Cloud] Cannot refresh token after server status check.');
                 return false;
             }
             // 用拿到的token覆盖现在的值并存储
@@ -2138,6 +2143,8 @@
         checkServerStatus(async () => {
             // 获取本地的token
             await getCloudToken();
+            console.log(cloud_token)
+            console.log(cloud_refresh_token);
             if (!cloud_token) {
                 if (!cloud_refresh_token) {
                     // 两个token都没有，不执行
@@ -2152,7 +2159,8 @@
             // 在线，检查登录态
             const logon = await checkLogin();
             if (!logon) {
-                // refresh不成功，视为无登录态，不执行后续步骤
+                // 检查失败，视为无登录态，不执行后续步骤
+                console.warn('[Cloud] Login status check failed.');
                 return;
             }
             // 登录态正确
