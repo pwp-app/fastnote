@@ -85,7 +85,6 @@ function checkCategoryCount() {
     categories.forEach((category) => {
         custom_total += category.count;
     });
-    console.log(notalloc_count);
     if (notalloc_count + custom_total !== notes.length) {
         recountNotes();
     } else {
