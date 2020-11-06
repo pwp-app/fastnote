@@ -3,6 +3,10 @@ var fs = require('fs');
 
 var storagePath = app.getPath('userData');
 
+// 保存所有的notes
+var notes = [];
+var noteMap = {};
+
 // 预设notesid
 var notesid = 0;
 
@@ -104,10 +108,34 @@ textarea.on('keyup', function (e) {
     }
 });
 
+// 添加便签至Array
+function addNoteObjToArray(note, isRecycle = false) {
+    notes.push(note);
+    noteMap[note.id] = note;
+    // 分类计数
+    const { category } = note;
+    if (!category && !isRecycle) {
+        notalloc_count++;
+    }
+}
+
+// 从便签数据中删除一项
+function deleteNoteFromArr(id, isRecycle = false) {
+    if (noteMap[id]) {
+        const { category } = noteMap[id];
+        if (!isRecycle) minorCategoryCount(category, false, true, true);
+        noteMap[id] = null;
+    }
+    const index = notes.findIndex((note) => note.id === id);
+    if (index > -1) {
+        notes.splice(index, 1);
+    }
+}
+
 // 放入回收站
 function putToRecyclebin(id, infoEnabled = true) {
     notes.every(function (note, i) {
-        if (note.id == id) {
+        if (note.id === id) {
             let path;
             // 暂存
             let note_temp = note;
@@ -179,7 +207,7 @@ function putNotesToRecyclebin(notes, callback) {
             }
         }
     }
-    if (typeof callback == 'function') {
+    if (typeof callback === 'function') {
         callback(false);
     }
 }
@@ -373,9 +401,9 @@ function saveNoteByObj(note) {
 
 // 基于obj删除note
 function deleteNoteByObj(note) {
-    var note_path = storagePath + (global.indebug ? '/devTemp' : '') + "/notes/" + note.rawtime + (typeof note.offset !== 'undefined' ? note.offset > 0 ? "." + note.offset : "" : "") + ".json";
-    if (fs.existsSync(note_path)) {
-        fs.unlink(note_path, function (err) {
+    const notePath = storagePath + (global.indebug ? '/devTemp' : '') + "/notes/" + note.rawtime + (typeof note.offset !== 'undefined' ? note.offset > 0 ? "." + note.offset : "" : "") + ".json";
+    if (fs.existsSync(notePath)) {
+        fs.unlink(notePath, function (err) {
             if (err) {
                 console.error(err);
             }

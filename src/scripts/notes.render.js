@@ -7,10 +7,6 @@ String.prototype.startWith = function(compareStr){
 };
 
 // *** 变量 ***
-
-// 保存所有的notes
-var notes = [];
-
 var selectModeEnabled = false;
 // 存放长按的setTimeout
 var noteLongClickTimeout;
@@ -415,17 +411,7 @@ function bindNoteFoldDBL(id) {
     }
 }
 
-//添加笔记至Array
-function addNoteObjToArray(note, isRecycle = false) {
-    notes.push(note);
-    // 分类计数
-    const { category } = note;
-    if (!category && !isRecycle) {
-        notalloc_count++;
-    }
-}
-
-//刷新note-list
+// 刷新note-list
 function refreshNoteList(callback) {
     clearNoteList(); //先清空
     if (typeof sort_mode !== 'string') {
@@ -493,30 +479,6 @@ function sortNotesByUpdateDate(a, b) {
     } else {
         return 0;
     }
-}
-
-//从数组中删除一项
-function deleteNoteFromArr(id) {
-    notes.every(function (note, i) {
-        if (note.id == id) {
-            notes.splice(i, 1);
-            minorCategoryCount(note.category, false, true, true);
-            return false;
-        } else {
-            return true;
-        }
-    });
-}
-
-function deleteNoteFromArr_recycle(id) {
-    notes.every(function (note, i) {
-        if (note.id == id) {
-            notes.splice(i, 1);
-            return false;
-        } else {
-            return true;
-        }
-    });
 }
 
 function operateForceTopNote(noteid, status) {
