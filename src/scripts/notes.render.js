@@ -29,7 +29,7 @@ var lazyloadObserver = null;
 var noteList = {};
 var filterX;
 
-$(document).ready(() => {
+$(function() {
     noteList.normal = $('#note-list-normal');
     noteList.forceTop = $('#note-list-forceTop');
     filterX = $('#filter-x');
@@ -416,74 +416,32 @@ function bindNoteFoldDBL(id) {
 }
 
 //添加笔记至Array
-function addNoteToArray(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop, markdown) {
-    var note = {
-        id: id,
-        time: time,
-        rawtime: rawtime,
-        updatetime: updatetime,
-        updaterawtime: updaterawtime,
-        title: title,
-        category: category,
-        password: password,
-        text: text,
-        offset: offset,
-        timezone: timezone,
-        forceTop: forceTop,
-        markdown: markdown
-    };
+function addNoteObjToArray(note, isRecycle = false) {
     notes.push(note);
-    //分类计数
-    if (category) {
+    // 分类计数
+    const { category } = note;
+    if (!category && !isRecycle) {
         notalloc_count++;
-    }
-}
-
-function addNoteToArray_recycle(id, time, rawtime, updatetime, updaterawtime, title, category, password, text, offset, timezone, forceTop, markdown) {
-    var note = {
-        id: id,
-        time: time,
-        rawtime: rawtime,
-        updatetime: updatetime,
-        updaterawtime: updaterawtime,
-        title: title,
-        category: category,
-        text: text,
-        password: password,
-        offset: offset,
-        timezone: timezone,
-        forceTop: forceTop,
-        markdown: markdown
-    };
-    notes.push(note);
-}
-
-//添加Note Obj至Array
-function addNoteObjToArray(note) {
-    notes.push(note);
-    //计数器增加
-    if (typeof inRecyclebin === "undefined"){
-        addCategoryCount(note.category, true, true);
     }
 }
 
 //刷新note-list
 function refreshNoteList(callback) {
     clearNoteList(); //先清空
-    if (typeof sort_mode != 'string') {
-        storage.get('sortMode' + (typeof inRecyclebin !== 'undefined' && inRecyclebin ? '_recyclebin' : ''), function (err, data) {
+    if (typeof sort_mode !== 'string') {
+        storage.get('sortMode' + (inRecyclebin ? '_recyclebin' : ''), function (err, data) {
             if (err) {
                 console.error(err);
                 return;
             }
             sort_mode = data.mode;
-            if (typeof sort_mode != 'string') {
+            if (typeof sort_mode !== 'string') {
                 sort_mode = 'id';
             }
             // 渲染列表
             initialRender(notes);
             // callback
-            if (typeof (callback) === 'function') {
+            if (typeof callback === 'function') {
                 callback();
             }
         });
@@ -491,7 +449,7 @@ function refreshNoteList(callback) {
         // 渲染列表
         initialRender(notes);
         // callback
-        if (typeof (callback) === 'function') {
+        if (typeof callback === 'function') {
             callback();
         }
     }

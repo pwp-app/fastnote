@@ -28,8 +28,8 @@ storage.get('notesid' + (global.indebug ? '_dev' : ''), function (error, data) {
         return;
     } else {
         // 获取callback回传的json
-        var notesid_json = data;
-        if (typeof notesid_json.id != 'undefined') {
+        let notesid_json = data;
+        if (typeof notesid_json.id !== 'undefined' && notesid_json.id !== null) {
             if (notesid_json.id >= 0) {
                 notesid = notesid_json.id;
             } else {
@@ -43,7 +43,7 @@ storage.get('notesid' + (global.indebug ? '_dev' : ''), function (error, data) {
 });
 
 // execute
-if (typeof settings == "undefined"){
+if (!settings){
     storage.get('settings' + (global.indebug ? '_dev' : ''), function (err, data) {
         if (err) {
           // 获取callback回传的json
@@ -76,7 +76,7 @@ textarea.on('input propertychange',function(e){
 });
 
 let isComboKeyDown = false; // 防止反复触发
-textarea.keydown(function (e) {
+textarea.on('keydown', function (e) {
     var ctrlKey = e.ctrlKey || e.metaKey;
     if (ctrlKey && e.keyCode == 13 && !isComboKeyDown) {
         isComboKeyDown = true;
@@ -97,9 +97,9 @@ textarea.keydown(function (e) {
 });
 
 // 按键弹起解除锁
-textarea.keyup(function (e) {
+textarea.on('keyup', function (e) {
     var ctrlKey = e.ctrlKey || e.metaKey;
-    if (e.keyCode == 13 || ctrlKey) {
+    if (e.keyCode === 13 || ctrlKey) {
         isComboKeyDown = false;
     }
 });
@@ -257,28 +257,31 @@ function readNoteFiles(success_callback) {
                         countOffset++;
                         console.error(err);
                     }
-                    var note_json = data;
-                    if (typeof (note_json) != 'undefined' && note_json != null) {
-                        note_json = JSON.parse(note_json);
-                        addNoteToArray(note_json.id, note_json.time, note_json.rawtime, note_json.updatetime, note_json.updaterawtime, note_json.title, note_json.category, note_json.password, note_json.text, note_json.offset, note_json.timezone, note_json.forceTop, note_json.markdown);
-                        if (notes.length + countOffset == fileArr.length) {
-                            // 结束文件遍历，渲染列表
-                            refreshNoteList();
-                            // 显示列表
-                            showNoteList();
-                            // 渲染便签分类数量
-                            renderSystemCategoryCount();
-                            renderCustomCategoryCount();
-                            // 检查便签分类数量的正确性
-                            checkCategoryCount();
-                            if (notes.length == 0) {
-                                showNoteEmpty();
-                                isNotesEmpty = true;
-                            }
-                            // 回调
-                            if (typeof success_callback == 'function') {
-                                success_callback();
-                            }
+                    const note_json = data;
+                    if (note_json) {
+                        const note = JSON.parse(note_json);
+                        addNoteObjToArray(note);
+                        if (notes.length + countOffset === fileArr.length) {
+                            // 等待页面DOM初始化
+                            $(function() {
+                                // 结束文件遍历，渲染列表
+                                refreshNoteList();
+                                // 显示列表
+                                showNoteList();
+                                // 渲染便签分类数量
+                                renderSystemCategoryCount();
+                                renderCustomCategoryCount();
+                                // 检查便签分类数量的正确性
+                                checkCategoryCount();
+                                if (notes.length === 0) {
+                                    showNoteEmpty();
+                                    isNotesEmpty = true;
+                                }
+                                // 回调
+                                if (typeof success_callback === 'function') {
+                                    success_callback();
+                                }
+                            });
                         }
                     }
                 });
@@ -356,10 +359,11 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
 
 // 基于note obj保存便签
 function saveNoteByObj(note) {
+    console.log(note);
     // 保存路径
-    var path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + note.rawtime + (typeof note.offset !== 'undefined' ? note.offset > 0 ? "." + note.offset : "" : "") + '.json';
+    const path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + note.rawtime + (typeof note.offset !== 'undefined' ? note.offset > 0 ? "." + note.offset : "" : "") + '.json';
     // 计算文件的offset
-    var json = JSON.stringify(note);
+    const json = JSON.stringify(note);
     fs.writeFile(path, json, 'utf-8', function (err, data) {
         if (err) {
             console.error(err);

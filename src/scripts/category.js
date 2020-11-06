@@ -70,7 +70,7 @@ function readCategoriesFile() {
                 return;
             }
             categories = JSON.parse(data);
-            $(document).ready(function() {
+            $(function() {
                 renderCategoryList();
                 renderCategorySelect();
                 renderSystemCategoryCount();
@@ -82,9 +82,10 @@ function readCategoriesFile() {
 
 function checkCategoryCount() {
     let custom_total = 0;
-    for (var i = 0; i < categories.length; i++) {
-        custom_total += categories[i].count;
-    }
+    categories.forEach((category) => {
+        custom_total += category.count;
+    });
+    console.log(notalloc_count);
     if (notalloc_count + custom_total !== notes.length) {
         recountNotes();
     } else {
@@ -96,39 +97,39 @@ function checkCategoryCount() {
 function recountNotes(retry = false) {
     let count_obj = {};
     // 清点notes
-    for (let i = 0; i < notes.length; i++) {
-        if (notes[i].category) {
-            if (notes[i].category !== 'notalloc') {
-                if (!count_obj[notes[i].category]) {
-                    count_obj[notes[i].category] = {};
-                    count_obj[notes[i].category].count = 1;
-                } else {
-                    count_obj[notes[i].category].count++;
-                }
+    notes.forEach((note) => {
+        const { category } = note;
+        if (category && category !== 'notalloc') {
+            if (!count_obj[category]) {
+                count_obj[category] = {};
+                count_obj[category].count = 1;
+                return;
             }
+            count_obj[category].count += 1;
         }
-    }
+    });
     // 覆盖categories的设置
-    for (let i = 0; i < categories.length; i++) {
-        if (count_obj[categories[i].name]) {
-            categories[i].count = count_obj[categories[i].name].count;
+    categories.forEach((category) => {
+        const { name } = category;
+        if (count_obj[name]) {
+            category.count = count_obj[name].count;
         }
-    }
+    });
     // 重新校验正确性
     let custom_total = 0;
-    for (let i = 0; i < categories.length; i++) {
-        custom_total += categories[i].count;
-    }
-    console.log('Category verify total after fix: ' + (notalloc_count + custom_total));
-    if (notalloc_count + custom_total == notes.length) {
-        console.log('Category count is reset to correct values.');
+    categories.forEach((category) => {
+        custom_total += category.count;
+    });
+    console.log('[Category] Category verify total after fix: ' + (notalloc_count + custom_total));
+    if (notalloc_count + custom_total === notes.length) {
+        console.log('[Category] Category count is reset to correct values.');
         saveCategories();
         renderSystemCategoryCount();
         renderCustomCategoryCount();
     } else {
         // 尝试扫描便签修复分类文件
         if (!retry) {
-            console.error('Category count error, try to fix missing categories.');
+            console.error('[Category] Category count error, try to fix missing categories.');
             fixMissingCategories().then((res) => {
                 // 修复成功后重新渲染一次
                 if (res) {
@@ -138,7 +139,7 @@ function recountNotes(retry = false) {
                 }
             });
         } else {
-            console.error('Category count error, cannot fix after missing categories check.');
+            console.error('[Category] Category count error, cannot fix after missing categories check.');
         }
     }
 }
@@ -214,7 +215,7 @@ function getCountOfCategory(name) {
 }
 
 function removeCategoryFromArr(name) {
-    for (var i = 0; i < categories.length; i++) {
+    for (let i = 0; i < categories.length; i++) {
         if (categories[i].name === name) {
             categories.splice(i, 1);
         }
@@ -222,11 +223,11 @@ function removeCategoryFromArr(name) {
 }
 
 function setNotesCategory(name, category) {
-    var index;
+    let index;
     if (category) {
         index = indexOfCategory(name);
     }
-    for (var i = 0; i < notes.length; i++) {
+    for (let i = 0; i < notes.length; i++) {
         if (notes[i].category == name) {
             notes[i].category = category;
             saveNoteByObj(notes[i]);
