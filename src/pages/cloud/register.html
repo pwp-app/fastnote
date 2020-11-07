@@ -411,7 +411,7 @@
         }
 
         $('#input-captcha').on('keydown', function(e) {
-            if (e.code == 13) {
+            if (e.keyCode == 13) {
                 trySubmitForm();
             }
         });
@@ -430,14 +430,14 @@
             });
             $(document).on('keydown', 'input[type="password"]', (e) => {
                 var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.code == 73) {
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
                     e.preventDefault();
                     e.stopPropagation();
                 }
             });
             $(document).on('keydown', 'input[type="text"]', (e) => {
                 var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.code == 73) {
+                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
                     e.preventDefault();
                     e.stopPropagation();
                 }
