@@ -82,7 +82,7 @@ textarea.on('input propertychange',function(e){
 let isComboKeyDown = false; // 防止反复触发
 textarea.on('keydown', function (e) {
     var ctrlKey = e.ctrlKey || e.metaKey;
-    if (ctrlKey && e.keyCode == 13 && !isComboKeyDown) {
+    if (ctrlKey && e.code == 13 && !isComboKeyDown) {
         isComboKeyDown = true;
         var text = textarea.val().trim();
         var title = $('#input-note-title').val().trim();
@@ -103,7 +103,7 @@ textarea.on('keydown', function (e) {
 // 按键弹起解除锁
 textarea.on('keyup', function (e) {
     var ctrlKey = e.ctrlKey || e.metaKey;
-    if (e.keyCode === 13 || ctrlKey) {
+    if (e.code === 13 || ctrlKey) {
         isComboKeyDown = false;
     }
 });

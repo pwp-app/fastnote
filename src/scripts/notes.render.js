@@ -599,7 +599,7 @@ function renderNotesOfCategory(name) {
 
 // noteid: string
 function checkNotePassword(e, noteid) {
-    if (e.keyCode == 13) {
+    if (e.code == 13) {
         let input_pwd = $('#note_password_' + noteid).val().toString();
         if (sha256(input_pwd, 'fastnote') === $('#note_password_' + noteid).parent().attr('data-password')) {
             //密码正确
