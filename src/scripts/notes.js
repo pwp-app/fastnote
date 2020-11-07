@@ -107,7 +107,7 @@ textarea.on('keydown', function (e) {
 // 按键弹起解除锁
 textarea.on('keyup', function (e) {
     var ctrlKey = e.ctrlKey || e.metaKey;
-    if (e.keyCode === 13 || ctrlKey) {
+    if (e.key === 'Enter' || ctrlKey) {
         isComboKeyDown = false;
     }
 });

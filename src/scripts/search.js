@@ -14,7 +14,7 @@ Mousetrap.bind('ctrl+f', function () {
 $(document).ready(function(){
     $('#note-text').on('keydown', function (e) {
         var ctrlKey = e.ctrlKey || e.metaKey;
-        if (ctrlKey && e.keyCode == 70) {
+        if (ctrlKey && e.key === 'f') {
             if (searchOpened){
                 $('#input-search').focus();
             } else {
@@ -33,7 +33,7 @@ $('#input-search').bind('input propertychange', function () {
     searchTimeout = setTimeout(searchNotes(searchTextChangeCount, $('#input-search').val().trim()), 100);
 });
 $('#input-search').on('keydown', function (e) {
-    if (e.keyCode == 27){
+    if (e.key === 'Escape'){
         closeSearchToast();
         $('#note-text').focus();
         return;

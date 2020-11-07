@@ -9,7 +9,7 @@ $(function () {
   $('body').append(html);
   const consoleInput = $('#input-devconsole');
   consoleInput.on('keydown', (e) => {
-    if (e.keyCode === 13) {
+    if (e.key === 'Enter') {
       const input = consoleInput.val();
       processConsoleCmd(input);
       consoleInput.val('');
