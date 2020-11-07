@@ -82,16 +82,16 @@ textarea.on('input propertychange',function(e){
 let isComboKeyDown = false; // 防止反复触发
 textarea.on('keydown', function (e) {
     let ctrlKey = e.ctrlKey || e.metaKey;
-    if (ctrlKey && e.key === '`') {
+    if (ctrlKey && e.key === 'd') {
         showDevConsole();
         return;
     }
     if (ctrlKey && e.key === 'Enter' && !isComboKeyDown) {
         isComboKeyDown = true;
-        const text = textarea.val().trim();
-        const title = $('#input-note-title').val().trim();
-        const category = $('#select-note-category').val().trim();
-        const password = $('#input-note-password').val().trim();
+        let text = textarea.val().trim();
+        let title = $('#input-note-title').val().trim();
+        let category = $('#select-note-category').val().trim();
+        let password = $('#input-note-password').val().trim();
         if (category === 'notalloc'){
             category = null;
         }
@@ -106,7 +106,7 @@ textarea.on('keydown', function (e) {
 
 // 按键弹起解除锁
 textarea.on('keyup', function (e) {
-    var ctrlKey = e.ctrlKey || e.metaKey;
+    const ctrlKey = e.ctrlKey || e.metaKey;
     if (e.key === 'Enter' || ctrlKey) {
         isComboKeyDown = false;
     }

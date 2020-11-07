@@ -32,6 +32,8 @@ function processConsoleCmd(input) {
   const func = cmdMap[cmd];
   if (func && typeof func === 'function') {
     func(args);
+  } else {
+    displayInfobar.warn('Invalid command');
   }
 }
 
@@ -61,7 +63,7 @@ function devMarkSync(args) {
     }
     saveNoteByObj(note);
   });
-  displayInfobar.success('Command executed.');
+  displayInfobar.success('Command executed');
 }
 
 // 手动触发同步
@@ -70,7 +72,7 @@ function devFireSync(args) {
     devMarkSync(args);
   }
   doSync();
-  displayInfobar.success('Command executed.');
+  displayInfobar.success('Command executed');
 }
 
 // 清除便签的sync相关属性
@@ -86,5 +88,5 @@ function devClearSync(args) {
     }
     saveNoteByObj(note);
   });
-  displayInfobar.success('Command executed.');
+  displayInfobar.success('Command executed');
 }
