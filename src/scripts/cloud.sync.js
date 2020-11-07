@@ -5,8 +5,6 @@ var pako = require('pako');
 // 全局变量
 var noteRecycledLog;
 
-getRecycledLog();
-
 // 执行同步流程的主方法
 async function doSync() {
   if (!cloud_token) {
@@ -22,7 +20,7 @@ async function doSync() {
   }
   const lastSync = await getLastSync() || '2020-01-01 00:00:00';
   if (!noteRecycledLog) {
-    await getRecycledLog();
+    noteRecycledLog = await getRecycledLog();
   }
   // 获取diff数据
   const diff = await fetchDiff(lastSync);
@@ -30,7 +28,7 @@ async function doSync() {
     return;
   }
   // 处理diff数据
-  processDiff(note);
+  await processDiff(diff);
   // 执行同步
   const updated = await pushNoSyncNotes();
   if (!updated) {
@@ -99,9 +97,9 @@ function fetchDiff(lastSync) {
   });
 }
 
-function processDiff() {
+async function processDiff(diff) {
   const { notes } = diff;
-  const { needAnimate: needCreateAnim } = processDiffNotes(notes);
+  const { needAnimate: needCreateAnim } = await processDiffNotes(notes);
   // 处理deleted
   const { deleted } = diff;
   processDiffDeleted(deleted);
@@ -115,12 +113,15 @@ function processDiff() {
 }
 
 // 处理diff
-function processDiffNotes(diffNotes) {
+async function processDiffNotes(diffNotes) {
   if (!diffNotes || !Array.isArray(diffNotes)) {
     console.warn('[Cloud] Diff notes data is not right.');
     return;
   }
   const needAnimate = [];
+  if (!noteRecycledLog) {
+    noteRecycledLog = await getRecycledLog();
+  }
   const localRecycled = Object.keys(noteRecycledLog);
   diffNotes.forEach((item) => {
     const note = JSON.parse(pako.ungzip(item.content, { to: 'string' }));
@@ -330,7 +331,7 @@ function processUpdated(updated) {
 // 删除记录
 async function recordRecycleBehaviour(note) {
   if (!noteRecycledLog) {
-    await getRecycledLog();
+    noteRecycledLog = await getRecycledLog();
   }
   // 没有syncId的不需要同步远端
   const { syncId } = note;
@@ -343,7 +344,7 @@ async function recordRecycleBehaviour(note) {
 }
 async function recordRestoreBehaviour(note) {
   if (!noteRecycledLog) {
-    await getRecycledLog();
+    noteRecycledLog = await getRecycledLog();
   }
   const { syncId } = note;
   if (!syncId) {
@@ -357,9 +358,10 @@ function getRecycledLog() {
   return new Promise((resolve) => {
     storage.get('recycled-log', (err, res) => {
       if (err) {
+        console.error('[Cloud] Cannot get recycled log.');
         return resolve(null);
       }
-      resolve(res);
+      resolve(res || {});
     });
   });
 }
@@ -372,35 +374,4 @@ function saveRecycledLog() {
       resolve(true);
     });
   });
-}
-
-function testNoteIdDuplicate(note) {
-  if (!noteMap[note.id]) {
-    return true;
-  }
-  // 存在重复
-  const note = noteMap[note.id];
-  const ret = dialog.showMessageBoxSync({
-    title: '便签ID冲突',
-    type: 'warning',
-    message: '正在恢复的便签和已有便签的ID存在冲突',
-    defaultId: 1,
-    cancelId: 1,
-    buttons: ['覆盖', '取消', '恢复为新便签'],
-  });
-  if (ret === 1) {
-    return true;
-  }
-  if (ret === 2) {
-    note.id = notesid;
-    notesid++;
-    note.needSync = true;
-    saveNoteByObj(note);
-    saveNotesId();
-  }
-  if (ret === 0) {
-    deleteNoteFile(note);
-    deleteNoteFromArr(note.id);
-  }
-  return false;
 }
