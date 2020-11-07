@@ -279,7 +279,7 @@
             $("#text-newnote").keydown(function(e) {
                 var ctrlKey = e.ctrlKey || e.metaKey;
                 //ctrl+enter 或 ctrl+s
-                if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
+                if (ctrlKey && e.key === 'Enter' || ctrlKey && e.key === 's') {
                     submitSave();
                 }
             });
@@ -287,7 +287,7 @@
             $("#input-title").keydown(function(e) {
                 var ctrlKey = e.ctrlKey || e.metaKey;
                 //ctrl+enter 或 ctrl+s
-                if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
+                if (ctrlKey && e.key === 'Enter' || ctrlKey && e.key === 's') {
                     submitSave();
                 }
             });
@@ -295,7 +295,7 @@
             $("#input-password").keydown(function(e) {
                 var ctrlKey = e.ctrlKey || e.metaKey;
                 //ctrl+enter 或 ctrl+s
-                if (ctrlKey && e.keyCode == 13 || ctrlKey && e.keyCode == 83) {
+                if (ctrlKey && e.key === 'Enter' || ctrlKey && e.key === 's') {
                     submitSave();
                 }
             });
@@ -339,14 +339,14 @@
                 });
                 $(document).on('keydown', 'input[type="password"]', (e) => {
                     var ctrlKey = e.ctrlKey || e.metaKey;
-                    if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    if (ctrlKey && e.shiftKey && e.key === 'i') {
                         e.preventDefault();
                         e.stopPropagation();
                     }
                 });
                 $(document).on('keydown', 'input[type="text"]', (e) => {
                     var ctrlKey = e.ctrlKey || e.metaKey;
-                    if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    if (ctrlKey && e.shiftKey && e.key === 'i') {
                         e.preventDefault();
                         e.stopPropagation();
                     }

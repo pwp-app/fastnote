@@ -1225,6 +1225,9 @@
         });
         //绑定主菜单快捷键
         Mousetrap.bind('esc', function() {
+            if (devconsoleOpened) {
+
+            }
             if (isCategoryOpen) {
                 closeCategory();
                 $('#note-text').focus();
@@ -1274,18 +1277,22 @@
             closeMainMenu();
         });
         $('#mainmenu-btn-reload').click(function() {
-            ipcRenderer.send("reloadMainWindow"); //重载
-            ipcRenderer.send('reloadRecycleWindow');
-            ipcRenderer.send('reloadAllEditWindow');
-            ipcRenderer.send('reloadAboutWindow');
-            ipcRenderer.send('reloadAllWidgets');
-            ipcRenderer.send('reloadLoginWindow');
+            reloadAllWindows();
             closeMainMenu();
         });
         $('#mainmenu-btn-exit').click(function() {
             ipcRenderer.send("app-quitNow"); //退出程序
             closeMainMenu();
         });
+
+        function reloadAllWindows() {
+            ipcRenderer.send("reloadMainWindow"); //重载
+            ipcRenderer.send('reloadRecycleWindow');
+            ipcRenderer.send('reloadAllEditWindow');
+            ipcRenderer.send('reloadAboutWindow');
+            ipcRenderer.send('reloadAllWidgets');
+            ipcRenderer.send('reloadLoginWindow');
+        }
 
         function closeMainMenu() {
             if (isMainMenuOpen) {
@@ -2227,21 +2234,21 @@
             });
             $('textarea').on('keydown', (e) => {
                 var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                if (ctrlKey && e.shiftKey && e.key === 'i') {
                     e.preventDefault();
                     e.stopPropagation();
                 }
             });
             $(document).on('keydown', 'input[type="password"]', (e) => {
                 var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                if (ctrlKey && e.shiftKey && e.key === 'i') {
                     e.preventDefault();
                     e.stopPropagation();
                 }
             });
             $(document).on('keydown', 'input[type="text"]', (e) => {
                 var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.keyCode == 73) {
+                if (ctrlKey && e.shiftKey && e.key === 'i') {
                     e.preventDefault();
                     e.stopPropagation();
                 }
@@ -2255,19 +2262,31 @@
         // 启用开发控制台，引入控制台js
         var devconsoleOpened = false;
         if (global.indebug) {
-            Mousetrap.bind('ctrl+shift+1', function() {
-                if (devconsoleOpened) {
-                    $('.container-devconsole').animateCss('fadeOutUp', function() {
-                        devconsoleOpened = false;
-                        $('.container-devconsole').removeAttr('style');
-                    });
-                } else {
-                    devconsoleOpened = true;
-                    $('.container-devconsole').attr('style', 'display: flex;');
-                    $('.container-devconsole').animateCss('fadeInDown');
-                }
-            });
             $.getScript('static/devconsole.js');
+        }
+        Mousetrap.bind('ctrl+`', function() {
+            if (devconsoleOpened) {
+                closeDevConsole();
+            } else {
+                showDevConsole();
+            }
+        });
+
+        function closeDevConsole() {
+            $('.container-devconsole').animateCss('fadeOutUp', function() {
+                devconsoleOpened = false;
+                $('.container-devconsole').removeAttr('style');
+            });
+        }
+
+        function showDevConsole() {
+            if (global.indebug) {
+                devconsoleOpened = true;
+                $('.container-devconsole').attr('style', 'display: flex;');
+                $('.container-devconsole').animateCss('fadeInDown', () => {
+                    $('#input-devconsole').focus();
+                });
+            }
         }
     </script>
 

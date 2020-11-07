@@ -81,17 +81,21 @@ textarea.on('input propertychange',function(e){
 
 let isComboKeyDown = false; // 防止反复触发
 textarea.on('keydown', function (e) {
-    var ctrlKey = e.ctrlKey || e.metaKey;
-    if (ctrlKey && e.keyCode == 13 && !isComboKeyDown) {
+    let ctrlKey = e.ctrlKey || e.metaKey;
+    if (ctrlKey && e.key === '`') {
+        showDevConsole();
+        return;
+    }
+    if (ctrlKey && e.key === 'Enter' && !isComboKeyDown) {
         isComboKeyDown = true;
-        var text = textarea.val().trim();
-        var title = $('#input-note-title').val().trim();
-        var category = $('#select-note-category').val().trim();
-        var password = $('#input-note-password').val().trim();
-        if (category == 'notalloc'){
+        const text = textarea.val().trim();
+        const title = $('#input-note-title').val().trim();
+        const category = $('#select-note-category').val().trim();
+        const password = $('#input-note-password').val().trim();
+        if (category === 'notalloc'){
             category = null;
         }
-        if (text != null && text != "") {
+        if (text) {
             saveNote(text, title, category, password, markdown_enabled);
             // 清空浮层的内容
             $('#input-note-category').val('');
@@ -365,13 +369,13 @@ function readNoteFiles(success_callback) {
 
 // 保存note为json
 function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
-    var alltime = time.getAllTime();
+    const alltime = time.getAllTime();
     // 保存路径
-    var path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + alltime.rawTime + '.json';
+    let path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + alltime.rawTime + '.json';
     // 计算文件的offset
-    var offset = 0;
+    let offset = 0;
     if (fs.existsSync(path)) {
-        offset++;
+        offset += 1;
     }
     if (offset > 0) {
         path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + alltime.rawTime + '.' + offset + '.json';
@@ -390,7 +394,7 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
         notepassword = null;
     }
     // 构造note
-    var note = {
+    const note = {
         id: notesid,
         time: alltime.currentTime,
         rawtime: alltime.rawTime,
@@ -401,9 +405,9 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
         password: notepassword,
         offset: offset,
         forceTop: false,
-        markdown: markdown
+        markdown: markdown,
     };
-    var json = JSON.stringify(note);
+    const json = JSON.stringify(note);
     fs.writeFile(path, json, 'utf-8', function (err, data) {
         if (err) {
             console.error(err);
@@ -419,7 +423,7 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
     // 把新增的note添加到array
     addNoteObjToArray(note);
     // 如果是0到1则切换到列表页
-    if (notes.length == 1) {
+    if (notes.length >= 1) {
         showNoteList();
     }
     // 分类的empty隐藏

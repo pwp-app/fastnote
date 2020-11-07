@@ -1,6 +1,6 @@
 var infobar_container;
 
-$(document).ready(function(){
+$(function(){
     infobar_container = $("#electron-titlebar");
 });
 
@@ -76,6 +76,19 @@ function displayInfobar(type, text, timeout = 3000, dismiss = true) {
     }
     infobar_id++;
 }
+
+displayInfobar.success = (text, timeout = 3000, dismiss = true) => {
+    displayInfobar('success', text, timeout, dismiss);
+};
+displayInfobar.warn = (text, timeout = 3000, dismiss = true) => {
+    displayInfobar('warn', text, timeout, dismiss);
+};
+displayInfobar.error = (text, timeout = 3000, dismiss = true) => {
+    displayInfobar('error', text, timeout, dismiss);
+};
+displayInfobar.info = (text, timeout = 3000, dismiss = true) => {
+    displayInfobar('info', text, timeout, dismiss);
+};
 
 function closeInfobar(id){
     clearTimeout(infobar_timeout.id);
