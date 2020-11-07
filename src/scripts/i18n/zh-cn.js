@@ -142,7 +142,7 @@ i18n['zh-cn']={
     delete_category_and_note_detail: '仅删除分类不影响便签，便签会被放入未分类中。',
     confirm_delete_category_left: '确定要删除分类',
     confirm_delete_category_right: '吗？该操作将不可撤回。',
-    delete_conflict_notes: '你确定要自动删除存在冲突的便签吗？',
+    delete_conflict_notes: '你确定要删除存在冲突的便签吗？',
     button_dealwithconflict: '处理冲突',
     notes_conflict: '便签冲突',
     notes_conflict_message: '恢复备份中的一些便签在ID上和现有便签产生冲突\n便签的ID应是唯一的，否则程序将出现错误。\n请处理冲突',

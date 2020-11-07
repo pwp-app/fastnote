@@ -221,7 +221,7 @@ function importNotes() {
     }
 }
 
-function recoverNotes(notes) {
+function recoverNotes(backupNotes) {
     // 计数变量
     let recover_count = 0;
     let recover_failed_count = 0;
@@ -230,20 +230,18 @@ function recoverNotes(notes) {
     let flag_allcover = false;
     let flag_allskip = false;
 
-    for (let i = 0; i < notes.length; i++) {
-
-        let backup = notes[i];
-
+    for (let i = 0; i < backupNotes.length; i++) {
+        let backup = backupNotes[i];
         // 文件校验
-        var check = sha256(backup.filename + backup.content, "fastnote");
-        if (check != backup.check) {
+        const check = sha256(backup.filename + backup.content, "fastnote");
+        if (check !== backup.check) {
             recover_count++;
             recover_failed_count++;
             recover_failed_files.push({
                 filename: backup.filename,
                 err: 0
             });
-            recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
+            recoverBackupCompleted(recover_count, backupNotes.length, recover_failed_count, recover_failed_files);
             continue;
         }
 
@@ -272,7 +270,7 @@ function recoverNotes(notes) {
                     filename: backup.filename,
                     err: 1
                 });
-                recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
+                recoverBackupCompleted(recover_count, backupNotes.length, recover_failed_count, recover_failed_files);
                 continue;
             }
             // 对便签本身进行处理
@@ -326,7 +324,10 @@ function recoverNotes(notes) {
         }
         if (flag_cover) {
             try {
-                fs.writeFileSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename, backup.content, 'utf-8');
+                // 设置同步属性
+                const backupDecoded = JSON.parse(backupDecoded);
+                backupDecoded.needSync = true;
+                fs.writeFileSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename, JSON.stringify(backupDecoded), 'utf-8');
                 recover_count++;
             } catch(err) {
                 recover_failed_count++;
@@ -335,11 +336,11 @@ function recoverNotes(notes) {
                     err: 2
                 });
             }
-            recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
+            recoverBackupCompleted(recover_count, backupNotes.length, recover_failed_count, recover_failed_files);
         }
         if (flag_skip) {
             recover_count++;
-            recoverBackupCompleted(recover_count, notes.length, recover_failed_count, recover_failed_files);
+            recoverBackupCompleted(recover_count, backupNotes.length, recover_failed_count, recover_failed_files);
         }
     }
 }

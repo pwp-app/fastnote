@@ -63,6 +63,42 @@ $(document).on('click', '.note-createtime', function(e) {
     $(`#note_${id} .note-header .note-createtime`).css('display', 'none');
 });
 
+// *** 操作 ***
+
+// 添加便签至Array
+function addNoteObjToArray(note, isRecycle = false) {
+    notes.push(note);
+    noteMap[note.id] = note;
+    // 分类计数
+    const { category } = note;
+    if (!category && !isRecycle) {
+        notalloc_count++;
+    }
+}
+
+// 从便签数据中删除一项
+function deleteNoteFromArr(id, isRecycle = false) {
+    if (noteMap[id]) {
+        const { category } = noteMap[id];
+        if (!isRecycle) minorCategoryCount(category, false, true, true);
+        noteMap[id] = null;
+    }
+    const index = notes.findIndex((note) => note.id === id);
+    if (index > -1) {
+        notes.splice(index, 1);
+    }
+}
+
+function deleteNoteFromArrByIdx(idx, isRecycle = false) {
+    const note = notes[idx];
+    const { noteId, category } = note;
+    if (!isRecycle) minorCategoryCount(category, false, true, true);
+    if (noteMap[noteId]) {
+        noteMap[noteId] = null;
+    }
+    notes.splice(idx, 1);
+}
+
 // *** 定义 ***
 
 //显示没有笔记的界面

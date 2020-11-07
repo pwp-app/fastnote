@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Fastnote</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!--import requirements-->
     <script>
         // define electron app
@@ -392,7 +391,6 @@
         <script>
             //编辑笔记
             ipcRenderer.on('update-edit-note', (event, data) => {
-                console.log(data)
                 updateEditNote(data);
             });
 
@@ -416,14 +414,9 @@
 
             //执行notes的替换
             function updateEditNoteinArray(data, refreshList = false) {
-                for (var i = 0; i < notes.length; i++) {
-                    if (notes[i].id == data.id) {
-                        notes[i] = data;
-                        if (refreshList) {
-                            refreshNoteList();
-                        }
-                        break;
-                    }
+                if (noteMap[data.id]) {
+                    noteMap[data.id] = data;
+                    noteMap[data.id].needSync = true;
                 }
             }
 
@@ -432,11 +425,20 @@
                 if (notes.length <= 0) {
                     showNoteList();
                 }
+                // 恢复需要排查重复的noteId
+                const duplicateRes = testNoteIdDuplicate(note);
+                if (duplicateRes) {
+                    // 重新移回回收站
+                    moveFileToRecycled(data);
+                    ipcRenderer.send('restore-duplicated', data);
+                    return;
+                }
                 addNoteObjToArray(data);
+                recordRestoreBehaviour(data);
                 refreshNoteList(function() {
                     bindNoteFoldDBL(data.id);
                 });
-                //animate
+                // animate
                 $('#note_' + data.id).animateCss('fadeInLeft faster');
             });
 
@@ -1539,15 +1541,15 @@
 
         function removeNotesOfCategory(name) {
             var notes_tobeDeleted = [];
-            for (var i = 0; i < notes.length; i++) {
+            for (let i = 0; i < notes.length; i++) {
                 if (notes[i].category == name) {
                     notes_tobeDeleted.push(i);
                 }
             }
             //删除便签
-            for (var i = 0; i < notes_tobeDeleted.length; i++) {
+            for (let i = 0; i < notes_tobeDeleted.length; i++) {
                 //检查offset
-                var path;
+                let path;
                 if (notes[notes_tobeDeleted[i]].offset > 0) {
                     path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.' + notes[tobeDeleted[i]].offset + '.json';
                 } else {
@@ -1558,7 +1560,7 @@
                     fs.unlinkSync(path);
                     //render
                     if (current_category == 'all') {
-                        var noteid = notes[notes_tobeDeleted[i]].id;
+                        let noteid = notes[notes_tobeDeleted[i]].id;
                         $('#note_' + noteid).parent().animateCss('fadeOutLeft faster', function() {
                             $('#note_' + noteid).parent().remove();
                         });
@@ -1788,15 +1790,14 @@
     <script>
         //backup recovered
         ipcRenderer.on('backup-recover-completed', function() {
-            console.log('backup recovered');
             // 刷新便签列表
             readNoteFiles(() => {
                 console.log('recoverd notes rendered.');
                 // 获取最大的便签id，刷新为新的便签id
-                var maxNoteId = 0;
+                let maxNoteId = 0;
                 // 检测NoteID冲突
-                var existedNoteId = [];
-                var conflictNotes = [];
+                let existedNoteId = [];
+                let conflictNotes = [];
                 // 遍历现有的便签
                 for (let i = 0; i < notes.length; i++) {
                     if (parseInt(notes[i].id) > maxNoteId) {
@@ -1815,7 +1816,7 @@
                 // 检测是否存在冲突的便签
                 if (conflictNotes.length > 0) {
                     // 构造细节
-                    var detail = i18n[current_i18n].note_conflict_detail;
+                    let detail = i18n[current_i18n].note_conflict_detail;
                     conflictNotes.forEach(note => {
                         detail += "ID: " + note.id + i18n[current_i18n].note_conflict_detail_content + (note.text.length > 20 ? note.text.substring(
                             0, 20) + "..." : note.text) + "\n";
@@ -1828,32 +1829,37 @@
                         defaultId: 0,
                         cancelId: 0
                     });
-                    if (ret == 0) {
+                    if (ret === 0) {
                         // 处理冲突
                         conflictNotes.forEach(note => {
                             note.id = notesid;
                             saveNoteByObj(note);
                             notesid++;
                         });
-                        // 冲突处理完毕
-                        readNoteFiles();
                     } else if (ret == 1) {
-                        let ret = dialog.showMessageBoxSync({
+                        let confirmRes = dialog.showMessageBoxSync({
                             type: 'warning',
                             message: i18n[current_i18n].delete_conflict_notes,
                             detail: detail,
                             buttons: [i18n[current_i18n].button_no, i18n[current_i18n].button_yes],
                             defaultId: 0,
-                            cancelId: 0
+                            cancelId: 0,
                         });
-                        if (ret == 0) {
+                        if (confirmRes === 0) {
+                            // 处理冲突
+                            conflictNotes.forEach(note => {
+                                note.id = notesid;
+                                saveNoteByObj(note);
+                                notesid++;
+                            });
+                        } else if (confirmRes === 1) {
                             conflictNotes.forEach(note => {
                                 deleteNoteByObj(note);
                             });
-                            // 删除完毕
-                            readNoteFiles();
                         }
                     }
+                    // 冲突处理完毕
+                    readNoteFiles();
                 }
                 saveNotesId();
                 // 通知主进程已经处理完了导入
@@ -1991,7 +1997,8 @@
                     }
                     // 获得本地的token
                     const { token, refreshToken, saveTime } = res;
-                    if (moment(saveTime, 'YYYYMMDDHHmmss').add(3, 'hours').valueOf() >= moment().valueOf()) {
+                    // 刷新authToken的周期是2.5h，超过20min的authToken一律丢弃
+                    if (moment(saveTime, 'YYYYMMDDHHmmss').add(20, 'minutes').valueOf() >= moment().valueOf()) {
                         cloud_token = token;
                     }
                     if (moment(saveTime, 'YYYYMMDDHHmmss').add(14, 'days').valueOf() >= moment().valueOf()) {
@@ -2053,7 +2060,6 @@
                     dataType: 'json',
                     timeout: 1000,
                     success: (res) => {
-                        console.log(res);
                         if (!res) {
                             resolve(false);
                         }
@@ -2143,8 +2149,6 @@
         checkServerStatus(async () => {
             // 获取本地的token
             await getCloudToken();
-            console.log(cloud_token)
-            console.log(cloud_refresh_token);
             if (!cloud_token) {
                 if (!cloud_refresh_token) {
                     // 两个token都没有，不执行
@@ -2176,6 +2180,8 @@
             // 切换UI
             $('.cloud-body-nologin').hide();
             $('.cloud-body-user').show();
+            // 执行sync
+            doSync();
         }
 
         // 登录成功事件

@@ -16,30 +16,6 @@ if (!settings){
     readNoteFiles();
 }
 
-// 添加便签至Array
-function addNoteObjToArray(note, isRecycle = false) {
-    notes.push(note);
-    noteMap[note.id] = note;
-    // 分类计数
-    const { category } = note;
-    if (!category && !isRecycle) {
-        notalloc_count++;
-    }
-}
-
-// 从便签数据中删除一项
-function deleteNoteFromArr(id, isRecycle = false) {
-    if (noteMap[id]) {
-        const { category } = noteMap[id];
-        if (!isRecycle) minorCategoryCount(category, false, true, true);
-        noteMap[id] = null;
-    }
-    const index = notes.findIndex((note) => note.id === id);
-    if (index > -1) {
-        notes.splice(index, 1);
-    }
-}
-
 // 删除note
 function deleteNote(id, infoEnabled = true) {
     notes.every(function (note, i) {
@@ -90,7 +66,7 @@ function deleteNote(id, infoEnabled = true) {
 }
 
 function deleteNoteByObj(note, infoEnabled = true) {
-    var path;
+    let path;
     //检查offset
     if (note.offset > 0) {
         path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
@@ -153,9 +129,9 @@ function deleteNotes(notes, callback) {
 
 function restoreNote(id, infoEnabled = true) {
     notes.every(function (note, i) {
-        if (note.id == id) {
+        if (note.id === id) {
             let path;
-            //检查offset
+            // 检查offset
             if (note.offset > 0) {
                 path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
             } else {
@@ -234,7 +210,7 @@ function readNoteFiles() {
             if (err) {
                 throw (err);
             }
-            if (typeof (fileArr) == 'undefined') {
+            if (!fileArr) {
                 showNoteEmpty();
                 isNotesEmpty = true;
                 return;

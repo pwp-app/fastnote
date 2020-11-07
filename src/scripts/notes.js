@@ -139,6 +139,8 @@ function putToRecyclebin(id, infoEnabled = true) {
                         recycledNotes.push(note_temp);
                         // 从数组里删除
                         deleteNoteFromArr(id);
+                        // 记录回收内容
+                        recordRecycleBehaviour(note_temp);
                         // 动画
                         $('#note_' + id).animateCss('fadeOutLeft faster', function () {
                             $('#note_' + id).parent().remove(); // 动画结束后删除div
@@ -162,6 +164,51 @@ function putToRecyclebin(id, infoEnabled = true) {
             return false;
         } else {
             return true;
+        }
+    });
+}
+
+function moveFileToRecycled(note) {
+    let path;
+    if (note.offset > 0) {
+        path = note.rawtime + '.' + note.offset + '.json';
+    } else {
+        path = note.rawtime + '.json';
+    }
+    if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + path)) {
+        if (!fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/')) {
+            let res_mkdir = fs.mkdirSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/');
+            if (!res_mkdir){
+                return;
+            }
+        }
+        fs.rename(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + path, storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + path, function (err) {
+            if (err) {
+                throw (err);
+            }
+        });
+    }
+}
+
+function deleteNoteFile(note, inRecycle = false) {
+    if (!note) {
+        return;
+    }
+    // 构建路径
+    let path;
+    const after = inRecycle ? '/recyclebin' : '';
+    if (note.offset > 0) {
+        path = storagePath + (global.indebug ? '/devTemp' : '') + `/notes${after}` + note.rawtime + '.' + note.offset + '.json';
+    } else {
+        path = storagePath + (global.indebug ? '/devTemp' : '') + `/notes${after}` + note.rawtime + '.json';
+    }
+    if (!fs.existsSync(path)) {
+        return;
+    }
+    // 删除文件
+    fs.unlink(path, function (err) {
+        if (err) {
+            throw (err);
         }
     });
 }
@@ -190,6 +237,11 @@ function putNotesToRecyclebin(notes, callback) {
 
 // 快速还原一个便签
 function quickRestoreNote(note) {
+    // 恢复需要排查重复的noteId
+    const duplicateRes = testNoteIdDuplicate(note);
+    if (duplicateRes) {
+        return;
+    }
     return new Promise((resolve) => {
         let path;
         if (note.offset > 0) {
@@ -213,6 +265,7 @@ function quickRestoreNote(note) {
                 return;
             }
             addNoteObjToArray(note);
+            recordRestoreBehaviour(note);
             refreshNoteList(() => {
                 displayInfobar('success', i18n[current_i18n].restore_success);
                 // animate
