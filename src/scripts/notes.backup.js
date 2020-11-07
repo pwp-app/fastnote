@@ -22,10 +22,10 @@ function backupNotes() {
         //保存备份
         try {
             let t = _backupNotes(filePath);
-            if (typeof t == "string") {
+            if (typeof t === "string") {
                 //备份失败
                 backupNotesErrorBox(t);
-            } else if (typeof t == "boolean") {
+            } else if (typeof t === "boolean") {
                 //备份成功
                 dialog.showMessageBoxSync({
                     type: "info",
@@ -34,7 +34,7 @@ function backupNotes() {
                     buttons: ["好的"]
                 });
                 setLastBackupTime();
-            } else if (typeof t == "object") {
+            } else if (typeof t === "object") {
                 var failed = "";
                 t.failedNotes.forEach(function(filePath) {
                     failed = failed + filePath + "\n";

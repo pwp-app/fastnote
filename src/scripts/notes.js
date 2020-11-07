@@ -237,11 +237,6 @@ function putNotesToRecyclebin(notes, callback) {
 
 // 快速还原一个便签
 function quickRestoreNote(note) {
-    // 恢复需要排查重复的noteId
-    const duplicateRes = testNoteIdDuplicate(note);
-    if (duplicateRes) {
-        return;
-    }
     return new Promise((resolve) => {
         let path;
         if (note.offset > 0) {
@@ -255,6 +250,27 @@ function quickRestoreNote(note) {
             return;
         }
         let newpath = path.replace('recyclebin/', '');
+        // 检查是否存在ID冲突
+        if (noteMap[note.id]) {
+            // 存在冲突
+            const ret = dialog.showMessageBoxSync({
+                title: '便签ID冲突',
+                type: 'warning',
+                message: '正在恢复的便签和已有便签的ID存在冲突',
+                defaultId: 1,
+                cancelId: 1,
+                buttons: ['覆盖', '恢复为新便签'],
+            });
+            if (ret === 0) {
+                // 先删除原有的
+                deleteNoteFile(noteMap[note.id]);
+            } else if (ret === 1) {
+                note.id = notesid;
+                notesid += 1;
+                saveNotesId();
+            }
+            note.needSync = true;
+        }
         fs.rename(path, newpath, err => {
             if (err) {
                 if (infoEnabled) {

@@ -420,18 +420,34 @@
                 }
             }
 
-            //event restore
+            // event restore
             ipcRenderer.on('restore-note', (event, data) => {
                 if (notes.length <= 0) {
                     showNoteList();
                 }
-                // 恢复需要排查重复的noteId
-                const duplicateRes = testNoteIdDuplicate(note);
-                if (duplicateRes) {
-                    // 重新移回回收站
-                    moveFileToRecycled(data);
-                    ipcRenderer.send('restore-duplicated', data);
-                    return;
+                // 检查是否存在ID冲突
+                if (noteMap[data.id]) {
+                    // 存在冲突
+                    const ret = dialog.showMessageBoxSync({
+                        title: '便签ID冲突',
+                        type: 'warning',
+                        message: '正在恢复的便签和已有便签的ID存在冲突',
+                        defaultId: 1,
+                        cancelId: 1,
+                        buttons: ['覆盖', '恢复为新便签'],
+                    });
+                    if (ret === 0) {
+                        // 此时新的便签文件已经恢复过来了，不需要另外保存
+                        // 这里需要处理原来的旧便签
+                        const stored = noteMap[data.id];
+                        moveFileToRecycled(stored);
+                        deleteNoteFromArr(stored.id);
+                    } else if (ret === 1) {
+                        data.id = notesid;
+                        notesid++;
+                        saveNoteByObj(data);
+                    }
+                    data.needSync = true;
                 }
                 addNoteObjToArray(data);
                 recordRestoreBehaviour(data);
