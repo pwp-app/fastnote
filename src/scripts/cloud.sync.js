@@ -109,6 +109,9 @@ async function processDiff(diff) {
     for (const id of needCreateAnim) {
       $(`#note_${id}`).animateCss('fadeInRight faster');
     }
+    // 处理分类
+    checkCategoryCount();
+    pushCategories();
   });
 }
 
@@ -258,9 +261,10 @@ function pushNoSyncNotes() {
     notes.forEach((note) => {
       const { syncId, needSync } = note;
       if (!syncId || needSync) {
-        const { id } = note;
+        const { id, syncId } = note;
         syncNoteData.push({
           id,
+          syncId: syncId || null,
           content: pako.gzip(JSON.stringify(note), { to: 'string' }),
         });
       }
@@ -374,5 +378,36 @@ function saveRecycledLog() {
       }
       resolve(true);
     });
+  });
+}
+
+// 同步分类信息
+function pushCategories() {
+  if (!categories) {
+    return;
+  }
+  $.ajax({
+    url: `${cloud_apibase}/sync/updateCategories`,
+    type: 'POST',
+    headers: {
+      Authorization: `Bearer ${cloud_token}`,
+    },
+    data: {
+      categories: pako.gzip(JSON.stringify(categories), { to: 'string' }),
+    },
+    dataType: 'JSON',
+    success: (res) => {
+      if (!res) {
+        console.error('[Cloud] Push categories failed.');
+        return;
+      }
+      const { success } = res;
+      if (!success) {
+        console.error('[Cloud] Push categories failed.');
+      }
+    },
+    error: (err) => {
+      console.error('[Cloud] Push categories error: ', err);
+    }
   });
 }
