@@ -285,11 +285,12 @@
                     const { success, data } = res;
                     if (!success) {
                         // 是否需要验证码
-                        if (res.code === 400008) {
+                        if (res.code === 400008 && needCaptcha) {
                             getCaptcha();
                         }
                         if (res.code === 400009) {
                             $('#login-captcha-group').show();
+                            needCaptcha = true;
                             ipcRenderer.send('cloud-login-need-captcha');
                             if (!captchaId) {
                                 getCaptcha();

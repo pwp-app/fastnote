@@ -185,10 +185,8 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
         }
     }
     html += '<span class="note-title">' + titletext + '</span>';
-    if (typeof forceTop !== 'undefined' && forceTop !== null) {
-        if (forceTop) {
-            html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
-        }
+    if (forceTop) {
+        html += '<i class="fa fa-caret-up note-forceTop-icon" aria-hidden="true"></i>';
     }
     // 选择性显示时间
     let m_time = moment(rawtime, 'YYYYMMDDHHmmss');
