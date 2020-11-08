@@ -387,7 +387,7 @@ function pushCategories() {
     return;
   }
   $.ajax({
-    url: `${cloud_apibase}/sync/updateCategories`,
+    url: `${cloud_apibase}/category/update`,
     type: 'POST',
     headers: {
       Authorization: `Bearer ${cloud_token}`,
