@@ -67,6 +67,10 @@ $(document).on('click', '.note-createtime', function(e) {
 
 // 添加便签至Array
 function addNoteObjToArray(note, isRecycle = false) {
+    if (note.id >= notesid) {
+        notesid = note.id + 1;
+        saveNotesId();
+    }
     notes.push(note);
     noteMap[note.id] = note;
     // 分类计数
