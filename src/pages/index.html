@@ -2021,10 +2021,10 @@
                     // 获得本地的token
                     const { token, refreshToken, saveTime } = res;
                     // 刷新authToken的周期是2.5h，超过20min的authToken一律丢弃
-                    if (moment(saveTime, 'YYYYMMDDHHmmss').add(20, 'minutes').valueOf() < moment().valueOf()) {
+                    if (moment(saveTime, 'YYYYMMDDHHmmss').add(20, 'minutes').valueOf() > moment().valueOf()) {
                         cloud_token = token;
                     }
-                    if (moment(saveTime, 'YYYYMMDDHHmmss').add(14, 'days').valueOf() < moment().valueOf()) {
+                    if (moment(saveTime, 'YYYYMMDDHHmmss').add(14, 'days').valueOf() > moment().valueOf()) {
                         cloud_refresh_token = refreshToken;
                     }
                     resolve(true);

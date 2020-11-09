@@ -80,16 +80,20 @@ function readCategoriesFile() {
     }
 }
 
-function checkCategoryCount() {
+function checkCategoryCount(retry = false) {
     let custom_total = 0;
     categories.forEach((category) => {
         custom_total += category.count;
     });
     if (notalloc_count + custom_total !== notes.length) {
-        recountNotes();
-    } else {
-        console.log('Category count check passed.');
+        if (!retry) {
+            recountNotes();
+            return checkCategoryCount(retry = true);
+        }
+        return false;
     }
+    console.log('Category count check passed.');
+    return true;
 }
 
 // 重新计算note的数量
@@ -100,20 +104,26 @@ function recountNotes(retry = false) {
         const { category } = note;
         if (category && category !== 'notalloc') {
             if (!count_obj[category]) {
-                count_obj[category] = {};
-                count_obj[category].count = 1;
+                count_obj[category] = 1;
                 return;
             }
-            count_obj[category].count += 1;
+            count_obj[category] += 1;
+        } else {
+            if (!count_obj.notalloc) {
+                count_obj.notalloc = 1;
+                return;
+            }
+            count_obj.notalloc += 1;
         }
     });
     // 覆盖categories的设置
     categories.forEach((category) => {
         const { name } = category;
         if (count_obj[name]) {
-            category.count = count_obj[name].count;
+            category.count = count_obj[name];
         }
     });
+    notalloc_count = count_obj.notalloc;
     // 重新校验正确性
     let custom_total = 0;
     categories.forEach((category) => {
@@ -132,9 +142,9 @@ function recountNotes(retry = false) {
             fixMissingCategories().then((res) => {
                 // 修复成功后重新渲染一次
                 if (res) {
+                    recountNotes(retry = true);
                     renderCategoryList();
                     renderCategorySelect();
-                    recountNotes(retry = true);
                 }
             });
         } else {
@@ -157,7 +167,7 @@ function fixMissingCategories() {
                 }
                 let flag_found = false;
                 for (let j = 0; i < categories.length; j++) {
-                    if (categories[j].name == notes[i].category) {
+                    if (categories[j].name === notes[i].category) {
                         flag_found = true;
                         break;
                     }

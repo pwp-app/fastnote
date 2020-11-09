@@ -18,11 +18,16 @@ $(function () {
 });
 
 const cmdMap = {
+  'reload': devReloadWindow,
   'reloadwindow': devReloadWindow,
   'noteinfo': devDisplayNoteInfo,
   'clearsync': devClearSync,
   'marksync': devMarkSync,
   'firesync': devFireSync,
+  'dosync': devFireSync,
+  'pushcategory': pushCategories,
+  'pushcategories': pushCategories,
+  'delelecategory': deleteCategory,
 };
 
 function processConsoleCmd(input) {
@@ -87,6 +92,18 @@ function devClearSync(args) {
       delete note.syncId;
     }
     saveNoteByObj(note);
+  });
+  displayInfobar.success('Command executed');
+}
+
+// 分类操作
+function deleteCategory(args) {
+  args.forEach((arg) => {
+    const idx = categories.findIndex(item => item.name === arg);
+    if (idx >= 0) {
+      categories.splice(idx, 1);
+    }
+    saveCategories();
   });
   displayInfobar.success('Command executed');
 }

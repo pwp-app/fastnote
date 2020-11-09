@@ -103,6 +103,10 @@ async function processDiff(diff) {
   // 处理deleted
   const { deleted } = diff;
   processDiffDeleted(deleted);
+  const { categories: catData } = diff;
+  if (catData) {
+    processDiffCategories(catData);
+  }
   // 重新渲染
   refreshNoteList(() => {
     // 动画效果
@@ -110,8 +114,12 @@ async function processDiff(diff) {
       $(`#note_${id}`).animateCss('fadeInRight faster');
     }
     // 处理分类
-    checkCategoryCount();
-    pushCategories();
+    if (checkCategoryCount()) {
+      renderCategoryList();
+      renderCategorySelect();
+      saveCategories();
+      pushCategories();
+    }
   });
 }
 
@@ -241,6 +249,15 @@ function processDiffDeleted(diffDeleted) {
   });
 }
 
+function processDiffCategories(data) {
+  const cat = JSON.parse(pako.ungzip(data, { to: 'string' }));
+  cat.forEach((category) => {
+    if (categories.findIndex(item => item.name === category.name) < 0 && category.name !== 'all' && category.name !== 'notalloc') {
+      categories.push(category);
+    }
+  });
+}
+
 // 把远程已有的便签当作新便签插入本地
 function addExistedNoteAsNew(note) {
   // 改变noteId
@@ -261,9 +278,10 @@ function pushNoSyncNotes() {
     notes.forEach((note) => {
       const { syncId, needSync } = note;
       if (!syncId || needSync) {
-        const { id, syncId } = note;
+        const { id: noteId, syncId, category } = note;
         syncNoteData.push({
-          id,
+          noteId,
+          category,
           syncId: syncId || null,
           content: pako.gzip(JSON.stringify(note), { to: 'string' }),
         });
@@ -393,7 +411,17 @@ function pushCategories() {
       Authorization: `Bearer ${cloud_token}`,
     },
     data: {
-      categories: pako.gzip(JSON.stringify(categories), { to: 'string' }),
+      categories: pako.gzip(JSON.stringify([
+        ...categories,
+        {
+          name: 'all',
+          count: notes.length,
+        },
+        {
+          name: 'notalloc',
+          count: notalloc_count,
+        }
+      ]), { to: 'string' }),
     },
     dataType: 'JSON',
     success: (res) => {
