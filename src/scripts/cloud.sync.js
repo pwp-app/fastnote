@@ -145,8 +145,8 @@ async function processDiffNotes(diffNotes) {
     const remoteTimeObj = moment(remoteTime, 'YYYYMMDDHHmmss');
     // 判断本地是否删除
     if (
-      localRecycled.includes(stored.syncId) &&
-      remoteTimeObj.valueOf() > localRecycled[stored.syncId]
+      localRecycled.includes(note.syncId) &&
+      remoteTimeObj.valueOf() > localRecycled[note.syncId]
     ) {
       // 本地已删除但是远程未删除，且比本地更新
       const ret = dialog.showMessageBoxSync({
@@ -158,11 +158,8 @@ async function processDiffNotes(diffNotes) {
         buttons: ['保留该便签并使用云端版本', '删除'],
       });
       // 覆盖也需要删除
-      deleteNoteFile(stored);
-      deleteNoteFromArr(stored.id);
-      if (ret === 0) {
-        addNoteObjToArray(note);
-        saveNoteByObj(note);
+      if (ret === 1) {
+        delete localRecycled[note.syncId];
       }
     }
     // 判断是否要替换原有的内容
