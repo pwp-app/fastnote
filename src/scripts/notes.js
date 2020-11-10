@@ -436,7 +436,6 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
 
 // 基于note obj保存便签
 function saveNoteByObj(note) {
-    console.log(note);
     // 保存路径
     const path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + note.rawtime + (typeof note.offset !== 'undefined' ? note.offset > 0 ? "." + note.offset : "" : "") + '.json';
     // 计算文件的offset
