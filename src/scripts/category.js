@@ -385,7 +385,9 @@ function checkCategoryEmpty() {
 }
 
 function renderSystemCategoryCount() {
-    $('#category-count-all').html(notes.length);
+    if (notes) {
+        $('#category-count-all').html(notes.length);
+    }
     $('#category-count-notalloc').html(notalloc_count);
 }
 
