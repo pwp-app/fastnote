@@ -289,7 +289,7 @@ function quickRestoreNote(note) {
             refreshNoteList(() => {
                 displayInfobar('success', i18n[current_i18n].restore_success);
                 // animate
-                $(`#note_${note.id}`).animateCss('fadeInRight faster');
+                $(`#note_${note.id}`).animateCss('fadeInLeft faster');
                 bindNoteFoldDBL(note.id);
             });
             resolve(true);

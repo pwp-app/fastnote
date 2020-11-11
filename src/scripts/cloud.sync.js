@@ -111,7 +111,7 @@ async function processDiff(diff) {
   refreshNoteList(() => {
     // 动画效果
     for (const id of needCreateAnim) {
-      $(`#note_${id}`).animateCss('fadeInRight faster');
+      $(`#note_${id}`).animateCss('fadeInLeft faster');
     }
     // 处理分类
     if (checkCategoryCount()) {

@@ -96,15 +96,15 @@
                 });
             });
 
-            //读取noteid
-            storage.get("notesid" + (global.indebug ? "_dev" : ""), function(error, data) {
-                if (error) {
-                    console.error(error);
+            // 读取noteid
+            storage.get("notesid" + (global.indebug ? "_dev" : ""), function(err, data) {
+                if (err) {
+                    console.error(err);
                     initNotesId(null);
                     return;
                 } else {
-                    //获取callback回传的json
-                    if (typeof data !== "undefined") {
+                    // 获取callback回传的json
+                    if (data) {
                         initNotesId(data.id);
                     }
                 }
@@ -115,7 +115,7 @@
                 if (err) {
                     console.error(err);
                 } else {
-                    if (typeof data !== "undefined") {
+                    if (data) {
                         initLastBackupTime(data.lasttime);
                     }
                 }
@@ -149,15 +149,15 @@
                     current_i18n = "zh-cn";
                     $.getScript("static/i18n/zh-cn.js");
                 } else {
-                    //read success
-                    //init close option
-                    if (typeof settings.closeOption !== "undefined") {
+                    // read success
+                    // init close option
+                    if (settings.closeOption) {
                         initCloseOption(settings.closeOption);
                     } else {
                         initCloseOption("tray");
                     }
-                    //init language
-                    if (typeof settings.language !== "undefined") {
+                    // init language
+                    if (settings.language) {
                         if (settings.language !== "zh-cn") {
                             $(document).ready(function() {
                                 applyLanguage(settings.language);
@@ -171,8 +171,8 @@
                         current_i18n = "zh-cn";
                         $.getScript("static/i18n/zh-cn.js");
                     }
-                    //init themes
-                    if (typeof settings.theme !== "undefined") {
+                    // init themes
+                    if (settings.theme) {
                         initTheme(settings.theme);
                         $("#main-style").attr("href", "static/main." + settings.theme + ".css");
                     } else {
@@ -180,75 +180,75 @@
                         $("#main-style").attr("href", "static/main.default.css");
                     }
 
-                    //init font family
-                    if (typeof settings.fontfamily !== "undefined") {
+                    // init font family
+                    if (settings.fontfamily) {
                         initFont(settings.fontfamily);
                     } else {
                         initFont("Source Han Sans CN");
                     }
-                    //init auto update
-                    if (typeof settings.autoUpdateStatus !== "undefined") {
+                    // init auto update
+                    if (typeof settings.autoUpdateStatus !== "undefined" && settings.autoUpdateStatus !== null) {
                         if (settings.autoUpdateStatus) {
                             initAutoUpdate(true);
                         } else {
                             initAutoUpdate(false);
                         }
                     } else {
-                        initAutoUpdate(true); //default true
+                        initAutoUpdate(true); // default true
                     }
-                    if (typeof settings.hotfix !== 'undefined') {
+                    if (settings.hotfix) {
                         initHotfix(settings.hotfix);
                     } else {
                         initHotfix('after');
                     }
                     //init auto update channel
-                    if (typeof settings.autoUpdateChannel !== "undefined") {
+                    if (settings.autoUpdateChannel) {
                         initAutoUpdateChannel(settings.autoUpdateChannel);
                     }
 
-                    if (typeof settings.fontsize !== "undefined") {
+                    if (settings.fontsize) {
                         initFontSize(settings.fontsize);
                     } else {
                         initFontSize("16");
                     }
-                    if (typeof settings.textalign !== "undefined") {
+                    if (settings.textalign) {
                         initTextAlign(settings.textalign);
                     } else {
                         initTextAlign("justify");
                     }
-                    if (typeof settings.lineheight !== "undefined") {
+                    if (settings.lineheight) {
                         initLineHeight(settings.lineheight);
                     } else {
                         initLineHeight("24");
                     }
-                    if (typeof settings.letterspacing !== "undefined") {
+                    if (settings.letterspacing) {
                         initLetterSpacing(settings.letterspacing);
                     } else {
                         initLetterSpacing("0.06");
                     }
-                    if (typeof settings.datedisplay !== "undefined") {
+                    if (settings.datedisplay) {
                         initDateDisplay(settings.datedisplay);
                     } else {
                         initDateDisplay("all");
                     }
-                    if (typeof settings.timedisplay !== "undefined") {
+                    if (settings.timedisplay) {
                         initTimeDisplay(settings.timedisplay);
                     } else {
                         initTimeDisplay("all");
                     }
                     //init lockscreen
-                    if (typeof settings.lockpassword !== "undefined") {
+                    if (settings.lockpassword) {
                         initLockScreen("enabled");
                     } else {
                         initLockScreen("disabled");
                     }
                     //init widget
-                    if (typeof settings.widget_opacity !== "undefined") {
+                    if (typeof settings.widget_opacity !== 'undefined' && settings.widget_opacity !== null) {
                         initWidgetOpacity(settings.widget_opacity);
                     } else {
                         initWidgetOpacity(80);
                     }
-                    if (typeof settings.widget_defaultforcetop !== "undefined") {
+                    if (typeof settings.widget_defaultforcetop !== 'undefined' && settings.widget_defaultforcetop !== null) {
                         initWidgetDefaultForceTop(settings.widget_defaultforcetop);
                     } else {
                         initWidgetDefaultForceTop(false);
@@ -258,8 +258,8 @@
 
             //初始化页面字体
             function initFont(font) {
-                var cssText = "body {font-family:" + font + " !important;}";
-                var modStyle = document.querySelector("#modCSS");
+                const cssText = `body {font-family: ${font} !important;}`;
+                const modStyle = document.querySelector("#modCSS");
                 if (modStyle === null) {
                     modStyle = document.createElement("style");
                     modStyle.id = "modCSS";
@@ -270,7 +270,7 @@
                 //init settings ui
                 initFontFamilySetting(font);
 
-                if (font == "Source Han Sans CN") {
+                if (font === "Source Han Sans CN") {
                     loadWebfont(font);
                 }
             }
@@ -941,14 +941,14 @@
             $.getScript("static/notes.reset.js");
 
             function reloadNotesId() {
-                storage.get("notesid" + (global.indebug ? "_dev" : ""), function(error, data) {
-                    if (error) {
-                        console.error(error);
+                storage.get("notesid" + (global.indebug ? "_dev" : ""), function(err, data) {
+                    if (err) {
+                        console.error('Get notesid error: ', err);
                         initNotesId(null);
                         return;
                     } else {
                         //获取callback回传的json
-                        var notesid = data;
+                        const notesid = data;
                         initNotesId(notesid.id);
                     }
                 });

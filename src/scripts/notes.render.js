@@ -259,7 +259,7 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
 
     // animate
     if (animate) {
-        $('#note_' + id).animateCss('fadeInRight faster');
+        $('#note_' + id).animateCss('fadeInLeft faster');
     }
 
     setTimeout(function(){
@@ -291,7 +291,7 @@ function rerenderEditedNote(data, rawtext) {
             // 便签可能是从其他类别改到当前类别的
             if ($('#note_' + data.id).parent().css('display') === 'none') {
                 $('#note_' + data.id).parent().show();
-                $('#note_' + data.id).parent().animateCss('fadeInRight faster');
+                $('#note_' + data.id).parent().animateCss('fadeInLeft faster');
                 // 有便签新加入必定不为空
                 $('#note-empty-category').hide();
             }
