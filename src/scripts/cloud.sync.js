@@ -237,6 +237,7 @@ function processDiffDeleted(diffDeleted) {
     const time = note.updaterawtime || note.rawtime;
     if (moment(time, 'YYYYMMDDHHmmss').valueOf() > moment(createdAt).valueOf()) {
       // 本地有修改
+      note.syncId = null;
       note.needSync = true;
       return;
     }
