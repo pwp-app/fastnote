@@ -259,7 +259,7 @@
             //初始化页面字体
             function initFont(font) {
                 const cssText = `body {font-family: ${font} !important;}`;
-                const modStyle = document.querySelector("#modCSS");
+                let modStyle = document.querySelector("#modCSS");
                 if (modStyle === null) {
                     modStyle = document.createElement("style");
                     modStyle.id = "modCSS";
