@@ -23,30 +23,19 @@ class Category {
 readCategoriesFile();
 readCurrentCategory();
 
-//读取
+// 读取
 function readCurrentCategory() {
     const current_category_file = storagePath + (global.indebug ? '/devTemp' : '') + '/storage/current_category.json';
-    if (current_category_file) {
-        fs.readFile(current_category_file, 'utf-8', function(err, data) {
-            if (err) {
-                console.error(err);
-                return;
-            }
-            current_category = JSON.parse(data).category;
-            $(document).ready(function() {
-                //渲染一次current_category
-                renderCurrentCategory();
-                if (current_category !== 'notalloc' && current_category !== 'all') {
-                    $('#select-note-category').val(current_category);
-                }
-            });
-        });
+    if (fs.existsSync(current_category_file)) {
+        try {
+            const stored = fs.readFileSync(current_category_file, 'utf-8');
+            current_category = JSON.parse(stored).category;
+        } catch (err) {
+            console.error('Read current category error: ', err);
+            return;
+        }
     } else {
-        current_category = "all";
-        $(document).ready(function() {
-            //渲染一次current_category
-            renderCurrentCategory();
-        });
+        current_category = 'all';
     }
 }
 
@@ -307,7 +296,7 @@ function renderCurrentCategory() {
         case 'all':
             $('#category-system-' + current_category).addClass('category-selected');
             $('.bottombar-category-name').html('');
-            $('#newnote-info-item-category').show(); //当前分类为所有便签时创建便签的分类可选
+            $('#newnote-info-item-category').show(); // 当前分类为所有便签时创建便签的分类可选
             break;
         case 'notalloc':
             $('#category-system-' + current_category).addClass('category-selected');
@@ -317,7 +306,8 @@ function renderCurrentCategory() {
         default:
             $('#category-custom-' + current_category).addClass('category-selected');
             $('.bottombar-category-name').html(current_category);
-            $('#newnote-info-item-category').hide(); //当前分类为其他分类时创建便签的分类不可选
+            $('#select-note-category').val(current_category);
+            $('#newnote-info-item-category').hide(); // 当前分类为其他分类时创建便签的分类不可选
             break;
     }
 }

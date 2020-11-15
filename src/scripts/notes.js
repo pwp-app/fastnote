@@ -350,6 +350,8 @@ function readNoteFiles(success_callback) {
                                 renderCustomCategoryCount();
                                 // 检查便签分类数量的正确性
                                 checkCategoryCount();
+                                // 可能需要重新渲染
+                                renderCurrentCategory();
                                 if (notes.length === 0) {
                                     showNoteEmpty();
                                     isNotesEmpty = true;
