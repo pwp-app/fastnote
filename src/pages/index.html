@@ -1722,21 +1722,16 @@
         <ul class="cloud-menu cloud-menu-user">
           <li id="cloud-menuitem-userinfo">
             <div class="cloud-user-avatar">
-              <img src="static/images/default_avatar.png">
+              <img id="cloud-user-avatar-img" src="static/images/default_avatar.png">
             </div>
             <div class="cloud-user-baseinfo">
-              <span id="cloud-user-username"></span>
+              <span id="cloud-user-username">未知用户</span>
             </div>
           </li>
           <div class="cloud-menuitem-split"></div>
           <li id="cloud-menuitem-sync">
             <div class="cloud-menuitem-label">
               <span data-lang="sync">同步</span>
-            </div>
-          </li>
-          <li id="cloud-menuitem-usersettings">
-            <div class="cloud-menuitem-label">
-              <span data-lang="user_settings">用户设置</span>
             </div>
           </li>
           <li id="cloud-menuitem-logout">
@@ -1806,6 +1801,14 @@
       closeCloudPanel();
     });
     // 登出
+    $('#cloud-menuitem-sync').on('click', () => {
+      Infobar.info('正在同步数据...');
+      doSync(() => {
+        setTimeout(() => {
+          Infobar.success('同步成功');
+        }, 3000);
+      });
+    });
     $('#cloud-menuitem-logout').on('click', () => {
       cloudUserLogout();
     });
@@ -2146,6 +2149,29 @@
       return true;
     }
 
+    function fetchCloudUserInfo() {
+      $.ajax({
+        url: `${cloud_apibase}/user/getInfo`,
+        headers: {
+          Authorization: `Bearer ${cloud_token}`,
+        },
+        type: 'GET',
+        dateType: 'json',
+        success: (res) => {
+          if (!res.success) {
+            return;
+          }
+          const { email, username } = res.data;
+          const mailUrl = `/${md5(email)}`;
+          $('#cloud-user-avatar-img').attr('src', `https://www.gravatar.com/avatar${email ? mailUrl : '' }?s=128`);
+          $('#cloud-user-username').text(username);
+        },
+        error: (err) => {
+          console.error('[Cloud] Fetch user info error: ', err);
+        }
+      });
+    }
+
     // 登出
     function cloudUserLogout() {
       // 显示未登录状态面板
@@ -2216,6 +2242,8 @@
       // 切换UI
       $('.cloud-body-nologin').hide();
       $('.cloud-body-user').show();
+      // 获取用户信息
+      fetchCloudUserInfo();
       // 开始执行sync
       doSync(() => {
 				startSyncPoll();
