@@ -2,410 +2,410 @@
 <html>
 
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Fastnote - 回收站</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--import requirements-->
-    <script>
-        window.$ = window.jQuery = require('./static/jquery.min.js');
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Fastnote - 回收站</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--import requirements-->
+  <script>
+    window.$ = window.jQuery = require('./static/jquery.min.js');
 
-        const remote = require('electron').remote;
-        const app = remote.app;
-        const pathPrefix = remote.getGlobal('pathPrefix') || '';
-    </script>
-    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
-    <link rel="stylesheet" href="static/font-awesome.min.css">
-    <link rel="stylesheet" href="static/bootstrap.min.css">
-    <link rel="stylesheet" href="static/animate.min.css">
-    <script src="static/i18n.js"></script>
-    <script src="static/i18n/render.js"></script>
-    <script src="static/array.js"></script>
-    <script src="static/encryption.js"></script>
-    <script src="static/han.simple.js"></script>
-    <script src="static/bootstrap.min.js"></script>
-    <script src="static/mousetrap.min.js"></script>
-    <script src="static/moment.min.js"></script>
-    <script src="static/marked.js"></script>
-    <script src="static/lozad.min.js"></script>
-    <script src="static/notes.render.js"></script>
-    <script>
-        //recyclebin flag
-        var inRecyclebin = true;
+    const remote = require('electron').remote;
+    const app = remote.app;
+		const pathPrefix = remote.getGlobal('pathPrefix') || '';
 
-        //load Animate CSS
-        $.fn.extend({
-            animateCss: function(animationName, callback) {
-                var animationEnd = (function(el) {
-                    var animations = {
-                        animation: 'animationend',
-                        OAnimation: 'oAnimationEnd',
-                        MozAnimation: 'mozAnimationEnd',
-                        WebkitAnimation: 'webkitAnimationEnd',
-                    };
+		// recyclebin flag
+    var inRecyclebin = true;
+  </script>
+  <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css" />
+  <link rel="stylesheet" href="static/font-awesome.min.css">
+  <link rel="stylesheet" href="static/bootstrap.min.css">
+  <link rel="stylesheet" href="static/animate.min.css">
+  <script src="static/i18n.js"></script>
+  <script src="static/i18n/render.js"></script>
+  <script src="static/array.js"></script>
+  <script src="static/encryption.js"></script>
+  <script src="static/han.simple.js"></script>
+  <script src="static/bootstrap.min.js"></script>
+  <script src="static/mousetrap.min.js"></script>
+  <script src="static/moment.min.js"></script>
+  <script src="static/marked.js"></script>
+  <script src="static/lozad.min.js"></script>
+  <script src="static/notes.render.js"></script>
+  <script>
+    // load Animate CSS
+    $.fn.extend({
+      animateCss: function(animationName, callback) {
+        var animationEnd = (function(el) {
+          var animations = {
+            animation: 'animationend',
+            OAnimation: 'oAnimationEnd',
+            MozAnimation: 'mozAnimationEnd',
+            WebkitAnimation: 'webkitAnimationEnd',
+          };
 
-                    for (var t in animations) {
-                        if (typeof(el.style[t]) !== 'undefined') {
-                            return animations[t];
-                        }
-                    }
-                })(document.createElement('div'));
+          for (var t in animations) {
+            if (typeof(el.style[t]) !== 'undefined') {
+              return animations[t];
+            }
+          }
+        })(document.createElement('div'));
 
-                this.addClass('animated ' + animationName).one(animationEnd, function() {
-                    $(this).removeClass('animated ' + animationName);
-                    if (typeof callback === 'function') callback();
-                });
-
-                return this;
-            },
+        this.addClass('animated ' + animationName).one(animationEnd, function() {
+          $(this).removeClass('animated ' + animationName);
+          if (typeof callback === 'function') callback();
         });
 
-        // fetch indebug status
-        global.indebug = remote.getGlobal('indebug');
+        return this;
+      },
+    });
 
-        // import json storage
-        var storage = require(pathPrefix + 'electron-json-storage');
-        var time = require('./static/tools/time.js');
+    // fetch indebug status
+    global.indebug = remote.getGlobal('indebug');
 
-        const Menu = remote.Menu;
-        const MenuItem = remote.MenuItem;
+    // import json storage
+    var storage = require(pathPrefix + 'electron-json-storage');
+    var time = require('./static/tools/time.js');
 
-        const {
-            dialog
-        } = require('electron').remote;
+    const Menu = remote.Menu;
+    const MenuItem = remote.MenuItem;
+
+    const {
+      dialog
+    } = require('electron').remote;
 
 
-        const {
-            ipcRenderer
-        } = require('electron');
+    const {
+      ipcRenderer
+    } = require('electron');
 
-        const WebFont = require(pathPrefix + 'webfontloader');
+    const WebFont = require(pathPrefix + 'webfontloader');
 
-        // import requirements
-        $.getScript('static/infobar.js'); //import by jQuery
+    // import requirements
+    $.getScript('static/infobar.js'); //import by jQuery
 
-        // import menu
-        $.getScript('static/menu.recyclebin.js');
+    // import menu
+    $.getScript('static/menu.recyclebin.js');
 
-        var settings;
+    var settings;
 
-        storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
-            if (error) {
-                console.error(error);
-                settingsInit(null);
-                return;
-            } else {
-                //获取callback回传的json
-                settings = data;
-                settingsInit(settings);
-            }
+    storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
+      if (error) {
+        console.error(error);
+        settingsInit(null);
+        return;
+      } else {
+        //获取callback回传的json
+        settings = data;
+        settingsInit(settings);
+      }
+      $(document).ready(function() {
+        ipcRenderer.send("recyclebin-window-ready");
+      });
+    });
+
+    function settingsInit(settings) {
+      var cssText = "";
+      var font = "";
+      // build css
+      if (settings == null) {
+        // read error
+        $('#main-style').attr('href', 'static/main.default.css');
+
+        cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
+        font = 'Source Han Sans CN';
+        current_i18n = 'zh-cn';
+        $.getScript('static/i18n/zh-cn.js');
+        // read error
+        console.error('A error occured when reading settings.');
+      } else {
+        // read success
+        if (typeof settings.language != 'undefined') {
+          if (settings.language != 'zh-cn') {
             $(document).ready(function() {
-                ipcRenderer.send("recyclebin-window-ready");
+              applyLanguage(settings.language);
             });
-        });
-
-        function settingsInit(settings) {
-            var cssText = "";
-            var font = "";
-            // build css
-            if (settings == null) {
-                // read error
-                $('#main-style').attr('href', 'static/main.default.css');
-
-                cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
-                font = 'Source Han Sans CN';
-                current_i18n = 'zh-cn';
-                $.getScript('static/i18n/zh-cn.js');
-                // read error
-                console.error('A error occured when reading settings.');
-            } else {
-                // read success
-                if (typeof settings.language != 'undefined') {
-                    if (settings.language != 'zh-cn') {
-                        $(document).ready(function() {
-                            applyLanguage(settings.language);
-                        });
-                    } else {
-                        $.getScript('static/i18n/zh-cn.js');
-                    }
-                    current_i18n = settings.language;
-                } else {
-                    current_i18n = 'zh-cn';
-                    $.getScript('static/i18n/zh-cn.js');
-                }
-                if (typeof settings.theme != 'undefined') {
-                    $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
-                } else {
-                    $('#main-style').attr('href', 'static/main.default.css');
-                }
-
-                if (typeof settings.fontfamily != 'undefined') {
-                    cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
-                    font = settings.fontfamily;
-                } else {
-                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;';
-                    font = 'Source Han Sans CN';
-                }
-
-                // 笔记显示设置初始化
-                cssText += '.note-content p{';
-                if (typeof settings.fontsize != 'undefined') {
-                    cssText += 'font-size:' + settings.fontsize + 'px !important;';
-                }
-                if (typeof settings.lineheight != 'undefined') {
-                    cssText += 'line-height:' + settings.lineheight + 'px !important;';
-                }
-                if (typeof settings.textalign != 'undefined') {
-                    cssText += 'text-align:' + settings.textalign + ' !important;'; //note text align
-                }
-                if (typeof settings.letterspacing != 'undefined') {
-                    cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
-                }
-                cssText += '}'
-
-                cssText += '.note-content a{';
-                if (typeof settings.fontsize != 'undefined') {
-                    cssText += 'font-size:' + settings.fontsize + 'px !important;';
-                }
-                if (typeof settings.letterspacing != 'undefined') {
-                    cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
-                }
-                cssText += '}'
-            }
-
-            var modStyle = document.querySelector('#modCSS');
-            if (modStyle === null) {
-                modStyle = document.createElement('style');
-                modStyle.id = 'modCSS';
-                document.body.appendChild(modStyle);
-            }
-            modStyle.innerHTML = cssText;
-
-            if (font == 'Source Han Sans CN') {
-                loadWebfont(font);
-            }
+          } else {
+            $.getScript('static/i18n/zh-cn.js');
+          }
+          current_i18n = settings.language;
+        } else {
+          current_i18n = 'zh-cn';
+          $.getScript('static/i18n/zh-cn.js');
+        }
+        if (typeof settings.theme != 'undefined') {
+          $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
+        } else {
+          $('#main-style').attr('href', 'static/main.default.css');
         }
 
-        // 加载webfont
-        function loadWebfont(font) {
-            WebFont.load({
-                custom: {
-                    families: [font]
-                }
-            });
+        if (typeof settings.fontfamily != 'undefined') {
+          cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
+          font = settings.fontfamily;
+        } else {
+          cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;';
+          font = 'Source Han Sans CN';
         }
-    </script>
+
+        // 笔记显示设置初始化
+        cssText += '.note-content p{';
+        if (typeof settings.fontsize != 'undefined') {
+          cssText += 'font-size:' + settings.fontsize + 'px !important;';
+        }
+        if (typeof settings.lineheight != 'undefined') {
+          cssText += 'line-height:' + settings.lineheight + 'px !important;';
+        }
+        if (typeof settings.textalign != 'undefined') {
+          cssText += 'text-align:' + settings.textalign + ' !important;'; //note text align
+        }
+        if (typeof settings.letterspacing != 'undefined') {
+          cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
+        }
+        cssText += '}'
+
+        cssText += '.note-content a{';
+        if (typeof settings.fontsize != 'undefined') {
+          cssText += 'font-size:' + settings.fontsize + 'px !important;';
+        }
+        if (typeof settings.letterspacing != 'undefined') {
+          cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
+        }
+        cssText += '}'
+      }
+
+      var modStyle = document.querySelector('#modCSS');
+      if (modStyle === null) {
+        modStyle = document.createElement('style');
+        modStyle.id = 'modCSS';
+        document.body.appendChild(modStyle);
+      }
+      modStyle.innerHTML = cssText;
+
+      if (font == 'Source Han Sans CN') {
+        loadWebfont(font);
+      }
+    }
+
+    // 加载webfont
+    function loadWebfont(font) {
+      WebFont.load({
+        custom: {
+          families: [font]
+        }
+      });
+    }
+  </script>
 </head>
 
 <body class="recyclebin-body">
-    <!-- titlebar -->
-    <div class="container-titlebar col-lg-12 drag">
-        <div class="title" id="app-title" data-lang="recyclebin">回收站</div>
-        <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
+  <!-- titlebar -->
+  <div class="container-titlebar col-lg-12 drag">
+    <div class="title" id="app-title" data-lang="recyclebin">回收站</div>
+    <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
+  </div>
+  <script async>
+    require('./modules/electron-titlebar');
+  </script>
+  <div class="container-lockscreen">
+    <div class="lockscreen">
+      <div class="lockscreen-icon">
+        <i class="fa fa-lock" aria-hidden="true"></i>
+      </div>
+      <div class="lockscreen-form">
+        <input type="password" class="brcontrol-input" id="input-lockscreen">
+      </div>
     </div>
-    <script async>
-        require('./modules/electron-titlebar');
-    </script>
-    <div class="container-lockscreen">
-        <div class="lockscreen">
-            <div class="lockscreen-icon">
-                <i class="fa fa-lock" aria-hidden="true"></i>
-            </div>
-            <div class="lockscreen-form">
-                <input type="password" class="brcontrol-input" id="input-lockscreen">
-            </div>
+  </div>
+  <script src="static/lockscreen.js"></script>
+  </div>
+  <!-- main -->
+  <div class="recycle-container">
+    <div class="container-right">
+      <div class="right-wrapper">
+        <!-- multi-selected -->
+        <div class="brtoast toast-multiselected">
+          <p class="toast-normaltext" id="toast-multiselected-text"></p>
         </div>
+      </div>
     </div>
-    <script src="static/lockscreen.js"></script>
+    <div class="recycle-list-container">
+      <div class="note-empty recycle-empty col-lg-12" id="note-empty">
+        <span data-lang="note_empty_recyclebin">回收站内没有便签</span>
+      </div>
+      <div class="note-list recycle-list" id="note-list">
+        <div class="note-list-forceTop" id="note-list-forceTop"></div>
+        <div class="note-list-normal" id="note-list-normal"></div>
+      </div>
     </div>
-    <!-- main -->
-    <div class="recycle-container">
-        <div class="container-right">
-            <div class="right-wrapper">
-                <!-- multi-selected -->
-                <div class="brtoast toast-multiselected">
-                    <p class="toast-normaltext" id="toast-multiselected-text"></p>
-                </div>
-            </div>
-        </div>
-        <div class="recycle-list-container">
-            <div class="note-empty recycle-empty col-lg-12" id="note-empty">
-                <span data-lang="note_empty_recyclebin">回收站内没有便签</span>
-            </div>
-            <div class="note-list recycle-list" id="note-list">
-                <div class="note-list-forceTop" id="note-list-forceTop"></div>
-                <div class="note-list-normal" id="note-list-normal"></div>
-            </div>
-        </div>
-    </div>
-    </div>
-    <script>
-        //event recycle
-        ipcRenderer.on('recycle-note', (event, data) => {
-            if (notes.length <= 0) {
-                showNoteList();
-            }
-            addNoteObjToArray(data);
-            refreshNoteList(function() {
-                bindNoteFoldDBL(data.id);
-            });
-            //animate
-            $('#note_' + data.id).animateCss('fadeInLeft faster');
-        });
-    </script>
+  </div>
+  </div>
+  <script>
+    //event recycle
+    ipcRenderer.on('recycle-note', (event, data) => {
+      if (notes.length <= 0) {
+        showNoteList();
+      }
+      addNoteObjToArray(data);
+      refreshNoteList(function() {
+        bindNoteFoldDBL(data.id);
+      });
+      //animate
+      $('#note_' + data.id).animateCss('fadeInLeft faster');
+    });
+  </script>
 
-    <span id="filter-x" style="display:none"></span>
+  <span id="filter-x" style="display:none"></span>
 
-    <script>
-        let noteid_clicked = -1;
+  <script>
+    let noteid_clicked = -1;
 
-        // bind resize
-        $(window).resize(function() { // 当浏览器大小变化时
-            // 调整note的高度
-            $('.note-content').each(function() {
-                if ($(this).attr('class').indexOf('note-overheight') === -1) {
-                    $(this).css('height', 'auto');
-                }
-            });
-        });
-
-        function bindNoteClickEvent() {
-            // 滚动条不响应选择事件
-            $('.note-content').off('mousedown').on('mousedown', function(e) {
-                if (e.offsetX >= $(this).width()) {
-                    e.stopPropagation();
-                }
-            });
-
-            $('.note-wrapper').off('mousedown').on('mousedown', function(e) {
-                // 提取点击的id
-                noteid_clicked = parseInt($(this).children('.note').attr("data-id"));
-                if (e.which == 1) {
-                    if (selectModeEnabled) {
-                        // 多选模式下，单击，如果选中则取消，未选中则选中
-                        let index = notes_selected.indexOf(noteid_clicked);
-                        if (index != -1) {
-                            $('#note_' + noteid_clicked).parent().removeClass('note-selected');
-                            notes_selected.removeAt(index);
-                            // 如果没有选中则退出
-                            if (notes_selected.length <= 0) {
-                                selectModeEnabled = false;
-                                $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
-                                    $('.toast-multiselected').removeClass('toast-active');
-                                });
-                            } else {
-                                $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
-                            }
-                        } else {
-                            $('#note_' + noteid_clicked).parent().addClass('note-selected');
-                            notes_selected.push(noteid_clicked);
-                            //set up toast
-                            $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
-                        }
-                    } else {
-                        noteLongClickTimeout = setTimeout(function() {
-                            selectModeEnabled = true;
-                            $('#note_' + noteid_clicked).parent().addClass('note-selected');
-                            notes_selected = [];
-                            notes_selected.push(noteid_clicked);
-                            //set up toast
-                            $('.toast-multiselected').addClass('toast-active');
-                            $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
-                            $('.toast-multiselected').animateCss('fadeInRight faster');
-                        }, 1000);
-                        // 如果移动了鼠标则取消长按计时
-                        $('body').one('mousemove', function(e) {
-                            clearTimeout(noteLongClickTimeout);
-                        });
-                    }
-                }
-                if (e.which == 3) {
-                    if (selectModeEnabled) {
-                        let index = notes_selected.indexOf(noteid_clicked);
-                        //如果是选中的，弹出菜单，如果不是选中的，取消
-                        if (index != -1) {
-                            popup_menu_recyclebin_multiSelected();
-                        } else {
-                            selectModeEnabled = false;
-                            $('.note-wrapper').removeClass('note-selected');
-                            $(this).addClass('note-selected');
-                            popup_menu_recyclebin();
-                            $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
-                                $('.toast-multiselected').removeClass('toast-active');
-                            });
-                        }
-                    } else {
-                        $('#note_' + noteid_clicked).parent().removeClass('note-selected');
-                        $(this).addClass('note-selected');
-                        popup_menu_recyclebin();
-                    }
-                }
-                // 阻止事件冒泡到父元素
-                e.stopPropagation();
-            });
-            $('.note-wrapper').off('mouseup').on('mouseup', function(e) {
-                if (e.which == 1) {
-                    clearTimeout(noteLongClickTimeout);
-                }
-            });
+    // bind resize
+    $(window).resize(function() { // 当浏览器大小变化时
+      // 调整note的高度
+      $('.note-content').each(function() {
+        if ($(this).attr('class').indexOf('note-overheight') === -1) {
+          $(this).css('height', 'auto');
         }
+      });
+    });
 
-        $(document).ready(function() {
-            $('#note-list').mousedown(function(e) {
-                if (selectModeEnabled) {
-                    selectModeEnabled = false;
-                    $('.note-wrapper').removeClass('note-selected');
-                    $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
-                        $('.toast-multiselected').removeClass('toast-active');
-                    });
-                }
-            });
-        });
-
-        Mousetrap.bind('ctrl+a', function() {
-            selectModeEnabled = true;
-            notes_selected = [];
-            notes.forEach(note => {
-                notes_selected.push(note.id);
-            });
-            $('.note-wrapper').addClass('note-selected');
-            if (!$('.toast-multiselected').hasClass('toast-active')) {
-                $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
-            }
-            $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
-            return false;
-        });
-
-        bindNoteClickEvent();
-
-        if (!global.indebug) {
-            Mousetrap.bind('ctrl+shift+i', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-            $(document).on('keydown', 'input[type="password"]', (e) => {
-                var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.key === 'i') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-            $(document).on('keydown', 'input[type="text"]', (e) => {
-                var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.key === 'i') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
+    function bindNoteClickEvent() {
+      // 滚动条不响应选择事件
+      $('.note-content').off('mousedown').on('mousedown', function(e) {
+        if (e.offsetX >= $(this).width()) {
+          e.stopPropagation();
         }
-        // 屏蔽F11
-        Mousetrap.bind('f11', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        });
-    </script>
+      });
 
-    <script>
-        $.getScript('static/notes.recycle.js');
-    </script>
+      $('.note-wrapper').off('mousedown').on('mousedown', function(e) {
+        // 提取点击的id
+        noteid_clicked = parseInt($(this).children('.note').attr("data-id"));
+        if (e.which == 1) {
+          if (selectModeEnabled) {
+            // 多选模式下，单击，如果选中则取消，未选中则选中
+            let index = notes_selected.indexOf(noteid_clicked);
+            if (index != -1) {
+              $('#note_' + noteid_clicked).parent().removeClass('note-selected');
+              notes_selected.removeAt(index);
+              // 如果没有选中则退出
+              if (notes_selected.length <= 0) {
+                selectModeEnabled = false;
+                $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
+                  $('.toast-multiselected').removeClass('toast-active');
+                });
+              } else {
+                $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
+              }
+            } else {
+              $('#note_' + noteid_clicked).parent().addClass('note-selected');
+              notes_selected.push(noteid_clicked);
+              //set up toast
+              $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
+            }
+          } else {
+            noteLongClickTimeout = setTimeout(function() {
+              selectModeEnabled = true;
+              $('#note_' + noteid_clicked).parent().addClass('note-selected');
+              notes_selected = [];
+              notes_selected.push(noteid_clicked);
+              //set up toast
+              $('.toast-multiselected').addClass('toast-active');
+              $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
+              $('.toast-multiselected').animateCss('fadeInRight faster');
+            }, 1000);
+            // 如果移动了鼠标则取消长按计时
+            $('body').one('mousemove', function(e) {
+              clearTimeout(noteLongClickTimeout);
+            });
+          }
+        }
+        if (e.which == 3) {
+          if (selectModeEnabled) {
+            let index = notes_selected.indexOf(noteid_clicked);
+            //如果是选中的，弹出菜单，如果不是选中的，取消
+            if (index != -1) {
+              popup_menu_recyclebin_multiSelected();
+            } else {
+              selectModeEnabled = false;
+              $('.note-wrapper').removeClass('note-selected');
+              $(this).addClass('note-selected');
+              popup_menu_recyclebin();
+              $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
+                $('.toast-multiselected').removeClass('toast-active');
+              });
+            }
+          } else {
+            $('#note_' + noteid_clicked).parent().removeClass('note-selected');
+            $(this).addClass('note-selected');
+            popup_menu_recyclebin();
+          }
+        }
+        // 阻止事件冒泡到父元素
+        e.stopPropagation();
+      });
+      $('.note-wrapper').off('mouseup').on('mouseup', function(e) {
+        if (e.which == 1) {
+          clearTimeout(noteLongClickTimeout);
+        }
+      });
+    }
+
+    $(document).ready(function() {
+      $('#note-list').mousedown(function(e) {
+        if (selectModeEnabled) {
+          selectModeEnabled = false;
+          $('.note-wrapper').removeClass('note-selected');
+          $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
+            $('.toast-multiselected').removeClass('toast-active');
+          });
+        }
+      });
+    });
+
+    Mousetrap.bind('ctrl+a', function() {
+      selectModeEnabled = true;
+      notes_selected = [];
+      notes.forEach(note => {
+        notes_selected.push(note.id);
+      });
+      $('.note-wrapper').addClass('note-selected');
+      if (!$('.toast-multiselected').hasClass('toast-active')) {
+        $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
+      }
+      $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
+      return false;
+    });
+
+    bindNoteClickEvent();
+
+    if (!global.indebug) {
+      Mousetrap.bind('ctrl+shift+i', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      $(document).on('keydown', 'input[type="password"]', (e) => {
+        var ctrlKey = e.ctrlKey || e.metaKey;
+        if (ctrlKey && e.shiftKey && e.key === 'i') {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+      $(document).on('keydown', 'input[type="text"]', (e) => {
+        var ctrlKey = e.ctrlKey || e.metaKey;
+        if (ctrlKey && e.shiftKey && e.key === 'i') {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+    }
+    // 屏蔽F11
+    Mousetrap.bind('f11', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  </script>
+
+  <script>
+    $.getScript('static/notes.recycle.js');
+  </script>
 </body>
