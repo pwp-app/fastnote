@@ -1226,7 +1226,9 @@
     //绑定主菜单快捷键
     Mousetrap.bind('esc', function() {
       if (devconsoleOpened) {
-
+        closeDevConsole();
+        $('#note-text').focus();
+        return;
       }
       if (isCategoryOpen) {
         closeCategory();
