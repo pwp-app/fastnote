@@ -90,6 +90,8 @@ displayInfobar.info = (text, timeout = 3000, dismiss = true) => {
     displayInfobar('info', text, timeout, dismiss);
 };
 
+var Infobar = displayInfobar;
+
 function closeInfobar(id){
     clearTimeout(infobar_timeout.id);
     $('#infobar_' + id).animateCss('fadeOutUp faster', function () {
