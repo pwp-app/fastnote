@@ -1,3 +1,5 @@
+var popupMenuOpened = false;
+
 function popup_menu_note(isForceTop, hasPassword) {
   var menu_note;
   //如果是加密便签，则不显示复制
@@ -213,8 +215,14 @@ function popup_menu_note(isForceTop, hasPassword) {
   }
   menu_note.on('menu-will-close', (event, args) => {
     $('.note-wrapper').removeClass('note-selected');
-  });
-  menu_note.popup(remote.getCurrentWindow());
+	});
+	popupMenuOpened = true;
+  menu_note.popup({
+		window: remote.getCurrentWindow(),
+		callback: () => {
+			popupMenuOpened = false;
+		},
+	});
 }
 
 // 多选状态
@@ -335,6 +343,12 @@ function popup_menu_note_multiSelected(hasForceTop, hasNotForceTop) {
         },
       })
     );
-  }
-  menu_note_multiSelected.popup(remote.getCurrentWindow());
+	}
+	popupMenuOpened = true;
+  menu_note_multiSelected.popup({
+		window: remote.getCurrentWindow(),
+		callback: () => {
+			popupMenuOpened = false;
+		},
+	});
 }

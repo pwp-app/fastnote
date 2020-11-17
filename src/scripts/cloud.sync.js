@@ -5,8 +5,32 @@ var pako = require('pako');
 // 全局变量
 var noteRecycledLog;
 
+// poll
+var syncTimer;
+const syncInterval = 5000;
+
+function startSyncPoll() {
+  syncTimer = setInterval(() => {
+    if (!hasLogon) {
+      return;
+    }
+    // 情况排除
+    const exclude = selectModeEnabled || searchOpened ||
+      isMainMenuOpen || isCategoryOpen || isCloudOpen;
+    if (exclude) {
+      return;
+    }
+    doSync();
+  }, syncInterval);
+}
+
+function stopSyncPoll() {
+  clearInterval(syncTimer);
+  syncTimer = null;
+}
+
 // 执行同步流程的主方法
-async function doSync() {
+async function doSync(callback) {
   if (!cloud_token) {
     // 两个token都没有，直接return
     if (!cloud_refresh_token) {
@@ -15,6 +39,7 @@ async function doSync() {
     // 有refresh token，尝试刷新
     const res = await doRefreshToken();
     if (!res) {
+      console.error('[Cloud] Cannot refresh token when do sync.');
       return;
     }
   }
@@ -24,20 +49,21 @@ async function doSync() {
   }
   // 获取diff数据
   const diff = await fetchDiff(lastSync);
-  if (!diff) {
-    return;
+  if (diff) {
+    await processDiff(diff);
   }
   // 处理diff数据
-  await processDiff(diff);
   // 执行同步
   const updated = await pushNoSyncNotes();
-  if (!updated) {
-    return;
+  if (updated) {
+    // 处理同步返回数据
+    processUpdated(updated);
   }
-  // 处理同步返回数据
-  processUpdated(updated);
   // 保存最后的sync日期
   saveLastSync();
+  if (typeof callback === 'function') {
+    callback();
+  }
 }
 
 function getLastSync() {
