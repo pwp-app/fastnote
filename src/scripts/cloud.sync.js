@@ -60,7 +60,7 @@ async function doSync(callback) {
     processUpdated(updated);
   }
   // 保存最后的sync日期
-  saveLastSync();
+  await saveLastSync();
   if (typeof callback === 'function') {
     callback();
   }
@@ -319,7 +319,7 @@ function pushNoSyncNotes() {
     // 判断是否要发请求
     if (syncNoteData.length < 1 && deleted.length < 1) {
       console.warn('[Cloud] No need to send update request.');
-      return;
+      return resolve(null);
     }
     $.ajax({
       url: `${cloud_apibase}/sync/update`,
