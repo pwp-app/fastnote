@@ -259,6 +259,9 @@ function processDiffDeleted(diffDeleted) {
     }
     // 本地未删除
     const index = notes.findIndex(note => note.syncId === syncId);
+    if (index < 0) {
+      return;
+    }
     const note = notes[index];
     const time = note.updaterawtime || note.rawtime;
     if (moment(time, 'YYYYMMDDHHmmss').valueOf() > moment(createdAt).valueOf()) {
