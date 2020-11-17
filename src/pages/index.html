@@ -2,2306 +2,2306 @@
 <html>
 
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Fastnote</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--import requirements-->
-    <script>
-        // define electron app
-        window.$ = window.jQuery = require('./static/jquery.min.js');
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Fastnote</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--import requirements-->
+  <script>
+    // define electron app
+    window.$ = window.jQuery = require('./static/jquery.min.js');
 
-        var remote = require('electron').remote;
-        var app = remote.app;
-        const pathPrefix = remote.getGlobal('pathPrefix') || '';
-        const hotfix = remote.getGlobal('hotfix');
+    var remote = require('electron').remote;
+    var app = remote.app;
+    const pathPrefix = remote.getGlobal('pathPrefix') || '';
+    const hotfix = remote.getGlobal('hotfix');
 
-        var inRecyclebin = false;
-    </script>
+    var inRecyclebin = false;
+  </script>
 
-    <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css">
-    <link rel="stylesheet" href="static/font-awesome.min.css">
-    <link rel="stylesheet" href="static/bootstrap.min.css">
-    <link rel="stylesheet" href="static/animate.min.css">
-    <script src="static/array.js"></script>
-    <script src="static/i18n.js"></script>
-    <script src="static/i18n/render.js"></script>
-    <script src="static/encryption.js"></script>
-    <script src="static/han.simple.js"></script>
-    <script src="static/category.js"></script>
-    <script src="static/bootstrap.min.js"></script>
-    <script src="static/mousetrap.min.js"></script>
-    <script src="static/moment.min.js"></script>
-    <script src="static/html5sortable.min.js"></script>
-    <script src="static/marked.js"></script>
-    <script src="static/lozad.min.js"></script>
-    <script src="static/notes.render.js"></script>
-    <script src="static/cloud.sync.js"></script>
-    <script src="static/stat.js"></script>
-    <script>
-        // i18n
-        var postprocess_i18n = [{
-            selector: '#input-note-title',
-            attr: 'placeholder',
-            key: 'placeholder_notitle'
-        }, {
-            selector: '#input-note-password',
-            attr: 'placeholder',
-            key: 'placeholder_notsetpassword'
-        }];
-        var postprocess_i18n_css = [{
-            selector: '.newnote-info-item',
-            class: 'newnote-info-item-en-us'
-        }];
-    </script>
-    <script>
-        // import json storage
-        var storage = require(pathPrefix + 'electron-json-storage');
+  <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="static/main.white.css">
+  <link rel="stylesheet" href="static/font-awesome.min.css">
+  <link rel="stylesheet" href="static/bootstrap.min.css">
+  <link rel="stylesheet" href="static/animate.min.css">
+  <script src="static/array.js"></script>
+  <script src="static/i18n.js"></script>
+  <script src="static/i18n/render.js"></script>
+  <script src="static/encryption.js"></script>
+  <script src="static/han.simple.js"></script>
+  <script src="static/category.js"></script>
+  <script src="static/bootstrap.min.js"></script>
+  <script src="static/mousetrap.min.js"></script>
+  <script src="static/moment.min.js"></script>
+  <script src="static/html5sortable.min.js"></script>
+  <script src="static/marked.js"></script>
+  <script src="static/lozad.min.js"></script>
+  <script src="static/notes.render.js"></script>
+  <script src="static/cloud.sync.js"></script>
+  <script src="static/stat.js"></script>
+  <script>
+    // i18n
+    var postprocess_i18n = [{
+      selector: '#input-note-title',
+      attr: 'placeholder',
+      key: 'placeholder_notitle'
+    }, {
+      selector: '#input-note-password',
+      attr: 'placeholder',
+      key: 'placeholder_notsetpassword'
+    }];
+    var postprocess_i18n_css = [{
+      selector: '.newnote-info-item',
+      class: 'newnote-info-item-en-us'
+    }];
+  </script>
+  <script>
+    // import json storage
+    var storage = require(pathPrefix + 'electron-json-storage');
 
-        // dialog
-        const {
-            dialog
-        } = require('electron').remote;
+    // dialog
+    const {
+      dialog
+    } = require('electron').remote;
 
-        const Menu = remote.Menu;
-        const MenuItem = remote.MenuItem;
+    const Menu = remote.Menu;
+    const MenuItem = remote.MenuItem;
 
-        const {
-            ipcRenderer,
-            clipboard
-        } = require('electron');
+    const {
+      ipcRenderer,
+      clipboard
+    } = require('electron');
 
-        const notesEdit = require("./static/notes.edit.js");
+    const notesEdit = require("./static/notes.edit.js");
 
-        // tools
-        const UUID = require('./static/tools/uuid.js');
+    // tools
+    const UUID = require('./static/tools/uuid.js');
 
-        // debug
-        global.indebug = remote.getGlobal('indebug');
+    // debug
+    global.indebug = remote.getGlobal('indebug');
 
-        // 初始化Fastnote cloud
-        const cloudConfig = require('./static/config/cloud.config.js');
-        if (global.indebug) {
-            var cloud_protocol = cloudConfig.dev.protocol;
-            var cloud_host = cloudConfig.dev.host;
-            var cloud_port = cloudConfig.dev.port;
-            var cloud_apibase = cloudConfig.dev.protocol + '://' + cloudConfig.dev.host + (cloudConfig.dev.port ? `:${cloudConfig.dev.port}` : '');
-        } else {
-            var cloud_protocol = cloudConfig.release.protocol;
-            var cloud_host = cloudConfig.release.host;
-            var cloud_port = cloudConfig.release.port;
-            var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + (cloudConfig.release.port ? `:${cloudConfig.release.port}` : '')
-        }
+    // 初始化Fastnote cloud
+    const cloudConfig = require('./static/config/cloud.config.js');
+    if (global.indebug) {
+      var cloud_protocol = cloudConfig.dev.protocol;
+      var cloud_host = cloudConfig.dev.host;
+      var cloud_port = cloudConfig.dev.port;
+      var cloud_apibase = cloudConfig.dev.protocol + '://' + cloudConfig.dev.host + (cloudConfig.dev.port ? `:${cloudConfig.dev.port}` : '');
+    } else {
+      var cloud_protocol = cloudConfig.release.protocol;
+      var cloud_host = cloudConfig.release.host;
+      var cloud_port = cloudConfig.release.port;
+      var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + (cloudConfig.release.port ? `:${cloudConfig.release.port}` : '')
+    }
 
-        const WebFont = require(pathPrefix + 'webfontloader');
+    const WebFont = require(pathPrefix + 'webfontloader');
 
-        //import menu
-        $.getScript('static/menu.note.js');
-        $.getScript('static/menu.textarea.js');
+    //import menu
+    $.getScript('static/menu.note.js');
+    $.getScript('static/menu.textarea.js');
 
-        //设置项
-        var settings;
+    //设置项
+    var settings;
 
-        storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
-            if (error) {
-                console.error(error);
-                settingsInit(null);
-                return;
-            } else {
-                //获取callback回传的json
-                settings = data;
-                settingsInit(settings);
-            }
-            //设置加载完成，显示窗体
+    storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
+      if (error) {
+        console.error(error);
+        settingsInit(null);
+        return;
+      } else {
+        //获取callback回传的json
+        settings = data;
+        settingsInit(settings);
+      }
+      //设置加载完成，显示窗体
+      $(document).ready(function() {
+        ipcRenderer.send("main-window-ready");
+      });
+    });
+
+    function settingsInit(settings) {
+      var cssText = "";
+      var font = "";
+      //build css
+      if (settings == null) {
+        //read error
+        $('#main-style').attr('href', 'static/main.default.css');
+
+        cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
+        font = 'Source Han Sans CN';
+        current_i18n = 'zh-cn';
+        $.getScript('static/i18n/zh-cn.js');
+
+        console.error('A error occured when reading settings.');
+      } else {
+        //初始化语言
+        if (typeof settings.language != 'undefined') {
+          if (settings.language != 'zh-cn') {
             $(document).ready(function() {
-                ipcRenderer.send("main-window-ready");
+              applyLanguage(settings.language);
             });
-        });
-
-        function settingsInit(settings) {
-            var cssText = "";
-            var font = "";
-            //build css
-            if (settings == null) {
-                //read error
-                $('#main-style').attr('href', 'static/main.default.css');
-
-                cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
-                font = 'Source Han Sans CN';
-                current_i18n = 'zh-cn';
-                $.getScript('static/i18n/zh-cn.js');
-
-                console.error('A error occured when reading settings.');
-            } else {
-                //初始化语言
-                if (typeof settings.language != 'undefined') {
-                    if (settings.language != 'zh-cn') {
-                        $(document).ready(function() {
-                            applyLanguage(settings.language);
-                        });
-                    } else {
-                        $.getScript('static/i18n/zh-cn.js');
-                    }
-                    current_i18n = settings.language;
-                } else {
-                    current_i18n = 'zh-cn';
-                    $.getScript('static/i18n/zh-cn.js');
-                }
-                //优先初始化锁屏
-                if (typeof settings.lockpassword !== 'undefined') {
-                    $('.container-lockscreen').css('display', 'block');
-                    $('#input-lockscreen').focus();
-                }
-                //read success
-                if (typeof settings.theme != 'undefined') {
-                    $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
-                } else {
-                    $('#main-style').attr('href', 'static/main.default.css');
-                }
-
-                if (typeof settings.fontfamily != 'undefined') {
-                    cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
-                    font = settings.fontfamily;
-                } else {
-                    cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;';
-                    font = 'Source Han Sans CN';
-                }
-
-                //笔记显示设置初始化
-                cssText += '.note-content p, .note-content span{';
-                if (typeof settings.fontsize != 'undefined') {
-                    cssText += 'font-size:' + settings.fontsize + 'px !important;';
-                }
-                if (typeof settings.lineheight != 'undefined') {
-                    cssText += 'line-height:' + settings.lineheight + 'px !important;';
-                }
-                if (typeof settings.textalign != 'undefined') {
-                    cssText += 'text-align:' + settings.textalign + ' !important;'; //note text align
-                }
-                if (typeof settings.letterspacing != 'undefined') {
-                    cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
-                }
-                cssText += '}'
-
-                cssText += '.note-content a{';
-                if (typeof settings.fontsize != 'undefined') {
-                    cssText += 'font-size:' + settings.fontsize + 'px !important;';
-                }
-                if (typeof settings.letterspacing != 'undefined') {
-                    cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
-                }
-                cssText += '}'
-
-                //日期显示初始化
-                if (typeof settings.datedisplay != 'undefined') {
-                    switch (settings.datedisplay) {
-                        case 'createonly':
-                            cssText += '.note-updatetime {display:none !important;}';
-                            cssText += '.note-createtime-label {display:none !important;}';
-                            break;
-                        case 'updateonly':
-                            cssText += '.note-createtime {display:none !important;}';
-                            cssText += '.note-updatetime-label {display:none !important;}';
-                            break;
-                        case 'none':
-                            cssText += 'time {display:none !important;}';
-                            break;
-                    }
-                }
-
-                //时间显示初始化
-                if (typeof settings.timedisplay != 'undefined') {
-                    switch (settings.timedisplay) {
-                        case 'noyear':
-                            cssText += 'timeyear {display:none !important;}';
-                            break;
-                        case 'notime':
-                            cssText += 'timeclock {display:none !important;}';
-                            break;
-                        case 'noyearandtime':
-                            cssText += 'timeyear, timeclock {display:none !important;}';
-                            break;
-                    }
-                }
-            }
-            var modStyle = document.querySelector('#modCSS');
-            if (modStyle === null) {
-                modStyle = document.createElement('style');
-                modStyle.id = 'modCSS';
-                document.body.appendChild(modStyle);
-            }
-            modStyle.innerHTML = cssText;
-
-            if (font == 'Source Han Sans CN') {
-                loadWebfont(font);
-            }
+          } else {
+            $.getScript('static/i18n/zh-cn.js');
+          }
+          current_i18n = settings.language;
+        } else {
+          current_i18n = 'zh-cn';
+          $.getScript('static/i18n/zh-cn.js');
+        }
+        //优先初始化锁屏
+        if (typeof settings.lockpassword !== 'undefined') {
+          $('.container-lockscreen').css('display', 'block');
+          $('#input-lockscreen').focus();
+        }
+        //read success
+        if (typeof settings.theme != 'undefined') {
+          $('#main-style').attr('href', 'static/main.' + settings.theme + '.css');
+        } else {
+          $('#main-style').attr('href', 'static/main.default.css');
         }
 
-        //加载webfont
-        function loadWebfont(font) {
-            WebFont.load({
-                custom: {
-                    families: [font]
-                }
-            });
+        if (typeof settings.fontfamily != 'undefined') {
+          cssText += 'body {font-family:' + settings.fontfamily + ', Arial !important;}'; //font
+          font = settings.fontfamily;
+        } else {
+          cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;';
+          font = 'Source Han Sans CN';
         }
 
-        //获取版本
-        var version = app.getVersion();
-        var isOS64 = remote.getGlobal('isOS64');
+        //笔记显示设置初始化
+        cssText += '.note-content p, .note-content span{';
+        if (typeof settings.fontsize != 'undefined') {
+          cssText += 'font-size:' + settings.fontsize + 'px !important;';
+        }
+        if (typeof settings.lineheight != 'undefined') {
+          cssText += 'line-height:' + settings.lineheight + 'px !important;';
+        }
+        if (typeof settings.textalign != 'undefined') {
+          cssText += 'text-align:' + settings.textalign + ' !important;'; //note text align
+        }
+        if (typeof settings.letterspacing != 'undefined') {
+          cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
+        }
+        cssText += '}'
 
-        //load Animate CSS
-        $.fn.extend({
-            animateCss: function(animationName, callback) {
-                var animationEnd = (function(el) {
-                    var animations = {
-                        animation: 'animationend',
-                        OAnimation: 'oAnimationEnd',
-                        MozAnimation: 'mozAnimationEnd',
-                        WebkitAnimation: 'webkitAnimationEnd',
-                    };
+        cssText += '.note-content a{';
+        if (typeof settings.fontsize != 'undefined') {
+          cssText += 'font-size:' + settings.fontsize + 'px !important;';
+        }
+        if (typeof settings.letterspacing != 'undefined') {
+          cssText += 'letter-spacing:' + settings.letterspacing + 'em !important;';
+        }
+        cssText += '}'
 
-                    for (var t in animations) {
-                        if (typeof(el.style[t]) !== 'undefined') {
-                            return animations[t];
-                        }
-                    }
-                })(document.createElement('div'));
+        //日期显示初始化
+        if (typeof settings.datedisplay != 'undefined') {
+          switch (settings.datedisplay) {
+            case 'createonly':
+              cssText += '.note-updatetime {display:none !important;}';
+              cssText += '.note-createtime-label {display:none !important;}';
+              break;
+            case 'updateonly':
+              cssText += '.note-createtime {display:none !important;}';
+              cssText += '.note-updatetime-label {display:none !important;}';
+              break;
+            case 'none':
+              cssText += 'time {display:none !important;}';
+              break;
+          }
+        }
 
-                this.addClass('animated ' + animationName).one(animationEnd, function() {
-                    $(this).removeClass('animated ' + animationName);
-                    if (typeof callback === 'function') callback();
-                });
+        //时间显示初始化
+        if (typeof settings.timedisplay != 'undefined') {
+          switch (settings.timedisplay) {
+            case 'noyear':
+              cssText += 'timeyear {display:none !important;}';
+              break;
+            case 'notime':
+              cssText += 'timeclock {display:none !important;}';
+              break;
+            case 'noyearandtime':
+              cssText += 'timeyear, timeclock {display:none !important;}';
+              break;
+          }
+        }
+      }
+      var modStyle = document.querySelector('#modCSS');
+      if (modStyle === null) {
+        modStyle = document.createElement('style');
+        modStyle.id = 'modCSS';
+        document.body.appendChild(modStyle);
+      }
+      modStyle.innerHTML = cssText;
 
-                return this;
-            },
+      if (font == 'Source Han Sans CN') {
+        loadWebfont(font);
+      }
+    }
+
+    //加载webfont
+    function loadWebfont(font) {
+      WebFont.load({
+        custom: {
+          families: [font]
+        }
+      });
+    }
+
+    //获取版本
+    var version = app.getVersion();
+    var isOS64 = remote.getGlobal('isOS64');
+
+    //load Animate CSS
+    $.fn.extend({
+      animateCss: function(animationName, callback) {
+        var animationEnd = (function(el) {
+          var animations = {
+            animation: 'animationend',
+            OAnimation: 'oAnimationEnd',
+            MozAnimation: 'mozAnimationEnd',
+            WebkitAnimation: 'webkitAnimationEnd',
+          };
+
+          for (var t in animations) {
+            if (typeof(el.style[t]) !== 'undefined') {
+              return animations[t];
+            }
+          }
+        })(document.createElement('div'));
+
+        this.addClass('animated ' + animationName).one(animationEnd, function() {
+          $(this).removeClass('animated ' + animationName);
+          if (typeof callback === 'function') callback();
         });
 
-        //first start
-        var uuid = "";
-        var firstStart = false;
-        //生成一个独立的uuid
-        storage.has('uuid', function(error, hasKey) {
-            if (error) {
-                console.error(error);
-                throw (error);
+        return this;
+      },
+    });
+
+    //first start
+    var uuid = "";
+    var firstStart = false;
+    //生成一个独立的uuid
+    storage.has('uuid', function(error, hasKey) {
+      if (error) {
+        console.error(error);
+        throw (error);
+      }
+      //err为首次启动
+      if (hasKey) {
+        storage.get('uuid', function(error, data) {
+          if (error) {
+            console.error(error);
+            throw (error);
+          } else {
+            if (typeof data != 'undefined') {
+              uuid = data.uuid;
+              ipcRenderer.send("set-uuid", uuid);
+              if (typeof installstat == 'function') {
+                installstat(uuid);
+              }
             }
-            //err为首次启动
-            if (hasKey) {
-                storage.get('uuid', function(error, data) {
-                    if (error) {
-                        console.error(error);
-                        throw (error);
-                    } else {
-                        if (typeof data != 'undefined') {
-                            uuid = data.uuid;
-                            ipcRenderer.send("set-uuid", uuid);
-                            if (typeof installstat == 'function') {
-                                installstat(uuid);
-                            }
-                        }
-                    }
-                });
-            } else {
-                uuid = UUID.gen();
-                var json = {
-                    uuid: uuid
-                }
-                storage.set('uuid', json);
-                firstStart = true;
-                ipcRenderer.send("set-uuid", uuid);
-                if (typeof installstat == 'function') {
-                    installstat(uuid);
-                }
-            }
+          }
         });
-    </script>
+      } else {
+        uuid = UUID.gen();
+        var json = {
+          uuid: uuid
+        }
+        storage.set('uuid', json);
+        firstStart = true;
+        ipcRenderer.send("set-uuid", uuid);
+        if (typeof installstat == 'function') {
+          installstat(uuid);
+        }
+      }
+    });
+  </script>
 </head>
 
 <body class="index-body">
-    <!-- titlebar -->
-    <div class="container-titlebar col-lg-12 drag">
-        <div class="title" id="app-title">Fastnote</div>
-        <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
+  <!-- titlebar -->
+  <div class="container-titlebar col-lg-12 drag">
+    <div class="title" id="app-title">Fastnote</div>
+    <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 10;"></div>
+  </div>
+  <script async>
+    require('./modules/electron-titlebar');
+  </script>
+  <!-- lockscreen -->
+  <div class="container-lockscreen">
+    <div class="lockscreen">
+      <div class="lockscreen-icon">
+        <i class="fa fa-lock" aria-hidden="true"></i>
+      </div>
+      <div class="lockscreen-form">
+        <input type="password" class="brcontrol-input" id="input-lockscreen">
+      </div>
     </div>
-    <script async>
-        require('./modules/electron-titlebar');
-    </script>
-    <!-- lockscreen -->
-    <div class="container-lockscreen">
-        <div class="lockscreen">
-            <div class="lockscreen-icon">
-                <i class="fa fa-lock" aria-hidden="true"></i>
-            </div>
-            <div class="lockscreen-form">
-                <input type="password" class="brcontrol-input" id="input-lockscreen">
-            </div>
-        </div>
-    </div>
-    <script src="static/lockscreen.js"></script>
-    </div>
-    <!-- notes -->
-    <div class="container-main">
-        <!-- container-right -->
-        <div class="container-right">
-            <div class="right-wrapper">
-                <!-- multi-selected -->
-                <div class="brtoast toast-search">
-                    <div class="toast-icon">
-                        <i class="fa fa-search" aria-hidden="true"></i>
-                    </div>
-                    <div class="toast-control toast-search-control">
-                        <input type="text" class="form-control" id="input-search">
-                    </div>
-                    <script src="static/search.js"></script>
-                    <div class="toast-icon toast-close" id="toast-search-close">
-                        <i class="fa fa-times" aria-hidden="true"></i>
-                    </div>
-                </div>
-                <script>
-                    $('#toast-search-close').click(function() {
-                        closeSearchToast();
-                    });
-                </script>
-                <div class="brtoast toast-multiselected">
-                    <p class="toast-normaltext" id="toast-multiselected-text"></p>
-                </div>
-            </div>
-        </div>
-        <!-- empty -->
-        <div class="note-empty col-lg-12" id="note-empty">
-            <div class="note-empty-inner">
-                <span data-lang="note_empty">您还没有建立任何的便签<br>在下方你可以快速创建便签</span>
-            </div>
-        </div>
-        <div class="note-empty col-lg-12" id="note-empty-category">
-            <div class="note-empty-inner">
-                <span data-lang="note_empty_category">当前分类下没有任何便签<br>在下方你可以快速创建该分类的便签</span>
-            </div>
-        </div>
-        <div class="note-empty col-lg-12" id="note-empty-search">
-            <div class="note-empty-inner">
-                <span>没有找到相关的便签</span>
-            </div>
-        </div>
-        <div class="note-list" id="note-list">
-            <div class="note-list-forceTop" id="note-list-forceTop"></div>
-            <div class="note-list-normal" id="note-list-normal"></div>
+  </div>
+  <script src="static/lockscreen.js"></script>
+  </div>
+  <!-- notes -->
+  <div class="container-main">
+    <!-- container-right -->
+    <div class="container-right">
+      <div class="right-wrapper">
+        <!-- multi-selected -->
+        <div class="brtoast toast-search">
+          <div class="toast-icon">
+            <i class="fa fa-search" aria-hidden="true"></i>
+          </div>
+          <div class="toast-control toast-search-control">
+            <input type="text" class="form-control" id="input-search">
+          </div>
+          <script src="static/search.js"></script>
+          <div class="toast-icon toast-close" id="toast-search-close">
+            <i class="fa fa-times" aria-hidden="true"></i>
+          </div>
         </div>
         <script>
-            //编辑笔记
-            ipcRenderer.on('update-edit-note', (event, data) => {
-                updateEditNote(data);
-            });
+          $('#toast-search-close').click(function() {
+            closeSearchToast();
+          });
+        </script>
+        <div class="brtoast toast-multiselected">
+          <p class="toast-normaltext" id="toast-multiselected-text"></p>
+        </div>
+      </div>
+    </div>
+    <!-- empty -->
+    <div class="note-empty col-lg-12" id="note-empty">
+      <div class="note-empty-inner">
+        <span data-lang="note_empty">您还没有建立任何的便签<br>在下方你可以快速创建便签</span>
+      </div>
+    </div>
+    <div class="note-empty col-lg-12" id="note-empty-category">
+      <div class="note-empty-inner">
+        <span data-lang="note_empty_category">当前分类下没有任何便签<br>在下方你可以快速创建该分类的便签</span>
+      </div>
+    </div>
+    <div class="note-empty col-lg-12" id="note-empty-search">
+      <div class="note-empty-inner">
+        <span>没有找到相关的便签</span>
+      </div>
+    </div>
+    <div class="note-list" id="note-list">
+      <div class="note-list-forceTop" id="note-list-forceTop"></div>
+      <div class="note-list-normal" id="note-list-normal"></div>
+    </div>
+    <script>
+      //编辑笔记
+      ipcRenderer.on('update-edit-note', (event, data) => {
+        updateEditNote(data);
+      });
 
-            function updateEditNote(res) {
-                notesEdit.saveEditNote(res, function(data) {
-                    //reset contents in note
-                    switch (sort_mode) {
-                        //此处接收到的是{note:note, rawtext:text}
-                        case 'id':
-                            updateEditNoteinArray(data.note); //更新数组内容
-                            rerenderEditedNote(data.note, data.rawtext);
-                            break;
-                        case 'updateDate':
-                            updateEditNoteinArray(data.note, true);
-                            break;
-                    }
-                    //show infobar
-                    displayInfobar("success", i18n[current_i18n].note_saved);
-                });
-            }
+      function updateEditNote(res) {
+        notesEdit.saveEditNote(res, function(data) {
+          //reset contents in note
+          switch (sort_mode) {
+            //此处接收到的是{note:note, rawtext:text}
+            case 'id':
+              updateEditNoteinArray(data.note); //更新数组内容
+              rerenderEditedNote(data.note, data.rawtext);
+              break;
+            case 'updateDate':
+              updateEditNoteinArray(data.note, true);
+              break;
+          }
+          //show infobar
+          displayInfobar("success", i18n[current_i18n].note_saved);
+        });
+      }
 
-            //执行notes的替换
-            function updateEditNoteinArray(data, refreshList = false) {
-                if (noteMap[data.id]) {
-                    noteMap[data.id] = data;
-                    noteMap[data.id].needSync = true;
+      //执行notes的替换
+      function updateEditNoteinArray(data, refreshList = false) {
+        if (noteMap[data.id]) {
+          noteMap[data.id] = data;
+          noteMap[data.id].needSync = true;
+        }
+      }
+
+      // event restore
+      ipcRenderer.on('restore-note', (event, data) => {
+        if (notes.length <= 0) {
+          showNoteList();
+        }
+        // 检查是否存在ID冲突
+        if (noteMap[data.id]) {
+          // 存在冲突
+          const ret = dialog.showMessageBoxSync({
+            title: '便签ID冲突',
+            type: 'warning',
+            message: '正在恢复的便签和已有便签的ID存在冲突',
+            defaultId: 1,
+            cancelId: 1,
+            buttons: ['覆盖', '恢复为新便签'],
+          });
+          if (ret === 0) {
+            // 此时新的便签文件已经恢复过来了，不需要另外保存
+            // 这里需要处理原来的旧便签
+            const stored = noteMap[data.id];
+            moveFileToRecycled(stored);
+            deleteNoteFromArr(stored.id);
+          } else if (ret === 1) {
+            data.id = notesid;
+            notesid++;
+            saveNoteByObj(data);
+          }
+          data.needSync = true;
+        }
+        addNoteObjToArray(data);
+        recordRestoreBehaviour(data);
+        refreshNoteList(function() {
+          bindNoteFoldDBL(data.id);
+        });
+        // animate
+        $('#note_' + data.id).animateCss('fadeInLeft faster');
+      });
+
+      // 记录是否有置顶便签
+      var hasNotesForceTop = false;
+      var hasNotesNotForceTop = false;
+      // 笔记鼠标点击事件绑定
+      function bindNoteClickEvent() {
+        // 滚动条不响应选择事件
+        $('.note-content').off('mousedown').on('mousedown', function(e) {
+          if (e.offsetX >= $(this).width()) {
+            e.stopPropagation();
+          }
+        });
+
+        $('.note-wrapper').off('mousedown').on('mousedown', function(e) {
+          // 提取点击的id
+          noteid_clicked = parseInt($(this).children('.note').attr("data-id"));
+          if (e.which == 1) {
+            if (selectModeEnabled) {
+              // 判断是否为置顶
+              if ($(this).children('.note').hasClass('note-forceTop')) {
+                hasNotesForceTop = true;
+              } else {
+                hasNotesNotForceTop = true;
+              }
+              // 多选模式下，单击，如果选中则取消，未选中则选中
+              let index = notes_selected.indexOf(noteid_clicked);
+              if (index != -1) {
+                $('#note_' + noteid_clicked).parent().removeClass('note-selected');
+                // 非加密便签才进行操作
+                if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
+                  notes_selected.removeAt(index);
                 }
-            }
-
-            // event restore
-            ipcRenderer.on('restore-note', (event, data) => {
-                if (notes.length <= 0) {
-                    showNoteList();
+                notes_selected_withencrypted.removeAt(index);
+                // 如果没有选中则退出
+                if (notes_selected_withencrypted.length <= 0) {
+                  selectModeEnabled = false;
+                  $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
+                    $('.toast-multiselected').removeClass('toast-active');
+                  });
+                } else {
+                  $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
                 }
-                // 检查是否存在ID冲突
-                if (noteMap[data.id]) {
-                    // 存在冲突
-                    const ret = dialog.showMessageBoxSync({
-                        title: '便签ID冲突',
-                        type: 'warning',
-                        message: '正在恢复的便签和已有便签的ID存在冲突',
-                        defaultId: 1,
-                        cancelId: 1,
-                        buttons: ['覆盖', '恢复为新便签'],
-                    });
-                    if (ret === 0) {
-                        // 此时新的便签文件已经恢复过来了，不需要另外保存
-                        // 这里需要处理原来的旧便签
-                        const stored = noteMap[data.id];
-                        moveFileToRecycled(stored);
-                        deleteNoteFromArr(stored.id);
-                    } else if (ret === 1) {
-                        data.id = notesid;
-                        notesid++;
-                        saveNoteByObj(data);
-                    }
-                    data.needSync = true;
+              } else {
+                $('#note_' + noteid_clicked).parent().addClass('note-selected');
+                // 判断是否为加密便签，是则不操作
+                if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
+                  notes_selected.push(noteid_clicked);
                 }
-                addNoteObjToArray(data);
-                recordRestoreBehaviour(data);
-                refreshNoteList(function() {
-                    bindNoteFoldDBL(data.id);
-                });
-                // animate
-                $('#note_' + data.id).animateCss('fadeInLeft faster');
-            });
-
-            // 记录是否有置顶便签
-            var hasNotesForceTop = false;
-            var hasNotesNotForceTop = false;
-            // 笔记鼠标点击事件绑定
-            function bindNoteClickEvent() {
-                // 滚动条不响应选择事件
-                $('.note-content').off('mousedown').on('mousedown', function(e) {
-                    if (e.offsetX >= $(this).width()) {
-                        e.stopPropagation();
-                    }
-                });
-
-                $('.note-wrapper').off('mousedown').on('mousedown', function(e) {
-                    // 提取点击的id
-                    noteid_clicked = parseInt($(this).children('.note').attr("data-id"));
-                    if (e.which == 1) {
-                        if (selectModeEnabled) {
-                            // 判断是否为置顶
-                            if ($(this).children('.note').hasClass('note-forceTop')) {
-                                hasNotesForceTop = true;
-                            } else {
-                                hasNotesNotForceTop = true;
-                            }
-                            // 多选模式下，单击，如果选中则取消，未选中则选中
-                            let index = notes_selected.indexOf(noteid_clicked);
-                            if (index != -1) {
-                                $('#note_' + noteid_clicked).parent().removeClass('note-selected');
-                                // 非加密便签才进行操作
-                                if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
-                                    notes_selected.removeAt(index);
-                                }
-                                notes_selected_withencrypted.removeAt(index);
-                                // 如果没有选中则退出
-                                if (notes_selected_withencrypted.length <= 0) {
-                                    selectModeEnabled = false;
-                                    $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
-                                        $('.toast-multiselected').removeClass('toast-active');
-                                    });
-                                } else {
-                                    $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
-                                }
-                            } else {
-                                $('#note_' + noteid_clicked).parent().addClass('note-selected');
-                                // 判断是否为加密便签，是则不操作
-                                if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
-                                    notes_selected.push(noteid_clicked);
-                                }
-                                notes_selected_withencrypted.push(noteid_clicked);
-                                // set up toast
-                                $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
-                            }
-                        } else {
-                            noteLongClickTimeout = setTimeout(function() {
-                                // 初始化值
-                                selectModeEnabled = true;
-                                notes_selected = [];
-                                notes_selected_withencrypted = [];
-                                hasNotesForceTop = false;
-                                hasNotesNotForceTop = false;
-                                // 对当前所选进行对应处理
-                                $('#note_' + noteid_clicked).parent().addClass('note-selected');
-                                if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
-                                    notes_selected.push(noteid_clicked);
-                                }
-                                notes_selected_withencrypted.push(noteid_clicked);
-                                // 判断是否为置顶
-                                if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
-                                    hasNotesForceTop = true;
-                                } else {
-                                    hasNotesNotForceTop = true;
-                                }
-                                // set up toast
-                                $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
-                                $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
-                                window.getSelection().removeAllRanges();
-                            }, 1000);
-                            // 如果移动了鼠标则取消长按计时
-                            $('body').on('mousemove', function(e) {
-                                clearTimeout(noteLongClickTimeout);
-                            });
-                        }
-                    } else if (e.which == 3) {
-                        if (selectModeEnabled) {
-                            // 如果是选中的，弹出菜单，如果不是选中的，取消
-                            if ($('#note_' + noteid_clicked).parent().hasClass('note-selected')) {
-                                // 弹出多选下的右键菜单
-                                popup_menu_note_multiSelected(hasNotesForceTop, hasNotesNotForceTop);
-                            } else {
-                                selectModeEnabled = false;
-                                $('.note-wrapper').removeClass('note-selected');
-                                $(this).addClass('note-selected');
-                                if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
-                                    // 是置顶便签
-                                    popup_menu_note(true, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
-                                } else {
-                                    // 不是置顶便签
-                                    popup_menu_note(false, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
-                                }
-                                $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
-                                    $('.toast-multiselected').removeClass('toast-active');
-                                });
-                            }
-                        } else {
-                            $('.note-wrapper').removeClass('note-selected');
-                            $(this).addClass('note-selected');
-                            if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
-                                // 是置顶便签
-                                popup_menu_note(true, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
-                            } else {
-                                // 不是置顶便签
-                                popup_menu_note(false, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
-                            }
-                        }
-                    }
-                    // 阻止事件冒泡到父元素
-                    e.stopPropagation();
-                });
-                // 取消长按的计时器
-                $('.note-wrapper').off('mouseup').on('mouseup', function(e) {
-                    if (e.which == 1) {
-                        clearTimeout(noteLongClickTimeout);
-                    }
-                });
-            }
-
-            $(document).ready(function() {
-                // 绑定note-list的鼠标点击
-                $('#note-list').mousedown(function(e) {
-                    if (selectModeEnabled) {
-                        selectModeEnabled = false;
-                        $('.note-wrapper').removeClass('note-selected');
-                        $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
-                            $('.toast-multiselected').removeClass('toast-active');
-                        });
-                    }
-                    // 搜索框内没有输入内容时点击列表自动关闭
-                    if (searchOpened) {
-                        if ($('#input-search').val().length < 1) {
-                            closeSearchToast();
-                        }
-                    }
-                });
-            });
-
-            // 绑定全选快捷键
-            Mousetrap.bind('ctrl+a', function() {
+                notes_selected_withencrypted.push(noteid_clicked);
+                // set up toast
+                $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
+              }
+            } else {
+              noteLongClickTimeout = setTimeout(function() {
+                // 初始化值
                 selectModeEnabled = true;
                 notes_selected = [];
                 notes_selected_withencrypted = [];
-                notes.forEach(note => {
-                    if (typeof note.password == "undefined") {
-                        notes_selected.push(note.id);
-                    }
-                    notes_selected_withencrypted.push(note.id);
-                });
-                $('.note-wrapper').addClass('note-selected');
-                if (!$('.toast-multiselected').hasClass('toast-active')) {
-                    $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
+                hasNotesForceTop = false;
+                hasNotesNotForceTop = false;
+                // 对当前所选进行对应处理
+                $('#note_' + noteid_clicked).parent().addClass('note-selected');
+                if ($('#note_' + noteid_clicked + ' .note-content .note-text').length > 0) {
+                  notes_selected.push(noteid_clicked);
                 }
+                notes_selected_withencrypted.push(noteid_clicked);
+                // 判断是否为置顶
+                if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
+                  hasNotesForceTop = true;
+                } else {
+                  hasNotesNotForceTop = true;
+                }
+                // set up toast
                 $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
-                return false;
-            });
-
-            Mousetrap.bind('ctrl+t', function() {
-                ipcRenderer.send('main-window-alwaysontop');
-                return false;
-            });
-
-            // 回收便签后快速撤回
-            Mousetrap.bind('ctrl+z', async function() {
-                if (!recycledNotes) {
-                    return;
-                }
-                const note = recycledNotes.pop();
-                if (!note) {
-                    return;
-                }
-                // 快速回收
-                const res = await quickRestoreNote(note);
-                if (!res) {
-                    // 不成功就把note推回去
-                    recycledNotes.push(note);
-                }
-            });
-
-            ipcRenderer.on('win-alwaysontop', function(sender, data) {
-                if (data) {
-                    $('#statusbar-item-alwaysontop').css('display', 'inline-block');
+                $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
+                window.getSelection().removeAllRanges();
+              }, 1000);
+              // 如果移动了鼠标则取消长按计时
+              $('body').on('mousemove', function(e) {
+                clearTimeout(noteLongClickTimeout);
+              });
+            }
+          } else if (e.which == 3) {
+            if (selectModeEnabled) {
+              // 如果是选中的，弹出菜单，如果不是选中的，取消
+              if ($('#note_' + noteid_clicked).parent().hasClass('note-selected')) {
+                // 弹出多选下的右键菜单
+                popup_menu_note_multiSelected(hasNotesForceTop, hasNotesNotForceTop);
+              } else {
+                selectModeEnabled = false;
+                $('.note-wrapper').removeClass('note-selected');
+                $(this).addClass('note-selected');
+                if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
+                  // 是置顶便签
+                  popup_menu_note(true, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
                 } else {
-                    $('#statusbar-item-alwaysontop').css('display', 'none');
+                  // 不是置顶便签
+                  popup_menu_note(false, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
                 }
+                $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
+                  $('.toast-multiselected').removeClass('toast-active');
+                });
+              }
+            } else {
+              $('.note-wrapper').removeClass('note-selected');
+              $(this).addClass('note-selected');
+              if ($('#note_' + noteid_clicked).hasClass('note-forceTop')) {
+                // 是置顶便签
+                popup_menu_note(true, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
+              } else {
+                // 不是置顶便签
+                popup_menu_note(false, $('#note_' + noteid_clicked + ' .note-content .note-password').length > 0 && $('#note_' + noteid_clicked + ' .note-content .note-password').css('display') != 'none');
+              }
+            }
+          }
+          // 阻止事件冒泡到父元素
+          e.stopPropagation();
+        });
+        // 取消长按的计时器
+        $('.note-wrapper').off('mouseup').on('mouseup', function(e) {
+          if (e.which == 1) {
+            clearTimeout(noteLongClickTimeout);
+          }
+        });
+      }
+
+      $(document).ready(function() {
+        // 绑定note-list的鼠标点击
+        $('#note-list').mousedown(function(e) {
+          if (selectModeEnabled) {
+            selectModeEnabled = false;
+            $('.note-wrapper').removeClass('note-selected');
+            $('.toast-multiselected').animateCss('fadeOutRight faster', function() {
+              $('.toast-multiselected').removeClass('toast-active');
             });
+          }
+          // 搜索框内没有输入内容时点击列表自动关闭
+          if (searchOpened) {
+            if ($('#input-search').val().length < 1) {
+              closeSearchToast();
+            }
+          }
+        });
+      });
+
+      // 绑定全选快捷键
+      Mousetrap.bind('ctrl+a', function() {
+        selectModeEnabled = true;
+        notes_selected = [];
+        notes_selected_withencrypted = [];
+        notes.forEach(note => {
+          if (typeof note.password == "undefined") {
+            notes_selected.push(note.id);
+          }
+          notes_selected_withencrypted.push(note.id);
+        });
+        $('.note-wrapper').addClass('note-selected');
+        if (!$('.toast-multiselected').hasClass('toast-active')) {
+          $('.toast-multiselected').addClass('toast-active').animateCss('fadeInRight faster');
+        }
+        $('#toast-multiselected-text').html(i18n[current_i18n].selected_left + notes_selected.length + i18n[current_i18n].selected_right);
+        return false;
+      });
+
+      Mousetrap.bind('ctrl+t', function() {
+        ipcRenderer.send('main-window-alwaysontop');
+        return false;
+      });
+
+      // 回收便签后快速撤回
+      Mousetrap.bind('ctrl+z', async function() {
+        if (!recycledNotes) {
+          return;
+        }
+        const note = recycledNotes.pop();
+        if (!note) {
+          return;
+        }
+        // 快速回收
+        const res = await quickRestoreNote(note);
+        if (!res) {
+          // 不成功就把note推回去
+          recycledNotes.push(note);
+        }
+      });
+
+      ipcRenderer.on('win-alwaysontop', function(sender, data) {
+        if (data) {
+          $('#statusbar-item-alwaysontop').css('display', 'inline-block');
+        } else {
+          $('#statusbar-item-alwaysontop').css('display', 'none');
+        }
+      });
+    </script>
+  </div>
+
+  <!-- new note -->
+  <div class="container-newnote">
+    <div class="newnote-info-float">
+      <div class="newnote-info-item">
+        <div class="br-col-2">
+          <label data-lang="title">标题</label>
+        </div>
+        <div class="br-col-10">
+          <input type="text" class="form-control" id="input-note-title" maxlength="64" placeholder="(无标题)">
+        </div>
+      </div>
+      <div class="newnote-info-item" id="newnote-info-item-category" style="margin-top: 8px;">
+        <div class="br-col-2">
+          <label data-lang="category">分类</label>
+        </div>
+        <div class="br-col-10">
+          <select class="form-control" id="select-note-category">
+            <option value="notalloc" data-lang="notalloc">未分类</option>
+          </select>
+        </div>
+      </div>
+      <div class="newnote-info-item" id="newnote-info-item-password" style="margin-top: 8px;">
+        <div class="br-col-2">
+          <label data-lang="password">密码</label>
+        </div>
+        <div class="br-col-10">
+          <input type="password" class="form-control" id="input-note-password" maxlength="64" placeholder="(未设置密码)">
+        </div>
+      </div>
+    </div>
+    <div class="newnote-main">
+      <div class="lbl">
+        <label id="lbl-newnote" title="双击打开独立新建便签窗口" data-lang='newnote'>新建便签</label>
+        <script>
+          $('#lbl-newnote').dblclick(function() {
+            //双击启动新建便签窗口
+            ipcRenderer.send('openNewnoteWindow', current_category); //启动的时候传递当前分类
+          });
+          //接收回传的保存
+          ipcRenderer.on('newnotewin-save', (sender, data) => {
+            saveNote(data.text, data.title, data.category, data.password, data.markdown);
+          });
         </script>
-    </div>
-
-    <!-- new note -->
-    <div class="container-newnote">
-        <div class="newnote-info-float">
-            <div class="newnote-info-item">
-                <div class="br-col-2">
-                    <label data-lang="title">标题</label>
-                </div>
-                <div class="br-col-10">
-                    <input type="text" class="form-control" id="input-note-title" maxlength="64" placeholder="(无标题)">
-                </div>
-            </div>
-            <div class="newnote-info-item" id="newnote-info-item-category" style="margin-top: 8px;">
-                <div class="br-col-2">
-                    <label data-lang="category">分类</label>
-                </div>
-                <div class="br-col-10">
-                    <select class="form-control" id="select-note-category">
-                        <option value="notalloc" data-lang="notalloc">未分类</option>
-                    </select>
-                </div>
-            </div>
-            <div class="newnote-info-item" id="newnote-info-item-password" style="margin-top: 8px;">
-                <div class="br-col-2">
-                    <label data-lang="password">密码</label>
-                </div>
-                <div class="br-col-10">
-                    <input type="password" class="form-control" id="input-note-password" maxlength="64" placeholder="(未设置密码)">
-                </div>
-            </div>
+        <!-- fold -->
+        <div class="newnote-fold">
+          <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-fold">
+            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+          </button>
         </div>
-        <div class="newnote-main">
-            <div class="lbl">
-                <label id="lbl-newnote" title="双击打开独立新建便签窗口" data-lang='newnote'>新建便签</label>
-                <script>
-                    $('#lbl-newnote').dblclick(function() {
-                        //双击启动新建便签窗口
-                        ipcRenderer.send('openNewnoteWindow', current_category); //启动的时候传递当前分类
-                    });
-                    //接收回传的保存
-                    ipcRenderer.on('newnotewin-save', (sender, data) => {
-                        saveNote(data.text, data.title, data.category, data.password, data.markdown);
-                    });
-                </script>
-                <!-- fold -->
-                <div class="newnote-fold">
-                    <button class="br-btn btn-noback newnote-trigger" id="btn-newnote-fold">
-                        <i class="fa fa-chevron-down" aria-hidden="true"></i>
-                    </button>
-                </div>
-                <div class="newnote-info">
-                    <button class="br-btn btn-noback newnote-trigger" title="编辑便签信息" id="btn-newnote-info">
-                        <i class="fa fa-info-circle" aria-hidden="true"></i>
-                    </button>
-                </div>
-                <div class="newnote-markdown">
-                    <button class="br-btn btn-noback newnote-trigger" title="使用Markdown" id="btn-newnote-markdown">
-                        <svg t="1558625704373" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1534" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
-                            <path d="M85.333333 682.666667 85.333333 341.333333 170.666667 341.333333 298.666667 469.333333 426.666667 341.333333 512 341.333333 512 682.666667 426.666667 682.666667 426.666667 462.08 298.666667 590.08 170.666667 462.08 170.666667 682.666667 85.333333 682.666667M682.666667 341.333333 810.666667 341.333333 810.666667 512 917.333333 512 746.666667 704 576 512 682.666667 512 682.666667 341.333333Z" p-id="1535" fill="#ffffff"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="control">
-                <textarea id="note-text"></textarea>
-                <label class="note-text-submittip" data-lang="note_submittip">使用 [Ctrl+回车] 提交</label>
-            </div>
+        <div class="newnote-info">
+          <button class="br-btn btn-noback newnote-trigger" title="编辑便签信息" id="btn-newnote-info">
+            <i class="fa fa-info-circle" aria-hidden="true"></i>
+          </button>
         </div>
-    </div>
-    <script>
-        var newnote_info_opened = false;
-        //绑定btn-newnote-info
-        $('#btn-newnote-info').click(function() {
-            if (newnote_info_opened) {
-                $('.newnote-info-float').animateCss('fadeOutDown faster', function() {
-                    $('.newnote-info-float').css('display', 'none');
-                    newnote_info_opened = false;
-                });
-            } else {
-                $('.newnote-info-float').css('display', 'block').animateCss('fadeInUp faster', function() {
-                    newnote_info_opened = true;
-                });
-            }
-        });
-        $('.container-newnote').click(function() {
-            if (newnote_info_opened) {
-                $('.newnote-info-float').animateCss('fadeOutDown faster', function() {
-                    $('.newnote-info-float').css('display', 'none');
-                    newnote_info_opened = false;
-                });
-            }
-        });
-        //newnote-info-float 阻止冒泡到上面的事件
-        $('.newnote-info-float').click(function(e) {
-            e.stopPropagation();
-        })
-
-        //markdown
-        var markdown_enabled = false;
-        $('#btn-newnote-markdown').click(function(e) {
-            if (markdown_enabled) {
-                markdown_enabled = false;
-                $('#btn-newnote-markdown').removeClass('newnote-markdown-checked');
-            } else {
-                markdown_enabled = true;
-                $('#btn-newnote-markdown').addClass('newnote-markdown-checked');
-            }
-        });
-    </script>
-
-    <div class="container-bottombar-float">
-        <div class="bottombar-float-wrapper">
-            <div class="bottombar-float-update">
-                <div id="toast-updateready" class="brtoast toast-autoheight toast-updateready">
-                    <div class="toast-normaltext-wrapper">
-                        <span class="toast-text" id="toast-updateready-text" data-lang="updateready_text">更新下载完成，应用会在关闭后自动更新。</span>
-                    </div>
-                    <div class="toast-control toast-control-right">
-                        <button class="btn brbtn brbtn-primary" id="updateready-btn-update" data-lang="update_now">立即更新</button>
-                        <button class="btn brbtn brbtn-primary" id="updateready-btn-close" data-lang="close">关闭</button>
-                    </div>
-                </div>
-            </div>
+        <div class="newnote-markdown">
+          <button class="br-btn btn-noback newnote-trigger" title="使用Markdown" id="btn-newnote-markdown">
+            <svg t="1558625704373" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1534" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+              <path d="M85.333333 682.666667 85.333333 341.333333 170.666667 341.333333 298.666667 469.333333 426.666667 341.333333 512 341.333333 512 682.666667 426.666667 682.666667 426.666667 462.08 298.666667 590.08 170.666667 462.08 170.666667 682.666667 85.333333 682.666667M682.666667 341.333333 810.666667 341.333333 810.666667 512 917.333333 512 746.666667 704 576 512 682.666667 512 682.666667 341.333333Z" p-id="1535" fill="#ffffff"></path>
+            </svg>
+          </button>
         </div>
+      </div>
+      <div class="control">
+        <textarea id="note-text"></textarea>
+        <label class="note-text-submittip" data-lang="note_submittip">使用 [Ctrl+回车] 提交</label>
+      </div>
     </div>
-
-    <!-- 更新通知浮窗 -->
-    <script>
-        $('#updateready-btn-close').click(() => {
-            closeUpdateReadyToast();
+  </div>
+  <script>
+    var newnote_info_opened = false;
+    //绑定btn-newnote-info
+    $('#btn-newnote-info').click(function() {
+      if (newnote_info_opened) {
+        $('.newnote-info-float').animateCss('fadeOutDown faster', function() {
+          $('.newnote-info-float').css('display', 'none');
+          newnote_info_opened = false;
         });
-
-        $('#updateready-btn-update').click(() => {
-            ipcRenderer.send('app-quitNow');
+      } else {
+        $('.newnote-info-float').css('display', 'block').animateCss('fadeInUp faster', function() {
+          newnote_info_opened = true;
         });
+      }
+    });
+    $('.container-newnote').click(function() {
+      if (newnote_info_opened) {
+        $('.newnote-info-float').animateCss('fadeOutDown faster', function() {
+          $('.newnote-info-float').css('display', 'none');
+          newnote_info_opened = false;
+        });
+      }
+    });
+    //newnote-info-float 阻止冒泡到上面的事件
+    $('.newnote-info-float').click(function(e) {
+      e.stopPropagation();
+    })
 
-        var updateReadyToastOpened = false;
+    //markdown
+    var markdown_enabled = false;
+    $('#btn-newnote-markdown').click(function(e) {
+      if (markdown_enabled) {
+        markdown_enabled = false;
+        $('#btn-newnote-markdown').removeClass('newnote-markdown-checked');
+      } else {
+        markdown_enabled = true;
+        $('#btn-newnote-markdown').addClass('newnote-markdown-checked');
+      }
+    });
+  </script>
 
-        function popupUpdateReadyToast() {
-            updateReadyToastOpened = true;
-            $('#toast-updateready').addClass('toast-active');
-            $('#toast-updateready').animateCss('fadeInRight faster');
+  <div class="container-bottombar-float">
+    <div class="bottombar-float-wrapper">
+      <div class="bottombar-float-update">
+        <div id="toast-updateready" class="brtoast toast-autoheight toast-updateready">
+          <div class="toast-normaltext-wrapper">
+            <span class="toast-text" id="toast-updateready-text" data-lang="updateready_text">更新下载完成，应用会在关闭后自动更新。</span>
+          </div>
+          <div class="toast-control toast-control-right">
+            <button class="btn brbtn brbtn-primary" id="updateready-btn-update" data-lang="update_now">立即更新</button>
+            <button class="btn brbtn brbtn-primary" id="updateready-btn-close" data-lang="close">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 更新通知浮窗 -->
+  <script>
+    $('#updateready-btn-close').click(() => {
+      closeUpdateReadyToast();
+    });
+
+    $('#updateready-btn-update').click(() => {
+      ipcRenderer.send('app-quitNow');
+    });
+
+    var updateReadyToastOpened = false;
+
+    function popupUpdateReadyToast() {
+      updateReadyToastOpened = true;
+      $('#toast-updateready').addClass('toast-active');
+      $('#toast-updateready').animateCss('fadeInRight faster');
+    }
+
+    function closeUpdateReadyToast() {
+      if (updateReadyToastOpened) {
+        $('#toast-updateready').animateCss('fadeOutRight faster', function() {
+          //focus the input
+          $('#toast-updateready').removeClass('toast-active');
+          updateReadyToastOpened = false;
+        });
+      }
+    }
+  </script>
+
+  <!-- 底栏 -->
+  <div class="container-bottombar">
+    <div class="trigger-mainmenu">
+      <button class="br-btn btn-noback bottombar-trigger" title="主菜单" id="btn-mainmenu-trigger">
+        <i class="fa fa-bars" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="trigger-category">
+      <button class="br-btn btn-noback bottombar-trigger" title="分类" id="btn-category-trigger">
+        <i class="fa fa-book" aria-hidden="true"></i>
+        <span class="bottombar-category-name"></span>
+      </button>
+    </div>
+    <div class="trigger-expandnewnote">
+      <button class="br-btn btn-noback bottombar-trigger" id="btn-newnote-expand">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="trigger-cloud">
+      <button class="br-btn btn-noback bottombar-trigger" title="云服务" id="btn-cloud-trigger">
+        <i class="fa fa-user" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="bottom-bar-statusbar" id="statusbar">
+      <div class="statusbar-item" id="statusbar-item-alwaysontop"><i class="fa fa-caret-up"></i></div>
+    </div>
+  </div>
+
+  <script>
+    // 折叠开关
+    var isNoteFolded = false;
+    // init
+    storage.get('newnoteconfig', function(err, data) {
+      if (err || typeof(data) == 'undefined' || data == null || data == "") {
+        isNoteFolded = false;
+        $('.container-newnote').css('display', 'block');
+        $('.trigger-expandnewnote').css('display', 'none');
+        setTimeout(function() {
+          $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 205);
+          $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 205);
+        }, 50);
+      } else {
+        if (data.isFolded) {
+          $('.container-newnote').css('display', 'none');
+          $('.container-bottombar').addClass('bottombar-topshadow');
+          isNoteFolded = true;
+          $('.trigger-expandnewnote').css('display', 'block');
+          // late execute
+          setTimeout(function() {
+            $('.note-list').css('height', $(window).height() - $('.container-titlebar')
+              .height() - 25);
+            $('.note-empty').css('height', $(window).height() - $('.container-titlebar')
+              .height() - 25);
+          }, 50);
+        } else {
+          isNoteFolded = false;
+          $('.container-newnote').css('display', 'block');
+          $('.trigger-expandnewnote').css('display', 'none');
+          setTimeout(function() {
+            $('.note-list').css('height', $(window).height() - $('.container-titlebar')
+              .height() - 205);
+            $('.note-empty').css('height', $(window).height() - $('.container-titlebar')
+              .height() - 205);
+          }, 50);
         }
-
-        function closeUpdateReadyToast() {
-            if (updateReadyToastOpened) {
-                $('#toast-updateready').animateCss('fadeOutRight faster', function() {
-                    //focus the input
-                    $('#toast-updateready').removeClass('toast-active');
-                    updateReadyToastOpened = false;
-                });
-            }
+      }
+    });
+    // 绑定折叠事件
+    $('#btn-newnote-fold').click(function() {
+      if (!isNoteFolded) {
+        // set config
+        var config = {
+          isFolded: true
         }
-    </script>
+        storage.set('newnoteconfig', config);
+        // set height
+        $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 25) +
+          'px');
+        $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 25) +
+          'px');
+        // animate
+        $('.container-bottombar').addClass('bottombar-topshadow');
+        $('.container-newnote').animateCss('fadeOutDown faster', function() {
+          $('.container-newnote').css('display', 'none');
+          isNoteFolded = true;
+        });
+        $('.trigger-expandnewnote').css('display', 'block').animateCss('fadeIn faster');
+      }
+    });
+    $('#btn-newnote-expand').click(function() {
+      if (isNoteFolded) {
+        // set config
+        var config = {
+          isFolded: false
+        }
+        storage.set('newnoteconfig', config);
+        // set height
+        $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 205) +
+          'px');
+        $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 205) +
+          'px');
+        // animate
+        $('.container-newnote').css('display', 'block').animateCss('fadeInUp faster');
+        $('.container-bottombar').removeClass('bottombar-topshadow');
+        $('.trigger-expandnewnote').animateCss('fadeOut faster', function() {
+          $('.trigger-expandnewnote').css('display', 'none');
+          isNoteFolded = false;
+        });
+        $('#note-text').focus();
+      }
+    });
+  </script>
 
-    <!-- 底栏 -->
-    <div class="container-bottombar">
-        <div class="trigger-mainmenu">
-            <button class="br-btn btn-noback bottombar-trigger" title="主菜单" id="btn-mainmenu-trigger">
-                <i class="fa fa-bars" aria-hidden="true"></i>
-            </button>
+  <script>
+    var noteid_clicked = -1;
+
+    function getSelectText(id) {
+      var t = document.getElementById(id);
+      if (window.getSelection) {
+        if (typeof t.selectionStart !== 'undefined' && typeof t.selectionEnd !== 'undefined') {
+          return t.value.substring(t.selectionStart, t.selectionEnd);
+        } else {
+          return "";
+        }
+      } else {
+        return document.selection.createRange().text;
+      }
+    }
+
+    $(document).ready(function() {
+      bindNewnoteRightClickEvent();
+    });
+
+    function bindNewnoteRightClickEvent() {
+      $('#note-text').mousedown(function(e) {
+        if (e.which == 3) {
+          if ($('#note-text').val().trim().length > 0) {
+            if (getSelectText('note-text').length > 0) {
+              popup_menu_textarea_selected();
+            } else {
+              popup_menu_textarea();
+            }
+          } else {
+            popup_menu_textarea_empty();
+          }
+        }
+      });
+    }
+  </script>
+
+  <!-- 自动更新UI -->
+  <div class="container-updater">
+    <div class="update-block">
+      <div class="update-title">
+        <span id="update-title-span" data-lang="newversion_detected">检测到新版本：</span>
+      </div>
+      <div class="update-contents">
+        <h1 class="update-contents-title" data-lang="update_log">更新日志</h1>
+        <div class="update-contents-details">
         </div>
-        <div class="trigger-category">
-            <button class="br-btn btn-noback bottombar-trigger" title="分类" id="btn-category-trigger">
-                <i class="fa fa-book" aria-hidden="true"></i>
-                <span class="bottombar-category-name"></span>
-            </button>
+      </div>
+      <div class="update-footer">
+        <div class="control-group" style="-webkit-user-select: none">
+          <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-close" data-lang="close">关闭</button>
+          <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-cancel" data-lang="cancel">取消</button>
+          <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-confirm" data-lang="download">下载</button>
+          <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-manual" data-lang="download_installer">下载安装包</button>
         </div>
-        <div class="trigger-expandnewnote">
-            <button class="br-btn btn-noback bottombar-trigger" id="btn-newnote-expand">
-                <i class="fa fa-chevron-up" aria-hidden="true"></i>
-            </button>
-        </div>
-        <div class="trigger-cloud">
-            <button class="br-btn btn-noback bottombar-trigger" title="云服务" id="btn-cloud-trigger">
-                <i class="fa fa-user" aria-hidden="true"></i>
-            </button>
-        </div>
-        <div class="bottom-bar-statusbar" id="statusbar">
-            <div class="statusbar-item" id="statusbar-item-alwaysontop"><i class="fa fa-caret-up"></i></div>
-        </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // 折叠开关
-        var isNoteFolded = false;
-        // init
-        storage.get('newnoteconfig', function(err, data) {
-            if (err || typeof(data) == 'undefined' || data == null || data == "") {
-                isNoteFolded = false;
-                $('.container-newnote').css('display', 'block');
-                $('.trigger-expandnewnote').css('display', 'none');
-                setTimeout(function() {
-                    $('.note-list').css('height', $(window).height() - $('.container-titlebar').height() - 205);
-                    $('.note-empty').css('height', $(window).height() - $('.container-titlebar').height() - 205);
-                }, 50);
-            } else {
-                if (data.isFolded) {
-                    $('.container-newnote').css('display', 'none');
-                    $('.container-bottombar').addClass('bottombar-topshadow');
-                    isNoteFolded = true;
-                    $('.trigger-expandnewnote').css('display', 'block');
-                    // late execute
-                    setTimeout(function() {
-                        $('.note-list').css('height', $(window).height() - $('.container-titlebar')
-                            .height() - 25);
-                        $('.note-empty').css('height', $(window).height() - $('.container-titlebar')
-                            .height() - 25);
-                    }, 50);
-                } else {
-                    isNoteFolded = false;
-                    $('.container-newnote').css('display', 'block');
-                    $('.trigger-expandnewnote').css('display', 'none');
-                    setTimeout(function() {
-                        $('.note-list').css('height', $(window).height() - $('.container-titlebar')
-                            .height() - 205);
-                        $('.note-empty').css('height', $(window).height() - $('.container-titlebar')
-                            .height() - 205);
-                    }, 50);
-                }
+  <!-- 自动更新 -->
+  <script>
+    var time = require('./static/tools/time.js');
+    var version_new;
+    ipcRenderer.on('update-message', (event, {
+      message,
+      data
+    }) => {
+      switch (message) {
+        case 'checking-for-update':
+          console.log('Checking for update...');
+          break;
+        case 'update-available':
+          console.log("Update is avaliable...");
+          if (settings) {
+            if (!settings.autoUpdateStatus) { //自动更新未启用
+              console.warn('Auto update is not enable, break auto update.');
+              return;
             }
-        });
-        // 绑定折叠事件
-        $('#btn-newnote-fold').click(function() {
-            if (!isNoteFolded) {
-                // set config
-                var config = {
-                    isFolded: true
-                }
-                storage.set('newnoteconfig', config);
-                // set height
-                $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 25) +
-                    'px');
-                $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 25) +
-                    'px');
-                // animate
-                $('.container-bottombar').addClass('bottombar-topshadow');
-                $('.container-newnote').animateCss('fadeOutDown faster', function() {
-                    $('.container-newnote').css('display', 'none');
-                    isNoteFolded = true;
-                });
-                $('.trigger-expandnewnote').css('display', 'block').animateCss('fadeIn faster');
+          } else {
+            console.error('Settings is not loaded, break auto update.');
+            return; //设置没有载入的情况下不触发更新
+          }
+          let path_verfile = '';
+          const default_ver_path = `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/ver.json`;
+          if (settings) {
+            switch (settings.autoUpdateChannel) {
+              case "0":
+              path_verfile =
+              `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/ver.json`;
+              break;
+              case "100":
+              path_verfile =
+              `http://update.backrunner.top/fastnote/pre-release/${process.platform}${isOS64? '/x64/' : ''}/ver.json`;
+              break;
+              default:
+              path_verfile = default_ver_path;
+              break;
             }
-        });
-        $('#btn-newnote-expand').click(function() {
-            if (isNoteFolded) {
-                // set config
-                var config = {
-                    isFolded: false
-                }
-                storage.set('newnoteconfig', config);
-                // set height
-                $('.note-list').css('height', ($(window).height() - $('.container-titlebar').height() - 205) +
-                    'px');
-                $('.note-empty').css('height', ($(window).height() - $('.container-titlebar').height() - 205) +
-                    'px');
-                // animate
-                $('.container-newnote').css('display', 'block').animateCss('fadeInUp faster');
-                $('.container-bottombar').removeClass('bottombar-topshadow');
-                $('.trigger-expandnewnote').animateCss('fadeOut faster', function() {
-                    $('.trigger-expandnewnote').css('display', 'none');
-                    isNoteFolded = false;
-                });
-                $('#note-text').focus();
-            }
-        });
-    </script>
-
-    <script>
-        var noteid_clicked = -1;
-
-        function getSelectText(id) {
-            var t = document.getElementById(id);
-            if (window.getSelection) {
-                if (typeof t.selectionStart !== 'undefined' && typeof t.selectionEnd !== 'undefined') {
-                    return t.value.substring(t.selectionStart, t.selectionEnd);
-                } else {
-                    return "";
-                }
-            } else {
-                return document.selection.createRange().text;
-            }
-        }
-
-        $(document).ready(function() {
-            bindNewnoteRightClickEvent();
-        });
-
-        function bindNewnoteRightClickEvent() {
-            $('#note-text').mousedown(function(e) {
-                if (e.which == 3) {
-                    if ($('#note-text').val().trim().length > 0) {
-                        if (getSelectText('note-text').length > 0) {
-                            popup_menu_textarea_selected();
-                        } else {
-                            popup_menu_textarea();
-                        }
-                    } else {
-                        popup_menu_textarea_empty();
+          } else {
+            path_verfile = default_ver_path;
+          }
+          $.ajax({
+            url: `${path_verfile}?t=${new Date().getTime()}`,
+            dataType: 'json',
+            success: result => {
+              if (result) {
+                // 成功获取ver.json
+                version_new = result.ver;
+                // 选择性显示更新日志，不同版本显示不同内容
+                let version_number = version.split('.').map(Number); // 获取现有的版本号
+                let update_logs = document.getElementsByClassName('update-contents-details')[0].children; //获取更新日志板块的版本号
+                // 自动更新窗口文本
+                $('#update-title-span').text(i18n[current_i18n].newversion_detected + result.ver);
+                document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
+                // 使用try防止ver文件出错导致自动更新不能用
+                let flag_ver_error = false;
+                try {
+                  for (let i = 0; i < update_logs.length; i++) {
+                    let log_version = $(update_logs[i]).attr('data-ver').split('.').map(Number);
+                    // 判断现有版本是否已经大于更新日志的版本
+                    if (version_number[0] >= log_version[0] && version_number[1] >= log_version[1] && version_number[2] >= log_version[2]) {
+                      $(update_logs[i]).hide(); // 如果有就把这一部分隐藏掉
                     }
+                  }
+                } catch (err) {
+                  console.error('Update error: ');
+                  console.error(err);
+                  flag_ver_error = true;
                 }
-            });
-        }
-    </script>
-
-    <!-- 自动更新UI -->
-    <div class="container-updater">
-        <div class="update-block">
-            <div class="update-title">
-                <span id="update-title-span" data-lang="newversion_detected">检测到新版本：</span>
-            </div>
-            <div class="update-contents">
-                <h1 class="update-contents-title" data-lang="update_log">更新日志</h1>
-                <div class="update-contents-details">
-                </div>
-            </div>
-            <div class="update-footer">
-                <div class="control-group" style="-webkit-user-select: none">
-                    <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-close" data-lang="close">关闭</button>
-                    <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-cancel" data-lang="cancel">取消</button>
-                    <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-confirm" data-lang="download">下载</button>
-                    <button type="button" class="br-btn btn-noback control-item update-btn" id="btn-update-manual" data-lang="download_installer">下载安装包</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 自动更新 -->
-    <script>
-        var time = require('./static/tools/time.js');
-        var version_new;
-        ipcRenderer.on('update-message', (event, {
-            message,
-            data
-        }) => {
-            switch (message) {
-                case 'checking-for-update':
-                    console.log('Checking for update...');
-                    break;
-                case 'update-available':
-                    console.log("Update is avaliable...");
-                    if (settings) {
-                        if (!settings.autoUpdateStatus) { //自动更新未启用
-                            console.warn('Auto update is not enable, break auto update.');
-                            return;
-                        }
-                    } else {
-                        console.error('Settings is not loaded, break auto update.');
-                        return; //设置没有载入的情况下不触发更新
-                    }
-                    let path_verfile = '';
-                    const default_ver_path = `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/ver.json`;
-                    if (settings) {
-                        switch (settings.autoUpdateChannel) {
-                            case "0":
-                            path_verfile =
-                            `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/ver.json`;
-                            break;
-                            case "100":
-                            path_verfile =
-                            `http://update.backrunner.top/fastnote/pre-release/${process.platform}${isOS64? '/x64/' : ''}/ver.json`;
-                            break;
-                            default:
-                            path_verfile = default_ver_path;
-                            break;
-                        }
-                    } else {
-                        path_verfile = default_ver_path;
-                    }
-                    $.ajax({
-                        url: `${path_verfile}?t=${new Date().getTime()}`,
-                        dataType: 'json',
-                        success: result => {
-                            if (result) {
-                                // 成功获取ver.json
-                                version_new = result.ver;
-                                // 选择性显示更新日志，不同版本显示不同内容
-                                let version_number = version.split('.').map(Number); // 获取现有的版本号
-                                let update_logs = document.getElementsByClassName('update-contents-details')[0].children; //获取更新日志板块的版本号
-                                // 自动更新窗口文本
-                                $('#update-title-span').text(i18n[current_i18n].newversion_detected + result.ver);
-                                document.getElementsByClassName('update-contents-details')[0].innerHTML = insert_spacing(result.text, 0.08);
-                                // 使用try防止ver文件出错导致自动更新不能用
-                                let flag_ver_error = false;
-                                try {
-                                    for (let i = 0; i < update_logs.length; i++) {
-                                        let log_version = $(update_logs[i]).attr('data-ver').split('.').map(Number);
-                                        // 判断现有版本是否已经大于更新日志的版本
-                                        if (version_number[0] >= log_version[0] && version_number[1] >= log_version[1] && version_number[2] >= log_version[2]) {
-                                            $(update_logs[i]).hide(); // 如果有就把这一部分隐藏掉
-                                        }
-                                    }
-                                } catch (err) {
-                                    console.error('Update error: ');
-                                    console.error(err);
-                                    flag_ver_error = true;
-                                }
-                                if (flag_ver_error) {
-                                    return;
-                                }
-                                // 检查热更新版本限制
-                                if (result.hotfixBuildLimit) {
-                                    if (hotfix && hotfix.hotfixBuild) {
-                                        if (hotfix.hotfixBuild < result.hotfixBuildLimit) {
-                                            // 未达到主更新要求的热更版本，不允许进行主更新
-                                            console.error('Hotfix build is not suitable, break auto update.');
-                                            return;
-                                        }
-                                    } else {
-                                        // 未检测到需要的热更新，不允许更新
-                                        console.error('No suitable hotfix, break auto update.');
-                                        return;
-                                    }
-                                }
-                                // check show full
-                                if (result.showfull) {
-                                    document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">' + i18n[current_i18n].detail_updatelog + '</button>'
-                                }
-                                // 强制更新
-                                if (result.manual && result.manual.includes(version)) {
-                                    // 手动更新
-                                    $('#btn-update-confirm').hide();
-                                    $('#btn-update-cancel').hide();
-                                    if (result.forceupdate) {
-                                        $('#btn-update-close').hide();
-                                    } else {
-                                        $('#btn-update-close').show();
-                                    }
-                                    $('#btn-update-manual').show();
-                                } else if (result.forceupdate) {
-                                    $('#btn-update-confirm').show();
-                                } else {
-                                    $('#btn-update-confirm').show();
-                                    $('#btn-update-cancel').show();
-                                }
-                                // 显示更新窗口
-                                $('.container-updater').css('display', 'block').animateCss('fadeIn faster');
-                            }
-                        },
-                        error: err => {
-                            console.error('Update ver.json fetch error.');
-                            console.error(err);
-                        }
-                    });
-                    break;
-                case 'downloadProgress':
-                    document.getElementById('update-progress').value = data.percent;
-                    document.getElementById('infobar-update-text').innerText = i18n[current_i18n].update_downloading + " (" + data.percent.toFixed(
-                        1) + " %)......";
-                    break;
-                case 'update-downloaded':
-                    console.log('Update file downloaded');
-                    //收起上方的通知
-                    $('#infobar_update').animateCss('fadeOutUp', function() {
-                        $('#infobar_update').remove();
-                    });
-                    displayInfobar('success', i18n[current_i18n].update_download_success, 3000);
-                    //向状态栏添加图标
-                    appendUpdateIconToStautsbar();
-                    break;
-                case 'error':
-                    console.error('Update error: ');
-                    console.error(data);
-                    if (!data.message.includes('404 Not Found')) {
-                        let update_infobar = $('#infobar_update');
-                        if (update_infobar.length) {
-                            update_infobar.animateCss('fadeOutUp', function() {
-                                update_infobar.remove();
-                            });
-                        }
-                        displayInfobar('error', i18n[current_i18n].update_download_failed, 3000);
-                    }
-                    break;
-            }
-        });
-
-        function appendUpdateIconToStautsbar() {
-            $('#statusbar').append(
-                '<div id="statusbar-item-updateready" class="statusbar-item" onclick="popupUpdateReadyToast()";><i class="fa fa-arrow-circle-up"></i></div>'
-            );
-        }
-
-        // 绑定按钮事件
-        let startDownloadLock = false;
-        $('#btn-update-cancel').on('click', function() {
-            $('.container-updater').animateCss('fadeOut faster', function() {
-                $('.container-updater').removeAttr('style');
-            });
-            ipcRenderer.send('updateCancelled');
-        });
-        $('#btn-update-close').on('click', function() {
-            $('.container-updater').animateCss('fadeOut faster', function() {
-                $('.container-updater').removeAttr('style');
-            });
-            ipcRenderer.send('updateCancelled');
-        });
-        $('#btn-update-confirm').on('click', function() {
-            if (!startDownloadLock) {
-                startDownloadLock = true;
-                ipcRenderer.send('downloadNow');
-                displayInfobar('update', i18n[current_i18n].update_downloading + '......');
-                $('.container-updater').animateCss('fadeOut faster', function() {
-                    $('.container-updater').removeAttr('style');
-                });
-                setTimeout(() => {
-                    startDownloadLock = false;
-                }, 500);
-            }
-        });
-        $('#btn-update-manual').on('click', function () {
-            ipcRenderer.send('openExternalURL', `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/Fastnote Setup ${version_new}.exe`);
-            $('.container-updater').animateCss('fadeOut faster', function() {
-                $('.container-updater').removeAttr('style');
-            });
-            ipcRenderer.send('updateCancelled');
-        });
-    </script>
-
-    <!-- 主菜单 -->
-    <div class="mainmenu-background"></div>
-    <div class="container-mainmenu">
-        <div class="mainmenu-panel">
-            <div class="mainmenu-logo">
-                <img src="static/images/logo.png" class="mainmenu-logo-default" />
-                <img src="static/images/logo.blackwhite.png" class="mainmenu-logo-blackwhite" />
-                <h1>Fastnote</h1>
-                <span id="mainmenu-version"></span>
-                <script>
-                    $(document).ready(function() {
-                        $('#mainmenu-version').text(version);
-                    });
-                </script>
-            </div>
-            <div class="mainmenu-split"></div>
-            <div class="mainmenu-menu">
-                <ul>
-                    <li id="mainmenu-btn-recycle">
-                        <span data-lang="recyclebin">回收站</span>
-                    </li>
-                    <div class="mainmenu-split"></div>
-                    <li id="mainmenu-btn-settings">
-                        <span data-lang="settings">设置</span>
-                    </li>
-                    <li id="mainmenu-btn-about">
-                        <span data-lang="about">关于</span>
-                    </li>
-                    <div class="mainmenu-split"></div>
-                    <li id="mainmenu-btn-reload">
-                        <span data-lang="reload">重新载入</span>
-                    </li>
-                    <li id="mainmenu-btn-exit">
-                        <span data-lang="exit">退出</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- 主菜单、快捷键、窗口大小调整相关 -->
-    <script>
-        //绑定主菜单的动画事件
-        let isMainMenuOpen = false;
-        $('.mainmenu-background').on('mousedown', function() {
-            closeMainMenu();
-        });
-        //打开主菜单
-        $('#btn-mainmenu-trigger').on('click', function() {
-            if (!isMainMenuOpen && !isCategoryOpen && !isCloudOpen) {
-                openMainMenu();
-            }
-        });
-        //绑定主菜单快捷键
-        Mousetrap.bind('esc', function() {
-            if (devconsoleOpened) {
-
-            }
-            if (isCategoryOpen) {
-                closeCategory();
-                $('#note-text').focus();
-                return;
-            }
-            if (isCloudOpen) {
-                closeCloudPanel();
-                $('#note-text').focus();
-                return;
-            }
-            if (isMainMenuOpen) {
-                closeMainMenu();
-                $('#note-text').focus();
-            } else {
-                openMainMenu();
-            }
-        });
-
-        function openMainMenu() {
-            $('.mainmenu-background').css('display', 'block').animateCss('fadeIn');
-            $('.container-mainmenu').css('display', 'block').animateCss('fadeInLeft');
-            isMainMenuOpen = true;
-        }
-        //绑定菜单项
-        $('#mainmenu-btn-recycle').click(function() {
-            ipcRenderer.send("openRecycleWindow");
-            closeMainMenu();
-        });
-        //打开回收站的全局快捷键
-        Mousetrap.bind('shift+r', function() {
-            ipcRenderer.send("openRecycleWindow");
-        });
-        $('#mainmenu-btn-settings').click(function() {
-            ipcRenderer.send("openSettingsWindow"); //打开关于窗口
-            closeMainMenu();
-        });
-        //打开的设置全局快捷键
-        Mousetrap.bind('shift+s', function() {
-            ipcRenderer.send("openSettingsWindow");
-        });
-        //锁屏全局快捷键
-        Mousetrap.bind('ctrl+l', function() {
-            enableLockScreen();
-        });
-        $('#mainmenu-btn-about').click(function() {
-            ipcRenderer.send("openAboutWindow"); //打开关于窗口
-            closeMainMenu();
-        });
-        $('#mainmenu-btn-reload').click(function() {
-            reloadAllWindows();
-            closeMainMenu();
-        });
-        $('#mainmenu-btn-exit').click(function() {
-            ipcRenderer.send("app-quitNow"); //退出程序
-            closeMainMenu();
-        });
-
-        function reloadAllWindows() {
-            ipcRenderer.send("reloadMainWindow"); //重载
-            ipcRenderer.send('reloadRecycleWindow');
-            ipcRenderer.send('reloadAllEditWindow');
-            ipcRenderer.send('reloadAboutWindow');
-            ipcRenderer.send('reloadAllWidgets');
-            ipcRenderer.send('reloadLoginWindow');
-        }
-
-        function closeMainMenu() {
-            if (isMainMenuOpen) {
-                $('.mainmenu-background').css('width', '100%'); //动态修改宽度防止阻挡
-                $('.mainmenu-background').animateCss('fadeOut', function() {
-                    $('.mainmenu-background').css('display', 'none');
-                })
-                $('.container-mainmenu').animateCss('fadeOutLeft', function() {
-                    $('.container-mainmenu').css('display', 'none');
-                    isMainMenuOpen = false;
-                })
-            }
-        }
-
-        //bind resize
-        $(window).resize(function() { //当浏览器大小变化时
-            var windowHeight = $(window).height();
-            //调整list的高度
-            var listHeight = 0;
-            if ($('.container-newnote').css('display') == 'none') {
-                listHeight = $(window).height() - $('.container-titlebar').height() - 25;
-                $('.note-list').css('height', listHeight + 'px');
-                $('.note-empty').css('height', listHeight + 'px');
-            } else {
-                listHeight = $(window).height() - $('.container-titlebar').height() - 205;
-                $('.note-list').css('height', listHeight + 'px');
-                $('.note-empty').css('height', listHeight + 'px');
-            }
-            //调整note的高度
-            $('.note-content').each(function() {
-                if ($(this).attr('class').indexOf('note-overheight') == -1) {
-                    $(this).css('height', 'auto');
+                if (flag_ver_error) {
+                  return;
                 }
-            });
-        });
-    </script>
-
-    <!-- 分类侧边菜单 -->
-    <div class="category-background"></div>
-    <div class="container-category">
-        <div class="category-panel">
-            <div class="category-header">
-                <div class="category-header-title">
-                    <p data-lang="note_category">便签分类</p>
-                </div>
-                <div class="category-header-button">
-                    <i class="fa fa-edit" id="category-header-editbtn" aria-hidden="true"></i>
-                    <i class="fa fa-check" id="category-header-confirmbtn" aria-hidden="true"></i>
-                </div>
-            </div>
-            <div class="category-split"></div>
-            <div class="category-body">
-                <ul id="category-menu">
-                    <div class="category-menu-fixed">
-                        <li data-name="all">
-                            <div id="category-system-all">
-                                <div class="category-item-name">
-                                    <span data-lang="all_notes">所有便签</span>
-                                </div>
-                                <div class="category-item-count">
-                                    <span id="category-count-all">0</span>
-                                </div>
-                            </div>
-                        </li>
-                        <li data-name="notalloc">
-                            <div id="category-system-notalloc">
-                                <div class="category-item-name">
-                                    <span data-lang="notalloc">未分类</span>
-                                </div>
-                                <div class="category-item-count">
-                                    <span id="category-count-notalloc">0</span>
-                                </div>
-                            </div>
-                        </li>
-                    </div>
-                    <div class="category-split"></div>
-                    <div class="category-menu-custom"></div>
-                    <div class="category-menu-system">
-                        <li id="category-add">
-                            <div class="category-icon-add"><i class="fa fa-plus" aria-hidden="true"></i></div>
-                        </li>
-                        <li id="category-add-inside">
-                            <div class="category-ctrl-add">
-                                <div class="category-add-input">
-                                    <input id="input-category-add" type="text">
-                                </div>
-                                <div class="category-add-btn">
-                                    <i class="fa fa-times" aria-hidden="true"></i>
-                                </div>
-                            </div>
-                        </li>
-                    </div>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- 分类相关 -->
-    <script>
-        var isCategoryOpen = false;
-
-        function openCategory() {
-            $('.category-background').css('display', 'block');
-            $('.category-background').animateCss('fadeIn');
-            $('.container-category').css('display', 'block');
-            $('.container-category').animateCss('fadeInLeft');
-            isCategoryOpen = true;
-        }
-
-        function closeCategory() {
-            if (isCategoryOpen) {
-                disableCategoryEditMode(); //关闭时禁用编辑模式
-                $('.category-background').css('width', '100%'); //动态修改宽度防止阻挡
-                $('.category-background').animateCss('fadeOut', function() {
-                    $('.category-background').css('display', 'none');
-                });
-                $('.container-category').animateCss('fadeOutLeft', function() {
-                    $('.container-category').css('display', 'none');
-                    isCategoryOpen = false;
-                });
-            }
-        }
-
-        $('#category-add-inside').mouseenter(function() {
-            $('.category-add-input input').addClass('category-focused');
-        });
-        $('#category-add-inside').mouseleave(function() {
-            $('.category-add-input input').removeClass('category-focused');
-        })
-        $('#category-add').click(function() {
-            $('#category-add').animateCss('fadeOut morefaster', function() {
-                $('#category-add').hide();
-                $('#category-add-inside').show();
-                $('#input-category-add').focus().val("");
-                $('#category-add-inside').animateCss('fadeIn morefaster');
-            });
-        });
-        $('.category-add-btn').click(function() {
-            $('#category-add-inside').animateCss('fadeOut morefaster', function() {
-                $('#input-category-add').removeClass('br-invalid-underline');
-                $('#category-add-inside').hide();
-                $('#category-add').show();
-                $('#category-add').animateCss('fadeIn morefaster');
-            });
-        });
-
-        $('#input-category-add').keypress(function(e) {
-            if (e.which == 13) {
-                var category_name = $('#input-category-add').val().trim();
-                $('#input-category-add').val('');
-                if (category_name < 1) {
+                // 检查热更新版本限制
+                if (result.hotfixBuildLimit) {
+                  if (hotfix && hotfix.hotfixBuild) {
+                    if (hotfix.hotfixBuild < result.hotfixBuildLimit) {
+                      // 未达到主更新要求的热更版本，不允许进行主更新
+                      console.error('Hotfix build is not suitable, break auto update.');
+                      return;
+                    }
+                  } else {
+                    // 未检测到需要的热更新，不允许更新
+                    console.error('No suitable hotfix, break auto update.');
                     return;
+                  }
                 }
-                if (existCategory(category_name) || category_name in new Array("all", "notalloc")) {
-                    //仓库已存在或属于保留字
-                    $('#input-category-add').addClass('br-invalid-underline');
+                // check show full
+                if (result.showfull) {
+                  document.getElementsByClassName('update-contents-details')[0].innerHTML += '<button class="btn btn-primary brbtn-primary update-contents-showfull" onclick="ipcRenderer.send(\'openExternalURL\', \'https://io.backrunner.top/2018/07/08/Fastnote%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97.html\');">' + i18n[current_i18n].detail_updatelog + '</button>'
+                }
+                // 强制更新
+                if (result.manual && result.manual.includes(version)) {
+                  // 手动更新
+                  $('#btn-update-confirm').hide();
+                  $('#btn-update-cancel').hide();
+                  if (result.forceupdate) {
+                    $('#btn-update-close').hide();
+                  } else {
+                    $('#btn-update-close').show();
+                  }
+                  $('#btn-update-manual').show();
+                } else if (result.forceupdate) {
+                  $('#btn-update-confirm').show();
                 } else {
-                    //仓库不存在
-                    $('#category-add-inside').animateCss('fadeOut morefaster', function() {
-                        $('#input-category-add').removeClass('br-invalid-underline');
-                        $('#category-add-inside').hide();
-                        putCategoryToArr(category_name); //添加到数组
-                        //通知主进程分类有更改
-                        ipcRenderer.send('category_added', category_name);
-                        renderCategoryToList(categories.length - 1, category_name, 0, true); //渲染到页面
-                        renderCategoryToSelect(category_name); //渲染到select
-                        saveCategories(); //保存便签分类
-                        $('#category-add').show();
-                        $('#category-add').animateCss('fadeIn morefaster');
-                    });
+                  $('#btn-update-confirm').show();
+                  $('#btn-update-cancel').show();
                 }
+                // 显示更新窗口
+                $('.container-updater').css('display', 'block').animateCss('fadeIn faster');
+              }
+            },
+            error: err => {
+              console.error('Update ver.json fetch error.');
+              console.error(err);
             }
-        });
+          });
+          break;
+        case 'downloadProgress':
+          document.getElementById('update-progress').value = data.percent;
+          document.getElementById('infobar-update-text').innerText = i18n[current_i18n].update_downloading + " (" + data.percent.toFixed(
+            1) + " %)......";
+          break;
+        case 'update-downloaded':
+          console.log('Update file downloaded');
+          //收起上方的通知
+          $('#infobar_update').animateCss('fadeOutUp', function() {
+            $('#infobar_update').remove();
+          });
+          displayInfobar('success', i18n[current_i18n].update_download_success, 3000);
+          //向状态栏添加图标
+          appendUpdateIconToStautsbar();
+          break;
+        case 'error':
+          console.error('Update error: ');
+          console.error(data);
+          if (!data.message.includes('404 Not Found')) {
+            let update_infobar = $('#infobar_update');
+            if (update_infobar.length) {
+              update_infobar.animateCss('fadeOutUp', function() {
+                update_infobar.remove();
+              });
+            }
+            displayInfobar('error', i18n[current_i18n].update_download_failed, 3000);
+          }
+          break;
+      }
+    });
 
-        $('#btn-category-trigger').on('click', function() {
-            if (!isMainMenuOpen && !isCategoryOpen && !isCloudOpen) {
-                openCategory();
-            }
-        });
-        $('.category-background').on('mousedown', function() {
-            closeCategory();
-        });
+    function appendUpdateIconToStautsbar() {
+      $('#statusbar').append(
+        '<div id="statusbar-item-updateready" class="statusbar-item" onclick="popupUpdateReadyToast()";><i class="fa fa-arrow-circle-up"></i></div>'
+      );
+    }
 
-        //绑定除了add的每个li的点击
-        $(document).on('click', '#category-menu li:not(#category-add):not(#category-add-inside)', function() {
-            let category_clicked = $(this).attr('data-name');
-            if (category_clicked != current_category && !categoryEditMode) {
-                //移除选中
-                switch (current_category) {
-                    default:
-                        $('#category-custom-' + current_category).removeClass('category-selected');
-                        break;
-                    case 'all':
-                    case 'notalloc':
-                        $('#category-system-' + current_category).removeClass('category-selected');
-                        break;
-                }
-                current_category = category_clicked;
-                //渲染选择
-                renderCurrentCategory();
-                //隐藏不属于当前类别的
-                renderNotesOfCategory(current_category);
-                //调整select
-                if (current_category != 'all') {
-                    $('#select-note-category').val(current_category);
-                } else {
-                    //为all则设置为未分类
-                    $('#select-note-category').val('notalloc');
-                }
-                //写入current_category
-                saveCurrentCategory();
-            }
+    // 绑定按钮事件
+    let startDownloadLock = false;
+    $('#btn-update-cancel').on('click', function() {
+      $('.container-updater').animateCss('fadeOut faster', function() {
+        $('.container-updater').removeAttr('style');
+      });
+      ipcRenderer.send('updateCancelled');
+    });
+    $('#btn-update-close').on('click', function() {
+      $('.container-updater').animateCss('fadeOut faster', function() {
+        $('.container-updater').removeAttr('style');
+      });
+      ipcRenderer.send('updateCancelled');
+    });
+    $('#btn-update-confirm').on('click', function() {
+      if (!startDownloadLock) {
+        startDownloadLock = true;
+        ipcRenderer.send('downloadNow');
+        displayInfobar('update', i18n[current_i18n].update_downloading + '......');
+        $('.container-updater').animateCss('fadeOut faster', function() {
+          $('.container-updater').removeAttr('style');
         });
-        $(document).on('dblclick', '#category-menu li:not(#category-add):not(#category-add-inside)', function() {
-            let category_clicked = $(this).attr('data-name');
-            if (!categoryEditMode || category_clicked === 'all' || category_clicked === 'notalloc') {
-                return;
-            }
-            $('#category-custom-' + category_clicked).children('.category-item-name').children('span').hide();
-            $('#category-custom-' + category_clicked).children('.category-item-name').children('input').show();
-            //解决光标在input最前面的问题
-            let t = $('#category-custom-' + category_clicked).children('.category-item-name').children('input').val();
-            $('#category-custom-' + category_clicked).children('.category-item-name').children('input').val("").focus().val(t);
-        });
+        setTimeout(() => {
+          startDownloadLock = false;
+        }, 500);
+      }
+    });
+    $('#btn-update-manual').on('click', function () {
+      ipcRenderer.send('openExternalURL', `http://update.backrunner.top/fastnote/${process.platform}${isOS64? '/x64/' : ''}/Fastnote Setup ${version_new}.exe`);
+      $('.container-updater').animateCss('fadeOut faster', function() {
+        $('.container-updater').removeAttr('style');
+      });
+      ipcRenderer.send('updateCancelled');
+    });
+  </script>
 
-        //绑定每个自定义分类中的删除按钮
-        $(document).on('click', '.category-item-delbtn', function() {
-            //获取分类名称
-            var name = $(this).parent().parent().attr('data-name');
-            let ret = dialog.showMessageBoxSync({
-                type: "warning",
-                buttons: [i18n[current_i18n].button_cancel, i18n[current_i18n].button_delete, i18n[current_i18n].delete_category_and_note],
-                defaultId: 0,
-                cancelId: 0,
-                title: i18n[current_i18n].confirm_operation,
-                message: i18n[current_i18n].confirm_delete_category_left + name + i18n[current_i18n].confirm_delete_category_right,
-                detail: i18n[current_i18n].delete_category_and_note_detail
-            });
-            if (ret == 1) {
-                removeCategory(name);
-                // 该分类下的便签分类全部修改为未分类
-                setNotesCategory(name, undefined);
-            } else if (ret == 2) {
-                removeNotesOfCategory(name);
-                removeCategory(name, false);
-            }
-        });
+  <!-- 主菜单 -->
+  <div class="mainmenu-background"></div>
+  <div class="container-mainmenu">
+    <div class="mainmenu-panel">
+      <div class="mainmenu-logo">
+        <img src="static/images/logo.png" class="mainmenu-logo-default" />
+        <img src="static/images/logo.blackwhite.png" class="mainmenu-logo-blackwhite" />
+        <h1>Fastnote</h1>
+        <span id="mainmenu-version"></span>
+        <script>
+          $(document).ready(function() {
+            $('#mainmenu-version').text(version);
+          });
+        </script>
+      </div>
+      <div class="mainmenu-split"></div>
+      <div class="mainmenu-menu">
+        <ul>
+          <li id="mainmenu-btn-recycle">
+            <span data-lang="recyclebin">回收站</span>
+          </li>
+          <div class="mainmenu-split"></div>
+          <li id="mainmenu-btn-settings">
+            <span data-lang="settings">设置</span>
+          </li>
+          <li id="mainmenu-btn-about">
+            <span data-lang="about">关于</span>
+          </li>
+          <div class="mainmenu-split"></div>
+          <li id="mainmenu-btn-reload">
+            <span data-lang="reload">重新载入</span>
+          </li>
+          <li id="mainmenu-btn-exit">
+            <span data-lang="exit">退出</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
-        function removeCategory(name, renderCount = true) {
-            //删除分类
-            removeCategoryFromArr(name);
-            ipcRenderer.send('category_removed', name);
-            saveCategories();
-            $('#category-custom-' + name).parent().animateCss("fadeOutLeft faster", function() {
-                $('#category-custom-' + name).parent().remove();
-            });
-            //删除select中的项
-            $('#select-note-category option[value="' + name + '"]').remove();
-            //如果当前分类为被删除的分类，则切换到所有便签
-            if (current_category == name) {
-                current_category = 'all';
-                if (renderCount) {
-                    renderCurrentCategory();
-                    renderNotesOfCategory(current_category);
-                }
-                $('#select-note-category').val('notalloc');
-            }
+  <!-- 主菜单、快捷键、窗口大小调整相关 -->
+  <script>
+    //绑定主菜单的动画事件
+    let isMainMenuOpen = false;
+    $('.mainmenu-background').on('mousedown', function() {
+      closeMainMenu();
+    });
+    //打开主菜单
+    $('#btn-mainmenu-trigger').on('click', function() {
+      if (!isMainMenuOpen && !isCategoryOpen && !isCloudOpen) {
+        openMainMenu();
+      }
+    });
+    //绑定主菜单快捷键
+    Mousetrap.bind('esc', function() {
+      if (devconsoleOpened) {
+
+      }
+      if (isCategoryOpen) {
+        closeCategory();
+        $('#note-text').focus();
+        return;
+      }
+      if (isCloudOpen) {
+        closeCloudPanel();
+        $('#note-text').focus();
+        return;
+      }
+      if (isMainMenuOpen) {
+        closeMainMenu();
+        $('#note-text').focus();
+      } else {
+        openMainMenu();
+      }
+    });
+
+    function openMainMenu() {
+      $('.mainmenu-background').css('display', 'block').animateCss('fadeIn');
+      $('.container-mainmenu').css('display', 'block').animateCss('fadeInLeft');
+      isMainMenuOpen = true;
+    }
+    //绑定菜单项
+    $('#mainmenu-btn-recycle').click(function() {
+      ipcRenderer.send("openRecycleWindow");
+      closeMainMenu();
+    });
+    //打开回收站的全局快捷键
+    Mousetrap.bind('shift+r', function() {
+      ipcRenderer.send("openRecycleWindow");
+    });
+    $('#mainmenu-btn-settings').click(function() {
+      ipcRenderer.send("openSettingsWindow"); //打开关于窗口
+      closeMainMenu();
+    });
+    //打开的设置全局快捷键
+    Mousetrap.bind('shift+s', function() {
+      ipcRenderer.send("openSettingsWindow");
+    });
+    //锁屏全局快捷键
+    Mousetrap.bind('ctrl+l', function() {
+      enableLockScreen();
+    });
+    $('#mainmenu-btn-about').click(function() {
+      ipcRenderer.send("openAboutWindow"); //打开关于窗口
+      closeMainMenu();
+    });
+    $('#mainmenu-btn-reload').click(function() {
+      reloadAllWindows();
+      closeMainMenu();
+    });
+    $('#mainmenu-btn-exit').click(function() {
+      ipcRenderer.send("app-quitNow"); //退出程序
+      closeMainMenu();
+    });
+
+    function reloadAllWindows() {
+      ipcRenderer.send("reloadMainWindow"); //重载
+      ipcRenderer.send('reloadRecycleWindow');
+      ipcRenderer.send('reloadAllEditWindow');
+      ipcRenderer.send('reloadAboutWindow');
+      ipcRenderer.send('reloadAllWidgets');
+      ipcRenderer.send('reloadLoginWindow');
+    }
+
+    function closeMainMenu() {
+      if (isMainMenuOpen) {
+        $('.mainmenu-background').css('width', '100%'); //动态修改宽度防止阻挡
+        $('.mainmenu-background').animateCss('fadeOut', function() {
+          $('.mainmenu-background').css('display', 'none');
+        })
+        $('.container-mainmenu').animateCss('fadeOutLeft', function() {
+          $('.container-mainmenu').css('display', 'none');
+          isMainMenuOpen = false;
+        })
+      }
+    }
+
+    //bind resize
+    $(window).resize(function() { //当浏览器大小变化时
+      var windowHeight = $(window).height();
+      //调整list的高度
+      var listHeight = 0;
+      if ($('.container-newnote').css('display') == 'none') {
+        listHeight = $(window).height() - $('.container-titlebar').height() - 25;
+        $('.note-list').css('height', listHeight + 'px');
+        $('.note-empty').css('height', listHeight + 'px');
+      } else {
+        listHeight = $(window).height() - $('.container-titlebar').height() - 205;
+        $('.note-list').css('height', listHeight + 'px');
+        $('.note-empty').css('height', listHeight + 'px');
+      }
+      //调整note的高度
+      $('.note-content').each(function() {
+        if ($(this).attr('class').indexOf('note-overheight') == -1) {
+          $(this).css('height', 'auto');
         }
+      });
+    });
+  </script>
 
-        function removeNotesOfCategory(name) {
-            var notes_tobeDeleted = [];
-            for (let i = 0; i < notes.length; i++) {
-                if (notes[i].category == name) {
-                    notes_tobeDeleted.push(i);
-                }
-            }
-            //删除便签
-            for (let i = 0; i < notes_tobeDeleted.length; i++) {
-                //检查offset
-                let path;
-                if (notes[notes_tobeDeleted[i]].offset > 0) {
-                    path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.' + notes[tobeDeleted[i]].offset + '.json';
-                } else {
-                    path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.json';
-                }
-                if (fs.existsSync(path)) {
-                    //删除文件
-                    fs.unlinkSync(path);
-                    //render
-                    if (current_category == 'all') {
-                        let noteid = notes[notes_tobeDeleted[i]].id;
-                        $('#note_' + noteid).parent().animateCss('fadeOutLeft faster', function() {
-                            $('#note_' + noteid).parent().remove();
-                        });
-                    }
-                    notes.splice(notes_tobeDeleted[i], 1);
-                }
-            }
+  <!-- 分类侧边菜单 -->
+  <div class="category-background"></div>
+  <div class="container-category">
+    <div class="category-panel">
+      <div class="category-header">
+        <div class="category-header-title">
+          <p data-lang="note_category">便签分类</p>
+        </div>
+        <div class="category-header-button">
+          <i class="fa fa-edit" id="category-header-editbtn" aria-hidden="true"></i>
+          <i class="fa fa-check" id="category-header-confirmbtn" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="category-split"></div>
+      <div class="category-body">
+        <ul id="category-menu">
+          <div class="category-menu-fixed">
+            <li data-name="all">
+              <div id="category-system-all">
+                <div class="category-item-name">
+                  <span data-lang="all_notes">所有便签</span>
+                </div>
+                <div class="category-item-count">
+                  <span id="category-count-all">0</span>
+                </div>
+              </div>
+            </li>
+            <li data-name="notalloc">
+              <div id="category-system-notalloc">
+                <div class="category-item-name">
+                  <span data-lang="notalloc">未分类</span>
+                </div>
+                <div class="category-item-count">
+                  <span id="category-count-notalloc">0</span>
+                </div>
+              </div>
+            </li>
+          </div>
+          <div class="category-split"></div>
+          <div class="category-menu-custom"></div>
+          <div class="category-menu-system">
+            <li id="category-add">
+              <div class="category-icon-add"><i class="fa fa-plus" aria-hidden="true"></i></div>
+            </li>
+            <li id="category-add-inside">
+              <div class="category-ctrl-add">
+                <div class="category-add-input">
+                  <input id="input-category-add" type="text">
+                </div>
+                <div class="category-add-btn">
+                  <i class="fa fa-times" aria-hidden="true"></i>
+                </div>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分类相关 -->
+  <script>
+    var isCategoryOpen = false;
+
+    function openCategory() {
+      $('.category-background').css('display', 'block');
+      $('.category-background').animateCss('fadeIn');
+      $('.container-category').css('display', 'block');
+      $('.container-category').animateCss('fadeInLeft');
+      isCategoryOpen = true;
+    }
+
+    function closeCategory() {
+      if (isCategoryOpen) {
+        disableCategoryEditMode(); //关闭时禁用编辑模式
+        $('.category-background').css('width', '100%'); //动态修改宽度防止阻挡
+        $('.category-background').animateCss('fadeOut', function() {
+          $('.category-background').css('display', 'none');
+        });
+        $('.container-category').animateCss('fadeOutLeft', function() {
+          $('.container-category').css('display', 'none');
+          isCategoryOpen = false;
+        });
+      }
+    }
+
+    $('#category-add-inside').mouseenter(function() {
+      $('.category-add-input input').addClass('category-focused');
+    });
+    $('#category-add-inside').mouseleave(function() {
+      $('.category-add-input input').removeClass('category-focused');
+    })
+    $('#category-add').click(function() {
+      $('#category-add').animateCss('fadeOut morefaster', function() {
+        $('#category-add').hide();
+        $('#category-add-inside').show();
+        $('#input-category-add').focus().val("");
+        $('#category-add-inside').animateCss('fadeIn morefaster');
+      });
+    });
+    $('.category-add-btn').click(function() {
+      $('#category-add-inside').animateCss('fadeOut morefaster', function() {
+        $('#input-category-add').removeClass('br-invalid-underline');
+        $('#category-add-inside').hide();
+        $('#category-add').show();
+        $('#category-add').animateCss('fadeIn morefaster');
+      });
+    });
+
+    $('#input-category-add').keypress(function(e) {
+      if (e.which == 13) {
+        var category_name = $('#input-category-add').val().trim();
+        $('#input-category-add').val('');
+        if (category_name < 1) {
+          return;
+        }
+        if (existCategory(category_name) || category_name in new Array("all", "notalloc")) {
+          //仓库已存在或属于保留字
+          $('#input-category-add').addClass('br-invalid-underline');
+        } else {
+          //仓库不存在
+          $('#category-add-inside').animateCss('fadeOut morefaster', function() {
+            $('#input-category-add').removeClass('br-invalid-underline');
+            $('#category-add-inside').hide();
+            putCategoryToArr(category_name); //添加到数组
+            //通知主进程分类有更改
+            ipcRenderer.send('category_added', category_name);
+            renderCategoryToList(categories.length - 1, category_name, 0, true); //渲染到页面
+            renderCategoryToSelect(category_name); //渲染到select
+            saveCategories(); //保存便签分类
+            $('#category-add').show();
+            $('#category-add').animateCss('fadeIn morefaster');
+          });
+        }
+      }
+    });
+
+    $('#btn-category-trigger').on('click', function() {
+      if (!isMainMenuOpen && !isCategoryOpen && !isCloudOpen) {
+        openCategory();
+      }
+    });
+    $('.category-background').on('mousedown', function() {
+      closeCategory();
+    });
+
+    //绑定除了add的每个li的点击
+    $(document).on('click', '#category-menu li:not(#category-add):not(#category-add-inside)', function() {
+      let category_clicked = $(this).attr('data-name');
+      if (category_clicked != current_category && !categoryEditMode) {
+        //移除选中
+        switch (current_category) {
+          default:
+            $('#category-custom-' + current_category).removeClass('category-selected');
+            break;
+          case 'all':
+          case 'notalloc':
+            $('#category-system-' + current_category).removeClass('category-selected');
+            break;
+        }
+        current_category = category_clicked;
+        //渲染选择
+        renderCurrentCategory();
+        //隐藏不属于当前类别的
+        renderNotesOfCategory(current_category);
+        //调整select
+        if (current_category != 'all') {
+          $('#select-note-category').val(current_category);
+        } else {
+          //为all则设置为未分类
+          $('#select-note-category').val('notalloc');
+        }
+        //写入current_category
+        saveCurrentCategory();
+      }
+    });
+    $(document).on('dblclick', '#category-menu li:not(#category-add):not(#category-add-inside)', function() {
+      let category_clicked = $(this).attr('data-name');
+      if (!categoryEditMode || category_clicked === 'all' || category_clicked === 'notalloc') {
+        return;
+      }
+      $('#category-custom-' + category_clicked).children('.category-item-name').children('span').hide();
+      $('#category-custom-' + category_clicked).children('.category-item-name').children('input').show();
+      //解决光标在input最前面的问题
+      let t = $('#category-custom-' + category_clicked).children('.category-item-name').children('input').val();
+      $('#category-custom-' + category_clicked).children('.category-item-name').children('input').val("").focus().val(t);
+    });
+
+    //绑定每个自定义分类中的删除按钮
+    $(document).on('click', '.category-item-delbtn', function() {
+      //获取分类名称
+      var name = $(this).parent().parent().attr('data-name');
+      let ret = dialog.showMessageBoxSync({
+        type: "warning",
+        buttons: [i18n[current_i18n].button_cancel, i18n[current_i18n].button_delete, i18n[current_i18n].delete_category_and_note],
+        defaultId: 0,
+        cancelId: 0,
+        title: i18n[current_i18n].confirm_operation,
+        message: i18n[current_i18n].confirm_delete_category_left + name + i18n[current_i18n].confirm_delete_category_right,
+        detail: i18n[current_i18n].delete_category_and_note_detail
+      });
+      if (ret == 1) {
+        removeCategory(name);
+        // 该分类下的便签分类全部修改为未分类
+        setNotesCategory(name, undefined);
+      } else if (ret == 2) {
+        removeNotesOfCategory(name);
+        removeCategory(name, false);
+      }
+    });
+
+    function removeCategory(name, renderCount = true) {
+      //删除分类
+      removeCategoryFromArr(name);
+      ipcRenderer.send('category_removed', name);
+      saveCategories();
+      $('#category-custom-' + name).parent().animateCss("fadeOutLeft faster", function() {
+        $('#category-custom-' + name).parent().remove();
+      });
+      //删除select中的项
+      $('#select-note-category option[value="' + name + '"]').remove();
+      //如果当前分类为被删除的分类，则切换到所有便签
+      if (current_category == name) {
+        current_category = 'all';
+        if (renderCount) {
+          renderCurrentCategory();
+          renderNotesOfCategory(current_category);
+        }
+        $('#select-note-category').val('notalloc');
+      }
+    }
+
+    function removeNotesOfCategory(name) {
+      var notes_tobeDeleted = [];
+      for (let i = 0; i < notes.length; i++) {
+        if (notes[i].category == name) {
+          notes_tobeDeleted.push(i);
+        }
+      }
+      //删除便签
+      for (let i = 0; i < notes_tobeDeleted.length; i++) {
+        //检查offset
+        let path;
+        if (notes[notes_tobeDeleted[i]].offset > 0) {
+          path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.' + notes[tobeDeleted[i]].offset + '.json';
+        } else {
+          path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.json';
+        }
+        if (fs.existsSync(path)) {
+          //删除文件
+          fs.unlinkSync(path);
+          //render
+          if (current_category == 'all') {
+            let noteid = notes[notes_tobeDeleted[i]].id;
+            $('#note_' + noteid).parent().animateCss('fadeOutLeft faster', function() {
+              $('#note_' + noteid).parent().remove();
+            });
+          }
+          notes.splice(notes_tobeDeleted[i], 1);
+        }
+      }
+      renderCurrentCategory();
+      renderNotesOfCategory(current_category);
+    }
+
+    var categoryEditMode = false;
+
+    //绑定编辑按钮
+    $('.category-header-button').click(function() {
+      if (categoryEditMode) {
+        disableCategoryEditMode();
+        saveCategoriesName();
+      } else {
+        enableCategoryEditMode();
+      }
+    });
+
+    //sortable
+    sortable('.category-menu-custom', {
+      items: 'li',
+      forcePlaceholderSize: true
+    })[0].addEventListener('sortupdate', function(e) {
+      var name = $(e.detail.item).attr('data-name'); //获取拖动的名称
+      //列表的index和categories的index对应，交换
+      var t = categories[e.detail.origin.index];
+      categories[e.detail.origin.index] = categories[e.detail.destination.index];
+      categories[e.detail.destination.index] = t;
+      saveCategories();
+    });
+
+    function enableCategoryEditMode() {
+      // == 分类编辑模式启用 ==
+      categoryEditMode = true;
+      //顶部按钮改变
+      $('#category-header-confirmbtn').show();
+      $('#category-header-editbtn').hide();
+      //更改底部便签的显示
+      $('.category-item-delbtn').show();
+      $('.category-menu-custom .category-item-count').hide();
+      //sortable
+      $('.category-menu-custom li').css('-webkit-user-drag', 'auto');
+      $('.category-menu-custom li').css('-webkit-user-select', 'auto');
+    }
+
+    function disableCategoryEditMode() {
+      // == 分类编辑模式禁用 ==
+      categoryEditMode = false;
+      //顶部按钮改变
+      $('#category-header-editbtn').show();
+      $('#category-header-confirmbtn').hide();
+      //更改底部便签的显示
+      $('.category-menu-custom .category-item-count').show();
+      $('.category-item-delbtn').hide();
+      //sortable
+      $('.category-menu-custom li').css('-webkit-user-drag', 'none');
+      $('.category-menu-custom li').css('-webkit-user-select', 'none');
+    }
+
+    function saveCategoriesName() {
+      $('.category-edit-input').each((i, e) => {
+        let index = parseInt($(e).attr('data-index'));
+        let newname = $(e).val().trim();
+        //判断名称是否发生了改变
+        if (categories[index].name != newname) {
+          //当前分类的名称发生了修改
+          if (categories[index].name == current_category) {
+            //更新当前分类相关的内容
+            current_category = newname;
+            saveCurrentCategory();
             renderCurrentCategory();
-            renderNotesOfCategory(current_category);
+          }
+          //修改当前的data-name
+          $('#category-custom-' + categories[index].name).parent().attr('data-name', newname);
+          //修改id
+          $('#category-custom-' + categories[index].name).attr('id', 'category-custom-' + newname);
+          //向其他窗口发送rename通知
+          ipcRenderer.send('category_rename', {
+            index: index,
+            newname: newname
+          });
+          //改写便签的分类名称
+          renameCategoryOfNote(categories[index].name, newname);
         }
+        categories[index].name = newname;
+      });
+      saveCategories();
+      //重新渲染分类相关的内容
+      renderCategorySelect();
+    }
 
-        var categoryEditMode = false;
-
-        //绑定编辑按钮
-        $('.category-header-button').click(function() {
-            if (categoryEditMode) {
-                disableCategoryEditMode();
-                saveCategoriesName();
-            } else {
-                enableCategoryEditMode();
-            }
-        });
-
-        //sortable
-        sortable('.category-menu-custom', {
-            items: 'li',
-            forcePlaceholderSize: true
-        })[0].addEventListener('sortupdate', function(e) {
-            var name = $(e.detail.item).attr('data-name'); //获取拖动的名称
-            //列表的index和categories的index对应，交换
-            var t = categories[e.detail.origin.index];
-            categories[e.detail.origin.index] = categories[e.detail.destination.index];
-            categories[e.detail.destination.index] = t;
-            saveCategories();
-        });
-
-        function enableCategoryEditMode() {
-            // == 分类编辑模式启用 ==
-            categoryEditMode = true;
-            //顶部按钮改变
-            $('#category-header-confirmbtn').show();
-            $('#category-header-editbtn').hide();
-            //更改底部便签的显示
-            $('.category-item-delbtn').show();
-            $('.category-menu-custom .category-item-count').hide();
-            //sortable
-            $('.category-menu-custom li').css('-webkit-user-drag', 'auto');
-            $('.category-menu-custom li').css('-webkit-user-select', 'auto');
+    function renameCategoryOfNote(oldname, newname) {
+      notes.forEach(note => {
+        if (note.category == oldname) {
+          note.category = newname;
+          saveNoteByObj(note);
         }
+      });
+    }
+  </script>
 
-        function disableCategoryEditMode() {
-            // == 分类编辑模式禁用 ==
-            categoryEditMode = false;
-            //顶部按钮改变
-            $('#category-header-editbtn').show();
-            $('#category-header-confirmbtn').hide();
-            //更改底部便签的显示
-            $('.category-menu-custom .category-item-count').show();
-            $('.category-item-delbtn').hide();
-            //sortable
-            $('.category-menu-custom li').css('-webkit-user-drag', 'none');
-            $('.category-menu-custom li').css('-webkit-user-select', 'none');
-        }
-
-        function saveCategoriesName() {
-            $('.category-edit-input').each((i, e) => {
-                let index = parseInt($(e).attr('data-index'));
-                let newname = $(e).val().trim();
-                //判断名称是否发生了改变
-                if (categories[index].name != newname) {
-                    //当前分类的名称发生了修改
-                    if (categories[index].name == current_category) {
-                        //更新当前分类相关的内容
-                        current_category = newname;
-                        saveCurrentCategory();
-                        renderCurrentCategory();
-                    }
-                    //修改当前的data-name
-                    $('#category-custom-' + categories[index].name).parent().attr('data-name', newname);
-                    //修改id
-                    $('#category-custom-' + categories[index].name).attr('id', 'category-custom-' + newname);
-                    //向其他窗口发送rename通知
-                    ipcRenderer.send('category_rename', {
-                        index: index,
-                        newname: newname
-                    });
-                    //改写便签的分类名称
-                    renameCategoryOfNote(categories[index].name, newname);
-                }
-                categories[index].name = newname;
-            });
-            saveCategories();
-            //重新渲染分类相关的内容
-            renderCategorySelect();
-        }
-
-        function renameCategoryOfNote(oldname, newname) {
-            notes.forEach(note => {
-                if (note.category == oldname) {
-                    note.category = newname;
-                    saveNoteByObj(note);
-                }
-            });
-        }
-    </script>
-
-    <!-- 云服务侧边菜单 -->
-    <div class="cloud-background"></div>
-    <div class="container-cloud">
-        <div class="cloud-panel">
-            <div class="cloud-header">
-                <div class="cloud-header-title">
-                    <p>Fastnote Cloud</p>
-                </div>
-            </div>
-            <div class="cloud-split" style="margin-bottom: 8px !important"></div>
-            <div class="cloud-body cloud-body-nologin">
-                <ul class="cloud-menu">
-                    <li id="cloud-menuitem-login">
-                        <div class="cloud-menuitem-label">
-                            <span data-lang="login">登录</span>
-                        </div>
-                    </li>
-                    <div class="cloud-menuitem-split"></div>
-                    <li id="cloud-menuitem-register">
-                        <div class="cloud-menuitem-label">
-                            <span data-lang="register">注册</span>
-                        </div>
-                    </li>
-                    <div class="cloud-menuitem-split"></div>
-                </ul>
-            </div>
-            <div class="cloud-body cloud-body-user" style="display: none;">
-                <ul class="cloud-menu cloud-menu-user">
-                    <li id="cloud-menuitem-userinfo">
-                        <div class="cloud-user-avatar">
-                            <img src="static/images/default_avatar.png">
-                        </div>
-                        <div class="cloud-user-baseinfo">
-                            <span id="cloud-user-username"></span>
-                        </div>
-                    </li>
-                    <div class="cloud-menuitem-split"></div>
-                    <li id="cloud-menuitem-sync">
-                        <div class="cloud-menuitem-label">
-                            <span data-lang="sync">同步</span>
-                        </div>
-                    </li>
-                    <li id="cloud-menuitem-usersettings">
-                        <div class="cloud-menuitem-label">
-                            <span data-lang="user_settings">用户设置</span>
-                        </div>
-                    </li>
-                    <li id="cloud-menuitem-logout">
-                        <div class="cloud-menuitem-label">
-                            <span data-lang="logout">登出</span>
-                        </div>
-                    </li>
-                    <div class="cloud-menuitem-split"></div>
-                </ul>
-            </div>
+  <!-- 云服务侧边菜单 -->
+  <div class="cloud-background"></div>
+  <div class="container-cloud">
+    <div class="cloud-panel">
+      <div class="cloud-header">
+        <div class="cloud-header-title">
+          <p>Fastnote Cloud</p>
         </div>
+      </div>
+      <div class="cloud-split" style="margin-bottom: 8px !important"></div>
+      <div class="cloud-body cloud-body-nologin">
+        <ul class="cloud-menu">
+          <li id="cloud-menuitem-login">
+            <div class="cloud-menuitem-label">
+              <span data-lang="login">登录</span>
+            </div>
+          </li>
+          <div class="cloud-menuitem-split"></div>
+          <li id="cloud-menuitem-register">
+            <div class="cloud-menuitem-label">
+              <span data-lang="register">注册</span>
+            </div>
+          </li>
+          <div class="cloud-menuitem-split"></div>
+        </ul>
+      </div>
+      <div class="cloud-body cloud-body-user" style="display: none;">
+        <ul class="cloud-menu cloud-menu-user">
+          <li id="cloud-menuitem-userinfo">
+            <div class="cloud-user-avatar">
+              <img src="static/images/default_avatar.png">
+            </div>
+            <div class="cloud-user-baseinfo">
+              <span id="cloud-user-username"></span>
+            </div>
+          </li>
+          <div class="cloud-menuitem-split"></div>
+          <li id="cloud-menuitem-sync">
+            <div class="cloud-menuitem-label">
+              <span data-lang="sync">同步</span>
+            </div>
+          </li>
+          <li id="cloud-menuitem-usersettings">
+            <div class="cloud-menuitem-label">
+              <span data-lang="user_settings">用户设置</span>
+            </div>
+          </li>
+          <li id="cloud-menuitem-logout">
+            <div class="cloud-menuitem-label">
+              <span data-lang="logout">登出</span>
+            </div>
+          </li>
+          <div class="cloud-menuitem-split"></div>
+        </ul>
+      </div>
     </div>
+  </div>
 
-    <!-- Cloud 菜单相关 -->
-    <script>
-        var isCloudOpen = false;
+  <!-- Cloud 菜单相关 -->
+  <script>
+    var isCloudOpen = false;
 
-        function openCloudPanel() {
-            $('.cloud-background').css('display', 'block');
-            $('.cloud-background').animateCss('fadeIn');
-            $('.container-cloud').css('display', 'block');
-            $('.container-cloud').animateCss('fadeInLeft');
-            // 根据登录状态决定启用
-            isCloudOpen = true;
+    function openCloudPanel() {
+      $('.cloud-background').css('display', 'block');
+      $('.cloud-background').animateCss('fadeIn');
+      $('.container-cloud').css('display', 'block');
+      $('.container-cloud').animateCss('fadeInLeft');
+      // 根据登录状态决定启用
+      isCloudOpen = true;
+    }
+
+    function closeCloudPanel() {
+      if (isCloudOpen) {
+        $('.cloud-background').css('width', '100%'); //动态修改宽度防止阻挡
+        $('.cloud-background').animateCss('fadeOut', function() {
+          $('.cloud-background').css('display', 'none');
+        });
+        $('.container-cloud').animateCss('fadeOutLeft', function() {
+          $('.container-cloud').css('display', 'none');
+          isCloudOpen = false;
+        });
+      }
+    }
+
+    function switchCloudPanelToNoLogon() {
+      $('.cloud-body-user').animateCss('fadeOut morefaster', function() {
+        $('.cloud-body-user').hide();
+        $('.cloud-body-nologin').show();
+        $('.cloud-body-nologin').animateCss('fadeIn morefaster');
+      });
+    }
+
+    $('#btn-cloud-trigger').on('click', () => {
+      if (!isMainMenuOpen && !isCategoryOpen && !isCloudOpen) {
+        openCloudPanel();
+      }
+    });
+
+    $('.cloud-background').on('mousedown', () => {
+      closeCloudPanel();
+    });
+
+    // menu item events
+    // 登录
+    $('#cloud-menuitem-login').on('click', () => {
+      ipcRenderer.send('openLoginWindow');
+      closeCloudPanel();
+    });
+    // 注册
+    $('#cloud-menuitem-register').on('click', () => {
+      ipcRenderer.send('openRegisterWindow');
+      closeCloudPanel();
+    });
+    // 登出
+    $('#cloud-menuitem-logout').on('click', () => {
+      cloudUserLogout();
+    });
+  </script>
+
+  <!-- 本地备份导入 -->
+  <script>
+    //backup recovered
+    ipcRenderer.on('backup-recover-completed', function() {
+      // 刷新便签列表
+      readNoteFiles(() => {
+        console.log('recoverd notes rendered.');
+        // 获取最大的便签id，刷新为新的便签id
+        let maxNoteId = 0;
+        // 检测NoteID冲突
+        let existedNoteId = [];
+        let conflictNotes = [];
+        // 遍历现有的便签
+        for (let i = 0; i < notes.length; i++) {
+          if (parseInt(notes[i].id) > maxNoteId) {
+            maxNoteId = notes[i].id;
+          }
+          // 检测noteid是否有冲突，用户在本地的noteid应尽可能保持唯一。
+          if (existedNoteId.indexOf(notes[i].id) == -1) {
+            existedNoteId.push(notes[i].id);
+          } else {
+            // 存在冲突
+            conflictNotes.push(notes[i]);
+          }
         }
+        // 重新设置noteid
+        notesid = maxNoteId + 1;
+        // 检测是否存在冲突的便签
+        if (conflictNotes.length > 0) {
+          // 构造细节
+          let detail = i18n[current_i18n].note_conflict_detail;
+          conflictNotes.forEach(note => {
+            detail += "ID: " + note.id + i18n[current_i18n].note_conflict_detail_content + (note.text.length > 20 ? note.text.substring(
+              0, 20) + "..." : note.text) + "\n";
+          });
+          let ret = dialog.showMessageBoxSync({
+            title: i18n[current_i18n].notes_conflict,
+            message: i18n[current_i18n].notes_conflict_message,
+            detail: detail,
+            buttons: [i18n[current_i18n].button_dealwithconflict, i18n[current_i18n].button_delete],
+            defaultId: 0,
+            cancelId: 0
+          });
+          if (ret === 0) {
+            // 处理冲突
+            conflictNotes.forEach(note => {
+              note.id = notesid;
+              saveNoteByObj(note);
+              notesid++;
+            });
+          } else if (ret == 1) {
+            let confirmRes = dialog.showMessageBoxSync({
+              type: 'warning',
+              message: i18n[current_i18n].delete_conflict_notes,
+              detail: detail,
+              buttons: [i18n[current_i18n].button_no, i18n[current_i18n].button_yes],
+              defaultId: 0,
+              cancelId: 0,
+            });
+            if (confirmRes === 0) {
+              // 处理冲突
+              conflictNotes.forEach(note => {
+                note.id = notesid;
+                saveNoteByObj(note);
+                notesid++;
+              });
+            } else if (confirmRes === 1) {
+              conflictNotes.forEach(note => {
+                deleteNoteByObj(note);
+              });
+            }
+          }
+          // 冲突处理完毕
+          readNoteFiles();
+        }
+        saveNotesId();
+        // 通知主进程已经处理完了导入
+        ipcRenderer.send('backup-process-completed', notesid);
+      });
+    });
+  </script>
 
-        function closeCloudPanel() {
-            if (isCloudOpen) {
-                $('.cloud-background').css('width', '100%'); //动态修改宽度防止阻挡
-                $('.cloud-background').animateCss('fadeOut', function() {
-                    $('.cloud-background').css('display', 'none');
+  <!-- 便签加密相关 -->
+  <script>
+    //取消加密
+    ipcRenderer.on('cancel-encryption', function(sender, data) {
+      removePassword(data.id, data.rawpassword);
+      $('#note_' + data.id + ' .note-header .note-password-relock').remove();
+      $('#note_' + data.id + ' .note-content .note-password').animateCss('fadeOut morefaster', function() {
+        $('#note_' + data.id + ' .note-content .note-password').remove();
+      });
+    });
+
+    function removePassword(noteid, rawpassword) {
+      for (var i = 0; i < notes.length; i++) {
+        if (notes[i].id == noteid) {
+          notes[i].password = null; //取消密码
+          notes[i].text = aes_decrypt(notes[i].text, rawpassword);
+          saveNoteByObj(notes[i]); //保存
+          displayInfobar('success', i18n[current_i18n].note_unencrypted_sharp + noteid + i18n[current_i18n].note_unencrypted_right);
+          rerenderTextOfNote(noteid, notes[i].text, true);
+          break;
+        }
+      }
+    }
+  </script>
+
+  <!-- 窗口与托盘相关 -->
+  <script>
+    // 聚焦到输入文本框
+    $(document).ready(function() {
+      $('#note-text').focus();
+    });
+
+    // 关闭选项的flag
+    var reloadWindow = false;
+    var closeOptionDialogShow = false;
+
+    ipcRenderer.on('before-reload', () => {
+      reloadWindow = true;
+    });
+
+    // 复写关闭窗口事件
+    window.onbeforeunload = (e) => {
+      if (reloadWindow) {
+        return;
+      }
+      if (!settings.closeOption) {
+        if (!closeOptionDialogShow) {
+          closeOptionDialogShow = true;
+          dialog.showMessageBox({
+            type: 'info',
+            title: i18n[current_i18n].close_mainwindow_title,
+            buttons: [i18n[current_i18n].close_minimize_to_tray, i18n[current_i18n].close_just_close],
+            message: i18n[current_i18n].close_mainwindow_msg,
+            defaultId: 0,
+            cancelId: 0
+          }).then(res => {
+            switch (res.response) {
+              case 0:
+                //复写设置
+                settings.closeOption = 'tray';
+                storage.set('settings'  + (global.indebug ? '_dev' : ''), settings, (err) => {
+                  if (err) {
+                    console.error(err)
+                  }
                 });
-                $('.container-cloud').animateCss('fadeOutLeft', function() {
-                    $('.container-cloud').css('display', 'none');
-                    isCloudOpen = false;
+                window.close();
+                break;
+              case 1:
+                //复写设置
+                settings.closeOption = 'close';
+                //保存设置
+                storage.set('settings' + (global.indebug ? '_dev' : ''), settings, (err) => {
+                  if (err) {
+                    console.error(err)
+                  }
                 });
+                ipcRenderer.send('app-quitNow');
+                break;
+              default:
+                window.close();
+                break;
             }
+            reloadWindow = false;
+            closeOptionDialogShow = false;
+          });
+          e.returnValue = false;
         }
-
-        function switchCloudPanelToNoLogon() {
-            $('.cloud-body-user').animateCss('fadeOut morefaster', function() {
-                $('.cloud-body-user').hide();
-                $('.cloud-body-nologin').show();
-                $('.cloud-body-nologin').animateCss('fadeIn morefaster');
-            });
+      } else {
+        switch (settings.closeOption) {
+          case 'close':
+            ipcRenderer.send('app-quitNow');
+            break;
+          case 'tray':
+            window.close();
+            break;
         }
+      }
+    }
 
-        $('#btn-cloud-trigger').on('click', () => {
-            if (!isMainMenuOpen && !isCategoryOpen && !isCloudOpen) {
-                openCloudPanel();
-            }
-        });
+    ipcRenderer.on('tray-reload', () => {
+      ipcRenderer.send("reloadMainWindow"); //重载
+      ipcRenderer.send('reloadRecycleWindow');
+      ipcRenderer.send('reloadAllEditWindow');
+      ipcRenderer.send('reloadAboutWindow');
+      ipcRenderer.send('reloadAllWidgets');
+      ipcRenderer.send('reloadLoginWindow');
+      closeMainMenu();
+    });
+  </script>
 
-        $('.cloud-background').on('mousedown', () => {
-            closeCloudPanel();
-        });
+  <!-- 云服务 -->
+  <script>
+    // 服务器状态标识
+    var cloud_serveronline = false;
+    // token
+    var cloud_token;
+    var cloud_refresh_token;
+    var hasLogon = false;
 
-        // menu item events
-        // 登录
-        $('#cloud-menuitem-login').on('click', () => {
-            ipcRenderer.send('openLoginWindow');
-            closeCloudPanel();
-        });
-        // 注册
-        $('#cloud-menuitem-register').on('click', () => {
-            ipcRenderer.send('openRegisterWindow');
-            closeCloudPanel();
-        });
-        // 登出
-        $('#cloud-menuitem-logout').on('click', () => {
-            cloudUserLogout();
-        });
-    </script>
-
-    <!-- 本地备份导入 -->
-    <script>
-        //backup recovered
-        ipcRenderer.on('backup-recover-completed', function() {
-            // 刷新便签列表
-            readNoteFiles(() => {
-                console.log('recoverd notes rendered.');
-                // 获取最大的便签id，刷新为新的便签id
-                let maxNoteId = 0;
-                // 检测NoteID冲突
-                let existedNoteId = [];
-                let conflictNotes = [];
-                // 遍历现有的便签
-                for (let i = 0; i < notes.length; i++) {
-                    if (parseInt(notes[i].id) > maxNoteId) {
-                        maxNoteId = notes[i].id;
-                    }
-                    // 检测noteid是否有冲突，用户在本地的noteid应尽可能保持唯一。
-                    if (existedNoteId.indexOf(notes[i].id) == -1) {
-                        existedNoteId.push(notes[i].id);
-                    } else {
-                        // 存在冲突
-                        conflictNotes.push(notes[i]);
-                    }
-                }
-                // 重新设置noteid
-                notesid = maxNoteId + 1;
-                // 检测是否存在冲突的便签
-                if (conflictNotes.length > 0) {
-                    // 构造细节
-                    let detail = i18n[current_i18n].note_conflict_detail;
-                    conflictNotes.forEach(note => {
-                        detail += "ID: " + note.id + i18n[current_i18n].note_conflict_detail_content + (note.text.length > 20 ? note.text.substring(
-                            0, 20) + "..." : note.text) + "\n";
-                    });
-                    let ret = dialog.showMessageBoxSync({
-                        title: i18n[current_i18n].notes_conflict,
-                        message: i18n[current_i18n].notes_conflict_message,
-                        detail: detail,
-                        buttons: [i18n[current_i18n].button_dealwithconflict, i18n[current_i18n].button_delete],
-                        defaultId: 0,
-                        cancelId: 0
-                    });
-                    if (ret === 0) {
-                        // 处理冲突
-                        conflictNotes.forEach(note => {
-                            note.id = notesid;
-                            saveNoteByObj(note);
-                            notesid++;
-                        });
-                    } else if (ret == 1) {
-                        let confirmRes = dialog.showMessageBoxSync({
-                            type: 'warning',
-                            message: i18n[current_i18n].delete_conflict_notes,
-                            detail: detail,
-                            buttons: [i18n[current_i18n].button_no, i18n[current_i18n].button_yes],
-                            defaultId: 0,
-                            cancelId: 0,
-                        });
-                        if (confirmRes === 0) {
-                            // 处理冲突
-                            conflictNotes.forEach(note => {
-                                note.id = notesid;
-                                saveNoteByObj(note);
-                                notesid++;
-                            });
-                        } else if (confirmRes === 1) {
-                            conflictNotes.forEach(note => {
-                                deleteNoteByObj(note);
-                            });
-                        }
-                    }
-                    // 冲突处理完毕
-                    readNoteFiles();
-                }
-                saveNotesId();
-                // 通知主进程已经处理完了导入
-                ipcRenderer.send('backup-process-completed', notesid);
-            });
-        });
-    </script>
-
-    <!-- 便签加密相关 -->
-    <script>
-        //取消加密
-        ipcRenderer.on('cancel-encryption', function(sender, data) {
-            removePassword(data.id, data.rawpassword);
-            $('#note_' + data.id + ' .note-header .note-password-relock').remove();
-            $('#note_' + data.id + ' .note-content .note-password').animateCss('fadeOut morefaster', function() {
-                $('#note_' + data.id + ' .note-content .note-password').remove();
-            });
-        });
-
-        function removePassword(noteid, rawpassword) {
-            for (var i = 0; i < notes.length; i++) {
-                if (notes[i].id == noteid) {
-                    notes[i].password = null; //取消密码
-                    notes[i].text = aes_decrypt(notes[i].text, rawpassword);
-                    saveNoteByObj(notes[i]); //保存
-                    displayInfobar('success', i18n[current_i18n].note_unencrypted_sharp + noteid + i18n[current_i18n].note_unencrypted_right);
-                    rerenderTextOfNote(noteid, notes[i].text, true);
-                    break;
-                }
-            }
-        }
-    </script>
-
-    <!-- 窗口与托盘相关 -->
-    <script>
-        // 聚焦到输入文本框
-        $(document).ready(function() {
-            $('#note-text').focus();
-        });
-
-        // 关闭选项的flag
-        var reloadWindow = false;
-        var closeOptionDialogShow = false;
-
-        ipcRenderer.on('before-reload', () => {
-            reloadWindow = true;
-        });
-
-        // 复写关闭窗口事件
-        window.onbeforeunload = (e) => {
-            if (reloadWindow) {
-                return;
-            }
-            if (!settings.closeOption) {
-                if (!closeOptionDialogShow) {
-                    closeOptionDialogShow = true;
-                    dialog.showMessageBox({
-                        type: 'info',
-                        title: i18n[current_i18n].close_mainwindow_title,
-                        buttons: [i18n[current_i18n].close_minimize_to_tray, i18n[current_i18n].close_just_close],
-                        message: i18n[current_i18n].close_mainwindow_msg,
-                        defaultId: 0,
-                        cancelId: 0
-                    }).then(res => {
-                        switch (res.response) {
-                            case 0:
-                                //复写设置
-                                settings.closeOption = 'tray';
-                                storage.set('settings'  + (global.indebug ? '_dev' : ''), settings, (err) => {
-                                    if (err) {
-                                        console.error(err)
-                                    }
-                                });
-                                window.close();
-                                break;
-                            case 1:
-                                //复写设置
-                                settings.closeOption = 'close';
-                                //保存设置
-                                storage.set('settings' + (global.indebug ? '_dev' : ''), settings, (err) => {
-                                    if (err) {
-                                        console.error(err)
-                                    }
-                                });
-                                ipcRenderer.send('app-quitNow');
-                                break;
-                            default:
-                                window.close();
-                                break;
-                        }
-                        reloadWindow = false;
-                        closeOptionDialogShow = false;
-                    });
-                    e.returnValue = false;
-                }
-            } else {
-                switch (settings.closeOption) {
-                    case 'close':
-                        ipcRenderer.send('app-quitNow');
-                        break;
-                    case 'tray':
-                        window.close();
-                        break;
-                }
-            }
-        }
-
-        ipcRenderer.on('tray-reload', () => {
-            ipcRenderer.send("reloadMainWindow"); //重载
-            ipcRenderer.send('reloadRecycleWindow');
-            ipcRenderer.send('reloadAllEditWindow');
-            ipcRenderer.send('reloadAboutWindow');
-            ipcRenderer.send('reloadAllWidgets');
-            ipcRenderer.send('reloadLoginWindow');
-            closeMainMenu();
-        });
-    </script>
-
-    <!-- 云服务 -->
-    <script>
-        // 服务器状态标识
-        var cloud_serveronline = false;
-        // token
-        var cloud_token;
-        var cloud_refresh_token;
-        var hasLogon = false;
-
-        // 获取本地存储的token
-        function getCloudToken() {
-            return new Promise((resolve) => {
-                storage.get('cloud_token', (err, res) => {
-                    if (err) {
-                        console.error('[Cloud] Get local cloud token error.', err);
-                        resolve(false);
-                        return;
-                    }
-                    // 获得本地的token
-                    const { token, refreshToken, saveTime } = res;
-                    // 刷新authToken的周期是2.5h，超过20min的authToken一律丢弃
-                    if (moment(saveTime, 'YYYYMMDDHHmmss').add(20, 'minutes').valueOf() > moment().valueOf()) {
-                        cloud_token = token;
-                    }
-                    if (moment(saveTime, 'YYYYMMDDHHmmss').add(14, 'days').valueOf() > moment().valueOf()) {
-                        cloud_refresh_token = refreshToken;
-                    }
-                    resolve(true);
-                });
-            });
-        }
-
-        // 存储token
-        function saveCloudToken() {
-            storage.set('cloud_token', {
-                token: cloud_token,
-                refreshToken: cloud_refresh_token,
-                saveTime: moment().format('YYYYMMDDHHmmss'),
-            });
-        }
-
-        function deleteCloudToken() {
-            storage.remove('cloud_token');
-        }
-
-        // 检测服务器状态
-        function checkServerStatus(onlineCallback) {
-            $.ajax({
-                url: `${cloud_apibase}/common/ping`,
-                type: 'GET',
-                dataType: 'json',
-                timeout: 1000,
-                success: () => {
-                    if (!cloud_serveronline) {
-                        console.log('[Cloud] Fastnote Cloud server is online now, user module enabled.');
-                    }
-                    cloud_serveronline = true;
-                    $('.trigger-cloud').css('display', 'inline-block');
-                    if (typeof onlineCallback === 'function') {
-                        onlineCallback();
-                    }
-                },
-                error: () => {
-                    if (cloud_serveronline) {
-                        console.error('[Cloud] Fastnote Cloud server is not online, user module disabled.');
-                    }
-                    cloud_serveronline = false;
-                    // 每分钟检查一次服务器是否在线
-                    setTimeout(() => {
-                        checkServerStatus(onlineCallback);
-                    }, 1000 * 60);
-                }
-            })
-        }
-
-        // 检查登录态
-        function checkLogin() {
-            return new Promise((resolve) => {
-                $.ajax({
-                    url: `${cloud_apibase}/common/ping/auth`,
-                    type: 'get',
-                    headers: {
-                        Authorization: `Bearer ${cloud_token}`,
-                    },
-                    dataType: 'json',
-                    timeout: 1000,
-                    success: (res) => {
-                        if (!res) {
-                            resolve(false);
-                        }
-                        resolve(res.success);
-                    },
-                    error: () => {
-                        console.error('[Cloud] Cannot check login status.');
-                        resolve(false);
-                    },
-                });
-            });
-        }
-
-        // 尝试刷新token
-        function requestRefreshToken() {
-            return new Promise((resolve) => {
-                if (!cloud_refresh_token) {
-                    // token不存在
-                    console.error('[Cloud] Cannot get refresh token when doing refreshing.');
-                    resolve(null);
-                    return;
-                }
-                $.ajax({
-                    url: `${cloud_apibase}/user/refreshToken`,
-                    type: 'get',
-                    dataType: 'json',
-                    data: {
-                        token: cloud_refresh_token,
-                    },
-                    success: (res) => {
-                        if (!res.success) {
-                            return resolve(null);
-                        }
-                        resolve(res.data || null);
-                    },
-                    error: () => {
-                        resolve(null);
-                    }
-                })
-            });
-        }
-
-        async function doRefreshToken() {
-            const refreshRes = await requestRefreshToken();
-            if (!refreshRes) {
-                console.log('[Cloud] Cannot refresh token after server status check.');
-                return false;
-            }
-            // 用拿到的token覆盖现在的值并存储
-            const { authToken, refreshToken } = refreshRes;
-            cloud_token = authToken;
+    // 获取本地存储的token
+    function getCloudToken() {
+      return new Promise((resolve) => {
+        storage.get('cloud_token', (err, res) => {
+          if (err) {
+            console.error('[Cloud] Get local cloud token error.', err);
+            resolve(false);
+            return;
+          }
+          // 获得本地的token
+          const { token, refreshToken, saveTime } = res;
+          // 刷新authToken的周期是2.5h，超过20min的authToken一律丢弃
+          if (moment(saveTime, 'YYYYMMDDHHmmss').add(20, 'minutes').valueOf() > moment().valueOf()) {
+            cloud_token = token;
+          }
+          if (moment(saveTime, 'YYYYMMDDHHmmss').add(14, 'days').valueOf() > moment().valueOf()) {
             cloud_refresh_token = refreshToken;
-            saveCloudToken();
-            return true;
-        }
-
-        // 登出
-        function cloudUserLogout() {
-            // 显示未登录状态面板
-            $('.cloud-body-nologin').show();
-            $('.cloud-body-user').hide();
-            // 清除token数据
-            cloud_token = null;
-            cloud_refresh_token = null;
-            hasLogon = false;
-						stopSyncPoll();
-						deleteCloudToken();
-        }
-
-        // 定时刷新Token
-        async function setRefreshCron(retry = 0) {
-            if (retry === 0 || retry > 3) {
-                setTimeout(async () => {
-                    const res = await doRefreshToken();
-                    if (!res) {
-                        setRefreshCron(retry > 3 ? 0 : retry + 1);
-                        return;
-                    }
-                    setRefreshCron();
-                }, 2.5 * 3600 * 1000);
-            } else {
-                const res = await doRefreshToken();
-                if (!res) {
-                    setRefreshCron(retry + 1);
-                    return;
-                }
-                setRefreshCron();
-            }
-        }
-
-        // 执行服务器状态检查，如果服务器在线则检查登录状态
-        checkServerStatus(async () => {
-            // 获取本地的token
-            await getCloudToken();
-            if (!cloud_token) {
-                if (!cloud_refresh_token) {
-                    // 两个token都没有，不执行
-                    return;
-                }
-                // 有refreshToken，尝试refresh
-                const res = await doRefreshToken();
-                if (!res) {
-                    return;
-                }
-            }
-            // 在线，检查登录态
-            const logon = await checkLogin();
-            if (!logon) {
-                // 检查失败，视为无登录态，不执行后续步骤
-                console.warn('[Cloud] Login status check failed.');
-                return;
-            }
-            // 登录态正确
-            afterLoginSuccess();
+          }
+          resolve(true);
         });
+      });
+    }
 
-        // 登录成功后调用
-        function afterLoginSuccess() {
-            hasLogon = true;
-            // 保存token到本地
-            saveCloudToken();
-            // 定时每2.5小时刷新一次token
-            setRefreshCron();
-            // 切换UI
-            $('.cloud-body-nologin').hide();
-            $('.cloud-body-user').show();
-            // 开始执行sync
-            startSyncPoll();
+    // 存储token
+    function saveCloudToken() {
+      storage.set('cloud_token', {
+        token: cloud_token,
+        refreshToken: cloud_refresh_token,
+        saveTime: moment().format('YYYYMMDDHHmmss'),
+      });
+    }
+
+    function deleteCloudToken() {
+      storage.remove('cloud_token');
+    }
+
+    // 检测服务器状态
+    function checkServerStatus(onlineCallback) {
+      $.ajax({
+        url: `${cloud_apibase}/common/ping`,
+        type: 'GET',
+        dataType: 'json',
+        timeout: 1000,
+        success: () => {
+          if (!cloud_serveronline) {
+            console.log('[Cloud] Fastnote Cloud server is online now, user module enabled.');
+          }
+          cloud_serveronline = true;
+          $('.trigger-cloud').css('display', 'inline-block');
+          if (typeof onlineCallback === 'function') {
+            onlineCallback();
+          }
+        },
+        error: () => {
+          if (cloud_serveronline) {
+            console.error('[Cloud] Fastnote Cloud server is not online, user module disabled.');
+          }
+          cloud_serveronline = false;
+          // 每分钟检查一次服务器是否在线
+          setTimeout(() => {
+            checkServerStatus(onlineCallback);
+          }, 1000 * 60);
         }
+      })
+    }
 
-        // 登录成功事件
-        ipcRenderer.on('cloud-login-success', (sender, data) => {
-            displayInfobar('success', i18n[current_i18n].login_success);
-            // token设置
-            const { authToken, refreshToken } = data;
-            cloud_token = authToken;
-            cloud_refresh_token = refreshToken;
-            afterLoginSuccess();
-        });
-    </script>
-
-    <script>
-        // import requirements
-        $.getScript('static/infobar.js'); // import by jQuery
-        $.getScript('static/notes.js');
-    </script>
-
-    <!-- 开发工具屏蔽与控制台 -->
-    <script>
-        // 屏蔽开发工具
-        if (!global.indebug) {
-            Mousetrap.bind('ctrl+shift+i', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-            $('textarea').on('keydown', (e) => {
-                var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.key === 'i') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-            $(document).on('keydown', 'input[type="password"]', (e) => {
-                var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.key === 'i') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-            $(document).on('keydown', 'input[type="text"]', (e) => {
-                var ctrlKey = e.ctrlKey || e.metaKey;
-                if (ctrlKey && e.shiftKey && e.key === 'i') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-        }
-        // 屏蔽F11
-        Mousetrap.bind('f11', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        });
-        // 启用开发控制台，引入控制台js
-        var devconsoleOpened = false;
-        if (global.indebug) {
-            $.getScript('static/devconsole.js');
-        }
-        Mousetrap.bind('ctrl+d', function() {
-            if (devconsoleOpened) {
-                closeDevConsole();
-            } else {
-                showDevConsole();
+    // 检查登录态
+    function checkLogin() {
+      return new Promise((resolve) => {
+        $.ajax({
+          url: `${cloud_apibase}/common/ping/auth`,
+          type: 'get',
+          headers: {
+            Authorization: `Bearer ${cloud_token}`,
+          },
+          dataType: 'json',
+          timeout: 1000,
+          success: (res) => {
+            if (!res) {
+              resolve(false);
             }
+            resolve(res.success);
+          },
+          error: () => {
+            console.error('[Cloud] Cannot check login status.');
+            resolve(false);
+          },
         });
+      });
+    }
 
-        function closeDevConsole() {
-            $('.container-devconsole').animateCss('fadeOutUp', function() {
-                devconsoleOpened = false;
-                $('.container-devconsole').removeAttr('style');
-            });
+    // 尝试刷新token
+    function requestRefreshToken() {
+      return new Promise((resolve) => {
+        if (!cloud_refresh_token) {
+          // token不存在
+          console.error('[Cloud] Cannot get refresh token when doing refreshing.');
+          resolve(null);
+          return;
         }
-
-        function showDevConsole() {
-            if (global.indebug) {
-                devconsoleOpened = true;
-                $('.container-devconsole').attr('style', 'display: flex;');
-                $('.container-devconsole').animateCss('fadeInDown', () => {
-                    $('#input-devconsole').focus();
-                });
+        $.ajax({
+          url: `${cloud_apibase}/user/refreshToken`,
+          type: 'get',
+          dataType: 'json',
+          data: {
+            token: cloud_refresh_token,
+          },
+          success: (res) => {
+            if (!res.success) {
+              return resolve(null);
             }
-        }
-    </script>
+            resolve(res.data || null);
+          },
+          error: () => {
+            resolve(null);
+          }
+        })
+      });
+    }
 
-    <span id="filter-x" style="display:none"></span>
+    async function doRefreshToken() {
+      const refreshRes = await requestRefreshToken();
+      if (!refreshRes) {
+        console.log('[Cloud] Cannot refresh token after server status check.');
+        return false;
+      }
+      // 用拿到的token覆盖现在的值并存储
+      const { authToken, refreshToken } = refreshRes;
+      cloud_token = authToken;
+      cloud_refresh_token = refreshToken;
+      saveCloudToken();
+      return true;
+    }
+
+    // 登出
+    function cloudUserLogout() {
+      // 显示未登录状态面板
+      $('.cloud-body-nologin').show();
+      $('.cloud-body-user').hide();
+      // 清除token数据
+      cloud_token = null;
+      cloud_refresh_token = null;
+      hasLogon = false;
+      stopSyncPoll();
+      deleteCloudToken();
+    }
+
+    // 定时刷新Token
+    async function setRefreshCron(retry = 0) {
+      if (retry === 0 || retry > 3) {
+        setTimeout(async () => {
+          const res = await doRefreshToken();
+          if (!res) {
+            setRefreshCron(retry > 3 ? 0 : retry + 1);
+            return;
+          }
+          setRefreshCron();
+        }, 2.5 * 3600 * 1000);
+      } else {
+        const res = await doRefreshToken();
+        if (!res) {
+          setRefreshCron(retry + 1);
+          return;
+        }
+        setRefreshCron();
+      }
+    }
+
+    // 执行服务器状态检查，如果服务器在线则检查登录状态
+    checkServerStatus(async () => {
+      // 获取本地的token
+      await getCloudToken();
+      if (!cloud_token) {
+        if (!cloud_refresh_token) {
+          // 两个token都没有，不执行
+          return;
+        }
+        // 有refreshToken，尝试refresh
+        const res = await doRefreshToken();
+        if (!res) {
+          return;
+        }
+      }
+      // 在线，检查登录态
+      const logon = await checkLogin();
+      if (!logon) {
+        // 检查失败，视为无登录态，不执行后续步骤
+        console.warn('[Cloud] Login status check failed.');
+        return;
+      }
+      // 登录态正确
+      afterLoginSuccess();
+    });
+
+    // 登录成功后调用
+    function afterLoginSuccess() {
+      hasLogon = true;
+      // 保存token到本地
+      saveCloudToken();
+      // 定时每2.5小时刷新一次token
+      setRefreshCron();
+      // 切换UI
+      $('.cloud-body-nologin').hide();
+      $('.cloud-body-user').show();
+      // 开始执行sync
+      startSyncPoll();
+    }
+
+    // 登录成功事件
+    ipcRenderer.on('cloud-login-success', (sender, data) => {
+      displayInfobar('success', i18n[current_i18n].login_success);
+      // token设置
+      const { authToken, refreshToken } = data;
+      cloud_token = authToken;
+      cloud_refresh_token = refreshToken;
+      afterLoginSuccess();
+    });
+  </script>
+
+  <script>
+    // import requirements
+    $.getScript('static/infobar.js'); // import by jQuery
+    $.getScript('static/notes.js');
+  </script>
+
+  <!-- 开发工具屏蔽与控制台 -->
+  <script>
+    // 屏蔽开发工具
+    if (!global.indebug) {
+      Mousetrap.bind('ctrl+shift+i', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      $('textarea').on('keydown', (e) => {
+        var ctrlKey = e.ctrlKey || e.metaKey;
+        if (ctrlKey && e.shiftKey && e.key === 'i') {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+      $(document).on('keydown', 'input[type="password"]', (e) => {
+        var ctrlKey = e.ctrlKey || e.metaKey;
+        if (ctrlKey && e.shiftKey && e.key === 'i') {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+      $(document).on('keydown', 'input[type="text"]', (e) => {
+        var ctrlKey = e.ctrlKey || e.metaKey;
+        if (ctrlKey && e.shiftKey && e.key === 'i') {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+    }
+    // 屏蔽F11
+    Mousetrap.bind('f11', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    // 启用开发控制台，引入控制台js
+    var devconsoleOpened = false;
+    if (global.indebug) {
+      $.getScript('static/devconsole.js');
+    }
+    Mousetrap.bind('ctrl+d', function() {
+      if (devconsoleOpened) {
+        closeDevConsole();
+      } else {
+        showDevConsole();
+      }
+    });
+
+    function closeDevConsole() {
+      $('.container-devconsole').animateCss('fadeOutUp', function() {
+        devconsoleOpened = false;
+        $('.container-devconsole').removeAttr('style');
+      });
+    }
+
+    function showDevConsole() {
+      if (global.indebug) {
+        devconsoleOpened = true;
+        $('.container-devconsole').attr('style', 'display: flex;');
+        $('.container-devconsole').animateCss('fadeInDown', () => {
+          $('#input-devconsole').focus();
+        });
+      }
+    }
+  </script>
+
+  <span id="filter-x" style="display:none"></span>
 </body>
 
 </html>
