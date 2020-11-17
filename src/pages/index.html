@@ -2008,6 +2008,7 @@
         // token
         var cloud_token;
         var cloud_refresh_token;
+        var hasLogon = false;
 
         // 获取本地存储的token
         function getCloudToken() {
@@ -2039,6 +2040,10 @@
                 refreshToken: cloud_refresh_token,
                 saveTime: moment().format('YYYYMMDDHHmmss'),
             });
+        }
+
+        function deleteCloudToken() {
+            storage.remove('cloud_token');
         }
 
         // 检测服务器状态
@@ -2144,7 +2149,12 @@
             // 显示未登录状态面板
             $('.cloud-body-nologin').show();
             $('.cloud-body-user').hide();
-            // 清除
+            // 清除token数据
+            cloud_token = null;
+            cloud_refresh_token = null;
+            hasLogon = false;
+						stopSyncPoll();
+						deleteCloudToken();
         }
 
         // 定时刷新Token
@@ -2196,6 +2206,7 @@
 
         // 登录成功后调用
         function afterLoginSuccess() {
+            hasLogon = true;
             // 保存token到本地
             saveCloudToken();
             // 定时每2.5小时刷新一次token
@@ -2203,8 +2214,8 @@
             // 切换UI
             $('.cloud-body-nologin').hide();
             $('.cloud-body-user').show();
-            // 执行sync
-            doSync();
+            // 开始执行sync
+            startSyncPoll();
         }
 
         // 登录成功事件
