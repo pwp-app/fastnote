@@ -310,7 +310,10 @@ function pushNoSyncNotes() {
           noteId,
           category,
           syncId: syncId || null,
-          content: pako.gzip(JSON.stringify(note), { to: 'string' }),
+          content: pako.gzip(JSON.stringify({
+            ...note,
+            needSync: false,
+          }), { to: 'string' }),
         });
       }
     });
