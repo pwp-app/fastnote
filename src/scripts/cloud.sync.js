@@ -318,7 +318,9 @@ function pushNoSyncNotes() {
       }
     });
     // 构建deleted
-    const deleted = Object.keys(noteRecycledLog);
+    let deleted = Object.keys(noteRecycledLog);
+    // 去重
+    deleted = Array.from(new Set(deleted));
     // 判断是否要发请求
     if (syncNoteData.length < 1 && deleted.length < 1) {
       console.warn('[Cloud] No need to send update request.');

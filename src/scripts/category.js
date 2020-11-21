@@ -180,7 +180,7 @@ function putCategoryToArr(name, count = 0) {
 }
 
 function existCategory(name) {
-  for (var i = 0; i < categories.length; i++) {
+  for (let i = 0; i < categories.length; i++) {
     if (categories[i].name == name) {
       return true;
     }
@@ -189,7 +189,7 @@ function existCategory(name) {
 }
 
 function indexOfCategory(name) {
-  for (var i = 0; i < categories.length; i++) {
+  for (let i = 0; i < categories.length; i++) {
     if (categories[i].name == name) {
       return i;
     }
@@ -226,13 +226,14 @@ function setNotesCategory(name, category) {
     index = indexOfCategory(name);
   }
   for (let i = 0; i < notes.length; i++) {
-    if (notes[i].category == name) {
-      notes[i].category = category;
+    if (notes[i].category === name) {
+			notes[i].category = category;
+			notes[i].needSync = true;
       saveNoteByObj(notes[i]);
       if (!category) {
         notalloc_count++;
       } else {
-        if (index) {
+        if (index >= 0) {
           categories[index].count++;
         }
       }

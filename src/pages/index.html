@@ -1536,7 +1536,7 @@
       if (ret == 1) {
         removeCategory(name);
         // 该分类下的便签分类全部修改为未分类
-        setNotesCategory(name, undefined);
+        setNotesCategory(name, null);
       } else if (ret == 2) {
         removeNotesOfCategory(name);
         removeCategory(name, false);
@@ -1544,17 +1544,17 @@
     });
 
     function removeCategory(name, renderCount = true) {
-      //删除分类
+      // 删除分类
       removeCategoryFromArr(name);
       ipcRenderer.send('category_removed', name);
       saveCategories();
       $('#category-custom-' + name).parent().animateCss("fadeOutLeft faster", function() {
         $('#category-custom-' + name).parent().remove();
       });
-      //删除select中的项
+      // 删除select中的项
       $('#select-note-category option[value="' + name + '"]').remove();
-      //如果当前分类为被删除的分类，则切换到所有便签
-      if (current_category == name) {
+      // 如果当前分类为被删除的分类，则切换到所有便签
+      if (current_category === name) {
         current_category = 'all';
         if (renderCount) {
           renderCurrentCategory();
@@ -1565,9 +1565,9 @@
     }
 
     function removeNotesOfCategory(name) {
-      var notes_tobeDeleted = [];
+      const notes_tobeDeleted = [];
       for (let i = 0; i < notes.length; i++) {
-        if (notes[i].category == name) {
+        if (notes[i].category === name) {
           notes_tobeDeleted.push(i);
         }
       }
@@ -1581,11 +1581,16 @@
           path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.json';
         }
         if (fs.existsSync(path)) {
-          //删除文件
+          // 删除文件
           fs.unlinkSync(path);
-          //render
-          if (current_category == 'all') {
-            let noteid = notes[notes_tobeDeleted[i]].id;
+          // sync
+          const syncId = notes[notes_tobeDeleted[i]].syncId;
+          if (syncId) {
+            noteRecycledLog.push(syncId);
+          }
+          // render
+          if (current_category === 'all') {
+            const noteid = notes[notes_tobeDeleted[i]].id;
             $('#note_' + noteid).parent().animateCss('fadeOutLeft faster', function() {
               $('#note_' + noteid).parent().remove();
             });
