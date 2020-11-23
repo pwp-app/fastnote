@@ -239,9 +239,9 @@ function setNotesCategory(name, category) {
       }
     }
   }
-  //保存分类
+  // 保存分类
   saveCategories();
-  //重新渲染计数
+  // 重新渲染计数
   renderSystemCategoryCount();
   renderCustomCategoryCount();
 }
@@ -283,6 +283,7 @@ function renderCategoryList() {
   for (let i = 0; i < categories.length; i++) {
     renderCategoryToList(i, categories[i].name, categories[i].count);
   }
+  renderCurrentCategory();
 }
 
 function renderCategorySelect() {

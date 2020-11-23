@@ -1486,7 +1486,7 @@
     $(document).on('click', '#category-menu li:not(#category-add):not(#category-add-inside)', function() {
       let category_clicked = $(this).attr('data-name');
       if (category_clicked != current_category && !categoryEditMode) {
-        //移除选中
+        // 移除选中
         switch (current_category) {
           default:
             $('#category-custom-' + current_category).removeClass('category-selected');
@@ -1497,12 +1497,12 @@
             break;
         }
         current_category = category_clicked;
-        //渲染选择
+        // 渲染选择
         renderCurrentCategory();
         //隐藏不属于当前类别的
         renderNotesOfCategory(current_category);
         //调整select
-        if (current_category != 'all') {
+        if (current_category !== 'all') {
           $('#select-note-category').val(current_category);
         } else {
           //为all则设置为未分类
