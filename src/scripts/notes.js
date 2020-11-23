@@ -92,9 +92,14 @@ textarea.on('keydown', function (e) {
     let text = textarea.val().trim();
     let title = $('#input-note-title').val().trim();
     let category = $('#select-note-category').val().trim();
-    let password = $('#input-note-password').val().trim();
+		let password = $('#input-note-password').val().trim();
+		// 选择框未做选择，以当前为主
     if (category === 'notalloc'){
-      category = current_category || null;
+			if (current_category === 'all' || current_category === 'notalloc') {
+				category = null;
+			} else {
+				category = current_category;
+			}
     }
     if (text) {
       saveNote(text, title, category, password, markdown_enabled);

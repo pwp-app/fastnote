@@ -40,8 +40,8 @@ function readCurrentCategory() {
 }
 
 function saveCurrentCategory() {
-  var data = {
-    category: current_category
+  const data = {
+    category: current_category,
   };
   fs.writeFile(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/current_category.json', JSON.stringify(data), 'utf-8', function(err) {
     if (err) {
