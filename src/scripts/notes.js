@@ -95,11 +95,7 @@ textarea.on('keydown', function (e) {
 		let password = $('#input-note-password').val().trim();
 		// 选择框未做选择，以当前为主
     if (category === 'notalloc'){
-			if (current_category === 'all' || current_category === 'notalloc') {
-				category = null;
-			} else {
-				category = current_category;
-			}
+			category = current_category;
     }
     if (text) {
       saveNote(text, title, category, password, markdown_enabled);
@@ -400,16 +396,17 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
     notepassword = sha256(notepassword, 'fastnote');
   } else {
     notepassword = null;
-  }
-  // 构造note
+	}
+	// 构造note
+	const reservedCats = ['notalloc', 'all'];
   const note = {
     id: notesid,
     time: alltime.currentTime,
     rawtime: alltime.rawTime,
     timezone: time.getTimeZone(),
     text: notetext,
-    title: (notetitle ? notetitle : null),
-    category: (notecategory ? notecategory : null),
+    title: notetitle || null,
+    category: reservedCats.includes(notecategory) ? null : (notecategory || null),
     password: notepassword,
     offset: offset,
     forceTop: false,

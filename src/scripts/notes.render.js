@@ -278,7 +278,12 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false, 
 
 // 在顶部渲染Note
 function renderNoteAtTop(note) {
-  renderNote(note, true, true, true, note.category !== current_category);
+  const { category } = note;
+  let hidden = false;
+  if (category && category !== current_category) {
+    hidden = true;
+  }
+  renderNote(note, true, true, true, hidden);
 }
 
 function rerenderEditedNote(data, rawtext) {
