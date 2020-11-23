@@ -2061,7 +2061,7 @@
     }
 
     // 检测服务器状态
-    function checkServerStatus(onlineCallback) {
+    function checkServerStatus(onlineCallback, offlineCallback) {
       $.ajax({
         url: `${cloud_apibase}/common/ping`,
         type: 'GET',
@@ -2073,15 +2073,25 @@
           }
           cloud_serveronline = true;
           $('.trigger-cloud').css('display', 'inline-block');
-          if (typeof onlineCallback === 'function') {
+          if (onlineCallback && typeof onlineCallback === 'function') {
             onlineCallback();
           }
+          // 持续检查服务器在线情况，60s一次，如果断连需要做出响应
+          setTimeout(() => {
+            checkServerStatus(onlineCallback);
+          }, 1000 * 60);
         },
         error: () => {
           if (cloud_serveronline) {
             console.error('[Cloud] Fastnote Cloud server is not online, user module disabled.');
           }
           cloud_serveronline = false;
+          // 服务器不在线也视为没有登录
+          hasLogon = false;
+          $('.trigger-cloud').css('display', 'none');
+          if (offlineCallback && typeof offlineCallback === 'function') {
+            offlineCallback();
+          }
           // 每分钟检查一次服务器是否在线
           setTimeout(() => {
             checkServerStatus(onlineCallback);
