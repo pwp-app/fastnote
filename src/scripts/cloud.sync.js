@@ -140,7 +140,8 @@ async function processDiff(diff) {
       $(`#note_${id}`).animateCss('fadeInLeft faster');
     }
     // 处理分类
-    if (checkCategoryCount()) {
+    const oldCategories = JSON.stringify(categories);
+    if (checkCategoryCount() && oldCategories !== JSON.stringify(categories)) {
       renderCategoryList();
       renderCategorySelect();
       saveCategories();
@@ -334,7 +335,7 @@ function pushNoSyncNotes() {
       },
       data: {
         notes: JSON.stringify(syncNoteData),
-        deleted,
+        deleted: JSON.stringify(deleted),
       },
       success: (res) => {
         if (!res) {
