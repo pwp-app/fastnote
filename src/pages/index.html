@@ -2078,7 +2078,11 @@
           }
           // 持续检查服务器在线情况，60s一次，如果断连需要做出响应
           setTimeout(() => {
-            checkServerStatus(onlineCallback);
+            checkServerStatus(function () {
+              if (!hasLogon) {
+                onlineCallback();
+              }
+            });
           }, 1000 * 60);
         },
         error: () => {
