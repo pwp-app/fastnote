@@ -415,8 +415,12 @@
       //执行notes的替换
       function updateEditNoteinArray(data, refreshList = false) {
         if (noteMap[data.id]) {
+          data.needSync = true;
+          const idx = notes.findIndex(note => note.id === data.id);
+          notes[idx] = data;
           noteMap[data.id] = data;
-          noteMap[data.id].needSync = true;
+        } else {
+          console.error('Update edit error: cannot find existed source.');
         }
       }
 
