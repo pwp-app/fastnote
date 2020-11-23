@@ -76,17 +76,23 @@ function addNoteObjToArray(note, isRecycle = false) {
   notes.push(note);
   noteMap[note.id] = note;
   // 分类计数
-  const { category } = note;
-  if (!category && !isRecycle) {
-    notalloc_count++;
+  if (!isRecycle) {
+    const { category } = note;
+    if (!category) {
+      notalloc_count++;
+    } else {
+      addCategoryCount(category, true, true);
+    }
   }
 }
 
 // 从便签数据中删除一项
 function deleteNoteFromArr(id, isRecycle = false) {
   if (noteMap[id]) {
-    const { category } = noteMap[id];
-    if (!isRecycle) minorCategoryCount(category, false, true, true);
+    if (!isRecycle) {
+      const { category } = noteMap[id];
+      minorCategoryCount(category, false, true, true);
+    }
     noteMap[id] = null;
   }
   const index = notes.findIndex((note) => note.id === id);
@@ -166,16 +172,16 @@ function initialRender() {
 }
 
 // 渲染一条笔记
-function renderNote(note, immediate = true, isPrepend = false, animate = false) {
+function renderNote(note, immediate = true, isPrepend = false, animate = false, hidden = false) {
   let { id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown } = note;
   if (!settings.language){
     current_i18n = 'zh-cn';
   } else {
     current_i18n = settings.language;
   }
-  let html = `<div class="note-wrapper"><div class="note${forceTop ? " note-forceTop" : ""}" id="note_${id}"
-     data-id="${id}" data-category="${category ? category : 'notalloc'}"
-     data-markdown="${markdown ? markdown : false}"><div class="note-header">
+  let html = `<div class="note-wrapper"${hidden ? ' style="display: none;"' : ''}><div class="note${forceTop ? " note-forceTop" : ""}" id="note_${id}"
+     data-id="${id}" data-category="${category || 'notalloc'}"
+     data-markdown="${markdown || false}"><div class="note-header">
      <span class="note-no">#${id}</span>`;
   // 渲染note-title
   let titletext = "";
@@ -272,14 +278,14 @@ function renderNote(note, immediate = true, isPrepend = false, animate = false) 
 
 // 在顶部渲染Note
 function renderNoteAtTop(note) {
-  renderNote(note, immediate = true, isPrepend = true, animate = true);
+  renderNote(note, true, true, true, note.category !== current_category);
 }
 
 function rerenderEditedNote(data, rawtext) {
   // 分类
-  if (current_category != 'all') {
+  if (current_category !== 'all') {
     // 便签编辑后已经不属于当前分类，从画面中移出并隐藏
-    if (data.category != current_category) {
+    if (data.category !== current_category) {
       $('#note_' + data.id).parent().animateCss('fadeOutLeft faster', function () {
         $('#note_' + data.id).parent().hide();
         // 当前分类是否为空
@@ -573,16 +579,16 @@ function operateForceTopNotes(notes_selected, status){
 }
 
 function renderNotesOfCategory(name) {
-  //判断是否为空
+  // 判断是否为空
   if (getCountOfCategory(name) < 1) {
-    $('#note-empty-category').show();
+    current_category !== 'all' ? $('#note-empty').show() : $('#note-empty-category').show();
   } else {
-    $('#note-empty-category').hide();
+    current_category !== 'all' ? $('#note-empty').hide() : $('#note-empty-category').hide();
   }
-  //渲染便签
-  if (name == 'all') {
+  // 渲染便签
+  if (name === 'all') {
     $('.note').parent().show();
-  } else if (name == 'notalloc') {
+  } else if (name === 'notalloc') {
     for (let i = 0; i < notes.length; i++) {
       if (notes[i].category) {
         $('#note_' + notes[i].id).parent().hide();

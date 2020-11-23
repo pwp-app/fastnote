@@ -1,4 +1,5 @@
 var textarea = $('#note-text');
+const { net } = require('electron');
 var fs = require('fs');
 
 var storagePath = app.getPath('userData');
@@ -83,8 +84,8 @@ let isComboKeyDown = false; // 防止反复触发
 textarea.on('keydown', function (e) {
   let ctrlKey = e.ctrlKey || e.metaKey;
   if (ctrlKey && e.key === 'd') {
-    showDevConsole();
-    return;
+		devconsoleOpened ? closeDevConsole() : showDevConsole();
+		return;
   }
   if (ctrlKey && e.key === 'Enter' && !isComboKeyDown) {
     isComboKeyDown = true;
@@ -93,7 +94,7 @@ textarea.on('keydown', function (e) {
     let category = $('#select-note-category').val().trim();
     let password = $('#input-note-password').val().trim();
     if (category === 'notalloc'){
-      category = null;
+      category = current_category || null;
     }
     if (text) {
       saveNote(text, title, category, password, markdown_enabled);
@@ -429,7 +430,7 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
     showNoteList();
   }
   // 分类的empty隐藏
-  $('#note-empty-category').hide();
+	$('#note-empty-category').hide();
   // 在顶部渲染Note
   renderNoteAtTop(note);
   // 绑定Note的点击事件

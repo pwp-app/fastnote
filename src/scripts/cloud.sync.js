@@ -140,12 +140,10 @@ async function processDiff(diff) {
       $(`#note_${id}`).animateCss('fadeInLeft faster');
     }
     // 处理分类
-    const oldCategories = JSON.stringify(categories);
-    if (checkCategoryCount() && oldCategories !== JSON.stringify(categories)) {
+    if (checkCategoryCount()) {
       renderCategoryList();
       renderCategorySelect();
       saveCategories();
-      pushCategories();
     }
   });
 }

@@ -85,6 +85,44 @@ function checkCategoryCount(retry = false) {
   return true;
 }
 
+function recountNotes() {
+  const map = {};
+  notes.forEach((note) => {
+    let { category } = note;
+    if (!category) {
+      category = 'notalloc';
+    }
+    if (!map[category]) {
+      map[category] = 1;
+    } else {
+      map[category] += 1;
+    }
+  });
+  categories.forEach((item) => {
+    if (!map[item.name]) {
+      map[item.name] = 0;
+    }
+  });
+  const list = [];
+  const total = 0;
+  let keys = Object.keys(map);
+  keys.sort();
+  keys.forEach((key) => {
+    if (key === 'notalloc') {
+      notalloc_count = map[key];
+    }
+    customTotal += map[key];
+    list.push(new Category(key, map[key]));
+  });
+  if (total === notes.length) {
+    console.info('[Category] Categories count has been fixed.')
+    categories = list;
+    saveCategories();
+    renderCategoryList();
+    renderCategorySelect();
+  }
+}
+
 // 重新计算note的数量
 function recountNotes(retry = false) {
   let count_obj = {};
@@ -146,29 +184,21 @@ function recountNotes(retry = false) {
 function fixMissingCategories() {
   return new Promise((resolve, reject) => {
     let flag_changed = false;
-    let founded_missing = [];
+    const founded = [];
+    const map = {};
+    categories.forEach((category) => {
+      map[category.name] = true;
+    });
     // 普通遍历的性能更高
-    for (let i = 0; i < notes.length; i++) {
-      if (notes[i].category) {
-        // 如果已经修复过了就没必要再处理
-        if (founded_missing.includes(notes[i].category)) {
-          continue;
-        }
-        let flag_found = false;
-        for (let j = 0; i < categories.length; j++) {
-          if (categories[j].name === notes[i].category) {
-            flag_found = true;
-            break;
-          }
-        }
-        if (!flag_found) {
-          // 未找到说明是缺失的分类
-          putCategoryToArr(notes[i].category, 0);
-          founded_missing.push(notes[i].category);
-          flag_changed = true;
-        }
+    notes.forEach((note) => {
+      const { category } = note;
+      if (!category || founded.includes(category) || map[category]) {
+        return;
       }
-    }
+      putCategoryToArr(category, 0);
+      founded.push(category);
+      flag_changed = true;
+    });
     // 分类内容改变了即存在缺失并已修复
     resolve(flag_changed);
   });
@@ -250,10 +280,13 @@ function saveCategories() {
   if (!fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/')) {
     fs.mkdirSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/');
   }
-  var json = JSON.stringify(categories);
+  const json = JSON.stringify(categories);
   fs.writeFile(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json', json, 'utf-8', function(err, data) {
     if (err) {
       console.error(err);
+    }
+    if (hasLogon) {
+      pushCategories();
     }
   });
 }

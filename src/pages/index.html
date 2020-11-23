@@ -1873,7 +1873,7 @@
               saveNoteByObj(note);
               notesid++;
             });
-          } else if (ret == 1) {
+          } else if (ret === 1) {
             let confirmRes = dialog.showMessageBoxSync({
               type: 'warning',
               message: i18n[current_i18n].delete_conflict_notes,

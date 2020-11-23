@@ -9,6 +9,9 @@ $(function () {
   $('body').append(html);
   const consoleInput = $('#input-devconsole');
   consoleInput.on('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeDevConsole();
+    }
     if (e.key === 'Enter') {
       const input = consoleInput.val();
       processConsoleCmd(input);
@@ -27,6 +30,15 @@ const cmdMap = {
   'dosync': devFireSync,
   'pushcategory': pushCategories,
   'pushcategories': pushCategories,
+  'recount': function () {
+    recountNotes();
+    displayInfobar.success('Command executed');
+  },
+  'recountnotes': function () {
+    recountNotes();
+    displayInfobar.success('Command executed');
+  },
+  'recountnoteid': recountNoteId,
   'delelecategory': deleteCategory,
 };
 
@@ -105,5 +117,17 @@ function deleteCategory(args) {
     }
     saveCategories();
   });
+  displayInfobar.success('Command executed');
+}
+
+function recountNoteId() {
+  let max = 0;
+  notes.forEach((note) => {
+    if (note.id >= max) {
+      max = note.id + 1;
+    }
+  });
+  notesid = max;
+  saveNotesId();
   displayInfobar.success('Command executed');
 }
