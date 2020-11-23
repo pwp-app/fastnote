@@ -99,19 +99,21 @@ function recountNotes() {
     }
   });
   categories.forEach((item) => {
-    if (!map[item.name]) {
-      map[item.name] = 0;
+    const { name } = item;
+    if (!map[name] && name !== 'notalloc' && name !== 'all') {
+      map[name] = 0;
     }
   });
   const list = [];
-  const total = 0;
+  let total = 0;
   let keys = Object.keys(map);
   keys.sort();
   keys.forEach((key) => {
+    total += map[key];
     if (key === 'notalloc') {
       notalloc_count = map[key];
+      return;
     }
-    customTotal += map[key];
     list.push(new Category(key, map[key]));
   });
   if (total === notes.length) {
@@ -121,87 +123,6 @@ function recountNotes() {
     renderCategoryList();
     renderCategorySelect();
   }
-}
-
-// 重新计算note的数量
-function recountNotes(retry = false) {
-  let count_obj = {};
-  // 清点notes
-  notes.forEach((note) => {
-    const { category } = note;
-    if (category && category !== 'notalloc') {
-      if (!count_obj[category]) {
-        count_obj[category] = 1;
-        return;
-      }
-      count_obj[category] += 1;
-    } else {
-      if (!count_obj.notalloc) {
-        count_obj.notalloc = 1;
-        return;
-      }
-      count_obj.notalloc += 1;
-    }
-  });
-  // 覆盖categories的设置
-  categories.forEach((category) => {
-    const { name } = category;
-    if (count_obj[name]) {
-      category.count = count_obj[name];
-    }
-  });
-  notalloc_count = count_obj.notalloc;
-  // 重新校验正确性
-  let custom_total = 0;
-  categories.forEach((category) => {
-    custom_total += category.count;
-  });
-  console.log('[Category] Category verify total after fix: ' + (notalloc_count + custom_total));
-  if (notalloc_count + custom_total === notes.length) {
-    console.log('[Category] Category count is reset to correct values.');
-    saveCategories();
-    renderSystemCategoryCount();
-    renderCustomCategoryCount();
-  } else {
-    // 尝试扫描便签修复分类文件
-    if (!retry) {
-      console.error('[Category] Category count error, try to fix missing categories.');
-      fixMissingCategories().then((res) => {
-        // 修复成功后重新渲染一次
-        if (res) {
-          recountNotes(retry = true);
-          renderCategoryList();
-          renderCategorySelect();
-        }
-      });
-    } else {
-      console.error('[Category] Category count error, cannot fix after missing categories check.');
-    }
-  }
-}
-
-// 尝试修复缺失的分类
-function fixMissingCategories() {
-  return new Promise((resolve, reject) => {
-    let flag_changed = false;
-    const founded = [];
-    const map = {};
-    categories.forEach((category) => {
-      map[category.name] = true;
-    });
-    // 普通遍历的性能更高
-    notes.forEach((note) => {
-      const { category } = note;
-      if (!category || founded.includes(category) || map[category]) {
-        return;
-      }
-      putCategoryToArr(category, 0);
-      founded.push(category);
-      flag_changed = true;
-    });
-    // 分类内容改变了即存在缺失并已修复
-    resolve(flag_changed);
-  });
 }
 
 //放置新的Category到数组
