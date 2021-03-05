@@ -1,5 +1,4 @@
 // 依赖引入
-const moment = require('moment');
 var pako = require('pako');
 
 // 全局变量
