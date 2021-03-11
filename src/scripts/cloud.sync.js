@@ -1,5 +1,5 @@
 // 依赖引入
-var pako = require('pako');
+var pako = require(`${pathPrefix}pako`);
 
 // 全局变量
 var noteRecycledLog;

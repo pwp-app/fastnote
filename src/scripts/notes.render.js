@@ -1,4 +1,4 @@
-var storage = require(pathPrefix + 'electron-json-storage');
+var storage = require(`${pathPrefix}electron-json-storage`);
 var reg = require('./static/notes.render.reg');
 
 // prototype
