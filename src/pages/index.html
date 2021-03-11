@@ -76,11 +76,11 @@
     const UUID = require('./static/tools/uuid.js');
 
     // debug
-    global.indebug = remote.getGlobal('indebug');
+    inDebug = remote.getGlobal('indebug');
 
     // 初始化Fastnote cloud
     const cloudConfig = require('./static/config/cloud.config.js');
-    if (global.indebug) {
+    if (inDebug) {
       var cloud_protocol = cloudConfig.dev.protocol;
       var cloud_host = cloudConfig.dev.host;
       var cloud_port = cloudConfig.dev.port;
@@ -101,7 +101,7 @@
     //设置项
     var settings;
 
-    storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
+    storage.get('settings' + (inDebug ? '_dev' : ''), function(error, data) {
       if (error) {
         console.error(error);
         settingsInit(null);
@@ -1579,9 +1579,9 @@
         //检查offset
         let path;
         if (notes[notes_tobeDeleted[i]].offset > 0) {
-          path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.' + notes[tobeDeleted[i]].offset + '.json';
+          path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.' + notes[tobeDeleted[i]].offset + '.json';
         } else {
-          path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.json';
+          path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.json';
         }
         if (fs.existsSync(path)) {
           // 删除文件
@@ -1964,7 +1964,7 @@
               case 0:
                 //复写设置
                 settings.closeOption = 'tray';
-                storage.set('settings'  + (global.indebug ? '_dev' : ''), settings, (err) => {
+                storage.set('settings'  + (inDebug ? '_dev' : ''), settings, (err) => {
                   if (err) {
                     console.error(err)
                   }
@@ -1975,7 +1975,7 @@
                 //复写设置
                 settings.closeOption = 'close';
                 //保存设置
-                storage.set('settings' + (global.indebug ? '_dev' : ''), settings, (err) => {
+                storage.set('settings' + (inDebug ? '_dev' : ''), settings, (err) => {
                   if (err) {
                     console.error(err)
                   }
@@ -2292,7 +2292,7 @@
   <!-- 开发工具屏蔽与控制台 -->
   <script>
     // 屏蔽开发工具
-    if (!global.indebug) {
+    if (!inDebug) {
       Mousetrap.bind('ctrl+shift+i', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -2326,7 +2326,7 @@
     });
     // 启用开发控制台，引入控制台js
     var devconsoleOpened = false;
-    if (global.indebug) {
+    if (inDebug) {
       $.getScript('static/devconsole.js');
     }
     Mousetrap.bind('ctrl+d', function() {
@@ -2345,7 +2345,7 @@
     }
 
     function showDevConsole() {
-      if (global.indebug) {
+      if (inDebug) {
         devconsoleOpened = true;
         $('.container-devconsole').attr('style', 'display: flex;');
         $('.container-devconsole').animateCss('fadeInDown', () => {
