@@ -154,7 +154,7 @@
 
     // 初始化Fastnote cloud
     const cloudConfig = require('../static/config/cloud.config.js');
-    if (!inDebug) {
+    if (inDebug) {
       var cloud_protocol = cloudConfig.dev.protocol;
       var cloud_host = cloudConfig.dev.host;
       var cloud_port = cloudConfig.dev.port;
