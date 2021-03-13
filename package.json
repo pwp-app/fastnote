@@ -1,6 +1,6 @@
 {
   "name": "fastnote",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "homepage": "https://note.pwp.app",
   "main": "main.js",
   "scripts": {
