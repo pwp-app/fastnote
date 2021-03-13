@@ -2297,23 +2297,23 @@
         e.preventDefault();
         e.stopPropagation();
       });
-      $('textarea').on('keydown', (e) => {
-        var ctrlKey = e.ctrlKey || e.metaKey;
-        if (ctrlKey && e.shiftKey && e.key === 'i') {
+      $(document).on('keydown', 'textarea', (e) => {
+        const ctrlKey = e.ctrlKey || e.metaKey;
+        if (ctrlKey && e.shiftKey && e.key === 'I') {
           e.preventDefault();
           e.stopPropagation();
         }
       });
       $(document).on('keydown', 'input[type="password"]', (e) => {
-        var ctrlKey = e.ctrlKey || e.metaKey;
-        if (ctrlKey && e.shiftKey && e.key === 'i') {
+        const ctrlKey = e.ctrlKey || e.metaKey;
+        if (ctrlKey && e.shiftKey && e.key === 'I') {
           e.preventDefault();
           e.stopPropagation();
         }
       });
       $(document).on('keydown', 'input[type="text"]', (e) => {
-        var ctrlKey = e.ctrlKey || e.metaKey;
-        if (ctrlKey && e.shiftKey && e.key === 'i') {
+        const ctrlKey = e.ctrlKey || e.metaKey;
+        if (ctrlKey && e.shiftKey && e.key === 'I') {
           e.preventDefault();
           e.stopPropagation();
         }
