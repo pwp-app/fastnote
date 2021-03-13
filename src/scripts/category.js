@@ -8,7 +8,7 @@ var current_category;
 
 var notalloc_count = 0;
 
-global.indebug = remote.getGlobal('indebug');
+inDebug = remote.getGlobal('indebug');
 
 // ** 类 **
 class Category {
@@ -25,7 +25,7 @@ readCurrentCategory();
 
 // 读取
 function readCurrentCategory() {
-  const current_category_file = storagePath + (global.indebug ? '/devTemp' : '') + '/storage/current_category.json';
+  const current_category_file = storagePath + (inDebug ? '/devTemp' : '') + '/storage/current_category.json';
   if (fs.existsSync(current_category_file)) {
     try {
       const stored = fs.readFileSync(current_category_file, 'utf-8');
@@ -43,7 +43,7 @@ function saveCurrentCategory() {
   const data = {
     category: current_category,
   };
-  fs.writeFile(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/current_category.json', JSON.stringify(data), 'utf-8', function(err) {
+  fs.writeFile(storagePath + (inDebug ? '/devTemp' : '') + '/storage/current_category.json', JSON.stringify(data), 'utf-8', function(err) {
     if (err) {
       console.error(err);
     }
@@ -51,7 +51,7 @@ function saveCurrentCategory() {
 }
 
 function readCategoriesFile() {
-  const categories_file = storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json';
+  const categories_file = storagePath + (inDebug ? '/devTemp' : '') + '/storage/categories.json';
   if (fs.existsSync(categories_file)) {
     fs.readFile(categories_file, 'utf-8', function(err, data) {
       if (err) {
@@ -198,11 +198,11 @@ function setNotesCategory(name, category) {
 }
 
 function saveCategories() {
-  if (!fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/')) {
-    fs.mkdirSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/');
+  if (!fs.existsSync(storagePath + (inDebug ? '/devTemp' : '') + '/storage/')) {
+    fs.mkdirSync(storagePath + (inDebug ? '/devTemp' : '') + '/storage/');
   }
   const json = JSON.stringify(categories);
-  fs.writeFile(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json', json, 'utf-8', function(err, data) {
+  fs.writeFile(storagePath + (inDebug ? '/devTemp' : '') + '/storage/categories.json', json, 'utf-8', function(err, data) {
     if (err) {
       console.error(err);
     }

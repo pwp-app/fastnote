@@ -16,9 +16,9 @@ var notesEdit = {
         let path;
         // 检查offset
         if (note.offset > 0) {
-            path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + note.rawtime + '.' + note.offset + '.json';
+            path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + note.rawtime + '.' + note.offset + '.json';
         } else {
-            path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/' + note.rawtime + '.json';
+            path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + note.rawtime + '.json';
         }
         // replace char
         // set time

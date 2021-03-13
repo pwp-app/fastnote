@@ -8,7 +8,7 @@ var noteMap = {};
 
 // execute
 if (!settings){
-  storage.get('settings' + (global.indebug ? '_dev' : ''), function (err, data) {
+  storage.get('settings' + (inDebug ? '_dev' : ''), function (err, data) {
     if (err) {
       //获取callback回传的json
       console.error(err);
@@ -27,9 +27,9 @@ function deleteNote(id, infoEnabled = true) {
       var path;
       //检查offset
       if (note.offset > 0) {
-        path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
+        path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
       } else {
-        path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.json';
+        path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.json';
       }
       if (fs.existsSync(path)) {
         //删除文件
@@ -73,9 +73,9 @@ function deleteNoteByObj(note, infoEnabled = true) {
   let path;
   //检查offset
   if (note.offset > 0) {
-    path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
+    path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
   } else {
-    path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.json';
+    path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.json';
   }
   if (fs.existsSync(path)) {
     //删除文件
@@ -137,9 +137,9 @@ function restoreNote(id, infoEnabled = true) {
       let path;
       // 检查offset
       if (note.offset > 0) {
-        path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
+        path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.' + note.offset + '.json';
       } else {
-        path = storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.json';
+        path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/recyclebin/' + note.rawtime + '.json';
       }
       if (fs.existsSync(path)) {
         let newpath = path.replace('recyclebin/', '');
@@ -205,12 +205,12 @@ function readNoteFiles() {
   //重新读取需要清空notes Array
   clearNoteArray();
   //判断是否存在notes文件夹，不存在代表没有笔记
-  if (!fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/')) {
+  if (!fs.existsSync(storagePath + (inDebug ? '/devTemp' : '') + '/notes/recyclebin/')) {
     showNoteEmpty();
     isNotesEmpty = true;
-    fs.mkdirSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/');
+    fs.mkdirSync(storagePath + (inDebug ? '/devTemp' : '') + '/notes/recyclebin/');
   } else {
-    fs.readdir(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/', function (err, fileArr) {
+    fs.readdir(storagePath + (inDebug ? '/devTemp' : '') + '/notes/recyclebin/', function (err, fileArr) {
       if (err) {
         throw (err);
       }
@@ -227,8 +227,8 @@ function readNoteFiles() {
         //目录不是空的，代表有笔记，执行初始化
         let countOffset = 0;
         fileArr.forEach(element => {
-          if (!fs.statSync(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + element).isDirectory()) {
-            fs.readFile(storagePath + (global.indebug ? '/devTemp' : '') + '/notes/recyclebin/' + element, 'utf-8', function (err, data) {
+          if (!fs.statSync(storagePath + (inDebug ? '/devTemp' : '') + '/notes/recyclebin/' + element).isDirectory()) {
+            fs.readFile(storagePath + (inDebug ? '/devTemp' : '') + '/notes/recyclebin/' + element, 'utf-8', function (err, data) {
               if (err) {
                 countOffset++;
                 console.error(err);

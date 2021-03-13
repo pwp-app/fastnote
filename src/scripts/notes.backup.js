@@ -68,12 +68,12 @@ function setLastBackupTime() {
 function _backupNotes(backup_filename) {
     var notes_backup = [];
     var notes_backup_failed = []; // 备份失败的notes
-    if (!fs.existsSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/")) {
+    if (!fs.existsSync(storagePath + (inDebug ? "/devTemp" : "") + "/notes/")) {
         return "便签目录不存在。";
     }
     let files;
     try {
-        files = fs.readdirSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/");
+        files = fs.readdirSync(storagePath + (inDebug ? "/devTemp" : "") + "/notes/");
     } catch {
         return "目录读取错误。";
     }
@@ -86,7 +86,7 @@ function _backupNotes(backup_filename) {
     files.forEach(function(file) {
         let file_stat;
         try {
-            file_stat = fs.statSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + file);
+            file_stat = fs.statSync(storagePath + (inDebug ? "/devTemp" : "") + "/notes/" + file);
         } catch (err) {
             return;
         }
@@ -94,7 +94,7 @@ function _backupNotes(backup_filename) {
             notes_count++; // 计数
             let data;
             try {
-                data = fs.readFileSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + file, "utf-8");
+                data = fs.readFileSync(storagePath + (inDebug ? "/devTemp" : "") + "/notes/" + file, "utf-8");
             } catch (err) {
                 notes_backup_failed.push(file);
                 return;
@@ -200,7 +200,7 @@ function importNotes() {
                 importNotesErrorBox("读取备份文件失败");
             }
             // 检测便签目录是否是存在的
-            const notes_directory = storagePath + (global.indebug ? "/devTemp" : "") + "/notes/";
+            const notes_directory = storagePath + (inDebug ? "/devTemp" : "") + "/notes/";
             if (!fs.existsSync(notes_directory)) {
                 try {
                     fs.mkdirSync(notes_directory);
@@ -250,12 +250,12 @@ function recoverNotes(backupNotes) {
         let flag_skip = false;
 
         // 先判断文件是否存在
-        if (fs.existsSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename)) {
+        if (fs.existsSync(storagePath + (inDebug ? "/devTemp" : "") + "/notes/" + backup.filename)) {
             // 获取修改时间
             let note_data;
             let flag_null = false;
             try {
-                note_data = fs.readFileSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename);
+                note_data = fs.readFileSync(storagePath + (inDebug ? "/devTemp" : "") + "/notes/" + backup.filename);
             } catch {
                 flag_null = true;
             }
@@ -327,7 +327,7 @@ function recoverNotes(backupNotes) {
                 // 设置同步属性
                 const backupDecoded = JSON.parse(backupDecoded);
                 backupDecoded.needSync = true;
-                fs.writeFileSync(storagePath + (global.indebug ? "/devTemp" : "") + "/notes/" + backup.filename, JSON.stringify(backupDecoded), 'utf-8');
+                fs.writeFileSync(storagePath + (inDebug ? "/devTemp" : "") + "/notes/" + backup.filename, JSON.stringify(backupDecoded), 'utf-8');
                 recover_count++;
             } catch(err) {
                 recover_failed_count++;

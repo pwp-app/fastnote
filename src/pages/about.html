@@ -58,8 +58,8 @@
         const WebFont = require(pathPrefix + 'webfontloader');
 
         // fetch indebug status
-        global.indebug = remote.getGlobal('indebug');
-        if (!global.indebug){
+        inDebug = remote.getGlobal('indebug');
+        if (!inDebug){
             Mousetrap.bind('ctrl+shift+i', (e)=>{
                 e.preventDefault();
                 e.stopPropagation();
@@ -73,7 +73,7 @@
 
         var settings;
 
-        storage.get('settings' + (global.indebug ? '_dev' : ''), function (error, data) {
+        storage.get('settings' + (inDebug ? '_dev' : ''), function (error, data) {
             if (error) {
                 console.error(error);
                 settingsInit(null);

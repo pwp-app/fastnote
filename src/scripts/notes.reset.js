@@ -13,7 +13,7 @@ $('#btn-resetNotes').click(function(){
         detail:'所有已保存的便签、回收站内的便签将全部清除，重置后便签序号从0开始重新计算。'
     });
     if (ret == 1) {
-        storage.remove('notesid'+(global.indebug?'_dev':''), function(error){
+        storage.remove('notesid'+(inDebug?'_dev':''), function(error){
             if (error){
                 console.error(error);
                 dialog.showMessageBoxSync({
@@ -24,7 +24,7 @@ $('#btn-resetNotes').click(function(){
                 });
             } else {
                 // 删除便签文件
-                deleteall(storagePath  + (global.indebug?'/devTemp':'')+ '/notes');
+                deleteall(storagePath  + (inDebug?'/devTemp':'')+ '/notes');
                 // 删除分类
                 deleteCategoriesFile();
                 // 通知其他窗体重新载入
@@ -43,8 +43,8 @@ $('#btn-resetNotes').click(function(){
 // 删除分类相关的文件
 function deleteCategoriesFile() {
     // 删除分类主文件
-    const category_file = storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json';
-    const current_category_file = fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/current_category.json');
+    const category_file = storagePath + (inDebug ? '/devTemp' : '') + '/storage/categories.json';
+    const current_category_file = fs.existsSync(storagePath + (inDebug ? '/devTemp' : '') + '/storage/current_category.json');
     if (fs.existsSync(category_file)) {
         fs.unlinkSync(category_file);
     }

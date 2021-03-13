@@ -58,7 +58,7 @@
         const WebFont = require(pathPrefix + 'webfontloader');
 
         //获取indebug
-        global.indebug = remote.getGlobal('indebug');
+        inDebug = remote.getGlobal('indebug');
 
         //import requirements
         $.getScript('static/infobar.js'); //import by jQuery
@@ -68,7 +68,7 @@
 
         var settings;
 
-        storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
+        storage.get('settings' + (inDebug ? '_dev' : ''), function(error, data) {
             if (error) {
                 console.error(error);
                 settingsInit(null);
@@ -260,8 +260,8 @@
             </div>
         </div>
         <script>
-            if (fs.existsSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json')) {
-                var read_res = fs.readFileSync(storagePath + (global.indebug ? '/devTemp' : '') + '/storage/categories.json', 'utf-8'); //这里有同步让后面的update可以选择
+            if (fs.existsSync(storagePath + (inDebug ? '/devTemp' : '') + '/storage/categories.json')) {
+                var read_res = fs.readFileSync(storagePath + (inDebug ? '/devTemp' : '') + '/storage/categories.json', 'utf-8'); //这里有同步让后面的update可以选择
                 if (read_res) {
                     categories = JSON.parse(read_res);
                     for (var i = 0; i < categories.length; i++) {
@@ -511,7 +511,7 @@
             }
         }
 
-        if (!global.indebug) {
+        if (!inDebug) {
             Mousetrap.bind('ctrl+shift+i', (e) => {
                 e.preventDefault();
                 e.stopPropagation();

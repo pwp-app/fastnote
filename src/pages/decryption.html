@@ -35,9 +35,9 @@
         const WebFont = require(pathPrefix + 'webfontloader');
 
         // 获取indebug
-        global.indebug = remote.getGlobal('indebug');
+        inDebug = remote.getGlobal('indebug');
 
-        storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
+        storage.get('settings' + (inDebug ? '_dev' : ''), function(error, data) {
             if (error) {
                 console.error(error);
                 settingsInit(null);
@@ -169,7 +169,7 @@
             }
         }
 
-        if (!global.indebug) {
+        if (!inDebug) {
             Mousetrap.bind('ctrl+shift+i', (e) => {
                 e.preventDefault();
                 e.stopPropagation();

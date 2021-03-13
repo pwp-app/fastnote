@@ -59,11 +59,11 @@
 
     const WebFont = require(pathPrefix + 'webfontloader');
 
-    global.indebug = remote.getGlobal('indebug');
+    inDebug = remote.getGlobal('indebug');
 
     var settings;
 
-    storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
+    storage.get('settings' + (inDebug ? '_dev' : ''), function(error, data) {
       if (error) {
         console.error(error);
         settingsInit(null);
@@ -423,7 +423,7 @@
     }
   </style>
   <script>
-    if (!global.indebug) {
+    if (!inDebug) {
       Mousetrap.bind('ctrl+shift+i', (e) => {
         e.preventDefault();
         e.stopPropagation();

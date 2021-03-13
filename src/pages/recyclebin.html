@@ -61,7 +61,7 @@
     });
 
     // fetch indebug status
-    global.indebug = remote.getGlobal('indebug');
+    inDebug = remote.getGlobal('indebug');
 
     // import json storage
     var storage = require(pathPrefix + 'electron-json-storage');
@@ -89,7 +89,7 @@
 
     var settings;
 
-    storage.get('settings' + (global.indebug ? '_dev' : ''), function(error, data) {
+    storage.get('settings' + (inDebug ? '_dev' : ''), function(error, data) {
       if (error) {
         console.error(error);
         settingsInit(null);
@@ -378,7 +378,7 @@
 
     bindNoteClickEvent();
 
-    if (!global.indebug) {
+    if (!inDebug) {
       Mousetrap.bind('ctrl+shift+i', (e) => {
         e.preventDefault();
         e.stopPropagation();
