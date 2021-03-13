@@ -153,17 +153,17 @@
     }
 
     //初始化Fastnote cloud
-    const cloudConfig = require('../static/config/cloud.config.js');
-    if (global.indebug) {
+    const cloudConfig = require('./static/config/cloud.config.js');
+    if (inDebug) {
       var cloud_protocol = cloudConfig.dev.protocol;
       var cloud_host = cloudConfig.dev.host;
       var cloud_port = cloudConfig.dev.port;
-      var cloud_apibase = cloudConfig.dev.protocol + '://' + cloudConfig.dev.host + ':' + cloudConfig.dev.port
+      var cloud_apibase = cloudConfig.dev.protocol + '://' + cloudConfig.dev.host + (cloudConfig.dev.port ? `:${cloudConfig.dev.port}` : '');
     } else {
       var cloud_protocol = cloudConfig.release.protocol;
       var cloud_host = cloudConfig.release.host;
       var cloud_port = cloudConfig.release.port;
-      var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + ':' + cloudConfig.release.port
+      var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + (cloudConfig.release.port ? `:${cloudConfig.release.port}` : '')
     }
   </script>
   <script>
