@@ -24,7 +24,7 @@ const cmdMap = {
   'reload': devReloadWindow,
   'reloadwindow': devReloadWindow,
   'noteinfo': devDisplayNoteInfo,
-  'clearsync': devClearSync,
+  'clearsyncinfo': devClearSync,
   'marksync': devMarkSync,
   'firesync': devFireSync,
   'dosync': devFireSync,
@@ -94,17 +94,26 @@ function devFireSync(args) {
 
 // 清除便签的sync相关属性
 function devClearSync(args) {
-  args.forEach((arg) => {
-    if (arg.startsWith('#')) {
-      arg = arg.substr(1);
-    }
-    const note = noteMap[arg];
-    if (note) {
-      delete note.needSync;
-      delete note.syncId;
-    }
-    saveNoteByObj(note);
-  });
+  if (args.length === 1 && args[0] === 'all') {
+    notes.forEach((note) => {
+      if (note.syncId) {
+        delete note.syncId;
+      }
+      saveNoteByObj(note);
+    });
+  } else {
+    args.forEach((arg) => {
+      if (arg.startsWith('#')) {
+        arg = arg.substr(1);
+      }
+      const note = noteMap[arg];
+      if (note) {
+        delete note.needSync;
+        delete note.syncId;
+      }
+      saveNoteByObj(note);
+    });
+  }
   displayInfobar.success('Command executed');
 }
 
