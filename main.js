@@ -221,7 +221,7 @@ async function createWindow() {
 
   // ****************
 
-  //分类有修改
+  // 分类有修改
   ipc.on('category_added', (sender, data) => {
     let editWins = editWindow.getWins();
     for (let i = 0; i < editWins.length; i++) {
@@ -274,7 +274,7 @@ async function createWindow() {
     }
   });
 
-  //always on top
+  // always on top
   ipc.on('main-window-alwaysontop', () => {
     if (win.isAlwaysOnTop()) {
       win.setAlwaysOnTop(false);
@@ -293,7 +293,12 @@ async function createWindow() {
     win.webContents.send('cancel-encryption', data);
   });
 
-  //quit now
+  // cloud
+  ipc.on('cloudLogout', () => {
+    win.webContents.send('cloud-logout');
+  });
+
+  // quit now
   ipc.on('app-quitNow', () => {
     app.exit();
   });

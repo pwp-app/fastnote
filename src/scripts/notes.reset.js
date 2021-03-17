@@ -2,7 +2,7 @@ var fs = require('fs');
 
 var storagePath = app.getPath('userData');
 
-$('#btn-resetNotes').click(function () {
+$('#btn-resetNotes').on('click', function () {
   let ret = dialog.showMessageBoxSync({
     type: 'warning',
     buttons: ['取消', '确认'],
@@ -27,6 +27,8 @@ $('#btn-resetNotes').click(function () {
         deleteall(storagePath + (inDebug ? '/devTemp' : '') + '/notes');
         // 删除分类
         deleteCategoriesFile();
+				// 抹掉云端信息
+				ipcRenderer.send('cloudLogout');
         // 通知其他窗体重新载入
         ipcRenderer.send('reloadWindowAfterReset');
         reloadNotesId();

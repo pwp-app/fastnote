@@ -2207,6 +2207,11 @@
       deleteCloudToken();
     }
 
+    // 登出 (ipc)
+    ipcRenderer.on('cloud-logout', () => {
+      cloudUserLogout();
+    });
+
     // 定时刷新Token
     async function setRefreshCron(retry = 0) {
       if (retry === 0 || retry > 3) {
