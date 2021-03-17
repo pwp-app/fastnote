@@ -1573,11 +1573,11 @@
           notes_tobeDeleted.push(i);
         }
       }
-      //删除便签
-      for (let i = 0; i < notes_tobeDeleted.length; i++) {
-        //检查offset
+      // 删除便签
+      notes_tobeDeleted.forEach((idx) => {
+        // 检查offset
         let path;
-        if (notes[notes_tobeDeleted[i]].offset > 0) {
+        if (notes[idx].offset > 0) {
           path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.' + notes[tobeDeleted[i]].offset + '.json';
         } else {
           path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + notes[notes_tobeDeleted[i]].rawtime + '.json';
@@ -1586,20 +1586,21 @@
           // 删除文件
           fs.unlinkSync(path);
           // sync
-          const syncId = notes[notes_tobeDeleted[i]].syncId;
+          const { syncId } = notes[idx];
           if (syncId) {
-            noteRecycledLog.push(syncId);
+            noteRecycledLog[syncId] = moment().valueOf();
           }
           // render
           if (current_category === 'all') {
-            const noteid = notes[notes_tobeDeleted[i]].id;
-            $('#note_' + noteid).parent().animateCss('fadeOutLeft faster', function() {
-              $('#note_' + noteid).parent().remove();
+            const noteId = notes[idx].id;
+            $('#note_' + noteId).parent().animateCss('fadeOutLeft faster', function() {
+              $('#note_' + noteId).parent().remove();
             });
           }
-          notes.splice(notes_tobeDeleted[i], 1);
+          notes.splice(idx, 1);
         }
-      }
+      });
+      saveRecycleLog();
       renderCurrentCategory();
       renderNotesOfCategory(current_category);
     }
