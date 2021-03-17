@@ -124,7 +124,7 @@ function fetchDiff(lastSync) {
 
 async function processDiff(diff) {
   const { notes } = diff;
-  const { needAnimate: needCreateAnim } = await processDiffNotes(notes);
+  const { needAnimate: needCreateAnim, needRefresh } = await processDiffNotes(notes);
   // 处理deleted
   const { deleted } = diff;
   processDiffDeleted(deleted);
@@ -144,7 +144,7 @@ async function processDiff(diff) {
       renderCategorySelect();
       saveCategories();
     }
-  });
+  }, needRefresh);
 }
 
 // 处理diff
@@ -154,6 +154,7 @@ async function processDiffNotes(diffNotes) {
     return;
   }
   const needAnimate = [];
+  const needRefresh = [];
   if (!noteRecycledLog) {
     noteRecycledLog = await getRecycledLog();
   }
@@ -193,6 +194,7 @@ async function processDiffNotes(diffNotes) {
       addNoteObjToArray(note);
       saveNoteByObj(note);
       needAnimate.push(note.id);
+      needRefresh.push(note.id);
       return;
     }
     // 本地存在这个便签
@@ -201,6 +203,7 @@ async function processDiffNotes(diffNotes) {
         // 两边syncId不一致，把服务器端的作为新便签加入列表
         addExistedNoteAsNew(note);
         needAnimate.push(note.id);
+        needRefresh.push(note.id);
         stored.needSync = true;
         return;
       }
@@ -213,6 +216,7 @@ async function processDiffNotes(diffNotes) {
         deleteNoteFromArr(stored.id);
         addNoteObjToArray(note);
         saveNoteByObj(note);
+        needRefresh.push(note.id);
       } else if (remoteTimeObj.valueOf() < storedTimeObj.valueOf()) {
         // 服务器上的更旧
         stored.needSync = true;
@@ -230,16 +234,18 @@ async function processDiffNotes(diffNotes) {
       });
       if (ret === 0) {
         addExistedNoteAsNew(note);
+        needRefresh.push(note.id);
       }
       if (ret === 1) {
         deleteNoteFile(stored);
         deleteNoteFromArr(stored.id);
         addNoteObjToArray(note);
         saveNoteByObj(note);
+        needRefresh.push(note.id);
       }
     }
   });
-  return { needAnimate };
+  return { needAnimate, needRefresh };
 }
 
 // 处理diff的删除部分

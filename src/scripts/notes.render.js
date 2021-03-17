@@ -147,7 +147,9 @@ function initialRender() {
   let html_forceTop = [];
   // 渲染
   for (let i = 0; i < notes.length; i++) {
-    let rendered = renderNote(notes[i], immediate=false);
+    let rendered = renderNote(notes[i], {
+      immediate: false,
+    });
     if (rendered.forceTop) {
       html_forceTop.push(rendered.html);
     } else {
@@ -172,7 +174,17 @@ function initialRender() {
 }
 
 // 渲染一条笔记
-function renderNote(note, immediate = true, isPrepend = false, animate = false, hidden = false) {
+function renderNote(note, opts) {
+  // build opts
+  const defaultOpts = {
+    immediate: true,
+    isPrepend: false,
+    animate: false,
+    hidden: false,
+  };
+  Object.assign(defaultOpts, opts);
+  const { immediate, isPrepend, animate, hidden } = defaultOpts;
+  // render
   let { id, rawtime, updaterawtime, title, category, password, text, forceTop, markdown } = note;
   if (!settings.language){
     current_i18n = 'zh-cn';
@@ -283,7 +295,11 @@ function renderNoteAtTop(note) {
   if (category && category !== current_category) {
     hidden = true;
   }
-  renderNote(note, true, true, true, hidden);
+  renderNote(note, {
+    isPrepend: true,
+    animate: true,
+    hidden,
+  });
 }
 
 function rerenderEditedNote(data, rawtext) {
@@ -318,22 +334,28 @@ function rerenderEditedNote(data, rawtext) {
     $('#note_'+data.id).attr('data-markdown', 'false');
   }
 
-  //处理密码的更改
+  // 处理密码的更改
   if (data.password) {
-    resetEditedNoteText(data, rawtext);
     // 便签设置了密码，判断便签之前是否有密码
-    if ($('#note_'+data.id+' .note-content .note-password').length > 0){
-      // 便签已经有密码
-      $('#note_'+data.id+' .note-content .note-password').attr('data-password',data.password);
-      $('#note_'+data.id+' .note-content .note-password').attr('data-encrypted',data.text);
+    if ($(`#note_password_${data.id}`).length > 0){
+      // 便签在加密状态
+      $(`#note_${data.id} .note-content .note-password`).attr('data-password', data.password);
+      $(`#note_${data.id} .note-content .note-password`).attr('data-encrypted', data.text);
     } else {
-      // 便签之前没有设置过密码
-      $('#note_'+data.id+' .note-content').prepend('<div class="note-password" data-password="' + data.password + '" data-encrypted="' + data.text + '" style="display: none;"><span>'+i18n.render[current_i18n].password+'</span><input type="password" class="form-control" id="note_password_' + data.id + '" onkeydown="checkNotePassword(event, ' + data.id + ');"></div>');
-      $('#note_'+data.id+' .note-header').append('<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + data.id + ')" style="display: inline-block !important;"></i>');
-      $('#note_'+data.id+' .note-header .note-password-relock').animateCss('fadeIn morefaster');
+      // 便签不在加密状态
+      if (rawtext) {
+        resetEditedNoteText(data, rawtext);
+        $(`#note_${data.id} .note-content`).prepend('<div class="note-password" data-password="' + data.password + '" data-encrypted="' + data.text + '" style="display: none;"><span>'+i18n.render[current_i18n].password+'</span><input type="password" class="form-control" id="note_password_' + data.id + '" onkeydown="checkNotePassword(event, ' + data.id + ');"></div>');
+        $(`#note_${data.id} .note-header`).append('<i class="fa fa-lock note-password-relock" aria-hidden="true" onclick="relockNote(' + data.id + ')" style="display: inline-block !important;"></i>');
+        $(`#note_${data.id} .note-header .note-password-relock`).animateCss('fadeIn morefaster');
+      } else {
+        relockNote(data.id);
+        $(`#note_${data.id} .note-content .note-password`).attr('data-password', data.password);
+        $(`#note_${data.id} .note-content .note-password`).attr('data-encrypted', data.text);
+      }
     }
   } else {
-    //没有设置密码
+    // 没有设置密码
     resetEditedNoteText(data, data.text);
   }
 
@@ -463,31 +485,64 @@ function bindNoteFoldDBL(id) {
 }
 
 // 刷新note-list
-function refreshNoteList(callback) {
-  clearNoteList(); //先清空
-  if (typeof sort_mode !== 'string') {
-    storage.get('sortMode' + (inRecyclebin ? '_recyclebin' : ''), function (err, data) {
-      if (err) {
-        console.error(err);
-        return;
+function refreshNoteList(callback, noteIds) {
+  if (noteIds && Array.isArray(noteIds)) {
+    noteIds.forEach((id) => {
+      // 只更改涉及到的note
+      const el = $(`#note_${id}`);
+      if (el.length) {
+        // 看作是编辑了，重新渲染
+        rerenderEditedNote(noteMap[id]);
+      } else {
+        const { forceTop } = noteMap[id];
+        if (sort_mode === 'id') {
+          const prev = findPrevNote(id, forceTop);
+          if (prev) {
+            // prepend到之前
+            const rendered = renderNote(noteMap[id], { immediate: false });
+            $(`#note_${prev}`).before(rendered.html);
+          } else {
+            // 直接放在末尾
+            renderNote(noteMap[id]);
+          }
+        } else {
+          // TODO: 按照更新时间插入
+          clearNoteList(); //先清空
+          // 渲染列表
+          initialRender(notes);
+          // callback
+          if (typeof callback === 'function') {
+            callback();
+          }
+        }
       }
-      sort_mode = data.mode;
-      if (typeof sort_mode !== 'string') {
-        sort_mode = 'id';
-      }
+    });
+  } else {
+    clearNoteList(); //先清空
+    if (typeof sort_mode !== 'string') {
+      storage.get('sortMode' + (inRecyclebin ? '_recyclebin' : ''), function (err, data) {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        sort_mode = data.mode;
+        if (typeof sort_mode !== 'string') {
+          sort_mode = 'id';
+        }
+        // 渲染列表
+        initialRender(notes);
+        // callback
+        if (typeof callback === 'function') {
+          callback();
+        }
+      });
+    } else {
       // 渲染列表
       initialRender(notes);
       // callback
       if (typeof callback === 'function') {
         callback();
       }
-    });
-  } else {
-    // 渲染列表
-    initialRender(notes);
-    // callback
-    if (typeof callback === 'function') {
-      callback();
     }
   }
 }

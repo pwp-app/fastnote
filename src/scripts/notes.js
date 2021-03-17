@@ -474,3 +474,29 @@ function saveNotesId() {
   storage.set('notesid' + (inDebug ? '_dev' : ''), data);
 }
 
+function findPrevNote(id, forceTop = false) {
+  let pointer = id - 1;
+  while(true) {
+    if (pointer <= 0) {
+      return null;
+    }
+    if (noteMap[pointer]) {
+      if (!forceTop) {
+        return pointer;
+      } else {
+        if (noteMap[pointer].forceTop) {
+          return pointer;
+        } else {
+          pointer--;
+        }
+      }
+    } else {
+      pointer--;
+    }
+  }
+}
+
+// TODO: 寻找更新时间最近的一个的note
+function findPrevLastUpdateNote(updateTime, forceTop = false) {
+
+}
