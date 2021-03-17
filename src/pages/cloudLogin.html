@@ -3,26 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>注册</title>
+  <title>登录</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!--import requirements-->
   <script>
-    window.$ = window.jQuery = require('../static/jquery.min.js');
+    window.$ = window.jQuery = require('./static/jquery.min.js');
 
     const remote = require('electron').remote;
     const app = remote.app;
     const pathPrefix = remote.getGlobal('pathPrefix') || '';
   </script>
-  <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="../static/main.white.css" />
-  <link rel="stylesheet" href="../static/font-awesome.min.css">
-  <link rel="stylesheet" href="../static/bootstrap.min.css">
-  <link rel="stylesheet" href="../static/animate.min.css">
-  <script src="../static/encryption.js"></script>
-  <script src="../static/i18n.js"></script>
-  <script src="../static/mousetrap.min.js"></script>
-  <script src="../static/captcha.js"></script>
-  <script src="../static/validation.js" async defer></script>
+  <link rel="stylesheet" id="main-style" type="text/css" media="screen" href="./static/main.white.css" />
+  <link rel="stylesheet" href="static/font-awesome.min.css">
+  <link rel="stylesheet" href="static/bootstrap.min.css">
+  <link rel="stylesheet" href="static/animate.min.css">
+  <script src="static/mousetrap.min.js"></script>
+  <script src="static/encryption.js"></script>
+  <script src="static/i18n.js"></script>
+  <script src="static/captcha.js"></script>
+  <script src="static/validation.js" async defer></script>
   <script>
     //load Animate CSS
     $.fn.extend({
@@ -79,39 +79,39 @@
     });
 
     function settingsInit(settings) {
-      let cssText = '';
-      let font = '';
+      var cssText = '';
+      var font = '';
       //build css
       if (!settings) {
         //read error
-        $('#main-style').attr('href', '../static/main.default.css');
+        $('#main-style').attr('href', './static/main.default.css');
         cssText += 'body {font-family:Source Han Sans CN, MicroSoft Yahei, Arial !important;}'; //font
         font = 'Source Han Sans CN';
         current_i18n = 'zh-cn';
-        $.getScript('../static/i18n/zh-cn.js');
+        $.getScript('./static/i18n/zh-cn.js');
         console.error('A error occured when reading settings.');
       } else {
         //read success
         if (settings.language) {
-          if (settings.language != 'zh-cn') {
+          if (settings.language !== 'zh-cn') {
             $(document).ready(function() {
               initLanguage();
             });
           } else {
             current_i18n = 'zh-cn';
-            $.getScript('../static/i18n/zh-cn.js', function() {
+            $.getScript('./static/i18n/zh-cn.js', function() {
               postElementsInit();
             });
           }
           current_i18n = settings.language;
         } else {
           current_i18n = 'zh-cn';
-          $.getScript('../static/i18n/zh-cn.js');
+          $.getScript('./static/i18n/zh-cn.js');
         }
         if (settings.theme) {
-          $('#main-style').attr('href', '../static/main.' + settings.theme + '.css');
+          $('#main-style').attr('href', './static/main.' + settings.theme + '.css');
         } else {
-          $('#main-style').attr('href', '../static/main.default.css');
+          $('#main-style').attr('href', './static/main.default.css');
         }
 
         if (settings.fontfamily) {
@@ -136,7 +136,7 @@
     }
 
     function initLanguage() {
-      applyLanguage(settings.language);
+      applyLanguage(settings.language, postElementsInit);
     }
 
     //语言初始化后处理
@@ -152,8 +152,8 @@
       });
     }
 
-    //初始化Fastnote cloud
-    const cloudConfig = require('../static/config/cloud.config.js');
+    // 初始化Fastnote cloud
+    const cloudConfig = require('./static/config/cloud.config.js');
     if (inDebug) {
       var cloud_protocol = cloudConfig.dev.protocol;
       var cloud_host = cloudConfig.dev.host;
@@ -166,27 +166,24 @@
       var cloud_apibase = cloudConfig.release.protocol + '://' + cloudConfig.release.host + (cloudConfig.release.port ? `:${cloudConfig.release.port}` : '')
     }
   </script>
-  <script>
-    const reg_email = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
-  </script>
 </head>
 
 <body class="login-body">
   <div class="container-titlebar col-lg-12 drag">
-    <div class="title" id="login-title" data-lang='register'>注册</div>
+    <div class="title" id="login-title" data-lang='login'>登录</div>
     <div id="electron-titlebar" class="titlebar" style="position: fixed !important;z-index: 999;"></div>
   </div>
   <script async>
-    require('../modules/electron-titlebar');
+    require('./modules/electron-titlebar');
   </script>
   <div class="container-login">
     <div class="login-header">
       <div class="login-logo">
-        <img class="login-logo-default" src="../static/images/logo.png"></img>
-        <img class="login-logo-blackwhite" src="../static/images/logo.blackwhite.png"></img>
+        <img class="login-logo-default" src="./static/images/logo.png"></img>
+        <img class="login-logo-blackwhite" src="./static/images/logo.blackwhite.png"></img>
       </div>
       <div class="login-title">
-        <span data-lang="register">注册 Fastnote Cloud 帐户</span>
+        <span data-lang="login_title">登录到<handefault></handefault>Fastnote Cloud</span>
       </div>
     </div>
     <div class="login-body">
@@ -207,23 +204,7 @@
             <input class="form-control brcontrol-input" id="input-password" type="password">
           </div>
         </div>
-        <div class="login-form-group">
-          <div class="login-form-label">
-            <span data-lang="confirm_password">确认密码</span>
-          </div>
-          <div class="login-form-control">
-            <input class="form-control brcontrol-input" id="input-confirmpassword" type="password">
-          </div>
-        </div>
-        <div class="login-form-group">
-          <div class="login-form-label">
-            <span data-lang="email">邮箱</span>
-          </div>
-          <div class="login-form-control">
-            <input class="form-control brcontrol-input" id="input-email" type="text">
-          </div>
-        </div>
-        <div class="login-form-group login-captcha" id="login-captcha-group">
+        <div class="login-form-group" id="login-captcha-group" style="display: none;">
           <div class="login-form-label">
             <span data-lang="captcha">验证码</span>
           </div>
@@ -234,25 +215,25 @@
             <img id="login-captcha">
           </div>
         </div>
-        <div class="login-form-group login-captcha">
-          <div class="login-form-label">
-            <span data-lang="email_captcha">邮箱验证码</span>
-          </div>
-          <div class="login-form-control">
-            <input class="form-control brcontrol-input" id="input-emailcaptcha" type="text">
-          </div>
-          <div class="login-end">
-            <button class="btn btn-secondary brbtn-primary" id="btn-send" onclick="trySendMail();">发送</button>
-          </div>
-        </div>
         <div class="login-form-button" style="float: right;">
-          <button id="btn-submit" class="btn btn-secondary brbtn-primary login-button" data-lang="register" onclick="trySubmitForm();">注册</button>
+          <button class="btn btn-secondary brbtn-primary login-button" data-lang="register" onclick="switchToRegister();">注册</button>
+          <button id="btn-submit" class="btn btn-secondary brbtn-primary login-button" data-lang="login" onclick="trySubmitLogin();">登录</button>
         </div>
+        <script>
+          function switchToRegister(){
+            ipcRenderer.send('switch-to-register');
+          }
+        </script>
       </div>
     </div>
   </div>
   <script>
     var captchaId;
+    var needCaptcha = false;
+
+    $('#login-captcha').on('click', async () => {
+      await getCaptcha();
+    });
 
     // Get captcha from server
     async function getCaptcha() {
@@ -266,153 +247,83 @@
       $('#login-captcha').attr('src', `data:image/png;base64,${captcha}`);
     }
 
-    getCaptcha();
+    const keys = ['username', 'password', 'captcha'];
 
-    $('#login-captcha').on('click', async () => {
-      await getCaptcha();
-    });
-
-    const sendMailRules = {
-      email: {
-        required: true,
-      },
-      captcha: {
-        required: true,
-      }
-    };
-
-    const registerRules = {
+    const rules = {
       username: {
         required: true,
-        max: 30,
       },
       password: {
         required: true,
       },
-      confirmPassword: {
-        required: true,
-        custom: (value, data) => {
-          if (value !== data.password) {
-            return false;
-          }
-          return true;
-        }
-      },
-      email: {
-        required: true,
-      },
-      emailCaptcha: {
-        required: true,
-        max: 6,
-      },
-    }
+    };
 
-    const formKeys = ['username', 'password', 'captcha', 'confirmPassword', 'email', 'emailCaptcha'];
-
-    function trySendMail() {
-      const formData = getFormData(formKeys);
-      if (!validateValues(formData, sendMailRules)) {
-        console.log('formData', formData);
+    function trySubmitLogin() {
+      const formData = getFormData(keys);
+      if (!validateValues(formData, rules)) {
         displayInfobar('error', '数据有误，请检查输入后重试');
         return;
-      };
-      // send mail
-      $('#btn-send').attr('disabled', 'disabled');
-      const { email, captcha } = formData;
-      $.ajax({
-        url: `${cloud_apibase}/user/sendMail`,
-        type: 'POST',
-        dataType: 'json',
-        data: {
-          email,
-          captchaId,
-          captcha,
-        },
-        success: (res) => {
-          if (!res) {
-            displayInfobar('error', '无法发送验证码，请重试');
-            $('#btn-send').removeAttr('disabled');
-            return;
-          }
-          const { success } = res;
-          if (!success) {
-            displayInfobar('error', res.message);
-            $('#btn-send').removeAttr('disabled');
-            return;
-          }
-          displayInfobar('success', '验证码已发送至您的邮箱');
-          setSendTimeout(60);
-        },
-        error: (err) => {
-          console.error('[Cloud] Cannot send mail.', err);
-          displayInfobar('error', '无法发送验证码，请重试');
-          $('#btn-send').removeAttr('disabled');
-          return;
-        }
-      });
-    }
-
-    function setSendTimeout(time) {
-      setTimeout(() => {
-        if (time) {
-          $('#btn-send').text(time);
-          setSendTimeout(time - 1);
-        } else {
-          $('#btn-send').removeAttr('disabled');
-          $('#btn-send').text('发送');
-        }
-      }, 1000);
-    }
-
-    function trySubmitForm() {
-      const formData = getFormData(formKeys);
-      if (!validateValues(formData, registerRules)) {
-        displayInfobar('error', '数据有误，请检查输入后重试');
-        return;
-      };
-      const { username, password, confirmPassword, email, emailCaptcha } = formData;
+      }
+      const { username, password, captcha } = formData;
       $('#btn-submit').attr('disabled', 'disabled');
       $.ajax({
-        url: `${cloud_apibase}/user/register`,
-        dataType: 'json',
+        url: `${cloud_apibase}/user/login`,
         type: 'POST',
+        dataType: 'json',
         data: {
           username,
           password: sha256(password, 'fastnote'),
-          confirmPassword: sha256(confirmPassword, 'fastnote'),
-          email,
-          emailCaptcha,
+          captcha,
+          captchaId,
         },
         success: (res) => {
           if (!res) {
-            displayInfobar('error', '注册失败，请稍后再试');
+            displayInfobar('error', '登录失败，请稍后再试');
             $('#btn-submit').removeAttr('disabled');
             return;
           }
-          const { success } = res;
+          const { success, data } = res;
           if (!success) {
+            // 是否需要验证码
+            if (res.code === 400008 && needCaptcha) {
+              getCaptcha();
+            }
+            if (res.code === 400009) {
+              $('#login-captcha-group').show();
+              needCaptcha = true;
+              ipcRenderer.send('cloud-login-need-captcha');
+              if (!captchaId) {
+                getCaptcha();
+              }
+            }
             displayInfobar('error', res.message);
             $('#btn-submit').removeAttr('disabled');
             return;
           }
-          // 注册成功
-          ipcRenderer.send('switch-to-login', {
-            username,
-            registerSuccess: true,
-          });
-          $('#btn-submit').removeAttr('disabled');
+          ipcRenderer.send('cloud-login-success', data);
+          window.close();
         },
         error: (err) => {
-          console.error('[Cloud] Send register request failed.', err);
-          displayInfobar('error', '注册失败，请稍后再试');
+          console.error('[Cloud] Cannot send login request.', err);
+          displayInfobar('error', '登录失败，请稍后再试');
           $('#btn-submit').removeAttr('disabled');
-        },
+        }
       });
     }
 
-    $('#input-captcha').on('keydown', function(e) {
+    ipcRenderer.on('page-changed', (sender, data) => {
+      console.log('page-changed-data', data);
+      if (data) {
+        $('#input-username').val(data.username);
+        if (data.registerSuccess) {
+          displayInfobar('success', '注册成功');
+        }
+      }
+    });
+
+    $('#input-password').on('keydown', function(e) {
       if (e.key === 'Enter') {
-        trySubmitForm();
+        trySubmitLogin();
       }
     });
   </script>
@@ -448,7 +359,8 @@
       e.preventDefault();
       e.stopPropagation();
     });
+
     // import requirements
-    $.getScript('../static/infobar.js'); // import by jQuery
+    $.getScript('./static/infobar.js'); // import by jQuery
   </script>
 </body>
