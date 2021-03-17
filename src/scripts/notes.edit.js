@@ -1,5 +1,4 @@
 var fs = require('fs');
-var time = require('./tools/time.js');
 
 // import storage location
 const remote = require('electron').remote;
@@ -11,7 +10,8 @@ var notesEdit = {
     // 保存编辑的Note
     saveEditNote: function (data, callback) {
         const note = data.note;
-        const alltime = time.getAllTime();
+        const time = moment();
+        const rawtime = time.format('YYYYMMDDHHmmss');
         // 保存路径
         let path;
         // 检查offset
@@ -22,8 +22,8 @@ var notesEdit = {
         }
         // replace char
         // set time
-        note.updatetime = alltime.currentTime;
-        note.updaterawtime = alltime.rawTime;
+        note.updatetime = moment().format('YYYY年MM月DD日 HH:mm:ss');
+        note.updaterawtime = rawtime;
         if (note.category === 'notalloc') {
             note.category = null;
         }

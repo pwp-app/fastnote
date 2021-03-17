@@ -1,5 +1,4 @@
 var textarea = $('#note-text');
-const { net } = require('electron');
 var fs = require('fs');
 
 var storagePath = app.getPath('userData');
@@ -373,19 +372,21 @@ function readNoteFiles(success_callback) {
 
 // 保存note为json
 function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
-  const alltime = time.getAllTime();
   // 保存路径
-  let path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + alltime.rawTime + '.json';
+  let path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + moment().format('YYYYMMDDHHmmss') + '.json';
+  // time
+  const time = moment();
+  const rawtime = time.format('YYYYMMDDHHmmss');
   // 计算文件的offset
   let offset = 0;
   if (fs.existsSync(path)) {
     offset += 1;
   }
   if (offset > 0) {
-    path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + alltime.rawTime + '.' + offset + '.json';
+    path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + rawtime + '.' + offset + '.json';
     while (fs.existsSync(path)) {
       offset++;
-      path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + alltime.rawTime + '.' + offset + '.json';
+      path = storagePath + (inDebug ? '/devTemp' : '') + '/notes/' + rawtime + '.' + offset + '.json';
     }
   }
   // 转换回车
@@ -401,9 +402,10 @@ function saveNote(notetext, notetitle, notecategory, notepassword, markdown) {
 	const reservedCats = ['notalloc', 'all'];
   const note = {
     id: notesid,
-    time: alltime.currentTime,
-    rawtime: alltime.rawTime,
-    timezone: time.getTimeZone(),
+    time: time.format('YYYY年MM月DD日 HH:mm:ss'),
+    rawtime: rawtime,
+    timezone: time.format('ZZ'),
+    timestamp: time.valueOf(),
     text: notetext,
     title: notetitle || null,
     category: reservedCats.includes(notecategory) ? null : (notecategory || null),
