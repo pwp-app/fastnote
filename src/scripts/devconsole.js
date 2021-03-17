@@ -24,10 +24,12 @@ const cmdMap = {
   'reload': devReloadWindow,
   'reloadwindow': devReloadWindow,
   'noteinfo': devDisplayNoteInfo,
+  'resetnotetime': resetNoteTime,
   'clearsyncinfo': devClearSync,
   'marksync': devMarkSync,
   'firesync': devFireSync,
   'dosync': devFireSync,
+  'dosyncall': devSyncAll,
   'pushcategory': pushCategories,
   'pushcategories': pushCategories,
   'recount': function () {
@@ -83,11 +85,23 @@ function devMarkSync(args) {
   displayInfobar.success('Command executed');
 }
 
+function markSyncAll() {
+  notes.forEach((note) => {
+    note.needSync = true;
+  });
+}
+
 // 手动触发同步
 function devFireSync(args) {
   if (args && Array.isArray(args)) {
     devMarkSync(args);
   }
+  doSync();
+  displayInfobar.success('Command executed');
+}
+
+function devSyncAll() {
+  markSyncAll();
   doSync();
   displayInfobar.success('Command executed');
 }
@@ -139,4 +153,13 @@ function recountNoteId() {
   notesid = max;
   saveNotesId();
   displayInfobar.success('Command executed');
+}
+
+function resetNoteTime() {
+  notes.forEach((note) => {
+    note.timezone = moment().format('ZZ');
+    note.timestamp = moment(note.rawtime, 'YYYYMMDDHHmmss').valueOf();
+    saveNoteByObj(note);
+    displayInfobar.success('Command executed');
+  });
 }

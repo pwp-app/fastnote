@@ -213,7 +213,7 @@ async function processDiffNotes(diffNotes) {
         deleteNoteFromArr(stored.id);
         addNoteObjToArray(note);
         saveNoteByObj(note);
-      } else {
+      } else if (remoteTimeObj.valueOf() < storedTimeObj.valueOf()) {
         // 服务器上的更旧
         stored.needSync = true;
         saveNoteByObj(stored);
@@ -360,23 +360,16 @@ function pushNoSyncNotes() {
 }
 
 // 处理返回的更新信息
-function parseSyncIdMap(updated) {
-  const map = {};
-  updated.forEach((item) => {
-    const { id, syncId } = item;
-    map[id] = syncId;
-  });
-  return map;
-}
 function processUpdated(updated) {
-  const syncIdMap = parseSyncIdMap(updated);
-  notes.forEach((note) => {
-    const syncId = syncIdMap[note.id];
-    if (syncId && !note.syncId) {
-      note.syncId = syncId;
+  updated.forEach((log) => {
+    const note = noteMap[log.id];
+    if (!note) {
+      return;
+    }
+    if (!note.syncId) {
+      note.syncId = log.syncId;
     }
     note.needSync = false;
-    // 写入note
     saveNoteByObj(note);
   });
 }
@@ -395,6 +388,7 @@ async function recordRecycleBehaviour(note) {
   noteRecycledLog[syncId] = moment().valueOf();
   await saveRecycledLog();
 }
+
 async function recordRestoreBehaviour(note) {
   if (!noteRecycledLog) {
     noteRecycledLog = await getRecycledLog();
@@ -407,6 +401,7 @@ async function recordRestoreBehaviour(note) {
   delete noteRecycledLog(syncId);
   await saveRecycledLog();
 }
+
 function getRecycledLog() {
   return new Promise((resolve) => {
     storage.get('recycled-log', (err, res) => {
